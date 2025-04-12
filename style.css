@@ -1,0 +1,339 @@
+:root {
+    --primary-color: #6c5ce7;
+    --secondary-color: #a8a5e6;
+    --background-color: #f8f9fa;
+    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --dark-bg: #1a1a1a;
+    --dark-card-bg: #2d2d2d;
+    --dark-text: #ffffff;
+    --dark-border: #404040;
+}
+
+body {
+    background-color: var(--background-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header h1 {
+    color: var(--primary-color);
+    font-weight: bold;
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+header h1 img {
+    width: 48px;
+    height: 48px;
+    transition: transform 0.3s ease;
+}
+
+header h1 img:hover {
+    transform: scale(1.1);
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 15px 15px 0 0 !important;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.input-group {
+    margin-bottom: 1rem;
+}
+
+.form-control {
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(108, 92, 231, 0.25);
+}
+
+#pessoa-dados {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.copy-feedback {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 5px;
+    display: none;
+    animation: fadeInOut 2s ease;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    header h1 {
+        font-size: 1.8rem;
+    }
+    
+    header h1 img {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* Estilos para o tema escuro */
+.dark-theme {
+    background-color: var(--dark-bg);
+    color: var(--dark-text);
+}
+
+.dark-theme .card {
+    background-color: var(--dark-card-bg);
+    border-color: var(--dark-border);
+}
+
+.dark-theme .card-header {
+    background-color: var(--primary-color);
+    border-bottom: 1px solid var(--dark-border);
+}
+
+.dark-theme .form-control {
+    background-color: var(--dark-bg);
+    border-color: var(--dark-border);
+    color: var(--dark-text);
+}
+
+.dark-theme .form-control:focus {
+    background-color: var(--dark-bg);
+    color: var(--dark-text);
+}
+
+/* Estilos para o cartão de crédito */
+.card-info {
+    background-color: var(--background-color);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.dark-theme .card-info {
+    background-color: var(--dark-bg);
+}
+
+/* Animação para o botão de tema */
+#theme-toggle {
+    transition: transform 0.3s ease;
+}
+
+#theme-toggle:hover {
+    transform: rotate(180deg);
+}
+
+/* Adicione estes estilos */
+.copyable {
+    cursor: pointer;
+    padding: 2px 5px;
+    border-radius: 4px;
+    background-color: rgba(108, 92, 231, 0.1);
+    transition: background-color 0.2s ease;
+}
+
+.copyable:hover {
+    background-color: rgba(108, 92, 231, 0.2);
+}
+
+.copy-icon {
+    cursor: pointer;
+    color: var(--primary-color);
+    margin-left: 8px;
+    transition: transform 0.2s ease;
+}
+
+.copy-icon:hover {
+    transform: scale(1.1);
+}
+
+.dados-pessoa-item p {
+    margin-bottom: 0.5rem;
+}
+
+.input-group-text {
+    background-color: var(--background-color);
+    border-color: #e0e0e0;
+}
+
+.dark-theme .input-group-text {
+    background-color: var(--dark-bg);
+    border-color: var(--dark-border);
+    color: var(--dark-text);
+}
+
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Adicione estes estilos para o toast */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000;
+    animation: slideIn 0.3s ease, slideOut 0.3s ease 1.7s forwards;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Ajuste para o tema escuro */
+.dark-theme .copyable {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .copyable:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.dark-theme .form-check-input {
+    background-color: var(--dark-bg);
+    border-color: var(--dark-border);
+}
+
+.dark-theme .form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Estilo para o ícone da programadora */
+.programmer-icon {
+    width: 48px;
+    height: 48px;
+    transition: transform 0.3s ease;
+}
+
+.programmer-icon:hover {
+    transform: scale(1.1);
+}
+
+/* Estilos para os documentos */
+.documento-container {
+    background-color: var(--background-color);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.dark-theme .documento-container {
+    background-color: var(--dark-bg);
+}
+
+.documento-valor {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.controles {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.form-switch {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.regenerate-btn {
+    transition: transform 0.3s ease;
+}
+
+.regenerate-btn:hover {
+    transform: rotate(180deg);
+}
+
+/* Ajuste responsivo */
+@media (max-width: 768px) {
+    .programmer-icon {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .documento-container {
+        padding: 10px;
+    }
+    
+    .controles {
+        flex-direction: column;
+        gap: 10px;
+    }
+}

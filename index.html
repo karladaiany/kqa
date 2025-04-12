@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KQA :: Gerador de Dados para QA</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Faker.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+    <!-- Definir localização do Faker para pt_BR -->
+    <script>
+        faker.locale = 'pt_BR';
+        // Garantir que o Faker esteja carregado antes do script principal
+        window.onload = function() {
+            if (typeof faker === 'undefined') {
+                alert('Erro ao carregar o Faker.js. Por favor, recarregue a página.');
+            }
+        };
+    </script>
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="text-center my-5">
+            <h1>
+                <img src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Woman%20technologist/3D/woman_technologist_3d.png" 
+                     alt="Woman Programmer" 
+                     class="me-2 programmer-icon">
+                🎲 KQA :: Gerador de Dados para QA ::
+                <img src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Woman%20technologist/3D/woman_technologist_3d.png" 
+                     alt="Woman Programmer" 
+                     class="ms-2 programmer-icon">
+            </h1>
+            <p class="lead">Sua ferramenta essencial para dados de teste</p>
+        </header>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-id-card"></i> Documentos</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- CPF -->
+                        <div class="mb-4">
+                            <label for="cpf" class="form-label">CPF</label>
+                            <div class="documento-container">
+                                <div class="documento-valor">
+                                    <span class="copyable" id="cpf"></span>
+                                    <i class="fas fa-copy copy-icon"></i>
+                                </div>
+                                <div class="controles">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="cpf-mask-toggle">
+                                        <label class="form-check-label" for="cpf-mask-toggle">Máscara</label>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm regenerate-btn" id="generate-cpf">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CNPJ -->
+                        <div class="mb-4">
+                            <label for="cnpj" class="form-label">CNPJ</label>
+                            <div class="documento-container">
+                                <div class="documento-valor">
+                                    <span class="copyable" id="cnpj"></span>
+                                    <i class="fas fa-copy copy-icon"></i>
+                                </div>
+                                <div class="controles">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="cnpj-mask-toggle">
+                                        <label class="form-check-label" for="cnpj-mask-toggle">Máscara</label>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm regenerate-btn" id="generate-cnpj">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RG -->
+                        <div class="mb-4">
+                            <label for="rg" class="form-label">RG</label>
+                            <div class="documento-container">
+                                <div class="documento-valor">
+                                    <span class="copyable" id="rg"></span>
+                                    <i class="fas fa-copy copy-icon"></i>
+                                </div>
+                                <div class="controles">
+                                    <button class="btn btn-primary btn-sm regenerate-btn" id="generate-rg">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-user"></i> Dados Pessoais</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="pessoa-dados"></div>
+                        <button class="btn btn-primary" id="generate-person">
+                            Gerar Nova Pessoa
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-credit-card"></i> Cartão de Crédito</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="credit-card-data" class="mb-3"></div>
+                        <button class="btn btn-primary" id="generate-card">
+                            Gerar Novo Cartão
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button id="theme-toggle" class="btn btn-outline-primary position-fixed top-0 end-0 m-3">
+        <i id="theme-icon" class="fas fa-moon"></i>
+    </button>
+
+    <!-- Toast para feedback de cópia -->
+    <div class="toast-container"></div>
+</body>
+</html>
