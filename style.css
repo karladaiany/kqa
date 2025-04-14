@@ -302,23 +302,22 @@ header h1 img:hover {
 
 .controles {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 10px;
     margin-top: 10px;
 }
 
 .form-switch {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    margin-bottom: 5px;
 }
 
 .regenerate-btn {
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .regenerate-btn:hover {
-    transform: rotate(180deg);
+    transform: scale(1.1) rotate(180deg);
+    box-shadow: 0 0 15px rgba(108, 92, 231, 0.3);
 }
 
 /* Ajuste responsivo */
@@ -336,4 +335,84 @@ header h1 img:hover {
         flex-direction: column;
         gap: 10px;
     }
+}
+
+/* Ajuste para o fundo dos dados pessoais no tema escuro */
+.dark-theme #pessoa-dados,
+.dark-theme .card-info {
+    background-color: var(--dark-card-bg);
+    border: 1px solid var(--dark-border);
+}
+
+/* Estilo para o toggle de máscara */
+.form-check-input {
+    cursor: pointer;
+    width: 3rem;
+    height: 1.5rem;
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Reorganização dos controles */
+.controles {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.form-switch {
+    margin-bottom: 5px;
+}
+
+/* Ajuste das larguras dos cards */
+@media (min-width: 768px) {
+    .documentos-col {
+        flex: 0 0 25%;
+        max-width: 25%;
+    }
+    
+    .dados-col {
+        flex: 0 0 75%;
+        max-width: 75%;
+    }
+}
+
+/* Nova animação para os botões de gerar */
+.btn-primary {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+}
+
+.btn-primary:hover::after {
+    width: 200%;
+    height: 200%;
+}
+
+.regenerate-btn {
+    transition: all 0.3s ease;
+}
+
+.regenerate-btn:hover {
+    transform: scale(1.1) rotate(180deg);
+    box-shadow: 0 0 15px rgba(108, 92, 231, 0.3);
 }

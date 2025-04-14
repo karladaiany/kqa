@@ -315,9 +315,7 @@ function toggleTheme() {
 }
 
 function initTheme() {
-    const prefersDark = localStorage.getItem('darkTheme') === 'true';
-    if (prefersDark) {
-        document.body.classList.add('dark-theme');
-        document.getElementById('theme-icon').className = 'fas fa-sun';
-    }
+    document.body.classList.add('dark-theme');
+    document.getElementById('theme-icon').className = 'fas fa-sun';
+    localStorage.setItem('darkTheme', 'true');
 }
