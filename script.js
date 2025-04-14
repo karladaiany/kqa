@@ -12,6 +12,9 @@ const DDDsValidos = [
 ];
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Adicione este console.log para debug
+    console.log('Elemento produto-dados:', document.getElementById('produto-dados'));
+
     // Verificar se o Faker está disponível
     if (typeof faker === 'undefined') {
         console.error('Faker.js não está carregado!');
@@ -25,12 +28,14 @@ document.addEventListener('DOMContentLoaded', function() {
         rg: document.querySelector('#rg'),
         pessoaDados: document.getElementById('pessoa-dados'),
         creditCard: document.getElementById('credit-card-data'),
+        produtoDados: document.getElementById('produto-dados'),
         generateButtons: {
             cpf: document.getElementById('generate-cpf'),
             cnpj: document.getElementById('generate-cnpj'),
             rg: document.getElementById('generate-rg'),
             person: document.getElementById('generate-person'),
-            card: document.getElementById('generate-card')
+            card: document.getElementById('generate-card'),
+            product: document.getElementById('generate-product')
         },
         maskToggles: {
             cpf: document.getElementById('cpf-mask-toggle'),
@@ -102,12 +107,38 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
     }
 
+    function updateProdutoDados() {
+        // Adicione este console.log para debug
+        console.log('Atualizando dados do produto');
+        const produto = generateRandomProduct();
+        console.log('Produto gerado:', produto);
+        
+        if (!elements.produtoDados) {
+            console.error('Elemento produto-dados não encontrado');
+            return;
+        }
+
+        elements.produtoDados.innerHTML = `
+            <div class="dados-produto-item">
+                <p><strong>Nome:</strong> <span class="copyable">${produto.nome}</span> <i class="fas fa-copy copy-icon"></i></p>
+                <p><strong>Instrutor:</strong> <span class="copyable">${produto.instrutor}</span> <i class="fas fa-copy copy-icon"></i></p>
+                <p><strong>Duração:</strong> <span class="copyable">${produto.duracao}</span> <i class="fas fa-copy copy-icon"></i></p>
+                <p><strong>Preço:</strong> <span class="copyable">${produto.preco}</span> <i class="fas fa-copy copy-icon"></i></p>
+                <p><strong>Descrição:</strong> <span class="copyable">${produto.descricao}</span> <i class="fas fa-copy copy-icon"></i></p>
+                <p><strong>Benefícios:</strong> <span class="copyable">${produto.beneficios.join(', ')}</span> <i class="fas fa-copy copy-icon"></i></p>
+                <p><strong>Vagas:</strong> <span class="copyable">${produto.vagas}</span> <i class="fas fa-copy copy-icon"></i></p>
+                <p><strong>Início:</strong> <span class="copyable">${produto.inicio}</span> <i class="fas fa-copy copy-icon"></i></p>
+            </div>
+        `;
+    }
+
     // Event Listeners
     elements.generateButtons.cpf.addEventListener('click', updateCPF);
     elements.generateButtons.cnpj.addEventListener('click', updateCNPJ);
     elements.generateButtons.rg.addEventListener('click', updateRG);
     elements.generateButtons.person.addEventListener('click', updatePessoaDados);
     elements.generateButtons.card.addEventListener('click', updateCreditCard);
+    elements.generateButtons.product.addEventListener('click', updateProdutoDados);
     elements.theme.addEventListener('click', toggleTheme);
 
     elements.maskToggles.cpf.addEventListener('change', updateCPF);
@@ -122,13 +153,44 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Inicialização - Gerar todos os dados ao carregar
+    // Adicione esta função para inicializar os toggles
+    function initializeCardToggles() {
+        document.querySelectorAll('.card-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const cardBody = this.nextElementSibling;
+                const toggleIcon = this.querySelector('.toggle-icon');
+                
+                // Toggle das classes
+                this.classList.toggle('collapsed');
+                cardBody.classList.toggle('collapsed');
+                
+                // Salvar estado no localStorage
+                const cardId = this.closest('.card').getAttribute('id') || 
+                             Array.from(document.querySelectorAll('.card')).indexOf(this.closest('.card'));
+                localStorage.setItem(`card-${cardId}-collapsed`, this.classList.contains('collapsed'));
+            });
+
+            // Restaurar estado do localStorage
+            const cardId = header.closest('.card').getAttribute('id') || 
+                         Array.from(document.querySelectorAll('.card')).indexOf(header.closest('.card'));
+            const isCollapsed = localStorage.getItem(`card-${cardId}-collapsed`) === 'true';
+            
+            if (isCollapsed) {
+                header.classList.add('collapsed');
+                header.nextElementSibling.classList.add('collapsed');
+            }
+        });
+    }
+
+    // Inicialize os toggles junto com o resto
     initTheme();
+    initializeCardToggles();
     updateCPF();
     updateCNPJ();
     updateRG();
     updatePessoaDados();
     updateCreditCard();
+    updateProdutoDados();
 });
 
 // Funções de geração de dados
@@ -252,6 +314,53 @@ function generateCreditCard() {
         brand: selectedCard.brand,
         expiry: `${expMonth}/${expYear.toString().slice(2)}`,
         cvv: cvv
+    };
+}
+
+function generateRandomProduct() {
+    const cursosPrefixos = ['Curso de', 'Formação em', 'Especialização em', 'Workshop de', 'Treinamento em'];
+    const cursosTopicos = ['Automação de Testes', 'Testes de API', 'Testes de Performance', 'Cypress', 'Selenium', 'Robot Framework', 'Testes Mobile', 'DevOps para QA', 'Cucumber BDD', 'Testes de Segurança'];
+    const niveis = ['Básico', 'Intermediário', 'Avançado', 'Completo'];
+    
+    const nome = `${faker.random.arrayElement(cursosPrefixos)} ${faker.random.arrayElement(cursosTopicos)} - Nível ${faker.random.arrayElement(niveis)}`;
+    
+    const beneficios = [
+        'Certificado de conclusão',
+        'Projetos práticos',
+        'Suporte personalizado',
+        'Acesso vitalício',
+        'Material complementar',
+        'Mentoria individual',
+        'Comunidade exclusiva',
+        'Atualizações gratuitas'
+    ];
+
+    // Substituindo arrayElements por uma função personalizada
+    const numBeneficios = faker.random.number({min: 3, max: 5});
+    const beneficiosSelecionados = [];
+    const beneficiosCopy = [...beneficios];
+    for (let i = 0; i < numBeneficios; i++) {
+        const index = faker.random.number({min: 0, max: beneficiosCopy.length - 1});
+        beneficiosSelecionados.push(beneficiosCopy.splice(index, 1)[0]);
+    }
+    
+    const instrutores = [
+        'Ana Silva, QA Lead',
+        'Carlos Santos, Arquiteto de Testes',
+        'Patricia Oliveira, Especialista em Automação',
+        'Ricardo Martins, DevOps Engineer',
+        'Julia Costa, QA Specialist'
+    ];
+
+    return {
+        nome: nome,
+        instrutor: faker.random.arrayElement(instrutores),
+        duracao: `${faker.random.number({min: 20, max: 120})} horas`,
+        preco: `R$ ${faker.random.number({min: 297, max: 1997})},00`,
+        descricao: faker.lorem.paragraph(),
+        beneficios: beneficiosSelecionados,
+        vagas: faker.random.number({min: 20, max: 100}),
+        inicio: faker.date.future().toLocaleDateString('pt-BR')
     };
 }
 
