@@ -132,6 +132,43 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
     }
 
+    // Gerenciamento de notas
+    const notesArea = document.getElementById('notes-area');
+    const notesFeedback = document.getElementById('notes-feedback');
+    let saveTimeout;
+
+    // Carregar notas salvas
+    function loadNotes() {
+        const savedNotes = localStorage.getItem('userNotes');
+        if (savedNotes) {
+            notesArea.value = savedNotes;
+        }
+    }
+
+    // Salvar notas com debounce
+    function saveNotes() {
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => {
+            localStorage.setItem('userNotes', notesArea.value);
+            showSaveFeedback();
+        }, 500);
+    }
+
+    // Mostrar feedback de salvamento
+    function showSaveFeedback() {
+        notesFeedback.classList.add('show');
+        setTimeout(() => {
+            notesFeedback.classList.remove('show');
+        }, 2000);
+    }
+
+    // Event listeners para as notas
+    if (notesArea) {
+        notesArea.addEventListener('input', saveNotes);
+        notesArea.addEventListener('blur', saveNotes);
+        loadNotes(); // Carregar notas ao iniciar
+    }
+
     // Event Listeners
     elements.generateButtons.cpf.addEventListener('click', updateCPF);
     elements.generateButtons.cnpj.addEventListener('click', updateCNPJ);
@@ -191,6 +228,34 @@ document.addEventListener('DOMContentLoaded', function() {
     updatePessoaDados();
     updateCreditCard();
     updateProdutoDados();
+
+    // Adicione dentro do DOMContentLoaded, junto com os outros event listeners
+    const copyNotesBtn = document.getElementById('copy-notes');
+    if (copyNotesBtn) {
+        copyNotesBtn.addEventListener('click', function() {
+            const notesText = notesArea.value;
+            if (notesText) {
+                navigator.clipboard.writeText(notesText).then(function() {
+                    showToast('Notas copiadas com sucesso!');
+                }).catch(function(err) {
+                    console.error('Erro ao copiar: ', err);
+                    // Fallback para navegadores que não suportam clipboard API
+                    const tempTextArea = document.createElement('textarea');
+                    tempTextArea.value = notesText;
+                    document.body.appendChild(tempTextArea);
+                    tempTextArea.select();
+                    try {
+                        document.execCommand('copy');
+                        showToast('Notas copiadas com sucesso!');
+                    } catch (err) {
+                        console.error('Erro ao copiar: ', err);
+                        showToast('Não foi possível copiar as notas');
+                    }
+                    document.body.removeChild(tempTextArea);
+                });
+            }
+        });
+    }
 });
 
 // Funções de geração de dados
@@ -244,7 +309,9 @@ function generateRG() {
 }
 
 function generateRandomPerson() {
-    const nome = faker.name.findName();
+    // Substituir faker.name.findName() por uma combinação mais apropriada para nomes brasileiros
+    const nome = faker.name.firstName() + ' ' + faker.name.lastName();
+    
     const emailBase = nome
         .toLowerCase()
         .normalize('NFD')

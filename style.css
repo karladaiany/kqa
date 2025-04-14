@@ -585,3 +585,63 @@ header h1 img:hover {
         margin-bottom: 1rem;
     }
 }
+
+/* Estilos para o campo de notas */
+.notes-container {
+    position: relative;
+}
+
+#notes-area {
+    width: 100%;
+    background-color: var(--background-color);
+    color: inherit;
+    border: 1px solid var(--dark-border);
+    resize: vertical;
+    min-height: 100px;
+    font-family: inherit;
+    padding: 15px;
+    transition: all 0.3s ease;
+}
+
+.dark-theme #notes-area {
+    background-color: var(--dark-card-bg);
+    color: var(--dark-text);
+}
+
+#notes-area:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(108, 92, 231, 0.25);
+}
+
+.notes-feedback {
+    position: absolute;
+    bottom: -25px;
+    right: 0;
+    color: var(--primary-color);
+    font-size: 0.9em;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.notes-feedback.show {
+    opacity: 1;
+}
+
+/* Ajuste para o tema escuro */
+.dark-theme .notes-feedback {
+    color: var(--secondary-color);
+}
+
+.notes-header {
+    display: flex;
+    justify-content: flex-end;
+}
+
+#copy-notes {
+    font-size: 0.9em;
+}
+
+#copy-notes i {
+    margin-right: 5px;
+}
