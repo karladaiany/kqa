@@ -45,8 +45,38 @@
         <section class="data-generation-section mb-5">
             <h2 class="section-title mb-4">Geração de Dados</h2>
             <div class="row g-4">
-                <!-- Card de Documentos -->
-                <div class="col-12 col-lg-4">
+                <!-- Coluna 1 -->
+                <div class="col-12 col-lg-6">
+                    <!-- Card de Dados Pessoais -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-user"></i> Dados Pessoais</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="pessoa-dados"></div>
+                            <button class="btn btn-primary btn-sm regenerate-btn" id="generate-person">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Card de Cartão de Crédito -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-credit-card"></i> Cartão de Crédito</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="credit-card-data" class="mb-3"></div>
+                            <button class="btn btn-primary btn-sm regenerate-btn" id="generate-card">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna 2 -->
+                <div class="col-12 col-lg-6">
+                    <!-- Card de Documentos -->
                     <div class="card">
                         <div class="card-header">
                             <h5><i class="fas fa-id-card"></i> Documentos</h5>
@@ -91,25 +121,8 @@
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Card de Dados Pessoais -->
-                <div class="col-12 col-lg-8">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5><i class="fas fa-user"></i> Dados Pessoais</h5>
-                        </div>
-                        <div class="card-body">
-                            <div id="pessoa-dados"></div>
-                            <button class="btn btn-primary btn-sm regenerate-btn" id="generate-person">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card de Cursos e Produtos (agora primeiro) -->
-                <div class="col-12 col-lg-6">
+                    
+                    <!-- Card de Cursos e Produtos -->
                     <div class="card">
                         <div class="card-header">
                             <h5><i class="fas fa-graduation-cap"></i> Cursos e Produtos</h5>
@@ -117,21 +130,6 @@
                         <div class="card-body">
                             <div id="produto-dados"></div>
                             <button class="btn btn-primary btn-sm regenerate-btn" id="generate-product">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card de Cartão de Crédito (agora segundo) -->
-                <div class="col-12 col-lg-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5><i class="fas fa-credit-card"></i> Cartão de Crédito</h5>
-                        </div>
-                        <div class="card-body">
-                            <div id="credit-card-data" class="mb-3"></div>
-                            <button class="btn btn-primary btn-sm regenerate-btn" id="generate-card">
                                 <i class="fas fa-sync-alt"></i>
                             </button>
                         </div>

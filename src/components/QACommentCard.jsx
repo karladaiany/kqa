@@ -144,8 +144,8 @@ ${qaData.hasEvidenceLink ? `✓ Evidência no link: ${qaData.evidenceLink}` : ''
         marginBottom: '1rem',
         color: isDarkMode ? 'var(--dark-text)' : 'inherit'
       }}>
-        <i className="fas fa-clipboard-check" style={{ marginRight: '0.5rem' }}></i>
-        Comentário QA
+        <i className="fas" style={{ marginRight: '0.5rem' }}></i>
+        🗣️ Comentário QA
       </h5>
 
       <FormControl fullWidth sx={{ mb: 2 }}>

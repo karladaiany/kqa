@@ -147,8 +147,8 @@ ${bugData.hasEvidenceLink ? `✓ Evidência no link: ${bugData.evidenceLink}` : 
         marginBottom: '1rem',
         color: isDarkMode ? 'var(--dark-text)' : 'inherit'
       }}>
-        <i className="fas fa-bug" style={{ marginRight: '0.5rem' }}></i>
-        Registro de BUG's
+        <i className="fas" style={{ marginRight: '0.5rem' }}></i>
+        🐞 Registro de BUG's
       </h5>
       
       {/* Campos principais */}
