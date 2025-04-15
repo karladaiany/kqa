@@ -234,11 +234,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="acoes-grupo">
-                <button class="btn btn-primary btn-sm" id="generate-all-card">
-                    <i class="fas fa-sync-alt"></i> Gerar Todos
-                </button>
+                <div class="acoes-grupo">
+                    <button class="btn btn-primary btn-sm" id="generate-all-card">
+                        <i class="fas fa-sync-alt"></i> Gerar Todos
+                    </button>
+                </div>
             </div>
         `;
     }
@@ -287,11 +287,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="acoes-grupo">
-                <button class="btn btn-primary btn-sm" id="generate-all-product">
-                    <i class="fas fa-sync-alt"></i> Gerar Todos
-                </button>
+                <div class="acoes-grupo">
+                    <button class="btn btn-primary btn-sm" id="generate-all-product">
+                        <i class="fas fa-sync-alt"></i> Gerar Todos
+                    </button>
+                </div>
             </div>
         `;
     }
@@ -518,15 +518,34 @@ function generatePerson() {
     const firstName = nameParts[0];
     const lastName = nameParts.slice(1).join(' ');
 
+    // Função para remover acentos e caracteres especiais
+    function normalizeText(text) {
+        return text
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-zA-Z0-9]/g, '')
+            .toLowerCase();
+    }
+
+    // Função para gerar telefone com DDD válido
+    function generateValidPhone() {
+        const ddd = DDDsValidos[Math.floor(Math.random() * DDDsValidos.length)];
+        const numero = Math.floor(Math.random() * 100000000).toString().padStart(8, '0');
+        return `(${ddd}) ${numero.slice(0,5)}-${numero.slice(5)}`;
+    }
+
+    const emailFirstName = normalizeText(firstName);
+    const emailLastName = normalizeText(lastName);
+    
     const randomCEP = `${Math.floor(Math.random() * 90000) + 10000}-${Math.floor(Math.random() * 900) + 100}`;
     const randomState = faker.address.stateAbbr();
     const streetNumber = Math.floor(Math.random() * 2000) + 1;
     
     const person = {
         nome: `${firstName} ${lastName}`,
-        email: `${firstName.toLowerCase()}.${lastName.toLowerCase().replace(/\s/g, '')}@teste.com`,
-        telefone: faker.phone.phoneNumber('(##) #####-####'),
-        celular: faker.phone.phoneNumber('(##) #####-####'),
+        email: `${emailFirstName}.${emailLastName}@teste.com`,
+        telefone: generateValidPhone(),
+        celular: generateValidPhone(),
         rua: faker.address.streetName(),
         numero: streetNumber,
         bairro: faker.address.county(),
@@ -682,3 +701,61 @@ function initTheme() {
     document.getElementById('theme-icon').className = 'fas fa-sun';
     localStorage.setItem('darkTheme', 'true');
 }
+
+// Funções para gerar campos individuais do cartão
+function generateCardField(field) {
+    const card = generateCard();
+    const element = document.getElementById(`card-${field}`);
+    if (element) {
+        element.textContent = card[field];
+    }
+}
+
+// Funções para gerar campos individuais do produto
+function generateProductField(field) {
+    const produto = generateProduct();
+    const element = document.getElementById(`produto-${field}`);
+    if (element) {
+        element.textContent = produto[field];
+    }
+}
+
+// Funções para gerar campos individuais da pessoa
+function generatePersonField(field) {
+    const pessoa = generatePerson();
+    const element = document.getElementById(`pessoa-${field}`);
+    if (element) {
+        element.textContent = pessoa[field];
+    }
+}
+
+// Event listeners para os ícones de regeneração
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('regenerate-icon')) {
+        const id = e.target.id;
+        
+        // Para dados pessoais
+        if (id.startsWith('generate-')) {
+            const field = id.replace('generate-', '');
+            if (['nome', 'email', 'telefone', 'celular', 'rua', 'numero', 'bairro', 'cidade', 'estado', 'cep'].includes(field)) {
+                generatePersonField(field);
+            }
+        }
+        
+        // Para cartão de crédito
+        if (id.startsWith('generate-card-')) {
+            const field = id.replace('generate-card-', '');
+            if (['number', 'brand', 'expiry', 'cvv'].includes(field)) {
+                generateCardField(field);
+            }
+        }
+        
+        // Para produtos/cursos
+        if (id.startsWith('generate-produto-')) {
+            const field = id.replace('generate-produto-', '');
+            if (['nome', 'descricao', 'preco', 'categoria'].includes(field)) {
+                generateProductField(field);
+            }
+        }
+    }
+});
