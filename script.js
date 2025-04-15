@@ -469,6 +469,59 @@ document.addEventListener('DOMContentLoaded', function() {
             saveNotes();
         });
     }
+
+    // Função para o botão Voltar ao topo
+    const backToTopButton = document.getElementById('back-to-top');
+
+    window.onscroll = function() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            backToTopButton.style.display = "block";
+        } else {
+            backToTopButton.style.display = "none";
+        }
+    };
+
+    backToTopButton.onclick = function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    };
+
+    // Adicionar dentro do DOMContentLoaded
+    const menuToggle = document.querySelector('.menu-toggle');
+    const menuItems = document.querySelector('.menu-items');
+
+    menuToggle.addEventListener('click', () => {
+        menuItems.classList.toggle('active');
+    });
+
+    // Fechar menu ao clicar fora
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.floating-menu')) {
+            menuItems.classList.remove('active');
+        }
+    });
+
+    // Scroll suave para as seções com offset para o header
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = e.target.closest('a').getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                const headerOffset = 80; // Ajuste este valor conforme necessário
+                const elementPosition = targetElement.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+                menuItems.classList.remove('active');
+            }
+        });
+    });
 });
 
 // Funções de geração de dados

@@ -132,14 +132,17 @@ ${qaData.hasEvidenceLink ? `✓ Evidência no link: ${qaData.evidenceLink}` : ''
   };
 
   return (
-    <Card sx={{ 
-      p: 2, 
-      height: '100%',
-      boxShadow: '0 0.125rem 0.25rem rgba(0, 0, 0, 0.075)',
-      borderRadius: '0.25rem',
-      bgcolor: isDarkMode ? 'var(--dark-card-bg)' : 'var(--background-color)',
-      color: isDarkMode ? 'var(--dark-text)' : 'inherit'
-    }}>
+    <Card 
+      id="qa-comment"
+      sx={{ 
+        p: 2, 
+        height: '100%',
+        boxShadow: '0 0.125rem 0.25rem rgba(0, 0, 0, 0.075)',
+        borderRadius: '0.25rem',
+        bgcolor: isDarkMode ? 'var(--dark-card-bg)' : 'var(--background-color)',
+        color: isDarkMode ? 'var(--dark-text)' : 'inherit'
+      }}
+    >
       <h5 style={{ 
         marginBottom: '1rem',
         color: isDarkMode ? 'var(--dark-text)' : 'inherit'

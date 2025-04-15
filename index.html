@@ -48,7 +48,7 @@
                 <!-- Coluna 1 -->
                 <div class="col-12 col-lg-6">
                     <!-- Card de Dados Pessoais -->
-                    <div class="card">
+                    <div class="card" id="dados-pessoais">
                         <div class="card-header">
                             <h5><i class="fas fa-user"></i> Dados Pessoais</h5>
                         </div>
@@ -61,7 +61,7 @@
                     </div>
                     
                     <!-- Card de Cartão de Crédito -->
-                    <div class="card">
+                    <div class="card" id="cartao-credito">
                         <div class="card-header">
                             <h5><i class="fas fa-credit-card"></i> Cartão de Crédito</h5>
                         </div>
@@ -77,7 +77,7 @@
                 <!-- Coluna 2 -->
                 <div class="col-12 col-lg-6">
                     <!-- Card de Documentos -->
-                    <div class="card">
+                    <div class="card" id="documentos">
                         <div class="card-header">
                             <h5><i class="fas fa-id-card"></i> Documentos</h5>
                         </div>
@@ -123,7 +123,7 @@
                     </div>
                     
                     <!-- Card de Cursos e Produtos -->
-                    <div class="card">
+                    <div class="card" id="cursos">
                         <div class="card-header">
                             <h5><i class="fas fa-graduation-cap"></i> Cursos e Produtos</h5>
                         </div>
@@ -142,23 +142,30 @@
         <section class="records-section">
             <h2 class="section-title mb-4">Registros de Informações</h2>
             <!-- Cards React -->
-            <div id="root"></div>
-            <!-- Notas (novo layout) -->
+            <div id="root">
+                <!-- Bug Report será renderizado aqui com id="bug-report" -->
+                <!-- QA Comment será renderizado aqui com id="qa-comment" -->
+            </div>
+            <!-- Notas -->
             <div class="row mt-4">
-                <div class="col-12">
-                    <h5 style="margin-bottom: 1rem;">
-                        <i class="fas" style="margin-right: 0.5rem;"></i>
-                        📝 Notas
-                    </h5>
-                    <div class="notes-container">
-                        <div class="notes-actions">
-                            <i class="fas fa-copy" id="copy-notes" title="Copiar"></i>
-                            <i class="fas fa-eraser" id="clear-notes" title="Limpar"></i>
-                        </div>
-                        <textarea id="notes-area" class="form-control" rows="6" 
-                            placeholder="Adicione suas notas aqui... (salva automaticamente)"></textarea>
-                        <div class="notes-feedback" id="notes-feedback">
-                            <i class="fas fa-save"></i> Salvo
+                <div class="col-12" id="notas">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 style="margin-bottom: 1rem;">
+                                <i class="fas" style="margin-right: 0.5rem;"></i>
+                                📝 Notas
+                            </h5>
+                            <div class="notes-container">
+                                <div class="notes-actions">
+                                    <i class="fas fa-copy" id="copy-notes" title="Copiar"></i>
+                                    <i class="fas fa-eraser" id="clear-notes" title="Limpar"></i>
+                                </div>
+                                <textarea id="notes-area" class="form-control" rows="6" 
+                                    placeholder="Adicione suas notas aqui... (salva automaticamente)"></textarea>
+                                <div class="notes-feedback" id="notes-feedback">
+                                    <i class="fas fa-save"></i> Salvo
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -178,5 +185,40 @@
     
     <!-- Adicione o script do React depois -->
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- Adicionar antes do fechamento do body -->
+    <button id="back-to-top" class="btn btn-primary" title="Voltar ao topo">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Adicionar após o botão de tema -->
+    <div class="floating-menu">
+        <button class="menu-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <nav class="menu-items">
+            <a href="#dados-pessoais" class="menu-item">
+                <i class="fas fa-user"></i> Dados Pessoais
+            </a>
+            <a href="#cartao-credito" class="menu-item">
+                <i class="fas fa-credit-card"></i> Cartão de Crédito
+            </a>
+            <a href="#documentos" class="menu-item">
+                <i class="fas fa-id-card"></i> Documentos
+            </a>
+            <a href="#cursos" class="menu-item">
+                <i class="fas fa-graduation-cap"></i> Cursos
+            </a>
+            <a href="#bug-report" class="menu-item">
+                <i class="fas fa-bug"></i> Registro de Bugs
+            </a>
+            <a href="#qa-comment" class="menu-item">
+                <i class="fas fa-comment"></i> Comentário QA
+            </a>
+            <a href="#notas" class="menu-item">
+                <i class="fas fa-sticky-note"></i> Notas
+            </a>
+        </nav>
+    </div>
 </body>
 </html>

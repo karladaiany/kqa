@@ -450,8 +450,12 @@ header h1 img:hover {
     resize: vertical;
     min-height: 150px;
     max-height: 500px;
-    padding-right: 80px; /* Espaço para os ícones */
+    padding-right: 80px;
     transition: height 0.2s ease;
+    background-color: var(--background-color);
+    border: 1px solid var(--card-border);
+    border-radius: 4px;
+    color: inherit;
 }
 
 .notes-feedback {
@@ -731,4 +735,150 @@ header h1 img:hover {
 
 .dark-theme .campo-acoes i {
     color: var(--dark-text);
+}
+
+/* Estilos para o botão Voltar ao topo */
+#back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+#back-to-top:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-3px);
+}
+
+.dark-theme #back-to-top {
+    background-color: var(--primary-color);
+    color: var(--dark-text);
+}
+
+/* Estilos para o menu flutuante */
+.floating-menu {
+    position: fixed;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+}
+
+.menu-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.menu-toggle:hover {
+    background-color: var(--secondary-color);
+    transform: scale(1.1);
+}
+
+.menu-items {
+    position: absolute;
+    left: 50px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 10px 0;
+    display: none;
+}
+
+.menu-items.active {
+    display: block;
+}
+
+.menu-item {
+    display: block;
+    padding: 10px 20px;
+    color: var(--primary-color);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.menu-item:hover {
+    background-color: rgba(108, 92, 231, 0.1);
+    color: var(--secondary-color);
+}
+
+.menu-item i {
+    margin-right: 8px;
+    width: 20px;
+    text-align: center;
+}
+
+/* Tema escuro */
+.dark-theme .menu-items {
+    background-color: var(--dark-card-bg);
+}
+
+.dark-theme .menu-item {
+    color: var(--dark-text);
+}
+
+.dark-theme .menu-item:hover {
+    background-color: rgba(108, 92, 231, 0.2);
+    color: var(--primary-color);
+}
+
+/* Ajustes para o card de notas */
+#notas .card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: var(--card-shadow);
+    background-color: var(--card-bg);
+    transition: all 0.3s ease;
+}
+
+#notas .card-body {
+    padding: 1.5rem;
+}
+
+.dark-theme #notas .card {
+    background-color: var(--dark-card-bg);
+    color: var(--dark-text);
+}
+
+/* Ajustes para o textarea */
+#notes-area {
+    resize: vertical;
+    min-height: 150px;
+    max-height: 500px;
+    padding-right: 80px;
+    transition: height 0.2s ease;
+    background-color: var(--background-color);
+    border: 1px solid var(--card-border);
+    border-radius: 4px;
+    color: inherit;
+}
+
+.dark-theme #notes-area {
+    background-color: var(--dark-card-bg);
+    border-color: var(--dark-border);
+    color: var(--dark-text);
+}
+
+#notes-area:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(108, 92, 231, 0.25);
 }
