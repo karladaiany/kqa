@@ -53,9 +53,10 @@ header h1 img:hover {
     height: auto !important;
 }
 
-.card:hover {
+/* Remover ou comentar este bloco */
+/* .card:hover {
     transform: translateY(-5px);
-}
+} */
 
 .card-header {
     background-color: var(--primary-color);
@@ -881,4 +882,75 @@ header h1 img:hover {
 #notes-area:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 0.2rem rgba(108, 92, 231, 0.25);
+}
+
+/* Estilos para o contador de caracteres */
+.counter-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1;
+}
+
+.counter-actions i {
+    cursor: pointer;
+    color: var(--primary-color);
+    padding: 5px;
+    transition: all 0.3s ease;
+    opacity: 0.6;
+    font-size: 1.1rem;
+}
+
+.counter-actions i:hover {
+    transform: scale(1.1);
+    opacity: 1;
+}
+
+.counter-info {
+    display: flex;
+    gap: 20px;
+    color: var(--primary-color);
+}
+
+.dark-theme .counter-info {
+    color: var(--dark-text);
+}
+
+#character-counter {
+    padding-right: 40px;
+    position: relative;
+    min-height: 100px;
+}
+
+.campo-item {
+    position: relative;
+}
+
+/* Estilos para o gerador de caracteres */
+#char-length::-webkit-inner-spin-button,
+#char-length::-webkit-outer-spin-button {
+    opacity: 1;
+}
+
+#generate-chars:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#generated-text {
+    background-color: var(--background-color);
+}
+
+.dark-theme #generated-text {
+    background-color: var(--dark-card-bg);
+    color: var(--dark-text);
+}
+
+/* Ajustes para o tema escuro */
+.dark-theme .counter-actions i {
+    color: var(--dark-text);
+}
+
+.dark-theme .counter-actions i:hover {
+    color: var(--primary-color);
 }

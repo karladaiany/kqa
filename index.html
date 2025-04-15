@@ -134,6 +134,75 @@
                             </button>
                         </div>
                     </div>
+
+                    <!-- Após o card de Cursos e Produtos -->
+                    <!-- Card de Contador de Caracteres -->
+                    <div class="card" id="contador">
+                        <div class="card-header">
+                            <h5><i class="fas fa-calculator"></i> Contador de Caracteres</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="campo-item">
+                                <textarea 
+                                    id="character-counter" 
+                                    class="form-control" 
+                                    rows="4"
+                                    placeholder="Cole seu texto aqui..."
+                                ></textarea>
+                                <div class="counter-actions">
+                                    <i class="fas fa-eraser" id="clear-counter" title="Limpar"></i>
+                                </div>
+                                <div class="counter-info mt-2">
+                                    <span>Caracteres: <strong id="char-count">0</strong></span>
+                                    <span>Palavras: <strong id="word-count">0</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card de Gerador de Caracteres -->
+                    <div class="card" id="gerador">
+                        <div class="card-header">
+                            <h5><i class="fas fa-text-width"></i> Gerador de Caracteres</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="campo-item">
+                                <div class="input-group">
+                                    <input 
+                                        type="number" 
+                                        id="char-length" 
+                                        class="form-control" 
+                                        placeholder="Digite a quantidade de caracteres..."
+                                        min="1"
+                                    >
+                                    <div class="input-group-append">
+                                        <button 
+                                            class="btn btn-primary" 
+                                            id="generate-chars" 
+                                            disabled
+                                            title="Gerar"
+                                        >
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                        <button 
+                                            class="btn btn-outline-secondary" 
+                                            id="clear-generator" 
+                                            title="Limpar"
+                                        >
+                                            <i class="fas fa-eraser"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    id="generated-text" 
+                                    class="form-control mt-3" 
+                                    rows="4" 
+                                    readonly
+                                    placeholder="Texto gerado aparecerá aqui..."
+                                ></textarea>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -208,6 +277,12 @@
             </a>
             <a href="#cursos" class="menu-item">
                 <i class="fas fa-graduation-cap"></i> Cursos
+            </a>
+            <a href="#contador" class="menu-item">
+                <i class="fas fa-calculator"></i> Contador
+            </a>
+            <a href="#gerador" class="menu-item">
+                <i class="fas fa-text-width"></i> Gerador
             </a>
             <a href="#bug-report" class="menu-item">
                 <i class="fas fa-bug"></i> Registro de Bugs

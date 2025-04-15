@@ -522,6 +522,69 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Contador de Caracteres
+    const characterCounter = document.getElementById('character-counter');
+    const charCount = document.getElementById('char-count');
+    const wordCount = document.getElementById('word-count');
+    const clearCounter = document.getElementById('clear-counter');
+
+    function updateCount() {
+        const text = characterCounter.value;
+        charCount.textContent = text.length;
+        wordCount.textContent = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+    }
+
+    characterCounter.addEventListener('input', updateCount);
+
+    clearCounter.addEventListener('click', () => {
+        characterCounter.value = '';
+        updateCount();
+    });
+
+    // Gerador de Caracteres
+    const charLength = document.getElementById('char-length');
+    const generateChars = document.getElementById('generate-chars');
+    const clearGenerator = document.getElementById('clear-generator');
+    const generatedText = document.getElementById('generated-text');
+
+    const words = [
+        'teste', 'qualidade', 'software', 'automação', 'desenvolvimento',
+        'sistema', 'projeto', 'análise', 'dados', 'processo', 'método',
+        'código', 'programa', 'função', 'classe', 'objeto', 'variável',
+        'interface', 'módulo', 'componente', 'estrutura', 'padrão'
+    ];
+
+    function generateText(length) {
+        let text = '';
+        while (text.length < length) {
+            const word = words[Math.floor(Math.random() * words.length)];
+            if (text.length + word.length + 1 <= length) {
+                text += (text ? ' ' : '') + word;
+            } else if (text.length < length) {
+                text += 'a'.repeat(length - text.length);
+            }
+        }
+        return text;
+    }
+
+    charLength.addEventListener('input', () => {
+        const value = parseInt(charLength.value);
+        generateChars.disabled = !value || value <= 0;
+    });
+
+    generateChars.addEventListener('click', () => {
+        const length = parseInt(charLength.value);
+        if (length > 0) {
+            generatedText.value = generateText(length);
+        }
+    });
+
+    clearGenerator.addEventListener('click', () => {
+        charLength.value = '';
+        generatedText.value = '';
+        generateChars.disabled = true;
+    });
 });
 
 // Funções de geração de dados
