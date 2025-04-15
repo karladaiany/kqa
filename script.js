@@ -513,7 +513,13 @@ function generateRG() {
 }
 
 function generatePerson() {
-    const fullName = faker.name.findName();
+    // Gerar nome completo e remover prefixos
+    let fullName = faker.name.findName();
+    const prefixos = ['Dr.', 'Sr.', 'Sra.', 'Srta.', 'Mrs.', 'Mr.', 'Ms.', 'Prof.', 'Rev.'];
+    prefixos.forEach(prefix => {
+        fullName = fullName.replace(prefix, '').trim();
+    });
+
     const nameParts = fullName.split(' ');
     const firstName = nameParts[0];
     const lastName = nameParts.slice(1).join(' ');
