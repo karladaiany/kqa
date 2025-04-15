@@ -1,11 +1,28 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useToast } from '../../context/ToastContext';
+import { faker } from '@faker-js/faker/locale/pt_BR';
 import './Documents.css';
 
 export const Documents = () => {
   const { showToast } = useToast();
-  const [useCPFMask, setUseCPFMask] = useState(true);
-  const [useCNPJMask, setUseCNPJMask] = useState(true);
+  
+  // Inicializa estados com valores do localStorage
+  const [useCPFMask, setUseCPFMask] = useState(() => 
+    localStorage.getItem('useCPFMask') !== 'false'
+  );
+  const [useCNPJMask, setUseCNPJMask] = useState(() => 
+    localStorage.getItem('useCNPJMask') !== 'false'
+  );
+  const [useRGMask, setUseRGMask] = useState(() => 
+    localStorage.getItem('useRGMask') !== 'false'
+  );
+
+  // Atualiza localStorage quando os estados mudam
+  useEffect(() => {
+    localStorage.setItem('useCPFMask', useCPFMask);
+    localStorage.setItem('useCNPJMask', useCNPJMask);
+    localStorage.setItem('useRGMask', useRGMask);
+  }, [useCPFMask, useCNPJMask, useRGMask]);
 
   // Funções auxiliares
   const generateRandomNumber = useCallback((min, max) => {
@@ -33,11 +50,8 @@ export const Documents = () => {
     const digit2 = calculateCPFDigit(numbers);
     numbers.push(digit2);
 
-    const cpf = numbers.join('');
-    return useCPFMask ? 
-      cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : 
-      cpf;
-  }, [generateRandomNumber, calculateCPFDigit, useCPFMask]);
+    return numbers.join('');
+  }, [generateRandomNumber, calculateCPFDigit]);
 
   // Gerador de CNPJ
   const generateCNPJ = useCallback(() => {
@@ -66,11 +80,8 @@ export const Documents = () => {
     digit = 11 - (sum % 11);
     numbers.push(digit > 9 ? 0 : digit);
 
-    const cnpj = numbers.join('');
-    return useCNPJMask ? 
-      cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : 
-      cnpj;
-  }, [generateRandomNumber, useCNPJMask]);
+    return numbers.join('');
+  }, [generateRandomNumber]);
 
   // Gerador de RG
   const generateRG = useCallback(() => {
@@ -87,16 +98,75 @@ export const Documents = () => {
     const digit = 11 - (sum % 11);
     numbers.push(digit === 11 ? 0 : digit);
 
-    const rg = numbers.join('');
-    return rg.replace(/(\d{2})(\d{3})(\d{3})(\d{1})/, '$1.$2.$3-$4');
+    return numbers.join('');
   }, [generateRandomNumber]);
 
-  // Estado dos documentos
-  const [documents, setDocuments] = useState(() => ({
-    cpf: generateCPF(),
-    cnpj: generateCNPJ(),
-    rg: generateRG()
-  }));
+  const [documents, setDocuments] = useState(() => generateNewDocuments());
+
+  function formatCPF(cpf) {
+    return useCPFMask ? cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : cpf;
+  }
+
+  function formatCNPJ(cnpj) {
+    return useCNPJMask ? cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : cnpj;
+  }
+
+  function formatRG(rg) {
+    return useRGMask ? rg.replace(/(\d{2})(\d{3})(\d{3})(\d{1})/, '$1.$2.$3-$4') : rg;
+  }
+
+  function generateNewDocuments() {
+    const rawCPF = generateCPF();
+    const rawCNPJ = generateCNPJ();
+    const rawRG = generateRG();
+
+    return {
+      cpf: formatCPF(rawCPF),
+      cnpj: formatCNPJ(rawCNPJ),
+      rg: formatRG(rawRG)
+    };
+  }
+
+  const toggleMask = useCallback((type) => {
+    switch (type) {
+      case 'cpf':
+        setUseCPFMask(prev => !prev);
+        setDocuments(prev => ({
+          ...prev,
+          cpf: !useCPFMask 
+            ? prev.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
+            : prev.cpf.replace(/\D/g, '')
+        }));
+        break;
+      case 'cnpj':
+        setUseCNPJMask(prev => !prev);
+        setDocuments(prev => ({
+          ...prev,
+          cnpj: !useCNPJMask
+            ? prev.cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5')
+            : prev.cnpj.replace(/\D/g, '')
+        }));
+        break;
+      case 'rg':
+        setUseRGMask(prev => !prev);
+        setDocuments(prev => ({
+          ...prev,
+          rg: !useRGMask
+            ? prev.rg.replace(/(\d{2})(\d{3})(\d{3})(\d{1})/, '$1.$2.$3-$4')
+            : prev.rg.replace(/\D/g, '')
+        }));
+        break;
+    }
+  }, [useCPFMask, useCNPJMask, useRGMask]);
+
+  const regenerateField = useCallback((field) => {
+    setDocuments(prev => ({
+      ...prev,
+      [field]: field === 'cpf' ? formatCPF(generateCPF()) :
+               field === 'cnpj' ? formatCNPJ(generateCNPJ()) :
+               formatRG(generateRG())
+    }));
+  }, [useCPFMask, useCNPJMask, useRGMask]);
 
   const handleCopy = useCallback((text) => {
     navigator.clipboard.writeText(text)
@@ -104,29 +174,11 @@ export const Documents = () => {
       .catch(err => console.error('Erro ao copiar:', err));
   }, [showToast]);
 
-  const regenerateDocument = useCallback((type) => {
-    setDocuments(prev => ({
-      ...prev,
-      [type]: type === 'cpf' ? generateCPF() :
-              type === 'cnpj' ? generateCNPJ() : generateRG()
-    }));
-  }, [generateCPF, generateCNPJ, generateRG]);
-
-  const toggleMask = useCallback((type) => {
-    if (type === 'cpf') {
-      setUseCPFMask(prev => !prev);
-      setDocuments(prev => ({ ...prev, cpf: generateCPF() }));
-    } else {
-      setUseCNPJMask(prev => !prev);
-      setDocuments(prev => ({ ...prev, cnpj: generateCNPJ() }));
-    }
-  }, [generateCPF, generateCNPJ]);
-
-  const DocumentField = ({ label, value, type }) => (
+  const DataField = ({ label, value, field, showMask = false }) => (
     <div className="campo-item">
       <label>{label}:</label>
       <div className="campo-valor">
-        <span className="copyable" id={type}>{value}</span>
+        <span className="copyable">{value}</span>
         <i 
           className="fas fa-copy copy-icon" 
           title="Copiar"
@@ -135,13 +187,17 @@ export const Documents = () => {
         <i 
           className="fas fa-sync-alt regenerate-icon" 
           title="Gerar novo"
-          onClick={() => regenerateDocument(type)}
+          onClick={() => regenerateField(field)}
         />
-        {(type === 'cpf' || type === 'cnpj') && (
-          <i 
-            className={`fas fa-mask ${type === 'cpf' ? useCPFMask : useCNPJMask ? 'active' : ''}`}
+        {showMask && (
+          <i
+            className={`fas fa-mask ${
+              (field === 'cpf' && useCPFMask) ||
+              (field === 'cnpj' && useCNPJMask) ||
+              (field === 'rg' && useRGMask) ? 'active' : ''
+            }`}
             title="Alternar máscara"
-            onClick={() => toggleMask(type)}
+            onClick={() => toggleMask(field)}
           />
         )}
       </div>
@@ -154,9 +210,17 @@ export const Documents = () => {
         <h5><i className="fas fa-id-card"></i> Documentos</h5>
       </div>
       <div className="card-body">
-        <DocumentField label="CPF" value={documents.cpf} type="cpf" />
-        <DocumentField label="CNPJ" value={documents.cnpj} type="cnpj" />
-        <DocumentField label="RG" value={documents.rg} type="rg" />
+        <div id="documentos-dados">
+          <DataField label="CPF" value={documents.cpf} field="cpf" showMask={true} />
+          <DataField label="CNPJ" value={documents.cnpj} field="cnpj" showMask={true} />
+          <DataField label="RG" value={documents.rg} field="rg" showMask={true} />
+        </div>
+        <button 
+          className="btn btn-primary btn-sm regenerate-btn"
+          onClick={() => setDocuments(generateNewDocuments())}
+        >
+          <i className="fas fa-sync-alt"></i>
+        </button>
       </div>
     </div>
   );

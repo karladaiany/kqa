@@ -24,11 +24,16 @@
 }
 
 .fa-mask {
-  opacity: 0.5;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: color 0.2s;
 }
 
 .fa-mask.active {
-  opacity: 1;
+  color: var(--primary-color);
+}
+
+.fa-mask:hover {
   color: var(--primary-color);
 }
 
