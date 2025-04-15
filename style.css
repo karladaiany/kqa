@@ -7,6 +7,8 @@
     --dark-card-bg: #2d2d2d;
     --dark-text: #ffffff;
     --dark-border: #404040;
+    --card-bg: var(--background-color);
+    --card-border: #e0e0e0;
 }
 
 body {
@@ -45,10 +47,10 @@ header h1 img:hover {
     border: none;
     border-radius: 15px;
     box-shadow: var(--card-shadow);
-    transition: transform 0.3s ease;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    height: auto !important;
 }
 
 .card:hover {
@@ -60,7 +62,7 @@ header h1 img:hover {
     color: white;
     border-radius: 15px 15px 0 0 !important;
     cursor: pointer;
-    user-select: none;
+    padding: 1rem;
 }
 
 .card-header .toggle-icon {
@@ -73,15 +75,14 @@ header h1 img:hover {
 
 .card-body {
     transition: all 0.3s ease;
-    max-height: 2000px; /* altura máxima arbitrária */
+    padding: 1.5rem;
     overflow: hidden;
-    flex: 1;
 }
 
 .card-body.collapsed {
-    max-height: 0;
     padding: 0;
     margin: 0;
+    max-height: 0 !important;
     opacity: 0;
 }
 
@@ -116,10 +117,11 @@ header h1 img:hover {
 }
 
 #pessoa-dados {
-    background-color: #f8f9fa;
+    background-color: var(--background-color);
     padding: 15px;
     border-radius: 8px;
     margin-bottom: 1rem;
+    border: 1px solid var(--card-border);
 }
 
 .copy-feedback {
@@ -160,6 +162,8 @@ header h1 img:hover {
 .dark-theme {
     background-color: var(--dark-bg);
     color: var(--dark-text);
+    --card-bg: var(--dark-card-bg);
+    --card-border: var(--dark-border);
 }
 
 .dark-theme .card {
@@ -189,6 +193,7 @@ header h1 img:hover {
     padding: 15px;
     border-radius: 8px;
     margin-bottom: 1rem;
+    border: 1px solid var(--card-border);
 }
 
 .dark-theme .card-info {
@@ -207,7 +212,7 @@ header h1 img:hover {
 /* Adicione estes estilos */
 .copyable {
     cursor: pointer;
-    padding: 2px 5px;
+    padding: 4px 8px;
     border-radius: 4px;
     background-color: rgba(108, 92, 231, 0.1);
     transition: background-color 0.2s ease;
@@ -286,11 +291,7 @@ header h1 img:hover {
 
 /* Ajuste para o tema escuro */
 .dark-theme .copyable {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.dark-theme .copyable:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(108, 92, 231, 0.2);
 }
 
 .dark-theme .form-check-input {
@@ -320,6 +321,7 @@ header h1 img:hover {
     padding: 15px;
     border-radius: 8px;
     margin-bottom: 10px;
+    border: 1px solid var(--card-border);
 }
 
 .dark-theme .documento-container {
@@ -331,6 +333,10 @@ header h1 img:hover {
     align-items: center;
     gap: 10px;
     margin-bottom: 10px;
+    background-color: var(--background-color);
+    border: 1px solid var(--card-border);
+    border-radius: 4px;
+    padding: 8px;
 }
 
 .controles {
@@ -373,7 +379,8 @@ header h1 img:hover {
 .dark-theme #pessoa-dados,
 .dark-theme .card-info {
     background-color: var(--dark-card-bg);
-    border: 1px solid var(--dark-border);
+    border-color: var(--dark-border);
+    color: var(--dark-text);
 }
 
 /* Estilo para o toggle de máscara */
@@ -544,15 +551,18 @@ header h1 img:hover {
 
 /* Adicione estes estilos */
 .dados-produto-item {
-    background-color: var(--dark-card-bg);
-    border: 1px solid var(--dark-border);
+    background-color: var(--background-color);
     padding: 15px;
     border-radius: 8px;
     margin-bottom: 1rem;
+    border: 1px solid var(--card-border);
 }
 
 .dados-produto-item p {
     margin-bottom: 0.8rem;
+    padding: 8px;
+    border-radius: 4px;
+    background-color: var(--background-color);
 }
 
 .dados-produto-item .copyable {
@@ -589,6 +599,7 @@ header h1 img:hover {
 /* Estilos para o campo de notas */
 .notes-container {
     position: relative;
+    height: 100%;
 }
 
 #notes-area {
@@ -644,4 +655,195 @@ header h1 img:hover {
 
 #copy-notes i {
     margin-right: 5px;
+}
+
+/* Estilos para integração React/Bootstrap */
+#root {
+  margin-top: 0;
+  width: 100%;
+  padding: 0 15px;
+  margin-bottom: 2rem;
+}
+
+#root .row {
+  margin: 0;
+}
+
+#root .MuiCard-root {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  height: auto;
+  margin-bottom: 0;
+}
+
+#root .MuiButton-root {
+  text-transform: none;
+}
+
+.dark-theme #root .MuiCard-root {
+  background-color: var(--dark-card-bg);
+  color: var(--dark-text);
+}
+
+.dark-theme #root .MuiInputBase-root {
+  color: var(--dark-text);
+}
+
+.dark-theme #root .MuiOutlinedInput-notchedOutline {
+  border-color: var(--dark-border);
+}
+
+/* Ajuste para os documentos no tema escuro */
+.dark-theme .documento-container,
+.dark-theme .documento-valor,
+.dark-theme #pessoa-dados,
+.dark-theme .card-info,
+.dark-theme .dados-produto-item,
+.dark-theme .dados-produto-item p {
+    background-color: var(--dark-card-bg);
+    border-color: var(--dark-border);
+    color: var(--dark-text);
+}
+
+/* Ajuste para os valores copiáveis no tema escuro */
+.dark-theme .copyable {
+    background-color: rgba(108, 92, 231, 0.2);
+    color: var(--dark-text);
+}
+
+/* Ajuste para os campos de texto no tema escuro */
+.dark-theme .form-control,
+.dark-theme .input-group-text {
+    background-color: var(--dark-card-bg);
+    border-color: var(--dark-border);
+    color: var(--dark-text);
+}
+
+/* Ajuste para hover nos elementos copiáveis no tema escuro */
+.dark-theme .copyable:hover {
+    background-color: rgba(108, 92, 231, 0.3);
+}
+
+/* Ajuste para o background dos dados de produto no tema escuro */
+.dark-theme .dados-produto-item {
+    background-color: var(--dark-card-bg);
+}
+
+.dark-theme .dados-produto-item p {
+    background-color: var(--dark-card-bg);
+}
+
+/* Ajuste para o novo layout */
+.card {
+    height: 100%;
+    margin-bottom: 1rem;
+}
+
+/* Ajuste para os cards da coluna direita */
+.col-md-6 .row .card {
+    margin-bottom: 0;
+}
+
+/* Ajuste para o espaçamento entre os cards */
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+
+/* Garantir que os cards da direita tenham altura igual */
+.col-md-6 .row {
+    height: 100%;
+}
+
+/* Ajuste para o container dos componentes React */
+#root {
+    margin-top: 0;
+}
+
+/* Ajuste para o card de notas */
+.notes-container {
+    height: 100%;
+}
+
+/* Ajuste para o container dos componentes React */
+.react-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Remover margin-bottom duplicado */
+#root .MuiCard-root {
+    margin-bottom: 0;
+}
+
+/* Ajuste para garantir que os cards não se sobreponham */
+.row.mt-4 {
+    margin-top: 2rem !important;
+    clear: both;
+}
+
+/* Garantir que os cards tenham altura adequada */
+.card {
+    height: auto;
+    min-height: 100px;
+}
+
+/* Ajuste para a transição suave */
+.card {
+    transition: all 0.3s ease;
+}
+
+/* Ajuste específico para o card de cartão de crédito */
+.col-12 .card {
+    transition: height 0.3s ease;
+}
+
+.col-12 .card.h-100 {
+    height: 100% !important;
+}
+
+/* Estilos para as seções */
+.section-title {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    font-weight: 600;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--primary-color);
+    margin-bottom: 2rem;
+}
+
+.dark-theme .section-title {
+    color: var(--dark-text);
+    border-bottom-color: var(--primary-color);
+}
+
+/* Ajuste para o layout responsivo */
+@media (min-width: 992px) {
+    .data-generation-section .card {
+        height: 100%;
+    }
+}
+
+/* Ajuste para a seção de registros */
+.records-section {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--card-border);
+}
+
+.dark-theme .records-section {
+    border-top-color: var(--dark-border);
+}
+
+/* Ajuste para o espaçamento entre cards */
+.g-4 {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 1.5rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .col-md-6 {
+        margin-bottom: 1.5rem;
+    }
 }

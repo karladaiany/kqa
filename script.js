@@ -76,27 +76,25 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updatePessoaDados() {
-        const pessoa = generateRandomPerson();
+        const pessoa = generatePerson();
         elements.pessoaDados.innerHTML = `
             <div class="dados-pessoa-item">
                 <p><strong>Nome:</strong> <span class="copyable">${pessoa.nome}</span> <i class="fas fa-copy copy-icon"></i></p>
                 <p><strong>Email:</strong> <span class="copyable">${pessoa.email}</span> <i class="fas fa-copy copy-icon"></i></p>
                 <p><strong>Telefone:</strong> <span class="copyable">${pessoa.telefone}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Nascimento:</strong> <span class="copyable">${pessoa.nascimento}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Logradouro:</strong> <span class="copyable">${pessoa.endereco.logradouro}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Número:</strong> <span class="copyable">${pessoa.endereco.numero}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Complemento:</strong> <span class="copyable">${pessoa.endereco.complemento}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Bairro:</strong> <span class="copyable">${pessoa.endereco.bairro}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Cidade:</strong> <span class="copyable">${pessoa.endereco.cidade}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Estado:</strong> <span class="copyable">${pessoa.endereco.estado}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>País:</strong> <span class="copyable">${pessoa.endereco.pais}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>CEP:</strong> <span class="copyable">${pessoa.endereco.cep}</span> <i class="fas fa-copy copy-icon"></i></p>
+                <p><strong>Celular:</strong> <span class="copyable">${pessoa.celular}</span> <i class="fas fa-copy copy-icon"></i></p>
+                <p><strong>Rua:</strong> <span class="copyable">${pessoa.rua}</span> <i class="fas fa-copy copy-icon"></i></p>
+                <p><strong>Número:</strong> <span class="copyable">${pessoa.numero}</span> <i class="fas fa-copy copy-icon"></i></p>
+                <p><strong>Bairro:</strong> <span class="copyable">${pessoa.bairro}</span> <i class="fas fa-copy copy-icon"></i></p>
+                <p><strong>Cidade:</strong> <span class="copyable">${pessoa.cidade}</span> <i class="fas fa-copy copy-icon"></i></p>
+                <p><strong>Estado:</strong> <span class="copyable">${pessoa.estado}</span> <i class="fas fa-copy copy-icon"></i></p>
+                <p><strong>CEP:</strong> <span class="copyable">${pessoa.cep}</span> <i class="fas fa-copy copy-icon"></i></p>
             </div>
         `;
     }
 
     function updateCreditCard() {
-        const card = generateCreditCard();
+        const card = generateCard();
         elements.creditCard.innerHTML = `
             <div class="card-info">
                 <p><strong>Número:</strong> <span class="copyable">${card.number}</span> <i class="fas fa-copy copy-icon"></i></p>
@@ -108,26 +106,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateProdutoDados() {
-        // Adicione este console.log para debug
-        console.log('Atualizando dados do produto');
-        const produto = generateRandomProduct();
-        console.log('Produto gerado:', produto);
-        
-        if (!elements.produtoDados) {
-            console.error('Elemento produto-dados não encontrado');
-            return;
-        }
-
+        const produto = generateProduct();
         elements.produtoDados.innerHTML = `
             <div class="dados-produto-item">
                 <p><strong>Nome:</strong> <span class="copyable">${produto.nome}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Instrutor:</strong> <span class="copyable">${produto.instrutor}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Duração:</strong> <span class="copyable">${produto.duracao}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Preço:</strong> <span class="copyable">${produto.preco}</span> <i class="fas fa-copy copy-icon"></i></p>
                 <p><strong>Descrição:</strong> <span class="copyable">${produto.descricao}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Benefícios:</strong> <span class="copyable">${produto.beneficios.join(', ')}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Vagas:</strong> <span class="copyable">${produto.vagas}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Início:</strong> <span class="copyable">${produto.inicio}</span> <i class="fas fa-copy copy-icon"></i></p>
+                <p><strong>Preço:</strong> <span class="copyable">${produto.preco}</span> <i class="fas fa-copy copy-icon"></i></p>
+                <p><strong>Categoria:</strong> <span class="copyable">${produto.categoria}</span> <i class="fas fa-copy copy-icon"></i></p>
             </div>
         `;
     }
@@ -198,24 +183,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 const toggleIcon = this.querySelector('.toggle-icon');
                 
                 // Toggle das classes
-                this.classList.toggle('collapsed');
                 cardBody.classList.toggle('collapsed');
+                toggleIcon.style.transform = cardBody.classList.contains('collapsed') ? 'rotate(180deg)' : '';
                 
-                // Salvar estado no localStorage
-                const cardId = this.closest('.card').getAttribute('id') || 
-                             Array.from(document.querySelectorAll('.card')).indexOf(this.closest('.card'));
-                localStorage.setItem(`card-${cardId}-collapsed`, this.classList.contains('collapsed'));
+                // Ajustar altura do card body
+                if (!cardBody.classList.contains('collapsed')) {
+                    cardBody.style.maxHeight = cardBody.scrollHeight + "px";
+                } else {
+                    cardBody.style.maxHeight = "0";
+                }
             });
-
-            // Restaurar estado do localStorage
-            const cardId = header.closest('.card').getAttribute('id') || 
-                         Array.from(document.querySelectorAll('.card')).indexOf(header.closest('.card'));
-            const isCollapsed = localStorage.getItem(`card-${cardId}-collapsed`) === 'true';
-            
-            if (isCollapsed) {
-                header.classList.add('collapsed');
-                header.nextElementSibling.classList.add('collapsed');
-            }
         });
     }
 
@@ -308,40 +285,32 @@ function generateRG() {
     return numbers.join('') + lastDigit;
 }
 
-function generateRandomPerson() {
-    // Substituir faker.name.findName() por uma combinação mais apropriada para nomes brasileiros
-    const nome = faker.name.firstName() + ' ' + faker.name.lastName();
+function generatePerson() {
+    const fullName = faker.name.findName();
+    const nameParts = fullName.split(' ');
+    const firstName = nameParts[0];
+    const lastName = nameParts.slice(1).join(' ');
+
+    const randomCEP = `${Math.floor(Math.random() * 90000) + 10000}-${Math.floor(Math.random() * 900) + 100}`;
+    const randomState = faker.address.stateAbbr();
+    const streetNumber = Math.floor(Math.random() * 2000) + 1;
     
-    const emailBase = nome
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z]/g, '.')
-        .replace(/\.+/g, '.')
-        .replace(/^\.|\.$/g, '');
-
-    const ddd = DDDsValidos[Math.floor(Math.random() * DDDsValidos.length)];
-    const telefone = `(${ddd}) ${Math.floor(Math.random() * 90000) + 10000}-${Math.floor(Math.random() * 9000) + 1000}`;
-
-    return {
-        nome: nome,
-        email: `${emailBase}@teste.com`,
-        telefone: telefone,
-        nascimento: faker.date.between('1960-01-01', '2000-12-31').toLocaleDateString('pt-BR'),
-        endereco: {
-            logradouro: faker.address.streetName(),
-            numero: faker.random.number({min: 1, max: 9999}),
-            complemento: faker.random.arrayElement(['Apto', 'Casa', 'Sala', 'Loja']) + ' ' + faker.random.number({min: 1, max: 999}),
-            bairro: faker.address.county(),
-            cidade: faker.address.city(),
-            estado: faker.address.stateAbbr(),
-            pais: 'Brasil',
-            cep: faker.address.zipCode('#####-###')
-        }
+    const person = {
+        nome: `${firstName} ${lastName}`,
+        email: `${firstName.toLowerCase()}.${lastName.toLowerCase().replace(/\s/g, '')}@teste.com`,
+        telefone: faker.phone.phoneNumber('(##) #####-####'),
+        celular: faker.phone.phoneNumber('(##) #####-####'),
+        rua: faker.address.streetName(),
+        numero: streetNumber,
+        bairro: faker.address.county(),
+        cidade: faker.address.city(),
+        estado: randomState,
+        cep: randomCEP
     };
+    return person;
 }
 
-function generateCreditCard() {
+function generateCard() {
     const cards = [
         { brand: 'Visa', prefix: '4', length: 16 },
         { brand: 'Mastercard', prefix: '5', length: 16 },
@@ -384,51 +353,42 @@ function generateCreditCard() {
     };
 }
 
-function generateRandomProduct() {
-    const cursosPrefixos = ['Curso de', 'Formação em', 'Especialização em', 'Workshop de', 'Treinamento em'];
-    const cursosTopicos = ['Automação de Testes', 'Testes de API', 'Testes de Performance', 'Cypress', 'Selenium', 'Robot Framework', 'Testes Mobile', 'DevOps para QA', 'Cucumber BDD', 'Testes de Segurança'];
-    const niveis = ['Básico', 'Intermediário', 'Avançado', 'Completo'];
-    
-    const nome = `${faker.random.arrayElement(cursosPrefixos)} ${faker.random.arrayElement(cursosTopicos)} - Nível ${faker.random.arrayElement(niveis)}`;
-    
-    const beneficios = [
-        'Certificado de conclusão',
-        'Projetos práticos',
-        'Suporte personalizado',
-        'Acesso vitalício',
-        'Material complementar',
-        'Mentoria individual',
-        'Comunidade exclusiva',
-        'Atualizações gratuitas'
+function generateProduct() {
+    const cursos = [
+        'Curso de Automação de Testes',
+        'Desenvolvimento Web Full Stack',
+        'Análise de Dados com Python',
+        'Gestão Ágil de Projetos',
+        'DevOps na Prática',
+        'Testes de API Rest',
+        'Cypress Avançado',
+        'Selenium com Java',
+        'Quality Assurance Completo',
+        'Testes de Performance',
+        'Testes Mobile com Appium',
+        'Cucumber e BDD',
+        'Robot Framework',
+        'Postman para Testes de API',
+        'Jira para Times Ágeis'
     ];
 
-    // Substituindo arrayElements por uma função personalizada
-    const numBeneficios = faker.random.number({min: 3, max: 5});
-    const beneficiosSelecionados = [];
-    const beneficiosCopy = [...beneficios];
-    for (let i = 0; i < numBeneficios; i++) {
-        const index = faker.random.number({min: 0, max: beneficiosCopy.length - 1});
-        beneficiosSelecionados.push(beneficiosCopy.splice(index, 1)[0]);
-    }
-    
-    const instrutores = [
-        'Ana Silva, QA Lead',
-        'Carlos Santos, Arquiteto de Testes',
-        'Patricia Oliveira, Especialista em Automação',
-        'Ricardo Martins, DevOps Engineer',
-        'Julia Costa, QA Specialist'
+    const categorias = [
+        'Automação de Testes',
+        'Desenvolvimento',
+        'Quality Assurance',
+        'Metodologias Ágeis',
+        'DevOps',
+        'Testes Manuais',
+        'Ferramentas de QA'
     ];
 
-    return {
-        nome: nome,
-        instrutor: faker.random.arrayElement(instrutores),
-        duracao: `${faker.random.number({min: 20, max: 120})} horas`,
-        preco: `R$ ${faker.random.number({min: 297, max: 1997})},00`,
+    const product = {
+        nome: cursos[Math.floor(Math.random() * cursos.length)],
         descricao: faker.lorem.paragraph(),
-        beneficios: beneficiosSelecionados,
-        vagas: faker.random.number({min: 20, max: 100}),
-        inicio: faker.date.future().toLocaleDateString('pt-BR')
+        preco: faker.commerce.price(100, 5000, 2, 'R$ '),
+        categoria: categorias[Math.floor(Math.random() * categorias.length)]
     };
+    return product;
 }
 
 function copyToClipboard(text) {
