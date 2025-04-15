@@ -85,6 +85,20 @@ const BugReportCard = () => {
         value={bugData[field]}
         onChange={handleChange(field)}
         variant="outlined"
+        InputProps={{
+          endAdornment: (
+            <i 
+              className="fas fa-eraser" 
+              style={{ 
+                cursor: 'pointer',
+                color: isDarkMode ? 'var(--dark-text)' : 'inherit',
+                marginRight: '8px'
+              }}
+              onClick={() => clearField(field)}
+              title="Limpar"
+            />
+          ),
+        }}
         sx={{
           '& .MuiOutlinedInput-root': {
             color: isDarkMode ? 'var(--dark-text)' : 'inherit',
@@ -97,16 +111,6 @@ const BugReportCard = () => {
           },
         }}
       />
-      <Button 
-        size="small" 
-        onClick={() => clearField(field)}
-        sx={{
-          color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-        }}
-      >
-        <i className="fas fa-eraser" style={{ marginRight: '0.5rem' }}></i>
-        Limpar
-      </Button>
     </Box>
   );
 

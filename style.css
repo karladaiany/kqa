@@ -411,33 +411,47 @@ header h1 img:hover {
     }
 }
 
-/* Estilos para o campo de notas */
+/* Estilos para o container de notas */
 .notes-container {
     position: relative;
 }
 
-#notes-area {
-    width: 100%;
-    background-color: var(--background-color);
-    color: inherit;
-    border: 1px solid var(--card-border);
-    resize: none;
-    height: 150px;
-    font-family: inherit;
-    padding: 15px;
+.notes-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1;
+    display: flex;
+    gap: 1rem;
+    padding: 5px;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.dark-theme .notes-actions {
+    background-color: rgba(45, 45, 45, 0.9);
+}
+
+.notes-actions i {
+    cursor: pointer;
+    color: var(--primary-color);
     transition: all 0.3s ease;
 }
 
-.dark-theme #notes-area {
-    background-color: var(--dark-card-bg);
-    color: var(--dark-text);
-    border-color: var(--dark-border);
+.notes-actions i:hover {
+    transform: scale(1.1);
 }
 
-#notes-area:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(108, 92, 231, 0.25);
+.dark-theme .notes-actions i {
+    color: var(--dark-text);
+}
+
+#notes-area {
+    resize: vertical;
+    min-height: 150px;
+    max-height: 500px;
+    padding-right: 80px; /* Espaço para os ícones */
+    transition: height 0.2s ease;
 }
 
 .notes-feedback {

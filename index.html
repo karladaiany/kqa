@@ -143,26 +143,22 @@
             <h2 class="section-title mb-4">Registros de Informações</h2>
             <!-- Cards React -->
             <div id="root"></div>
-            <!-- Notas (sem collapse) -->
+            <!-- Notas (novo layout) -->
             <div class="row mt-4">
                 <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5><i class="fas fa-sticky-note"></i> Notas</h5>
+                    <h5 style="margin-bottom: 1rem;">
+                        <i class="fas" style="margin-right: 0.5rem;"></i>
+                        📝 Notas
+                    </h5>
+                    <div class="notes-container">
+                        <div class="notes-actions">
+                            <i class="fas fa-copy" id="copy-notes" title="Copiar"></i>
+                            <i class="fas fa-eraser" id="clear-notes" title="Limpar"></i>
                         </div>
-                        <div class="card-body">
-                            <div class="notes-container">
-                                <div class="notes-header mb-2">
-                                    <button class="btn btn-primary btn-sm" id="copy-notes">
-                                        <i class="fas fa-copy"></i> Copiar Notas
-                                    </button>
-                                </div>
-                                <textarea id="notes-area" class="form-control" rows="6" 
-                                    placeholder="Adicione suas notas aqui... (salva automaticamente)"></textarea>
-                                <div class="notes-feedback" id="notes-feedback">
-                                    <i class="fas fa-save"></i> Salvo
-                                </div>
-                            </div>
+                        <textarea id="notes-area" class="form-control" rows="6" 
+                            placeholder="Adicione suas notas aqui... (salva automaticamente)"></textarea>
+                        <div class="notes-feedback" id="notes-feedback">
+                            <i class="fas fa-save"></i> Salvo
                         </div>
                     </div>
                 </div>

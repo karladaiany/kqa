@@ -460,6 +460,15 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('generate-all-person').addEventListener('click', updatePessoaDados);
     document.getElementById('generate-all-card').addEventListener('click', updateCreditCard);
     document.getElementById('generate-all-product').addEventListener('click', updateProdutoDados);
+
+    // Event listeners para as notas
+    const clearNotesBtn = document.getElementById('clear-notes');
+    if (clearNotesBtn) {
+        clearNotesBtn.addEventListener('click', function() {
+            notesArea.value = '';
+            saveNotes();
+        });
+    }
 });
 
 // Funções de geração de dados
