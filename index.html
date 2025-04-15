@@ -48,65 +48,44 @@
                 <!-- Card de Documentos -->
                 <div class="col-12 col-lg-4">
                     <div class="card">
-                        <div class="card-header" role="button">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5><i class="fas fa-id-card"></i> Documentos</h5>
-                                <i class="fas fa-chevron-down toggle-icon"></i>
-                            </div>
+                        <div class="card-header">
+                            <h5><i class="fas fa-id-card"></i> Documentos</h5>
                         </div>
                         <div class="card-body">
                             <!-- CPF -->
-                            <div class="mb-4">
-                                <label for="cpf" class="form-label">CPF</label>
-                                <div class="documento-container">
-                                    <div class="documento-valor">
-                                        <span class="copyable" id="cpf"></span>
-                                        <i class="fas fa-copy copy-icon"></i>
-                                    </div>
-                                    <div class="controles">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="cpf-mask-toggle">
-                                            <label class="form-check-label" for="cpf-mask-toggle">Máscara</label>
-                                        </div>
-                                        <button class="btn btn-primary btn-sm regenerate-btn" id="generate-cpf">
-                                            <i class="fas fa-sync-alt"></i>
-                                        </button>
+                            <div class="documento-item">
+                                <label class="form-label">CPF</label>
+                                <div class="documento-valor">
+                                    <span class="copyable" id="cpf"></span>
+                                    <div class="documento-acoes">
+                                        <i class="fas fa-copy copy-icon" title="Copiar"></i>
+                                        <i class="fas fa-sync-alt regenerate-icon" id="generate-cpf" title="Gerar novo"></i>
+                                        <i class="fas fa-mask mask-toggle" id="cpf-mask-toggle" title="Alternar máscara"></i>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- CNPJ -->
-                            <div class="mb-4">
-                                <label for="cnpj" class="form-label">CNPJ</label>
-                                <div class="documento-container">
-                                    <div class="documento-valor">
-                                        <span class="copyable" id="cnpj"></span>
-                                        <i class="fas fa-copy copy-icon"></i>
-                                    </div>
-                                    <div class="controles">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="cnpj-mask-toggle">
-                                            <label class="form-check-label" for="cnpj-mask-toggle">Máscara</label>
-                                        </div>
-                                        <button class="btn btn-primary btn-sm regenerate-btn" id="generate-cnpj">
-                                            <i class="fas fa-sync-alt"></i>
-                                        </button>
+                            <div class="documento-item">
+                                <label class="form-label">CNPJ</label>
+                                <div class="documento-valor">
+                                    <span class="copyable" id="cnpj"></span>
+                                    <div class="documento-acoes">
+                                        <i class="fas fa-copy copy-icon" title="Copiar"></i>
+                                        <i class="fas fa-sync-alt regenerate-icon" id="generate-cnpj" title="Gerar novo"></i>
+                                        <i class="fas fa-mask mask-toggle" id="cnpj-mask-toggle" title="Alternar máscara"></i>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- RG -->
-                            <div class="mb-4">
-                                <label for="rg" class="form-label">RG</label>
-                                <div class="documento-container">
-                                    <div class="documento-valor">
-                                        <span class="copyable" id="rg"></span>
-                                        <i class="fas fa-copy copy-icon"></i>
-                                    </div>
-                                    <div class="controles">
-                                        <button class="btn btn-primary btn-sm regenerate-btn" id="generate-rg">
-                                            <i class="fas fa-sync-alt"></i>
-                                        </button>
+                            <div class="documento-item">
+                                <label class="form-label">RG</label>
+                                <div class="documento-valor">
+                                    <span class="copyable" id="rg"></span>
+                                    <div class="documento-acoes">
+                                        <i class="fas fa-copy copy-icon" title="Copiar"></i>
+                                        <i class="fas fa-sync-alt regenerate-icon" id="generate-rg" title="Gerar novo"></i>
                                     </div>
                                 </div>
                             </div>
@@ -117,11 +96,8 @@
                 <!-- Card de Dados Pessoais -->
                 <div class="col-12 col-lg-8">
                     <div class="card">
-                        <div class="card-header" role="button">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5><i class="fas fa-user"></i> Dados Pessoais</h5>
-                                <i class="fas fa-chevron-down toggle-icon"></i>
-                            </div>
+                        <div class="card-header">
+                            <h5><i class="fas fa-user"></i> Dados Pessoais</h5>
                         </div>
                         <div class="card-body">
                             <div id="pessoa-dados"></div>
@@ -132,36 +108,30 @@
                     </div>
                 </div>
 
-                <!-- Card de Cartão de Crédito -->
+                <!-- Card de Cursos e Produtos (agora primeiro) -->
                 <div class="col-12 col-lg-6">
                     <div class="card">
-                        <div class="card-header" role="button">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5><i class="fas fa-credit-card"></i> Cartão de Crédito</h5>
-                                <i class="fas fa-chevron-down toggle-icon"></i>
-                            </div>
+                        <div class="card-header">
+                            <h5><i class="fas fa-graduation-cap"></i> Cursos e Produtos</h5>
                         </div>
                         <div class="card-body">
-                            <div id="credit-card-data" class="mb-3"></div>
-                            <button class="btn btn-primary btn-sm regenerate-btn" id="generate-card">
+                            <div id="produto-dados"></div>
+                            <button class="btn btn-primary btn-sm regenerate-btn" id="generate-product">
                                 <i class="fas fa-sync-alt"></i>
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Card de Cursos e Produtos -->
+                <!-- Card de Cartão de Crédito (agora segundo) -->
                 <div class="col-12 col-lg-6">
                     <div class="card">
-                        <div class="card-header" role="button">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5><i class="fas fa-graduation-cap"></i> Cursos e Produtos</h5>
-                                <i class="fas fa-chevron-down toggle-icon"></i>
-                            </div>
+                        <div class="card-header">
+                            <h5><i class="fas fa-credit-card"></i> Cartão de Crédito</h5>
                         </div>
                         <div class="card-body">
-                            <div id="produto-dados"></div>
-                            <button class="btn btn-primary btn-sm regenerate-btn" id="generate-product">
+                            <div id="credit-card-data" class="mb-3"></div>
+                            <button class="btn btn-primary btn-sm regenerate-btn" id="generate-card">
                                 <i class="fas fa-sync-alt"></i>
                             </button>
                         </div>
@@ -175,15 +145,12 @@
             <h2 class="section-title mb-4">Registros de Informações</h2>
             <!-- Cards React -->
             <div id="root"></div>
-            <!-- Card de Notas -->
+            <!-- Notas (sem collapse) -->
             <div class="row mt-4">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header" role="button">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5><i class="fas fa-sticky-note"></i> Notas</h5>
-                                <i class="fas fa-chevron-down toggle-icon"></i>
-                            </div>
+                        <div class="card-header">
+                            <h5><i class="fas fa-sticky-note"></i> Notas</h5>
                         </div>
                         <div class="card-body">
                             <div class="notes-container">
@@ -192,7 +159,7 @@
                                         <i class="fas fa-copy"></i> Copiar Notas
                                     </button>
                                 </div>
-                                <textarea id="notes-area" class="form-control" rows="4" 
+                                <textarea id="notes-area" class="form-control" rows="6" 
                                     placeholder="Adicione suas notas aqui... (salva automaticamente)"></textarea>
                                 <div class="notes-feedback" id="notes-feedback">
                                     <i class="fas fa-save"></i> Salvo

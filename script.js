@@ -63,12 +63,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Funções de atualização
     function updateCPF() {
         const cpf = generateCPF();
-        elements.cpf.textContent = formatWithMask(cpf, elements.maskToggles.cpf.checked, maskCPF);
+        const maskToggle = document.getElementById('cpf-mask-toggle');
+        elements.cpf.textContent = maskToggle.classList.contains('active') ? maskCPF(cpf) : cpf;
     }
 
     function updateCNPJ() {
         const cnpj = generateCNPJ();
-        elements.cnpj.textContent = formatWithMask(cnpj, elements.maskToggles.cnpj.checked, maskCNPJ);
+        const maskToggle = document.getElementById('cnpj-mask-toggle');
+        elements.cnpj.textContent = maskToggle.classList.contains('active') ? maskCNPJ(cnpj) : cnpj;
     }
 
     function updateRG() {
@@ -78,17 +80,112 @@ document.addEventListener('DOMContentLoaded', function() {
     function updatePessoaDados() {
         const pessoa = generatePerson();
         elements.pessoaDados.innerHTML = `
-            <div class="dados-pessoa-item">
-                <p><strong>Nome:</strong> <span class="copyable">${pessoa.nome}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Email:</strong> <span class="copyable">${pessoa.email}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Telefone:</strong> <span class="copyable">${pessoa.telefone}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Celular:</strong> <span class="copyable">${pessoa.celular}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Rua:</strong> <span class="copyable">${pessoa.rua}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Número:</strong> <span class="copyable">${pessoa.numero}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Bairro:</strong> <span class="copyable">${pessoa.bairro}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Cidade:</strong> <span class="copyable">${pessoa.cidade}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Estado:</strong> <span class="copyable">${pessoa.estado}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>CEP:</strong> <span class="copyable">${pessoa.cep}</span> <i class="fas fa-copy copy-icon"></i></p>
+            <div class="dados-item">
+                <div class="campo-item">
+                    <label class="form-label">Nome</label>
+                    <div class="campo-valor">
+                        <span class="copyable" id="pessoa-nome">${pessoa.nome}</span>
+                        <div class="campo-acoes">
+                            <i class="fas fa-copy copy-icon" title="Copiar"></i>
+                            <i class="fas fa-sync-alt regenerate-icon" id="generate-nome" title="Gerar novo"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-item">
+                    <label class="form-label">Email</label>
+                    <div class="campo-valor">
+                        <span class="copyable" id="pessoa-email">${pessoa.email}</span>
+                        <div class="campo-acoes">
+                            <i class="fas fa-copy copy-icon" title="Copiar"></i>
+                            <i class="fas fa-sync-alt regenerate-icon" id="generate-email" title="Gerar novo"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-item">
+                    <label class="form-label">Telefone</label>
+                    <div class="campo-valor">
+                        <span class="copyable" id="pessoa-telefone">${pessoa.telefone}</span>
+                        <div class="campo-acoes">
+                            <i class="fas fa-copy copy-icon" title="Copiar"></i>
+                            <i class="fas fa-sync-alt regenerate-icon" id="generate-telefone" title="Gerar novo"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-item">
+                    <label class="form-label">Celular</label>
+                    <div class="campo-valor">
+                        <span class="copyable" id="pessoa-celular">${pessoa.celular}</span>
+                        <div class="campo-acoes">
+                            <i class="fas fa-copy copy-icon" title="Copiar"></i>
+                            <i class="fas fa-sync-alt regenerate-icon" id="generate-celular" title="Gerar novo"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-item">
+                    <label class="form-label">Rua</label>
+                    <div class="campo-valor">
+                        <span class="copyable" id="pessoa-rua">${pessoa.rua}</span>
+                        <div class="campo-acoes">
+                            <i class="fas fa-copy copy-icon" title="Copiar"></i>
+                            <i class="fas fa-sync-alt regenerate-icon" id="generate-rua" title="Gerar novo"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-item">
+                    <label class="form-label">Número</label>
+                    <div class="campo-valor">
+                        <span class="copyable" id="pessoa-numero">${pessoa.numero}</span>
+                        <div class="campo-acoes">
+                            <i class="fas fa-copy copy-icon" title="Copiar"></i>
+                            <i class="fas fa-sync-alt regenerate-icon" id="generate-numero" title="Gerar novo"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-item">
+                    <label class="form-label">Bairro</label>
+                    <div class="campo-valor">
+                        <span class="copyable" id="pessoa-bairro">${pessoa.bairro}</span>
+                        <div class="campo-acoes">
+                            <i class="fas fa-copy copy-icon" title="Copiar"></i>
+                            <i class="fas fa-sync-alt regenerate-icon" id="generate-bairro" title="Gerar novo"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-item">
+                    <label class="form-label">Cidade</label>
+                    <div class="campo-valor">
+                        <span class="copyable" id="pessoa-cidade">${pessoa.cidade}</span>
+                        <div class="campo-acoes">
+                            <i class="fas fa-copy copy-icon" title="Copiar"></i>
+                            <i class="fas fa-sync-alt regenerate-icon" id="generate-cidade" title="Gerar novo"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-item">
+                    <label class="form-label">Estado</label>
+                    <div class="campo-valor">
+                        <span class="copyable" id="pessoa-estado">${pessoa.estado}</span>
+                        <div class="campo-acoes">
+                            <i class="fas fa-copy copy-icon" title="Copiar"></i>
+                            <i class="fas fa-sync-alt regenerate-icon" id="generate-estado" title="Gerar novo"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-item">
+                    <label class="form-label">CEP</label>
+                    <div class="campo-valor">
+                        <span class="copyable" id="pessoa-cep">${pessoa.cep}</span>
+                        <div class="campo-acoes">
+                            <i class="fas fa-copy copy-icon" title="Copiar"></i>
+                            <i class="fas fa-sync-alt regenerate-icon" id="generate-cep" title="Gerar novo"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="acoes-grupo">
+                <button class="btn btn-primary btn-sm" id="generate-all-person">
+                    <i class="fas fa-sync-alt"></i> Gerar Todos
+                </button>
             </div>
         `;
     }
@@ -96,11 +193,52 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateCreditCard() {
         const card = generateCard();
         elements.creditCard.innerHTML = `
-            <div class="card-info">
-                <p><strong>Número:</strong> <span class="copyable">${card.number}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Bandeira:</strong> <span class="copyable">${card.brand}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Validade:</strong> <span class="copyable">${card.expiry}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>CVV:</strong> <span class="copyable">${card.cvv}</span> <i class="fas fa-copy copy-icon"></i></p>
+            <div class="dados-item">
+                <div class="campo-item">
+                    <label class="form-label">Número</label>
+                    <div class="campo-valor">
+                        <span class="copyable" id="card-number">${card.number}</span>
+                        <div class="campo-acoes">
+                            <i class="fas fa-copy copy-icon" title="Copiar"></i>
+                            <i class="fas fa-sync-alt regenerate-icon" id="generate-card-number" title="Gerar novo"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-item">
+                    <label class="form-label">Bandeira</label>
+                    <div class="campo-valor">
+                        <span class="copyable" id="card-brand">${card.brand}</span>
+                        <div class="campo-acoes">
+                            <i class="fas fa-copy copy-icon" title="Copiar"></i>
+                            <i class="fas fa-sync-alt regenerate-icon" id="generate-card-brand" title="Gerar novo"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-item">
+                    <label class="form-label">Validade</label>
+                    <div class="campo-valor">
+                        <span class="copyable" id="card-expiry">${card.expiry}</span>
+                        <div class="campo-acoes">
+                            <i class="fas fa-copy copy-icon" title="Copiar"></i>
+                            <i class="fas fa-sync-alt regenerate-icon" id="generate-card-expiry" title="Gerar novo"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-item">
+                    <label class="form-label">CVV</label>
+                    <div class="campo-valor">
+                        <span class="copyable" id="card-cvv">${card.cvv}</span>
+                        <div class="campo-acoes">
+                            <i class="fas fa-copy copy-icon" title="Copiar"></i>
+                            <i class="fas fa-sync-alt regenerate-icon" id="generate-card-cvv" title="Gerar novo"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="acoes-grupo">
+                <button class="btn btn-primary btn-sm" id="generate-all-card">
+                    <i class="fas fa-sync-alt"></i> Gerar Todos
+                </button>
             </div>
         `;
     }
@@ -108,11 +246,52 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateProdutoDados() {
         const produto = generateProduct();
         elements.produtoDados.innerHTML = `
-            <div class="dados-produto-item">
-                <p><strong>Nome:</strong> <span class="copyable">${produto.nome}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Descrição:</strong> <span class="copyable">${produto.descricao}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Preço:</strong> <span class="copyable">${produto.preco}</span> <i class="fas fa-copy copy-icon"></i></p>
-                <p><strong>Categoria:</strong> <span class="copyable">${produto.categoria}</span> <i class="fas fa-copy copy-icon"></i></p>
+            <div class="dados-item">
+                <div class="campo-item">
+                    <label class="form-label">Nome do Curso</label>
+                    <div class="campo-valor">
+                        <span class="copyable" id="produto-nome">${produto.nome}</span>
+                        <div class="campo-acoes">
+                            <i class="fas fa-copy copy-icon" title="Copiar"></i>
+                            <i class="fas fa-sync-alt regenerate-icon" id="generate-produto-nome" title="Gerar novo"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-item">
+                    <label class="form-label">Descrição</label>
+                    <div class="campo-valor">
+                        <span class="copyable" id="produto-descricao">${produto.descricao}</span>
+                        <div class="campo-acoes">
+                            <i class="fas fa-copy copy-icon" title="Copiar"></i>
+                            <i class="fas fa-sync-alt regenerate-icon" id="generate-produto-descricao" title="Gerar novo"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-item">
+                    <label class="form-label">Preço</label>
+                    <div class="campo-valor">
+                        <span class="copyable" id="produto-preco">${produto.preco}</span>
+                        <div class="campo-acoes">
+                            <i class="fas fa-copy copy-icon" title="Copiar"></i>
+                            <i class="fas fa-sync-alt regenerate-icon" id="generate-produto-preco" title="Gerar novo"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="campo-item">
+                    <label class="form-label">Categoria</label>
+                    <div class="campo-valor">
+                        <span class="copyable" id="produto-categoria">${produto.categoria}</span>
+                        <div class="campo-acoes">
+                            <i class="fas fa-copy copy-icon" title="Copiar"></i>
+                            <i class="fas fa-sync-alt regenerate-icon" id="generate-produto-categoria" title="Gerar novo"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="acoes-grupo">
+                <button class="btn btn-primary btn-sm" id="generate-all-product">
+                    <i class="fas fa-sync-alt"></i> Gerar Todos
+                </button>
             </div>
         `;
     }
@@ -169,9 +348,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Copiar ao clicar
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('copy-icon')) {
-            const textToCopy = e.target.previousElementSibling.textContent;
-            copyToClipboard(textToCopy);
-            showCopyFeedback(e.target);
+            let textToCopy;
+            
+            // Verifica se está em um documento-valor (CPF, CNPJ, RG)
+            if (e.target.closest('.documento-valor')) {
+                textToCopy = e.target.closest('.documento-valor').querySelector('.copyable').textContent;
+            }
+            // Verifica se está em um campo-valor (outros campos)
+            else if (e.target.closest('.campo-valor')) {
+                textToCopy = e.target.closest('.campo-valor').querySelector('.copyable').textContent;
+            }
+
+            if (textToCopy) {
+                copyToClipboard(textToCopy);
+                showCopyFeedback(e.target);
+            }
         }
     });
 
@@ -233,6 +424,42 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Event listeners para os ícones de regeneração
+    document.querySelectorAll('.regenerate-icon').forEach(icon => {
+        icon.addEventListener('click', function() {
+            const id = this.id;
+            if (id === 'generate-cpf') updateCPF();
+            if (id === 'generate-cnpj') updateCNPJ();
+            if (id === 'generate-rg') updateRG();
+        });
+    });
+
+    // Event listeners para os toggles de máscara
+    document.querySelectorAll('.mask-toggle').forEach(toggle => {
+        toggle.addEventListener('click', function() {
+            this.classList.toggle('active');
+            const id = this.id.replace('-mask-toggle', '');
+            const element = document.getElementById(id);
+            
+            if (id === 'cpf') {
+                const cpfValue = element.textContent.replace(/\D/g, '');
+                element.textContent = this.classList.contains('active') 
+                    ? maskCPF(cpfValue) 
+                    : cpfValue;
+            } else if (id === 'cnpj') {
+                const cnpjValue = element.textContent.replace(/\D/g, '');
+                element.textContent = this.classList.contains('active') 
+                    ? maskCNPJ(cnpjValue) 
+                    : cnpjValue;
+            }
+        });
+    });
+
+    // Botões de gerar todos
+    document.getElementById('generate-all-person').addEventListener('click', updatePessoaDados);
+    document.getElementById('generate-all-card').addEventListener('click', updateCreditCard);
+    document.getElementById('generate-all-product').addEventListener('click', updateProdutoDados);
 });
 
 // Funções de geração de dados
