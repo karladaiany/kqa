@@ -1,0 +1,54 @@
+.floating-menu {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.menu-toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s;
+}
+
+.menu-toggle:hover {
+  transform: scale(1.1);
+  background-color: var(--secondary-color);
+}
+
+.menu-items {
+  position: absolute;
+  bottom: 50px;
+  right: 0;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem;
+  display: none;
+}
+
+.menu-items.active {
+  display: block;
+}
+
+.menu-items a {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: var(--text-color);
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.menu-items a:hover {
+  background-color: var(--hover-color);
+  border-radius: 4px;
+} 

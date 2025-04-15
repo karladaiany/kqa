@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useTheme } from '../context/ThemeContext';
+import { useToast } from '../context/ToastContext';
 
 const QACommentCard = () => {
   const { isDarkMode } = useTheme();
@@ -28,6 +29,8 @@ const QACommentCard = () => {
     evidenceLink: '',
     hasEvidenceLink: false
   });
+
+  const { showToast } = useToast();
 
   const fieldLabels = {
     validation: 'Validação',
@@ -104,31 +107,10 @@ const QACommentCard = () => {
     }
   };
 
-  const copyTemplate = () => {
-    const template = `⇝ QA ⇜
-
-:: 🔎 Teste 🔎 ::
-${statusOptions[qaData.testStatus]?.value || qaData.testStatus}
-
-:: 📍 Ambiente 📍 ::
-${environmentOptions[qaData.environment]?.value || qaData.environment}
-
-:: 📑 Validação 📑 ::
-${qaData.validation}
-
-${qaData.observation ? `:: 🚩 Obs 🚩 ::
-${qaData.observation}` : ''}
-
-${qaData.waiting ? `::⚠️ Aguardando ⚠️ ::
-${qaData.waiting}` : ''}
-
-${qaData.returnReason ? `:: 🚨 Motivo retorno 🚨 ::
-${qaData.returnReason}` : ''}
-
-${qaData.hasEvidence ? '✓ Evidência em anexo na atividade' : ''}
-${qaData.hasEvidenceLink ? `✓ Evidência no link: ${qaData.evidenceLink}` : ''}`;
-
-    navigator.clipboard.writeText(template);
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text)
+      .then(() => showToast('Copiado para a área de transferência!'))
+      .catch(err => console.error('Erro ao copiar:', err));
   };
 
   return (
@@ -292,7 +274,7 @@ ${qaData.hasEvidenceLink ? `✓ Evidência no link: ${qaData.evidenceLink}` : ''
       <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
         <Button 
           variant="contained" 
-          onClick={copyTemplate}
+          onClick={() => handleCopy(document.querySelector('.template-content').innerText)}
           sx={{
             bgcolor: 'var(--primary-color)',
             '&:hover': {

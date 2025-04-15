@@ -1,34 +1,38 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem('darkMode') === 'true';
+  });
 
   useEffect(() => {
-    // Sincroniza com o tema existente
-    const body = document.body;
-    setIsDarkMode(body.classList.contains('dark-theme'));
+    // Mover a manipulação do DOM para dentro do useEffect
+    const root = document.documentElement;
+    if (isDarkMode) {
+      root.classList.add('dark-mode');
+    } else {
+      root.classList.remove('dark-mode');
+    }
+    localStorage.setItem('darkMode', isDarkMode);
+  }, [isDarkMode]);
 
-    // Observa mudanças no tema
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'class') {
-          setIsDarkMode(body.classList.contains('dark-theme'));
-        }
-      });
-    });
-
-    observer.observe(body, { attributes: true });
-
-    return () => observer.disconnect();
-  }, []);
+  const toggleTheme = () => {
+    setIsDarkMode(prev => !prev);
+  };
 
   return (
-    <ThemeContext.Provider value={{ isDarkMode }}>
+    <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );
 };
 
-export const useTheme = () => useContext(ThemeContext); 
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  return context;
+}; 

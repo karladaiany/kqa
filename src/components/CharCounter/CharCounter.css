@@ -1,0 +1,30 @@
+#char-count {
+  max-width: 100px;
+}
+
+#generated-text {
+  font-family: var(--font-family);
+  resize: vertical;
+  min-height: 100px;
+}
+
+.btn-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.text-muted {
+  font-size: 0.875rem;
+}
+
+.input-group .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  padding: 0;
+}
+
+.input-group .btn i {
+  font-size: 1rem;
+} 

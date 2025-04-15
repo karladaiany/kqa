@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useTheme } from '../context/ThemeContext';
+import { useToast } from '../context/ToastContext';
 
 const BugReportCard = () => {
   const { isDarkMode } = useTheme();
@@ -26,6 +27,8 @@ const BugReportCard = () => {
     evidenceLink: '',
     hasEvidenceLink: false
   });
+
+  const { showToast } = useToast();
 
   const fieldLabels = {
     incident: 'Incidente identificado',
@@ -135,7 +138,9 @@ ${bugData.evidence}
 ${bugData.hasEvidence ? '✓ Evidência em anexo na atividade' : ''}
 ${bugData.hasEvidenceLink ? `✓ Evidência no link: ${bugData.evidenceLink}` : ''}`;
 
-    navigator.clipboard.writeText(template);
+    navigator.clipboard.writeText(template)
+      .then(() => showToast('Copiado para a área de transferência!'))
+      .catch(err => console.error('Erro ao copiar:', err));
   };
 
   return (

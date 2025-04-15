@@ -1,18 +1,33 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
-import { ThemeProvider } from './context/ThemeContext'
+import './index.css'
 
-// Garanta que o elemento root existe
-const rootElement = document.getElementById('root');
-if (rootElement) {
-  ReactDOM.createRoot(rootElement).render(
-    <React.StrictMode>
-      <ThemeProvider>
+// Tratamento global de erros
+window.addEventListener('error', (event) => {
+  // Ignorar erros do MobX e service worker
+  if (event.message.includes('mobx-state-tree') || 
+      event.message.includes('runtime.lastError') ||
+      event.filename?.includes('sw.js')) {
+    event.preventDefault();
+    return;
+  }
+});
+
+// Garantir que o DOM está pronto
+const renderApp = () => {
+  const root = document.getElementById('root');
+  if (root) {
+    ReactDOM.createRoot(root).render(
+      <React.StrictMode>
         <App />
-      </ThemeProvider>
-    </React.StrictMode>
-  );
+      </React.StrictMode>
+    );
+  }
+};
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', renderApp);
 } else {
-  console.error('Elemento root não encontrado');
+  renderApp();
 } 
