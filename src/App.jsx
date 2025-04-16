@@ -27,6 +27,10 @@ function App() {
 
             <main>
               <section className="content-section">
+                <h2 className="records-title">
+                  <i className="fas fa-random"></i>
+                  Geração de Dados
+                </h2>
                 <div className="row">
                   <div className="col-6">
                     <PersonalData />
@@ -53,8 +57,11 @@ function App() {
                 </div>
               </section>
 
-              <section className="mt-5">
-                <h2 className="section-title">Registros de Informações</h2>
+              <div className="mt-5">
+                <h2 className="records-title">
+                  <i className="fas fa-database"></i>
+                  Registros de Informações
+                </h2>
                 <div className="row">
                   <div className="col-6">
                     <BugReportCard />
@@ -63,7 +70,7 @@ function App() {
                     <QACommentCard />
                   </div>
                 </div>
-              </section>
+              </div>
             </main>
           </div>
           <FloatingMenu />
