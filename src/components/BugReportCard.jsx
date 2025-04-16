@@ -1,122 +1,58 @@
-import React, { useState, useCallback } from 'react';
-import { 
-  Card, 
-  TextField, 
-  Button, 
-  Box, 
-  Typography,
-  Checkbox,
-  FormControlLabel 
-} from '@mui/material';
-import { useLocalStorage } from '../hooks/useLocalStorage';
-import { useTheme } from '../context/ThemeContext';
+import React, { useState } from 'react';
 import { useToast } from '../context/ToastContext';
+import { Card, Switch } from '@mui/material';
+import { useTheme } from '../context/ThemeContext';
+import { useLocalStorage } from '../hooks/useLocalStorage';
+import { encryptData, decryptData } from '../utils/crypto';
 
 const BugReportCard = () => {
   const { isDarkMode } = useTheme();
+  const { showToast } = useToast();
   const [bugData, setBugData] = useLocalStorage('bugReport', {
+    // Campos principais
     incident: '',
     steps: '',
     expectedBehavior: '',
+    // Informações
     url: '',
     login: '',
     password: '',
     orgId: '',
+    // Evidências
     evidence: '',
-    hasEvidence: false,
     evidenceLink: '',
-    hasEvidenceLink: false
+    hasEvidence: false
   });
 
-  const { showToast } = useToast();
-  const [text, setText] = useState('');
+  // Campos sensíveis que devem ser criptografados
+  const sensitiveFields = ['password', 'login', 'orgId'];
 
-  const fieldLabels = {
-    incident: 'Incidente identificado',
-    steps: 'Passo a passo para reprodução',
-    expectedBehavior: 'Comportamento esperado',
-    url: 'URL',
-    login: 'Login',
-    password: 'Senha',
-    orgId: 'ID da Organização',
-    evidence: 'Descrição da evidência'
-  };
-
-  const handleChange = (field) => (event) => {
+  const handleChange = (field) => (e) => {
+    const value = e.target.value;
     setBugData(prev => ({
       ...prev,
-      [field]: event.target.value
+      [field]: sensitiveFields.includes(field) ? encryptData(value) : value
     }));
   };
 
-  const handleCheckboxChange = (field) => (event) => {
+  // Função para obter valor descriptografado
+  const getDecryptedValue = (field) => {
+    return sensitiveFields.includes(field) ? decryptData(bugData[field]) : bugData[field];
+  };
+
+  const handleClear = (field) => {
     setBugData(prev => ({
       ...prev,
-      [field]: event.target.checked
+      [field]: ''
     }));
   };
 
-  const clearField = (field) => {
+  const handleToggle = () => {
     setBugData(prev => ({
       ...prev,
-      [field]: typeof prev[field] === 'boolean' ? false : ''
+      hasEvidence: !prev.hasEvidence
     }));
   };
-
-  const clearAll = () => {
-    setBugData({
-      incident: '',
-      steps: '',
-      expectedBehavior: '',
-      url: '',
-      login: '',
-      password: '',
-      orgId: '',
-      evidence: '',
-      hasEvidence: false,
-      evidenceLink: '',
-      hasEvidenceLink: false
-    });
-  };
-
-  const renderTextField = (field) => (
-    <Box key={field} sx={{ mb: 2 }}>
-      <TextField
-        fullWidth
-        multiline
-        label={fieldLabels[field]}
-        placeholder={`Digite ${fieldLabels[field].toLowerCase()} aqui...`}
-        value={bugData[field]}
-        onChange={handleChange(field)}
-        variant="outlined"
-        InputProps={{
-          endAdornment: (
-            <i 
-              className="fas fa-eraser" 
-              style={{ 
-                cursor: 'pointer',
-                color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-                marginRight: '8px'
-              }}
-              onClick={() => clearField(field)}
-              title="Limpar"
-            />
-          ),
-        }}
-        sx={{
-          '& .MuiOutlinedInput-root': {
-            color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-            '& fieldset': {
-              borderColor: isDarkMode ? 'var(--dark-border)' : 'inherit',
-            },
-          },
-          '& .MuiInputLabel-root': {
-            color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-          },
-        }}
-      />
-    </Box>
-  );
 
   const copyTemplate = () => {
     const template = `:: Incidente identificado ::
@@ -130,193 +66,135 @@ ${bugData.expectedBehavior}
 
 :: Informações ::
 url: ${bugData.url}
-login: ${bugData.login}
-senha: ${bugData.password}
-org_id: ${bugData.orgId}
+login: ${decryptData(bugData.login)}
+senha: ${decryptData(bugData.password)}
+org_id: ${decryptData(bugData.orgId)}
 
-:: Evidência(s) ::
-${bugData.evidence}
-${bugData.hasEvidence ? '✓ Evidência em anexo na atividade' : ''}
-${bugData.hasEvidenceLink ? `✓ Evidência no link: ${bugData.evidenceLink}` : ''}`;
+:: Evidência(s) ::${bugData.evidence ? `\n${bugData.evidence}` : ''}${bugData.hasEvidence ? '\n✓ Evidência em anexo na atividade' : ''}${bugData.evidenceLink ? `\n✓ Evidência no link: ${bugData.evidenceLink}` : ''}`;
 
-    navigator.clipboard.writeText(template)
-      .then(() => showToast('Copiado para a área de transferência!'))
+    navigator.clipboard.writeText(template.trim())
+      .then(() => showToast('Template copiado!'))
       .catch(err => console.error('Erro ao copiar:', err));
   };
 
-  const handleCopy = useCallback(() => {
-    if (!text) {
-      showToast('Digite um texto primeiro!');
-      return;
-    }
-    navigator.clipboard.writeText(text)
-      .then(() => showToast('Texto copiado!'))
-      .catch(err => console.error('Erro ao copiar:', err));
-  }, [text, showToast]);
+  const clearAll = () => {
+    setBugData({
+      incident: '',
+      steps: '',
+      expectedBehavior: '',
+      url: '',
+      login: '',
+      password: '',
+      orgId: '',
+      evidence: '',
+      evidenceLink: '',
+      hasEvidence: false
+    });
+    showToast('Todos os campos foram limpos!');
+  };
 
-  const handleClear = useCallback(() => {
-    setText('');
-    showToast('Texto limpo!');
-  }, [showToast]);
+  const renderField = (field, label) => (
+    <div className="form-group" key={field}>
+      <input
+        type={field === 'password' ? 'password' : 'text'}
+        className="form-control"
+        value={getDecryptedValue(field)}
+        onChange={handleChange(field)}
+        placeholder=" "
+      />
+      <label className="form-label">{label}</label>
+      {bugData[field] && (
+        <i 
+          className="fas fa-times clear-field-icon"
+          onClick={() => handleClear(field)}
+          title="Limpar campo"
+        />
+      )}
+      {sensitiveFields.includes(field) && (
+        <div className="sensitive-field-warning">
+          <i className="fas fa-shield-alt"></i>
+        </div>
+      )}
+    </div>
+  );
+
+  // Adicionar aviso de dados locais
+  const renderLocalStorageWarning = () => (
+    <div className="storage-warning">
+      <i className="fas fa-info-circle"></i>
+      <span>
+        Os dados são salvos localmente no seu navegador. 
+        Dados sensíveis são criptografados. 
+        Use "Limpar tudo" para removê-los.
+      </span>
+    </div>
+  );
 
   return (
     <Card 
-      id="bug-report"
       sx={{ 
         p: 2, 
-        height: '100%',
-        boxShadow: '0 0.125rem 0.25rem rgba(0, 0, 0, 0.075)',
-        borderRadius: '0.25rem',
         bgcolor: isDarkMode ? 'var(--dark-card-bg)' : 'var(--background-color)',
-        color: isDarkMode ? 'var(--dark-text)' : 'inherit'
       }}
     >
-      <h5 style={{ 
-        marginBottom: '1rem',
-        color: isDarkMode ? 'var(--dark-text)' : 'inherit'
-      }}>
-        <i className="fas" style={{ marginRight: '0.5rem' }}></i>
-        🐞 Registro de BUG's
-      </h5>
-      
-      {/* Campos principais */}
-      {['incident', 'steps', 'expectedBehavior'].map(renderTextField)}
+      <div className="card-header">
+        <h5><i className="fas fa-bug"></i> Registro de bugs</h5>
+      </div>
+      <div className="card-body">
+        {renderLocalStorageWarning()}
+        {/* Campos principais */}
+        <div className="form-section">
+          {renderField('incident', 'Incidente identificado')}
+          {renderField('steps', 'Passo a passo para reprodução')}
+          {renderField('expectedBehavior', 'Comportamento esperado')}
+        </div>
 
-      {/* Seção de Informações */}
-      <Typography 
-        variant="subtitle1" 
-        sx={{ 
-          mt: 3, 
-          mb: 2, 
-          color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-          fontWeight: 'bold'
-        }}
-      >
-        <i className="fas fa-info-circle" style={{ marginRight: '0.5rem' }}></i>
-        Informações
-      </Typography>
-      <Box sx={{ pl: 2 }}>
-        {['url', 'login', 'password', 'orgId'].map(renderTextField)}
-      </Box>
+        {/* Seção de Informações */}
+        <div className="form-section">
+          <h6 className="section-title">
+            <i className="fas fa-info-circle"></i> Informações
+          </h6>
+          <div className="form-row">
+            {renderField('url', 'URL')}
+            {renderField('login', 'Login')}
+            {renderField('password', 'Senha')}
+            {renderField('orgId', 'ID da organização')}
+          </div>
+        </div>
 
-      {/* Seção de Evidências */}
-      <Typography 
-        variant="subtitle1" 
-        sx={{ 
-          mt: 3, 
-          mb: 2, 
-          color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-          fontWeight: 'bold'
-        }}
-      >
-        <i className="fas fa-camera" style={{ marginRight: '0.5rem' }}></i>
-        Evidências
-      </Typography>
-      <Box sx={{ pl: 2 }}>
-        {renderTextField('evidence')}
-        
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={bugData.hasEvidence}
-              onChange={handleCheckboxChange('hasEvidence')}
-              sx={{
-                color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-                '&.Mui-checked': {
-                  color: 'var(--primary-color)',
-                },
-              }}
-            />
-          }
-          label="Evidência em anexo na atividade"
-          sx={{
-            color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-          }}
-        />
-
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1 }}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={bugData.hasEvidenceLink}
-                onChange={handleCheckboxChange('hasEvidenceLink')}
-                sx={{
-                  color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-                  '&.Mui-checked': {
-                    color: 'var(--primary-color)',
-                  },
-                }}
+        {/* Seção de Evidências */}
+        <div className="form-section">
+          <h6 className="section-title">
+            <i className="fas fa-camera"></i> Evidências
+          </h6>
+          <div className="form-row">
+            {renderField('evidence', 'Descrição da evidência')}
+            {renderField('evidenceLink', 'Link da evidência')}
+            <div className="evidence-toggle">
+              <Switch
+                checked={bugData.hasEvidence}
+                onChange={handleToggle}
+                color="primary"
               />
-            }
-            label="Evidência no link:"
-            sx={{
-              color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-            }}
-          />
-          {bugData.hasEvidenceLink && (
-            <TextField
-              size="small"
-              value={bugData.evidenceLink}
-              onChange={handleChange('evidenceLink')}
-              placeholder="Cole o link aqui..."
-              sx={{
-                flexGrow: 1,
-                '& .MuiOutlinedInput-root': {
-                  color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-                  '& fieldset': {
-                    borderColor: isDarkMode ? 'var(--dark-border)' : 'inherit',
-                  },
-                },
-              }}
-            />
-          )}
-        </Box>
-      </Box>
+              <span>Evidência em anexo na atividade</span>
+            </div>
+          </div>
+        </div>
 
-      <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
-        <Button 
-          variant="contained" 
-          onClick={copyTemplate}
-          sx={{
-            bgcolor: 'var(--primary-color)',
-            '&:hover': {
-              bgcolor: 'var(--secondary-color)',
-            },
-          }}
-        >
-          <i className="fas fa-copy" style={{ marginRight: '0.5rem' }}></i>
-          Copiar
-        </Button>
-        <Button 
-          variant="outlined" 
-          onClick={clearAll}
-          sx={{
-            color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-            borderColor: isDarkMode ? 'var(--dark-border)' : 'inherit',
-          }}
-        >
-          <i className="fas fa-broom" style={{ marginRight: '0.5rem' }}></i>
-          Limpar Tudo
-        </Button>
-      </Box>
-
-      <div className="form-group">
-        <label className="form-label">Passo a passo para reprodução</label>
-        <div className="input-container">
-          <input
-            type="text"
-            className="form-control"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Digite os passos para reproduzir o bug..."
-          />
-          {text && (
-            <i 
-              className="fas fa-times clear-field-icon"
-              onClick={handleClear}
-              title="Limpar campo"
-            />
-          )}
+        {/* Botões de ação */}
+        <div className="form-actions">
+          <button 
+            className="btn btn-primary" 
+            onClick={copyTemplate}
+          >
+            <i className="fas fa-copy"></i> Copiar
+          </button>
+          <button 
+            className="btn btn-secondary" 
+            onClick={clearAll}
+          >
+            <i className="fas fa-broom"></i> Limpar Tudo
+          </button>
         </div>
       </div>
     </Card>
