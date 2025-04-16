@@ -31,27 +31,15 @@ function App() {
                   <i className="fas fa-random"></i>
                   Geração de Dados
                 </h2>
-                <div className="row">
-                  <div className="col-6">
+                <div className="data-generation-container">
+                  <div className="data-generation-column left-column">
                     <PersonalData />
-                  </div>
-                  <div className="col-6">
-                    <Documents />
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-6">
-                    <Products />
-                  </div>
-                  <div className="col-6">
                     <CreditCard />
                   </div>
-                </div>
-                <div className="row">
-                  <div className="col-6">
+                  <div className="data-generation-column right-column">
+                    <Documents />
+                    <Products />
                     <CharCounter />
-                  </div>
-                  <div className="col-6">
                     <CharacterCounter />
                   </div>
                 </div>

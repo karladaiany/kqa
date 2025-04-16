@@ -45,6 +45,9 @@ body {
   border: 1px solid var(--card-border);
   box-shadow: var(--card-shadow);
   transition: all 0.3s ease;
+  padding: 24px;
+  height: fit-content;
+  min-height: auto;
 }
 
 .card:hover {
@@ -757,4 +760,32 @@ textarea::placeholder {
 .records-icon {
   color: var(--foreground);
   font-size: 1.2em;
+}
+
+/* Container de geração de dados */
+.data-generation-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+/* Colunas de geração de dados */
+.data-generation-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Removendo altura fixa dos cards */
+.left-column .card,
+.right-column .card {
+  height: auto;
+}
+
+/* Ajuste responsivo */
+@media (max-width: 768px) {
+  .data-generation-container {
+    grid-template-columns: 1fr;
+  }
 } 
