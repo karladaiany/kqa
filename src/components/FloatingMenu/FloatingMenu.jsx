@@ -1,41 +1,38 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './FloatingMenu.css';
 
 export const FloatingMenu = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const menuItems = [
+    { id: 'personal-data', icon: 'fas fa-user', label: 'Dados pessoais' },
+    { id: 'credit-card', icon: 'fas fa-credit-card', label: 'Cartão de crédito' },
+    { id: 'documents', icon: 'fas fa-file-alt', label: 'Documentos' },
+    { id: 'products', icon: 'fas fa-box', label: 'Produtos' },
+    { id: 'char-generator', icon: 'fas fa-font', label: 'Gerador de caracteres' },
+    { id: 'char-counter', icon: 'fas fa-text-width', label: 'Contador de caracteres' },
+    { id: 'bug-report', icon: 'fas fa-bug', label: 'Registro de BUG' },
+    { id: 'qa-comment', icon: 'fas fa-comment', label: 'Comentário de QA' }
+  ];
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
+  const scrollToElement = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (
     <div className="floating-menu">
-      <button className="menu-toggle" onClick={toggleMenu}>
-        <i className={`fas fa-${isOpen ? 'times' : 'bars'}`}></i>
-      </button>
-      <nav className={`menu-items ${isOpen ? 'active' : ''}`}>
-        <a href="#dados-pessoais">
-          <i className="fas fa-user"></i> Dados Pessoais
-        </a>
-        <a href="#cartao-credito">
-          <i className="fas fa-credit-card"></i> Cartão de Crédito
-        </a>
-        <a href="#documentos">
-          <i className="fas fa-id-card"></i> Documentos
-        </a>
-        <a href="#cursos">
-          <i className="fas fa-graduation-cap"></i> Cursos
-        </a>
-        <a href="#contador-caracteres">
-          <i className="fas fa-text-width"></i> Contador
-        </a>
-        <a href="#bug-report">
-          <i className="fas fa-bug"></i> Bug Report
-        </a>
-        <a href="#qa-comment">
-          <i className="fas fa-comment"></i> QA Comment
-        </a>
-      </nav>
+      {menuItems.map(item => (
+        <button
+          key={item.id}
+          className="menu-item"
+          onClick={() => scrollToElement(item.id)}
+          title={item.label}
+        >
+          <i className={item.icon}></i>
+          <span>{item.label}</span>
+        </button>
+      ))}
     </div>
   );
 }; 

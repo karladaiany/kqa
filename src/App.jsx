@@ -12,6 +12,7 @@ import { Documents } from './components/Documents/Documents';
 import { Products } from './components/Products/Products';
 import { CharCounter } from './components/CharCounter/CharCounter';
 import { CharacterCounter } from './components/CharacterCounter/CharacterCounter';
+import { ScrollToBottom } from './components/ScrollToBottom/ScrollToBottom';
 import './App.css';
 
 function App() {
@@ -33,14 +34,14 @@ function App() {
                 </h2>
                 <div className="data-generation-container">
                   <div className="data-generation-column left-column">
-                    <PersonalData />
-                    <CreditCard />
+                    <div id="personal-data"><PersonalData /></div>
+                    <div id="credit-card"><CreditCard /></div>
                   </div>
                   <div className="data-generation-column right-column">
-                    <Documents />
-                    <Products />
-                    <CharCounter />
-                    <CharacterCounter />
+                    <div id="documents"><Documents /></div>
+                    <div id="products"><Products /></div>
+                    <div id="char-generator"><CharCounter /></div>
+                    <div id="char-counter"><CharacterCounter /></div>
                   </div>
                 </div>
               </section>
@@ -52,16 +53,17 @@ function App() {
                 </h2>
                 <div className="row">
                   <div className="col-6">
-                    <BugReportCard />
+                    <div id="bug-report"><BugReportCard /></div>
                   </div>
                   <div className="col-6">
-                    <QACommentCard />
+                    <div id="qa-comment"><QACommentCard /></div>
                   </div>
                 </div>
               </div>
             </main>
           </div>
           <FloatingMenu />
+          <ScrollToBottom />
           <BackToTop />
         </ToastProvider>
       </ThemeProvider>
