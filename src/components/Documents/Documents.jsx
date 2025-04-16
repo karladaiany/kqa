@@ -176,7 +176,7 @@ export const Documents = () => {
 
   const DataField = ({ label, value, field, showMask = false }) => (
     <div className="campo-item">
-      <label>{label}:</label>
+      <label data-field={label}>{label}</label>
       <div className="campo-valor">
         <span className="copyable">{value}</span>
         <i 

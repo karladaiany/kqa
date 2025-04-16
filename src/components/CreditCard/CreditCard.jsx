@@ -116,7 +116,7 @@ export const CreditCard = () => {
         </div>
         <div className="card-data">
           <div className="data-field">
-            <label>Número:</label>
+            <label>Número</label>
             <div className="field-value">
               <span className="copyable card-number">
                 {formatCardNumber(cards[brand][typeKey].number, brand)}
@@ -129,7 +129,7 @@ export const CreditCard = () => {
             </div>
           </div>
           <div className="data-field">
-            <label>Validade:</label>
+            <label>Validade</label>
             <div className="field-value">
               <span className="copyable">{cards[brand][typeKey].expiryDate}</span>
               <i 
@@ -140,7 +140,7 @@ export const CreditCard = () => {
             </div>
           </div>
           <div className="data-field">
-            <label>CVV:</label>
+            <label>CVV</label>
             <div className="field-value">
               <span className="copyable">{cards[brand][typeKey].cvv}</span>
               <i 

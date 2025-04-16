@@ -127,7 +127,7 @@ export const PersonalData = () => {
 
   const DataField = ({ label, value, field }) => (
     <div className="campo-item">
-      <label>{label}:</label>
+      <label data-field={label}>{label}</label>
       <div className="campo-valor">
         <span className="copyable">{value}</span>
         <i 
@@ -152,7 +152,7 @@ export const PersonalData = () => {
       <div className="card-body">
         <div id="pessoa-dados">
           <DataField label="Nome" value={personalData.nome} field="nome" />
-          <DataField label="Email" value={personalData.email} field="email" />
+          <DataField label="E-mail" value={personalData.email} field="email" />
           <DataField label="Telefone" value={personalData.telefone} field="telefone" />
           <DataField label="Celular" value={personalData.celular} field="celular" />
           <DataField label="Endereço" value={personalData.rua} field="rua" />

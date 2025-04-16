@@ -81,7 +81,7 @@ export const Products = () => {
 
   const DataField = ({ label, value, field, isTextArea = false }) => (
     <div className="campo-item">
-      <label>{label}:</label>
+      <label>{label}</label>
       <div className="campo-valor">
         <div className="valor-wrapper">
           {isTextArea ? (

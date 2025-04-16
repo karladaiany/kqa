@@ -788,4 +788,46 @@ textarea::placeholder {
   .data-generation-container {
     grid-template-columns: 1fr;
   }
+}
+
+/* Ajuste para labels */
+.campo-item label,
+.data-field label {
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+/* Ajuste para campos específicos em maiúsculo */
+.campo-item label[for="email"],
+.campo-item label[for="cep"],
+.campo-item label[for="cpf"],
+.campo-item label[for="cnpj"],
+.campo-item label[for="rg"],
+.campo-item label[data-field="CEP"],
+.campo-item label[data-field="CPF"],
+.campo-item label[data-field="CNPJ"],
+.campo-item label[data-field="RG"] {
+  text-transform: uppercase !important;
+}
+
+/* Garantir que os labels específicos mantenham o formato correto */
+.campo-item label[data-field="E-mail"],
+.campo-item label[data-field="CEP"],
+.campo-item label[data-field="CPF"],
+.campo-item label[data-field="CNPJ"],
+.campo-item label[data-field="RG"] {
+  text-transform: none !important;
+}
+
+.campo-item label[data-field="E-mail"]::first-letter,
+.campo-item label[data-field="CEP"],
+.campo-item label[data-field="CPF"],
+.campo-item label[data-field="CNPJ"],
+.campo-item label[data-field="RG"] {
+  text-transform: uppercase !important;
+}
+
+/* Ajuste para campos de cartão */
+.card-data .data-field label {
+  text-transform: capitalize;
 } 
