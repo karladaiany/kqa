@@ -68,7 +68,7 @@ ${bugData.expectedBehavior}
 url: ${bugData.url}
 login: ${decryptData(bugData.login)}
 senha: ${decryptData(bugData.password)}
-org_id: ${decryptData(bugData.orgId)}
+id_ambiente: ${decryptData(bugData.orgId)}
 
 :: Evidência(s) ::${bugData.evidence ? `\n${bugData.evidence}` : ''}${bugData.hasEvidence ? '\n✓ Evidência em anexo na atividade' : ''}${bugData.evidenceLink ? `\n✓ Evidência no link: ${bugData.evidenceLink}` : ''}`;
 
@@ -93,30 +93,43 @@ org_id: ${decryptData(bugData.orgId)}
     showToast('Todos os campos foram limpos!');
   };
 
-  const renderField = (field, label) => (
-    <div className="form-group" key={field}>
-      <input
-        type={field === 'password' ? 'password' : 'text'}
-        className="form-control"
-        value={getDecryptedValue(field)}
-        onChange={handleChange(field)}
-        placeholder=" "
-      />
-      <label className="form-label">{label}</label>
-      {bugData[field] && (
-        <i 
-          className="fas fa-times clear-field-icon"
-          onClick={() => handleClear(field)}
-          title="Limpar campo"
+  const renderField = (field, label) => {
+    // Função auxiliar para formatar o label
+    const formatLabel = (label) => {
+      if (field === 'url') return 'URL';
+      if (field === 'orgId') {
+        return <><span className="id">ID</span> do ambiente</>;
+      }
+      return label;
+    };
+
+    return (
+      <div className="form-group" key={field}>
+        <input
+          type={field === 'password' ? 'password' : 'text'}
+          className={`form-control ${field === 'url' ? 'text-uppercase' : ''}`}
+          value={getDecryptedValue(field)}
+          onChange={handleChange(field)}
+          placeholder=" "
         />
-      )}
-      {sensitiveFields.includes(field) && (
-        <div className="sensitive-field-warning">
-          <i className="fas fa-shield-alt"></i>
-        </div>
-      )}
-    </div>
-  );
+        <label className={`form-label ${field === 'url' ? 'text-uppercase' : ''}`}>
+          {formatLabel(label)}
+        </label>
+        {bugData[field] && (
+          <i 
+            className="fas fa-times clear-field-icon"
+            onClick={() => handleClear(field)}
+            title="Limpar campo"
+          />
+        )}
+        {sensitiveFields.includes(field) && (
+          <div className="sensitive-field-warning">
+            <i className="fas fa-shield-alt"></i>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   // Adicionar aviso de dados locais
   const renderLocalStorageWarning = () => (
@@ -138,7 +151,7 @@ org_id: ${decryptData(bugData.orgId)}
       }}
     >
       <div className="card-header">
-        <h5><i className="fas fa-bug"></i> Registro de bugs</h5>
+        <h5><i className="fas fa-bug"></i> Registro de BUG </h5>
       </div>
       <div className="card-body">
         {renderLocalStorageWarning()}
@@ -158,7 +171,7 @@ org_id: ${decryptData(bugData.orgId)}
             {renderField('url', 'URL')}
             {renderField('login', 'Login')}
             {renderField('password', 'Senha')}
-            {renderField('orgId', 'ID da organização')}
+            {renderField('orgId', 'ID do ambiente')}
           </div>
         </div>
 

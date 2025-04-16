@@ -683,4 +683,56 @@ textarea::placeholder {
 
 .form-group:hover .sensitive-field-warning {
   opacity: 1;
+}
+
+/* Campos em maiúsculo */
+.text-uppercase {
+  text-transform: uppercase !important;
+}
+
+.text-uppercase::placeholder {
+  text-transform: uppercase !important;
+}
+
+/* Ajuste para não afetar a transformação padrão de primeira letra */
+.form-label.text-uppercase {
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px;
+}
+
+/* Reset de todas as transformações de texto */
+.form-label,
+.btn,
+.section-title,
+.evidence-toggle span {
+  text-transform: none;
+}
+
+/* Primeira letra maiúscula para labels e botões padrão */
+.form-label::first-letter,
+.btn::first-letter {
+  text-transform: uppercase;
+}
+
+/* URL sempre em maiúsculo */
+.text-uppercase {
+  text-transform: uppercase !important;
+}
+
+/* Ajuste específico para botões de ação */
+.form-actions .btn {
+  text-transform: none;
+}
+
+.form-actions .btn::first-letter {
+  text-transform: uppercase;
+}
+
+/* Ajuste específico para ID do ambiente */
+.form-group .form-label[for="orgId"] {
+  text-transform: none;
+}
+
+.form-group .form-label[for="orgId"] span.id {
+  text-transform: uppercase;
 } 
