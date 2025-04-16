@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { 
   Card, 
   TextField, 
@@ -29,6 +29,7 @@ const BugReportCard = () => {
   });
 
   const { showToast } = useToast();
+  const [text, setText] = useState('');
 
   const fieldLabels = {
     incident: 'Incidente identificado',
@@ -142,6 +143,21 @@ ${bugData.hasEvidenceLink ? `✓ Evidência no link: ${bugData.evidenceLink}` : 
       .then(() => showToast('Copiado para a área de transferência!'))
       .catch(err => console.error('Erro ao copiar:', err));
   };
+
+  const handleCopy = useCallback(() => {
+    if (!text) {
+      showToast('Digite um texto primeiro!');
+      return;
+    }
+    navigator.clipboard.writeText(text)
+      .then(() => showToast('Texto copiado!'))
+      .catch(err => console.error('Erro ao copiar:', err));
+  }, [text, showToast]);
+
+  const handleClear = useCallback(() => {
+    setText('');
+    showToast('Texto limpo!');
+  }, [showToast]);
 
   return (
     <Card 
@@ -283,6 +299,26 @@ ${bugData.hasEvidenceLink ? `✓ Evidência no link: ${bugData.evidenceLink}` : 
           Limpar Tudo
         </Button>
       </Box>
+
+      <div className="form-group">
+        <label className="form-label">Passo a passo para reprodução</label>
+        <div className="input-container">
+          <input
+            type="text"
+            className="form-control"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Digite os passos para reproduzir o bug..."
+          />
+          {text && (
+            <i 
+              className="fas fa-times clear-field-icon"
+              onClick={handleClear}
+              title="Limpar campo"
+            />
+          )}
+        </div>
+      </div>
     </Card>
   );
 };

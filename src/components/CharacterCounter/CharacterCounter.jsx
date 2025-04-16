@@ -32,7 +32,7 @@ export const CharacterCounter = () => {
         <h5><i className="fas fa-calculator"></i> Contador de Caracteres</h5>
       </div>
       <div className="card-body">
-        <textarea 
+        <textarea
           className="form-control mb-3"
           value={text}
           onChange={handleTextChange}

@@ -12,35 +12,43 @@ import { Documents } from './components/Documents/Documents';
 import { Products } from './components/Products/Products';
 import { CharCounter } from './components/CharCounter/CharCounter';
 import { CharacterCounter } from './components/CharacterCounter/CharacterCounter';
+import './App.css';
 
 function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
         <ToastProvider>
-          <div className="container">
+          <div className="app-container">
             <header className="page-header">
               <h1>🎲 KQA :: Gerador de Dados para QA ::</h1>
               <p className="lead">Sua ferramenta essencial para dados de teste</p>
             </header>
 
             <main>
-              <section>
-                <h2 className="section-title">Geração de Dados</h2>
+              <section className="content-section">
                 <div className="row">
                   <div className="col-6">
-                    <div className="card-stack">
-                      <PersonalData />
-                      <CreditCard />
-                    </div>
+                    <PersonalData />
                   </div>
                   <div className="col-6">
-                    <div className="card-stack">
-                      <Documents />
-                      <Products />
-                      <CharCounter title="Gerador de Caracteres" />
-                      <CharacterCounter />
-                    </div>
+                    <Documents />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-6">
+                    <Products />
+                  </div>
+                  <div className="col-6">
+                    <CreditCard />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-6">
+                    <CharCounter />
+                  </div>
+                  <div className="col-6">
+                    <CharacterCounter />
                   </div>
                 </div>
               </section>

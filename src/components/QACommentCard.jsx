@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { 
   Card, 
   TextField, 
@@ -31,6 +31,7 @@ const QACommentCard = () => {
   });
 
   const { showToast } = useToast();
+  const [text, setText] = useState('');
 
   const fieldLabels = {
     validation: 'Validação',
@@ -107,11 +108,20 @@ const QACommentCard = () => {
     }
   };
 
-  const handleCopy = (text) => {
+  const handleCopy = useCallback(() => {
+    if (!text) {
+      showToast('Digite um texto primeiro!');
+      return;
+    }
     navigator.clipboard.writeText(text)
-      .then(() => showToast('Copiado para a área de transferência!'))
+      .then(() => showToast('Texto copiado!'))
       .catch(err => console.error('Erro ao copiar:', err));
-  };
+  }, [text, showToast]);
+
+  const handleClear = useCallback(() => {
+    setText('');
+    showToast('Texto limpo!');
+  }, [showToast]);
 
   return (
     <Card 
@@ -178,40 +188,51 @@ const QACommentCard = () => {
               </Select>
             </FormControl>
           ) : (
-            <TextField
-              fullWidth
-              multiline
-              label={fieldLabels[field]}
-              placeholder={`Digite ${fieldLabels[field].toLowerCase()} aqui...`}
-              value={qaData[field]}
-              onChange={handleChange(field)}
-              variant="outlined"
-              InputProps={{
-                endAdornment: (
-                  <i 
-                    className="fas fa-eraser" 
-                    style={{ 
-                      cursor: 'pointer',
+            <div className="form-group">
+              <label className="form-label">{fieldLabels[field]}</label>
+              <div className="input-container">
+                <TextField
+                  fullWidth
+                  multiline
+                  placeholder={`Digite ${fieldLabels[field].toLowerCase()} aqui...`}
+                  value={qaData[field]}
+                  onChange={handleChange(field)}
+                  variant="outlined"
+                  InputProps={{
+                    endAdornment: (
+                      <i 
+                        className="fas fa-eraser" 
+                        style={{ 
+                          cursor: 'pointer',
+                          color: isDarkMode ? 'var(--dark-text)' : 'inherit',
+                          marginRight: '8px'
+                        }}
+                        onClick={() => clearField(field)}
+                        title="Limpar"
+                      />
+                    ),
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
                       color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-                      marginRight: '8px'
-                    }}
+                      '& fieldset': {
+                        borderColor: isDarkMode ? 'var(--dark-border)' : 'inherit',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: isDarkMode ? 'var(--dark-text)' : 'inherit',
+                    },
+                  }}
+                />
+                {qaData[field] && (
+                  <i 
+                    className="fas fa-times clear-field-icon"
                     onClick={() => clearField(field)}
-                    title="Limpar"
+                    title="Limpar campo"
                   />
-                ),
-              }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-                  '& fieldset': {
-                    borderColor: isDarkMode ? 'var(--dark-border)' : 'inherit',
-                  },
-                },
-                '& .MuiInputLabel-root': {
-                  color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-                },
-              }}
-            />
+                )}
+              </div>
+            </div>
           )}
         </Box>
       ))}
@@ -274,7 +295,7 @@ const QACommentCard = () => {
       <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
         <Button 
           variant="contained" 
-          onClick={() => handleCopy(document.querySelector('.template-content').innerText)}
+          onClick={handleCopy}
           sx={{
             bgcolor: 'var(--primary-color)',
             '&:hover': {
