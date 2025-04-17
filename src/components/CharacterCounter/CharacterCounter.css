@@ -13,4 +13,69 @@
 
 .btn-group .btn i {
   font-size: 1rem;
+}
+
+.card {
+  height: 320px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  gap: 24px;
+}
+
+.form-group {
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+.form-group textarea.form-control {
+  height: 120px;
+  resize: none;
+  padding: 1rem;
+  margin: 0;
+}
+
+.char-count-info {
+  color: var(--text-muted);
+  font-size: 0.9em;
+  margin: 0;
+  padding: 0;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding: 0;
+}
+
+.form-actions .btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-actions .btn i {
+  font-size: 0.9em;
+}
+
+/* Estilo do botão secundário */
+.btn-secondary {
+  background-color: var(--current-line);
+  border-color: var(--current-line);
+  color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+  background-color: var(--selection);
+  border-color: var(--selection);
+  color: var(--text-primary);
 } 

@@ -3,93 +3,110 @@ import { useToast } from '../../context/ToastContext';
 import { faker } from '@faker-js/faker/locale/pt_BR';
 import './CharCounter.css';
 
-export const CharCounter = ({ title = "Gerador de Caracteres" }) => {
+export const CharCounter = () => {
   const { showToast } = useToast();
-  const [count, setCount] = useState(100);
-  const [text, setText] = useState('');
+  const [charCount, setCharCount] = useState('');
+  const [generatedText, setGeneratedText] = useState('');
 
-  const generateText = useCallback(() => {
-    const newText = count <= 0 ? '' : 
-                   count <= 10 ? faker.lorem.word({ length: count }) :
-                   count <= 50 ? faker.lorem.words({ min: 3, max: 7 }) :
-                   count <= 200 ? faker.lorem.sentences({ min: 2, max: 4 }) :
-                   faker.lorem.paragraphs(2);
-                   
-    setText(newText.slice(0, count));
-  }, [count]);
+  const generateChars = useCallback(() => {
+    if (!charCount) return;
+    const count = parseInt(charCount);
+    if (isNaN(count) || count <= 0) return;
 
-  const handleCountChange = useCallback((event) => {
-    const value = parseInt(event.target.value) || 0;
-    setCount(Math.max(0, Math.min(1000, value)));
-  }, []);
+    // Palavras para geração aleatória
+    const words = [
+      'teste', 'qualidade', 'software', 'automação', 'desenvolvimento',
+      'sistema', 'projeto', 'análise', 'dados', 'validação',
+      'verificação', 'execução', 'cenário', 'caso', 'evidência',
+      'bug', 'defeito', 'melhoria', 'sprint', 'release'
+    ];
+
+    let result = '';
+    while (result.length < count) {
+      const word = faker.helpers.arrayElement(words);
+      if (result.length === 0) {
+        result = word;
+      } else {
+        result += ' ' + word;
+      }
+    }
+
+    // Ajusta o tamanho exato
+    result = result.slice(0, count);
+    setGeneratedText(result);
+  }, [charCount]);
 
   const handleCopy = useCallback(() => {
-    if (!text) {
-      showToast('Gere um texto primeiro!');
-      return;
-    }
-    
-    navigator.clipboard.writeText(text)
-      .then(() => showToast('Texto copiado para a área de transferência!'))
+    if (!generatedText) return;
+    navigator.clipboard.writeText(generatedText)
+      .then(() => showToast('Copiado para a área de transferência!'))
       .catch(err => console.error('Erro ao copiar:', err));
-  }, [text, showToast]);
+  }, [generatedText, showToast]);
 
-  const handleClear = useCallback(() => {
-    setText('');
-    showToast('Texto limpo!');
-  }, [showToast]);
+  const clearAll = useCallback(() => {
+    setCharCount('');
+    setGeneratedText('');
+  }, []);
 
   return (
-    <div className="card" id="gerador-caracteres">
+    <div className="card">
       <div className="card-header">
-        <h5><i className="fas fa-text-width"></i> {title}</h5>
+        <h5><i className="fas fa-font"></i> Gerador de Caracteres</h5>
       </div>
       <div className="card-body">
-        <div className="input-group mb-3">
-          <span className="input-group-text">Caracteres</span>
-          <input 
-            type="number" 
-            className="form-control" 
-            id="char-count" 
-            value={count}
-            onChange={handleCountChange}
-            min="0"
-            max="1000"
+        <div className="form-group">
+          <input
+            type="number"
+            className="form-control char-input"
+            value={charCount}
+            onChange={(e) => setCharCount(e.target.value)}
+            placeholder=" "
+            onWheel={(e) => e.target.blur()}
+            style={{ appearance: 'textfield' }}
           />
-          <button 
-            className="btn btn-primary" 
-            id="generate-text"
-            onClick={generateText}
-          >
-            <i className="fas fa-sync-alt"></i>
-          </button>
-          <button 
-            className="btn btn-outline-secondary" 
-            id="copy-text"
-            onClick={handleCopy}
-            title="Copiar"
-          >
-            <i className="fas fa-copy"></i>
-          </button>
-          <button 
-            className="btn btn-outline-secondary" 
-            id="clear-text"
-            onClick={handleClear}
-            title="Limpar"
-          >
-            <i className="fas fa-eraser"></i>
-          </button>
+          <label className="form-label">Caracteres</label>
+          {charCount && (
+            <>
+              <i
+                className="fas fa-sync-alt regenerate-icon"
+                onClick={generateChars}
+                title="Gerar caracteres"
+              />
+              <i
+                className="fas fa-times clear-field-icon"
+                onClick={() => clearField('count')}
+                title="Limpar campo"
+              />
+            </>
+          )}
         </div>
-        <textarea 
-          id="generated-text" 
-          className="form-control"
-          value={text}
-          readOnly
-          rows="4"
-          placeholder="O texto gerado aparecerá aqui..."
-        />
-        <div className="text-muted mt-2">
-          Caracteres gerados: {text.length}
+
+        <div className="form-group">
+          <textarea
+            className="form-control"
+            value={generatedText}
+            readOnly
+            rows="3"
+            placeholder="Caracteres gerados aparecerão aqui"
+          />
+          {generatedText && (
+            <div className="form-actions">
+              <button 
+                className="btn btn-primary btn-sm"
+                onClick={handleCopy}
+              >
+                <i className="fas fa-copy"></i>
+                Copiar
+              </button>
+              <button 
+                className="btn btn-secondary btn-sm"
+                onClick={clearAll}
+              >
+                <i className="fas fa-broom"></i>
+                Limpar tudo
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

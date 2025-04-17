@@ -27,39 +27,37 @@ export const CharacterCounter = () => {
   }, [showToast]);
 
   return (
-    <div className="card" id="contador-caracteres">
+    <div className="card">
       <div className="card-header">
-        <h5><i className="fas fa-calculator"></i> Contador de Caracteres</h5>
+        <h5><i className="fas fa-text-width"></i> Contador de Caracteres</h5>
       </div>
       <div className="card-body">
-        <textarea
-          className="form-control mb-3"
-          value={text}
-          onChange={handleTextChange}
-          rows="4"
-          placeholder="Digite ou cole seu texto aqui..."
-        />
-        <div className="d-flex justify-content-between align-items-center">
-          <div className="text-muted">
-            Caracteres: {text.length}
-          </div>
-          <div className="btn-group">
-            <button 
-              className="btn btn-outline-secondary"
-              onClick={handleCopy}
-              title="Copiar"
-            >
-              <i className="fas fa-copy"></i>
-            </button>
-            <button 
-              className="btn btn-outline-secondary"
-              onClick={handleClear}
-              title="Limpar"
-            >
-              <i className="fas fa-eraser"></i>
-            </button>
-          </div>
+        <div className="form-group">
+          <textarea
+            className="form-control"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Digite ou cole seu texto aqui"
+            rows="3"
+          />
         </div>
+
+        {text && (
+          <>
+            <div className="char-count-info">
+              Caracteres: {text.length}
+            </div>
+            <div className="form-actions">
+              <button 
+                className="btn btn-secondary btn-sm"
+                onClick={handleClear}
+              >
+                <i className="fas fa-broom"></i>
+                Limpar tudo
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
