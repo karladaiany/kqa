@@ -48,6 +48,11 @@ export const CharCounter = () => {
     setGeneratedText('');
   }, []);
 
+  const clearCharCount = useCallback((e) => {
+    e.stopPropagation();
+    setCharCount('');
+  }, []);
+
   return (
     <div className="card">
       <div className="card-header">
@@ -74,7 +79,7 @@ export const CharCounter = () => {
               />
               <i
                 className="fas fa-times clear-field-icon"
-                onClick={() => clearField('count')}
+                onClick={clearCharCount}
                 title="Limpar campo"
               />
             </>
