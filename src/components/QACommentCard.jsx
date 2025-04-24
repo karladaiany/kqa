@@ -8,7 +8,8 @@ import {
   MenuItem, 
   FormControl,
   InputLabel,
-  Switch
+  Switch,
+  IconButton
 } from '@mui/material';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useTheme } from '../context/ThemeContext';
@@ -183,6 +184,28 @@ ${qaData.blockReason ? `:: Motivo do Bloqueio ::\n${qaData.blockReason}\n` : ''}
               value={qaData.testStatus}
               onChange={handleChange('testStatus')}
               label="Status do teste"
+              endAdornment={
+                qaData.testStatus && (
+                  <IconButton
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      clearField('testStatus');
+                    }}
+                    sx={{
+                      position: 'absolute',
+                      right: '32px',
+                      color: '#94a3b8',
+                      padding: '4px',
+                      '&:hover': {
+                        backgroundColor: 'rgba(148, 163, 184, 0.1)'
+                      }
+                    }}
+                  >
+                    <i className="fas fa-times" style={{ fontSize: '0.875rem' }} />
+                  </IconButton>
+                )
+              }
               sx={{
                 '& .MuiOutlinedInput-notchedOutline': {
                   borderColor: '#94a3b8'
@@ -231,6 +254,28 @@ ${qaData.blockReason ? `:: Motivo do Bloqueio ::\n${qaData.blockReason}\n` : ''}
                   value={qaData[field]}
                   onChange={handleChange(field)}
                   label="Ambiente"
+                  endAdornment={
+                    qaData[field] && (
+                      <IconButton
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          clearField(field);
+                        }}
+                        sx={{
+                          position: 'absolute',
+                          right: '32px',
+                          color: '#94a3b8',
+                          padding: '4px',
+                          '&:hover': {
+                            backgroundColor: 'rgba(148, 163, 184, 0.1)'
+                          }
+                        }}
+                      >
+                        <i className="fas fa-times" style={{ fontSize: '0.875rem' }} />
+                      </IconButton>
+                    )
+                  }
                   sx={{
                     '& .MuiOutlinedInput-notchedOutline': {
                       borderColor: '#94a3b8'
