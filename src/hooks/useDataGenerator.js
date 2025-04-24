@@ -1,6 +1,28 @@
 import { useState, useEffect } from 'react';
 import { fakerPT_BR as faker } from '@faker-js/faker';
 
+const removeAcentos = (texto) => {
+    return texto
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '.');
+};
+
+// DDDs válidos no Brasil por região
+const dddsValidos = [
+    // Norte
+    '68', '96', '92', '97', '91', '93', '94', '69', '95',
+    // Nordeste
+    '82', '71', '73', '74', '75', '77', '85', '88', '98', '99', '83', '81', '87', '86', '89', '84', '79',
+    // Centro-Oeste
+    '61', '62', '64', '65', '66', '67',
+    // Sudeste
+    '27', '28', '31', '32', '33', '34', '35', '37', '38', '21', '22', '24', '11', '12', '13', '14', '15', '16', '17', '18', '19',
+    // Sul
+    '41', '42', '43', '44', '45', '46', '51', '53', '54', '55', '47', '48', '49'
+];
+
 export const useDataGenerator = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -42,20 +64,30 @@ export const useDataGenerator = () => {
         };
     };
 
-    const generatePerson = () => ({
-        nome: `${faker.person.firstName()} ${faker.person.lastName()}`,
-        email: faker.internet.email(),
-        telefone: faker.helpers.fromRegExp('\\([0-9]{2}\\) [0-9]{5}-[0-9]{4}'),
-        endereco: {
-            rua: faker.location.street(),
-            numero: faker.string.numeric(4),
-            complemento: faker.helpers.arrayElement(['', 'Apto', 'Casa', 'Sala']) + ' ' + faker.string.numeric(3),
-            bairro: faker.location.county(),
-            cidade: faker.location.city(),
-            estado: faker.location.state({ abbreviated: true }),
-            cep: faker.location.zipCode('#####-###')
-        }
-    });
+    const generatePerson = () => {
+        const firstName = faker.person.firstName();
+        const lastName = faker.person.lastName();
+        const nome = `${firstName} ${lastName}`;
+        const emailNome = removeAcentos(`${firstName}.${lastName}`);
+        const ddd = faker.helpers.arrayElement(dddsValidos);
+        const numeroBase = faker.string.numeric(8); // Gera 8 dígitos para completar o número
+        const telefone = `(${ddd}) 9${numeroBase.slice(0, 4)}-${numeroBase.slice(4)}`;
+        
+        return {
+            nome,
+            email: `${emailNome}@teste.com`,
+            telefone,
+            endereco: {
+                rua: faker.location.street(),
+                numero: faker.string.numeric(4),
+                complemento: faker.helpers.arrayElement(['', 'Apto', 'Casa', 'Sala']) + ' ' + faker.string.numeric(3),
+                bairro: faker.location.county(),
+                cidade: faker.location.city(),
+                estado: faker.location.state({ abbreviated: true }),
+                cep: faker.location.zipCode('#####-###')
+            }
+        };
+    };
 
     const generateCreditCard = () => ({
         numero: faker.finance.creditCardNumber(),
