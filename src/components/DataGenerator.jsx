@@ -152,8 +152,13 @@ export const DataGenerator = () => {
             onRegenerate={() => setPerson(generatePerson())}
           />
           <DataField 
-            label="Cidade/UF" 
-            value={`${person.endereco.cidade}/${person.endereco.estado}`}
+            label="Cidade" 
+            value={person.endereco.cidade}
+            onRegenerate={() => setPerson(generatePerson())}
+          />
+          <DataField 
+            label="UF" 
+            value={person.endereco.estado}
             onRegenerate={() => setPerson(generatePerson())}
           />
           <DataField 
