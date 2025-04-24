@@ -244,4 +244,49 @@ h1 {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+.categories-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.category-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background-color: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.category-tag:hover {
+  border-color: var(--accent-color);
+  transform: translateY(-1px);
+}
+
+.tag-icon {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.tag-text {
+  color: var(--text-primary);
+}
+
+.tag-copy-icon {
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.tag-copy-icon:hover {
+  color: var(--accent-color);
+  transform: scale(1.2);
 } 

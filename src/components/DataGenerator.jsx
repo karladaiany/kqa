@@ -2,7 +2,23 @@ import React, { useState } from 'react';
 import { useDataGenerator } from '../hooks/useDataGenerator';
 import { toast } from 'react-toastify';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { FaCopy, FaSync, FaMask, FaRedo } from 'react-icons/fa';
+import { FaCopy, FaSync, FaMask, FaRedo, FaTag } from 'react-icons/fa';
+
+const CategoryTag = ({ category }) => {
+  const handleCopy = () => {
+    toast.success('Categoria copiada!');
+  };
+
+  return (
+    <div className="category-tag">
+      <FaTag className="tag-icon" />
+      <span className="tag-text">{category}</span>
+      <CopyToClipboard text={category} onCopy={handleCopy}>
+        <FaCopy className="tag-copy-icon" title="Copiar categoria" />
+      </CopyToClipboard>
+    </div>
+  );
+};
 
 const DataField = ({ label, value, raw, onRegenerate, onToggleMask, showMask = true }) => {
   const handleCopy = () => {
@@ -261,26 +277,21 @@ export const DataGenerator = () => {
             value={product.descricao}
             onRegenerate={() => setProduct(generateProduct())}
           />
-          <DataField 
-            label="Preço" 
-            value={product.preco}
-            onRegenerate={() => setProduct(generateProduct())}
-          />
-          <DataField 
-            label="Categoria" 
-            value={product.categoria}
-            onRegenerate={() => setProduct(generateProduct())}
-          />
-          <DataField 
-            label="Código" 
-            value={product.codigo}
-            onRegenerate={() => setProduct(generateProduct())}
-          />
-          <DataField 
-            label="Fabricante" 
-            value={product.fabricante}
-            onRegenerate={() => setProduct(generateProduct())}
-          />
+          <div className="campo-item">
+            <label>Categorias:</label>
+            <div className="campo-valor">
+              <div className="categories-container">
+                {product.categorias.map((categoria, index) => (
+                  <CategoryTag key={index} category={categoria} />
+                ))}
+              </div>
+              <FaSync 
+                className="regenerate-icon" 
+                title="Gerar novas categorias"
+                onClick={() => setProduct(generateProduct())}
+              />
+            </div>
+          </div>
         </div>
       </section>
 

@@ -147,10 +147,7 @@ export const useDataGenerator = () => {
     const generateProduct = () => ({
         nome: faker.commerce.productName(),
         descricao: faker.commerce.productDescription(),
-        preco: `R$ ${faker.commerce.price()}`,
-        categoria: faker.commerce.department(),
-        codigo: faker.string.alphanumeric(10).toUpperCase(),
-        fabricante: faker.company.name()
+        categorias: Array.from({ length: 3 }, () => faker.commerce.department())
     });
 
     return {
