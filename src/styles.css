@@ -76,17 +76,22 @@ h1 {
   margin-bottom: 1.5rem;
 }
 
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
 .card h2 {
   margin: 0;
   font-size: 1.4rem;
   color: var(--text-primary);
 }
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
+.card-content {
+  display: grid;
+  gap: 1rem;
 }
 
 .generate-all-btn {
@@ -116,11 +121,6 @@ h1 {
 
 .generate-all-btn:hover .generate-icon {
   transform: rotate(180deg);
-}
-
-.card-content {
-  display: grid;
-  gap: 1rem;
 }
 
 .campo-item {

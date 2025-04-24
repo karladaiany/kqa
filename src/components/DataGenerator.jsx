@@ -149,7 +149,9 @@ export const DataGenerator = () => {
   return (
     <div className="data-generator">
       <section className="card">
-        <h2>Documentos</h2>
+        <div className="card-header">
+          <h2>Documentos</h2>
+        </div>
         <div className="card-content">
           <DataField 
             label="CPF" 
@@ -245,7 +247,9 @@ export const DataGenerator = () => {
       </section>
 
       <section className="card">
-        <h2>Cartão de Crédito</h2>
+        <div className="card-header">
+          <h2>Cartão de Crédito</h2>
+        </div>
         <div className="card-content">
           <DataField 
             label="Número" 
@@ -276,7 +280,9 @@ export const DataGenerator = () => {
       </section>
 
       <section className="card">
-        <h2>Produto</h2>
+        <div className="card-header">
+          <h2>Produto</h2>
+        </div>
         <div className="card-content">
           <DataField 
             label="Nome" 
