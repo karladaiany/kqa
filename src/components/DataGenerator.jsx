@@ -47,7 +47,8 @@ export const DataGenerator = () => {
     generateRG,
     generatePerson,
     generateCreditCard,
-    generateProduct
+    generateProduct,
+    gerarCEPValido
   } = useDataGenerator();
 
   const [documents, setDocuments] = useState({
@@ -71,6 +72,70 @@ export const DataGenerator = () => {
       ...prev,
       [field]: !prev[field]
     }));
+  };
+
+  const regenerateField = (field) => {
+    const newPerson = { ...person };
+    
+    switch(field) {
+      case 'nome':
+        const { nome, email } = generatePerson();
+        newPerson.nome = nome;
+        newPerson.email = email; // Atualiza email junto com nome pois são relacionados
+        break;
+      case 'telefone':
+        newPerson.telefone = generatePerson().telefone;
+        break;
+      case 'endereco':
+        newPerson.endereco = {
+          ...newPerson.endereco,
+          rua: generatePerson().endereco.rua
+        };
+        break;
+      case 'numero':
+        newPerson.endereco = {
+          ...newPerson.endereco,
+          numero: generatePerson().endereco.numero
+        };
+        break;
+      case 'complemento':
+        newPerson.endereco = {
+          ...newPerson.endereco,
+          complemento: generatePerson().endereco.complemento
+        };
+        break;
+      case 'bairro':
+        newPerson.endereco = {
+          ...newPerson.endereco,
+          bairro: generatePerson().endereco.bairro
+        };
+        break;
+      case 'cidade':
+        newPerson.endereco = {
+          ...newPerson.endereco,
+          cidade: generatePerson().endereco.cidade
+        };
+        break;
+      case 'estado':
+        const novaPessoa = generatePerson();
+        newPerson.endereco = {
+          ...newPerson.endereco,
+          estado: novaPessoa.endereco.estado,
+          cep: novaPessoa.endereco.cep // Atualiza CEP junto com estado pois são relacionados
+        };
+        break;
+      case 'cep':
+        // Gera um novo CEP baseado no estado atual
+        newPerson.endereco = {
+          ...newPerson.endereco,
+          cep: gerarCEPValido(newPerson.endereco.estado)
+        };
+        break;
+      default:
+        return;
+    }
+    
+    setPerson(newPerson);
   };
 
   if (isLoading) {
@@ -129,52 +194,52 @@ export const DataGenerator = () => {
           <DataField 
             label="Nome" 
             value={person.nome}
-            onRegenerate={() => setPerson(generatePerson())}
+            onRegenerate={() => regenerateField('nome')}
           />
           <DataField 
             label="Email" 
             value={person.email}
-            onRegenerate={() => setPerson(generatePerson())}
+            onRegenerate={() => regenerateField('nome')} // Email é atualizado junto com o nome
           />
           <DataField 
             label="Telefone" 
             value={person.telefone}
-            onRegenerate={() => setPerson(generatePerson())}
+            onRegenerate={() => regenerateField('telefone')}
           />
           <DataField 
             label="Endereço" 
             value={person.endereco.rua}
-            onRegenerate={() => setPerson(generatePerson())}
+            onRegenerate={() => regenerateField('endereco')}
           />
           <DataField 
             label="Número" 
             value={person.endereco.numero}
-            onRegenerate={() => setPerson(generatePerson())}
+            onRegenerate={() => regenerateField('numero')}
           />
           <DataField 
             label="Complemento" 
             value={person.endereco.complemento}
-            onRegenerate={() => setPerson(generatePerson())}
+            onRegenerate={() => regenerateField('complemento')}
           />
           <DataField 
             label="Bairro" 
             value={person.endereco.bairro}
-            onRegenerate={() => setPerson(generatePerson())}
+            onRegenerate={() => regenerateField('bairro')}
           />
           <DataField 
             label="Cidade" 
             value={person.endereco.cidade}
-            onRegenerate={() => setPerson(generatePerson())}
+            onRegenerate={() => regenerateField('cidade')}
           />
           <DataField 
             label="UF" 
             value={person.endereco.estado}
-            onRegenerate={() => setPerson(generatePerson())}
+            onRegenerate={() => regenerateField('estado')}
           />
           <DataField 
             label="CEP" 
             value={person.endereco.cep}
-            onRegenerate={() => setPerson(generatePerson())}
+            onRegenerate={() => regenerateField('cep')}
           />
         </div>
       </section>

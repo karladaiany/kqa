@@ -162,6 +162,7 @@ export const useDataGenerator = () => {
         generatePerson,
         generateCreditCard,
         generateProduct,
+        gerarCEPValido,
         formatCPF,
         formatCNPJ,
         formatRG
