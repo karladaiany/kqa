@@ -178,17 +178,31 @@ ${qaData.blockReason ? `:: Motivo do Bloqueio ::\n${qaData.blockReason}\n` : ''}
       <div className="card-body">
         <div className="form-section">
           <FormControl fullWidth className="form-group">
-            <InputLabel>Status do teste</InputLabel>
+            <InputLabel sx={{ color: '#94a3b8' }}>Status do teste</InputLabel>
             <Select
               value={qaData.testStatus}
               onChange={handleChange('testStatus')}
               label="Status do teste"
+              sx={{
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#94a3b8'
+                },
+                '& .MuiSelect-select': {
+                  color: '#94a3b8'
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#94a3b8'
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#94a3b8'
+                }
+              }}
               MenuProps={{
                 PaperProps: {
                   sx: {
                     bgcolor: '#1a1b26',
                     '& .MuiMenuItem-root': {
-                      color: 'rgba(255, 255, 255, 0.7)',
+                      color: '#94a3b8',
                       '&:hover': {
                         bgcolor: 'rgba(255, 255, 255, 0.05)',
                       },
@@ -212,17 +226,31 @@ ${qaData.blockReason ? `:: Motivo do Bloqueio ::\n${qaData.blockReason}\n` : ''}
           {getVisibleFields().map(field => (
             field === 'environment' ? (
               <FormControl fullWidth key={field} className="form-group">
-                <InputLabel>Ambiente</InputLabel>
+                <InputLabel sx={{ color: '#94a3b8' }}>Ambiente</InputLabel>
                 <Select
                   value={qaData[field]}
                   onChange={handleChange(field)}
                   label="Ambiente"
+                  sx={{
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#94a3b8'
+                    },
+                    '& .MuiSelect-select': {
+                      color: '#94a3b8'
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#94a3b8'
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#94a3b8'
+                    }
+                  }}
                   MenuProps={{
                     PaperProps: {
                       sx: {
                         bgcolor: '#1a1b26',
                         '& .MuiMenuItem-root': {
-                          color: 'rgba(255, 255, 255, 0.7)',
+                          color: '#94a3b8',
                           '&:hover': {
                             bgcolor: 'rgba(255, 255, 255, 0.05)',
                           },
