@@ -154,6 +154,27 @@ export const DataGenerator = () => {
     setPerson(newPerson);
   };
 
+  const regenerateProductField = (field) => {
+    const newProduct = { ...product };
+    const tempProduct = generateProduct();
+    
+    switch(field) {
+      case 'nome':
+        newProduct.nome = tempProduct.nome;
+        break;
+      case 'descricao':
+        newProduct.descricao = tempProduct.descricao;
+        break;
+      case 'categorias':
+        newProduct.categorias = tempProduct.categorias;
+        break;
+      default:
+        return;
+    }
+    
+    setProduct(newProduct);
+  };
+
   if (isLoading) {
     return <div>Carregando gerador de dados...</div>;
   }
@@ -265,17 +286,25 @@ export const DataGenerator = () => {
       <section className="card">
         <div className="card-header">
           <h2>Produto</h2>
+          <button 
+            className="generate-all-btn" 
+            onClick={() => setProduct(generateProduct())}
+            title="Gerar todos os dados do produto novamente"
+          >
+            <FaRedo className="generate-icon" />
+            Gerar tudo
+          </button>
         </div>
         <div className="card-content">
           <DataField 
             label="Nome" 
             value={product.nome}
-            onRegenerate={() => setProduct(generateProduct())}
+            onRegenerate={() => regenerateProductField('nome')}
           />
           <DataField 
             label="Descrição" 
             value={product.descricao}
-            onRegenerate={() => setProduct(generateProduct())}
+            onRegenerate={() => regenerateProductField('descricao')}
           />
           <div className="campo-item">
             <label>Categorias:</label>
@@ -288,7 +317,7 @@ export const DataGenerator = () => {
               <FaSync 
                 className="regenerate-icon" 
                 title="Gerar novas categorias"
-                onClick={() => setProduct(generateProduct())}
+                onClick={() => regenerateProductField('categorias')}
               />
             </div>
           </div>

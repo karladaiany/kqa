@@ -29,6 +29,85 @@ const tiposLogradouro = [
     'Vila', 'Passagem', 'Ladeira'
 ];
 
+const produtosTecnologia = [
+    'Sistema de Automação de Testes',
+    'Framework de Desenvolvimento Web',
+    'Plataforma de Machine Learning',
+    'Software de Análise de Dados',
+    'Ferramenta de DevOps',
+    'Sistema de Gestão Ágil',
+    'Plataforma de Testes A/B',
+    'Software de Monitoramento de Performance',
+    'IDE Inteligente',
+    'Ferramenta de Code Review',
+    'Sistema de CI/CD',
+    'Plataforma de Design System',
+    'Software de Prototipação',
+    'Ferramenta de Versionamento',
+    'Sistema de Análise de Código',
+    'Plataforma de Documentação',
+    'Software de Gerenciamento de APIs',
+    'Ferramenta de Debug',
+    'Sistema de Logging',
+    'Plataforma de Cloud Computing'
+];
+
+const categoriasTecnologia = [
+    'Desenvolvimento de Software',
+    'Qualidade de Software',
+    'DevOps',
+    'Inteligência Artificial',
+    'Machine Learning',
+    'UI/UX Design',
+    'Gestão de Projetos',
+    'Metodologias Ágeis',
+    'Automação de Testes',
+    'Cloud Computing',
+    'Segurança da Informação',
+    'Arquitetura de Software',
+    'Frontend Development',
+    'Backend Development',
+    'Mobile Development',
+    'Data Science',
+    'Big Data',
+    'Blockchain',
+    'IoT',
+    'Microserviços',
+    'API Development',
+    'Design System',
+    'Code Quality',
+    'Performance',
+    'Acessibilidade',
+    'DevSecOps',
+    'SRE',
+    'Infraestrutura',
+    'Banco de Dados',
+    'Business Intelligence'
+];
+
+const descricoesProdutosTecnologia = [
+    'Solução avançada que automatiza todo o ciclo de testes, desde a criação até a execução e relatórios, aumentando a eficiência da equipe de QA.',
+    'Plataforma integrada que utiliza inteligência artificial para otimizar processos de desenvolvimento e garantir a qualidade do código.',
+    'Sistema completo de gestão de projetos ágeis com recursos de planejamento, monitoramento e métricas em tempo real.',
+    'Ferramenta inovadora para análise estática e dinâmica de código, identificando vulnerabilidades e sugerindo melhorias.',
+    'Software especializado em testes de performance, permitindo simulações de carga e análise detalhada de desempenho.',
+    'Plataforma colaborativa para design e prototipação, facilitando a criação e validação de interfaces com usuários.',
+    'Sistema robusto de integração contínua e entrega contínua (CI/CD) com suporte a múltiplas tecnologias e ambientes.',
+    'Ferramenta completa para documentação técnica, com suporte a versionamento e colaboração em tempo real.',
+    'Solução moderna para monitoramento e análise de APIs, garantindo performance e segurança em todas as integrações.',
+    'Plataforma unificada de DevOps que integra ferramentas de desenvolvimento, teste e implantação em um único ambiente.',
+    'Sistema inteligente de revisão de código que utiliza ML para identificar padrões e sugerir melhorias.',
+    'Ferramenta especializada em testes de acessibilidade e usabilidade, garantindo a melhor experiência para todos os usuários.',
+    'Plataforma avançada de análise de dados com recursos de visualização e geração de relatórios personalizados.',
+    'Software de gerenciamento de configuração que automatiza processos de deploy e rollback com zero downtime.',
+    'Sistema integrado de logging e monitoramento com alertas em tempo real e análise preditiva de problemas.',
+    'Ferramenta de automação de processos de QA com suporte a testes funcionais, de integração e end-to-end.',
+    'Plataforma completa para desenvolvimento de APIs com recursos de documentação, teste e monitoramento.',
+    'Solução especializada em testes de segurança, identificando vulnerabilidades e sugerindo correções.',
+    'Sistema de versionamento avançado com recursos de branching, merging e resolução de conflitos.',
+    'Ferramenta de análise de qualidade de código com métricas detalhadas e sugestões de refatoração.'
+];
+
 // Faixas de CEP por estado
 const faixasCEP = {
     'SP': { inicio: '01000000', fim: '19999999' },
@@ -66,6 +145,19 @@ const gerarCEPValido = (estado) => {
     const fim = parseInt(faixa.fim);
     const cep = inicio + Math.floor(Math.random() * (fim - inicio));
     return cep.toString().padStart(8, '0').replace(/(\d{5})(\d{3})/, '$1-$2');
+};
+
+const gerarCategoriasUnicas = (quantidade) => {
+    const categorias = [...categoriasTecnologia];
+    const selecionadas = [];
+    
+    for (let i = 0; i < quantidade; i++) {
+        if (categorias.length === 0) break;
+        const index = Math.floor(Math.random() * categorias.length);
+        selecionadas.push(categorias.splice(index, 1)[0]);
+    }
+    
+    return selecionadas;
 };
 
 export const useDataGenerator = () => {
@@ -145,9 +237,9 @@ export const useDataGenerator = () => {
     });
 
     const generateProduct = () => ({
-        nome: faker.commerce.productName(),
-        descricao: faker.commerce.productDescription(),
-        categorias: Array.from({ length: 3 }, () => faker.commerce.department())
+        nome: faker.helpers.arrayElement(produtosTecnologia),
+        descricao: faker.helpers.arrayElement(descricoesProdutosTecnologia),
+        categorias: gerarCategoriasUnicas(3)
     });
 
     return {
