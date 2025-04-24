@@ -160,6 +160,88 @@ const gerarCategoriasUnicas = (quantidade) => {
     return selecionadas;
 };
 
+const cartoesBandeiras = {
+    visa: {
+        credito: {
+            prefixos: ['4'],
+            tamanho: 16
+        },
+        debito: {
+            prefixos: ['4'],
+            tamanho: 16
+        }
+    },
+    mastercard: {
+        credito: {
+            prefixos: ['51', '52', '53', '54', '55'],
+            tamanho: 16
+        },
+        debito: {
+            prefixos: ['51', '52', '53', '54', '55'],
+            tamanho: 16
+        }
+    },
+    amex: {
+        credito: {
+            prefixos: ['34', '37'],
+            tamanho: 15
+        }
+    },
+    elo: {
+        credito: {
+            prefixos: ['636368', '636369', '438935', '504175', '451416', '509048', '509067', '509049', '509069', '509050', '509074', '509068', '509040', '509045', '509051', '509046', '509066', '509047', '509042', '509052', '509043', '509064', '509040'],
+            tamanho: 16
+        },
+        debito: {
+            prefixos: ['636368', '636369', '438935', '504175', '451416', '509048', '509067', '509049', '509069', '509050', '509074', '509068', '509040', '509045', '509051', '509046', '509066', '509047', '509042', '509052', '509043', '509064', '509040'],
+            tamanho: 16
+        }
+    },
+    hipercard: {
+        credito: {
+            prefixos: ['606282'],
+            tamanho: 16
+        }
+    }
+};
+
+const gerarNumeroCartao = (bandeira, tipo) => {
+    if (!bandeira || !cartoesBandeiras[bandeira] || !cartoesBandeiras[bandeira][tipo]) {
+        // Se não especificar bandeira ou tipo, gera aleatório
+        const todasBandeiras = Object.keys(cartoesBandeiras);
+        bandeira = faker.helpers.arrayElement(todasBandeiras);
+        tipo = faker.helpers.arrayElement(Object.keys(cartoesBandeiras[bandeira]));
+    }
+
+    const config = cartoesBandeiras[bandeira][tipo];
+    const prefixo = faker.helpers.arrayElement(config.prefixos);
+    const tamanho = config.tamanho;
+    
+    // Gera os dígitos restantes
+    const numeroBase = prefixo + faker.string.numeric(tamanho - prefixo.length - 1);
+    
+    // Implementação do algoritmo de Luhn para gerar o dígito verificador
+    let soma = 0;
+    let dobra = false;
+    
+    for (let i = numeroBase.length - 1; i >= 0; i--) {
+        let digito = parseInt(numeroBase[i]);
+        
+        if (dobra) {
+            digito *= 2;
+            if (digito > 9) {
+                digito -= 9;
+            }
+        }
+        
+        soma += digito;
+        dobra = !dobra;
+    }
+    
+    const digitoVerificador = ((Math.floor(soma / 10) + 1) * 10 - soma) % 10;
+    return numeroBase + digitoVerificador;
+};
+
 export const useDataGenerator = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -228,13 +310,32 @@ export const useDataGenerator = () => {
         };
     };
 
-    const generateCreditCard = () => ({
-        numero: faker.finance.creditCardNumber(),
-        nome: faker.person.fullName().toUpperCase(),
-        validade: faker.date.future().toLocaleDateString('pt-BR', { month: '2-digit', year: '2-digit' }),
-        cvv: faker.string.numeric(3),
-        bandeira: faker.helpers.arrayElement(['Visa', 'Mastercard', 'American Express'])
-    });
+    const generateCreditCard = (bandeira = '', tipo = '') => {
+        const numero = gerarNumeroCartao(bandeira, tipo);
+        const bandeiraSelecionada = bandeira || detectarBandeira(numero);
+        
+        return {
+            numero,
+            nome: faker.person.fullName().toUpperCase(),
+            validade: faker.date.future().toLocaleDateString('pt-BR', { month: '2-digit', year: '2-digit' }),
+            cvv: faker.string.numeric(bandeiraSelecionada === 'amex' ? 4 : 3),
+            bandeira: bandeiraSelecionada.toUpperCase(),
+            tipo: tipo || 'credito'
+        };
+    };
+
+    const detectarBandeira = (numero) => {
+        for (const [bandeira, config] of Object.entries(cartoesBandeiras)) {
+            for (const tipo of Object.values(config)) {
+                for (const prefixo of tipo.prefixos) {
+                    if (numero.startsWith(prefixo)) {
+                        return bandeira;
+                    }
+                }
+            }
+        }
+        return 'desconhecida';
+    };
 
     const generateProduct = () => ({
         nome: faker.helpers.arrayElement(produtosTecnologia),

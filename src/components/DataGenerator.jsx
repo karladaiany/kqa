@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useDataGenerator } from '../hooks/useDataGenerator';
 import { toast } from 'react-toastify';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { FaCopy, FaSync, FaMask, FaRedo, FaTag } from 'react-icons/fa';
+import { FaCopy, FaSync, FaMask, FaRedo, FaTag, FaCreditCard } from 'react-icons/fa';
+import DataField from './DataField';
 
 const CategoryTag = ({ category }) => {
   const handleCopy = () => {
@@ -20,41 +21,7 @@ const CategoryTag = ({ category }) => {
   );
 };
 
-const DataField = ({ label, value, raw, onRegenerate, onToggleMask, showMask = true }) => {
-  const handleCopy = () => {
-    toast.success('Copiado para a área de transferência!');
-  };
-
-  return (
-    <div className="campo-item">
-      <label>{label}:</label>
-      <div className="campo-valor">
-        <CopyToClipboard text={showMask ? value : raw} onCopy={handleCopy}>
-          <span className="copyable">{showMask ? value : raw}</span>
-        </CopyToClipboard>
-        <CopyToClipboard text={showMask ? value : raw} onCopy={handleCopy}>
-          <FaCopy className="copy-icon" title="Copiar" />
-        </CopyToClipboard>
-        {onRegenerate && (
-          <FaSync 
-            className="regenerate-icon" 
-            title="Gerar novo"
-            onClick={onRegenerate}
-          />
-        )}
-        {onToggleMask && (
-          <FaMask
-            className={`mask-icon ${showMask ? 'active' : ''}`}
-            title={showMask ? "Remover máscara" : "Aplicar máscara"}
-            onClick={onToggleMask}
-          />
-        )}
-      </div>
-    </div>
-  );
-};
-
-export const DataGenerator = () => {
+const DataGenerator = ({ onGenerate = () => {} }) => {
   const {
     isLoading,
     error,
@@ -82,6 +49,11 @@ export const DataGenerator = () => {
   const [person, setPerson] = useState(generatePerson());
   const [card, setCard] = useState(generateCreditCard());
   const [product, setProduct] = useState(generateProduct());
+
+  const [cardConfig, setCardConfig] = useState({
+    bandeira: 'visa',
+    tipo: 'credito'
+  });
 
   const toggleMask = (field) => {
     setMasks(prev => ({
@@ -173,6 +145,18 @@ export const DataGenerator = () => {
     }
     
     setProduct(newProduct);
+  };
+
+  const handleCardConfigChange = (e) => {
+    const { name, value } = e.target;
+    setCardConfig(prev => {
+      const newConfig = {
+        ...prev,
+        [name]: value
+      };
+      setCard(generateCreditCard(newConfig.bandeira, newConfig.tipo));
+      return newConfig;
+    });
   };
 
   if (isLoading) {
@@ -327,35 +311,69 @@ export const DataGenerator = () => {
       <section className="card">
         <div className="card-header">
           <h2>Cartão de Crédito</h2>
+          <div className="card-filters">
+            <select 
+              name="bandeira"
+              value={cardConfig.bandeira}
+              onChange={handleCardConfigChange}
+              className="card-select"
+            >
+              <option value="visa">Visa</option>
+              <option value="mastercard">Mastercard</option>
+              <option value="amex">American Express</option>
+              <option value="elo">Elo</option>
+            </select>
+
+            <select
+              name="tipo"
+              value={cardConfig.tipo}
+              onChange={handleCardConfigChange}
+              className="card-select"
+            >
+              <option value="credito">Crédito</option>
+              <option value="debito">Débito</option>
+              <option value="multiplo">Múltiplo</option>
+            </select>
+
+            <button 
+              onClick={() => setCard(generateCreditCard(cardConfig.bandeira, cardConfig.tipo))}
+              className="btn-generate"
+            >
+              <FaCreditCard /> Gerar Novo Cartão
+            </button>
+          </div>
         </div>
         <div className="card-content">
           <DataField 
             label="Número" 
             value={card.numero}
-            onRegenerate={() => setCard(generateCreditCard())}
+            onRegenerate={() => setCard(generateCreditCard(cardConfig.bandeira, cardConfig.tipo))}
           />
           <DataField 
             label="Nome" 
             value={card.nome}
-            onRegenerate={() => setCard(generateCreditCard())}
+            onRegenerate={() => setCard(generateCreditCard(cardConfig.bandeira, cardConfig.tipo))}
           />
           <DataField 
             label="Validade" 
             value={card.validade}
-            onRegenerate={() => setCard(generateCreditCard())}
+            onRegenerate={() => setCard(generateCreditCard(cardConfig.bandeira, cardConfig.tipo))}
           />
           <DataField 
             label="CVV" 
             value={card.cvv}
-            onRegenerate={() => setCard(generateCreditCard())}
+            onRegenerate={() => setCard(generateCreditCard(cardConfig.bandeira, cardConfig.tipo))}
           />
           <DataField 
             label="Bandeira" 
-            value={card.bandeira}
-            onRegenerate={() => setCard(generateCreditCard())}
+            value={`${card.bandeira}${card.tipo ? ` (${card.tipo})` : ''}`}
+            onRegenerate={() => setCard(generateCreditCard(cardConfig.bandeira, cardConfig.tipo))}
           />
         </div>
       </section>
     </div>
   );
-}; 
+};
+
+export { DataGenerator };
+export default DataGenerator; 
