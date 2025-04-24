@@ -1,0 +1,67 @@
+.campo-item {
+  margin-bottom: 1rem;
+}
+
+.campo-valor {
+  margin-top: 0.25rem;
+}
+
+.valor-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  width: 100%;
+}
+
+.copyable {
+  flex: 1;
+  font-family: var(--font-family);
+  line-height: 1.4;
+}
+
+textarea.copyable {
+  resize: none;
+  overflow-y: auto;
+  min-height: 3.5em;
+}
+
+.acoes {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: 0.25rem;
+}
+
+.copy-icon,
+.regenerate-icon {
+  cursor: pointer;
+  color: var(--text-color);
+  transition: color 0.2s, transform 0.2s;
+}
+
+.copy-icon:hover,
+.regenerate-icon:hover {
+  color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+.regenerate-btn {
+  margin-top: 1rem;
+}
+
+.categoria-descricao {
+  display: block;
+  font-size: 0.85em;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+  font-style: italic;
+}
+
+.campo-valor .copyable {
+  margin-bottom: 0.25rem;
+}
+
+.campo-valor .icons {
+  display: flex;
+  gap: 0.5rem;
+  align-self: flex-end;
+} 

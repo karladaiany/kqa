@@ -1,0 +1,51 @@
+.campo-item {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.campo-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.campo-valor {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.copy-icon,
+.regenerate-icon,
+.fa-mask {
+  cursor: pointer;
+  color: var(--text-color);
+  transition: color 0.2s, transform 0.2s;
+}
+
+.copy-icon:hover,
+.regenerate-icon:hover,
+.fa-mask:hover {
+  color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+.fa-mask {
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+.fa-mask.active {
+  color: var(--primary-color);
+}
+
+.fa-mask:hover {
+  color: var(--primary-color);
+}
+
+.copyable {
+  font-family: monospace;
+  font-size: 1.1em;
+} 

@@ -11,6 +11,11 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --primary-color: #0d6efd;
+  --text-color: #212529;
+  --toast-bg: #333;
+  --toast-color: #fff;
 }
 
 a {
@@ -65,4 +70,92 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+[data-theme='dark'] {
+  --primary-color: #0d6efd;
+  --text-color: #fff;
+  --toast-bg: #fff;
+  --toast-color: #333;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Header styles */
+.page-header {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.page-header .lead {
+  font-size: 1.25rem;
+  color: var(--text-muted);
+}
+
+/* Section styles */
+.section-title {
+  text-align: left;
+  margin-bottom: 2rem;
+  font-size: 1.75rem;
+  color: var(--text-color);
+}
+
+/* Grid system */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -1rem;
+}
+
+.col-6 {
+  width: 50%;
+  padding: 0 1rem;
+}
+
+.card-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+  .col-6 {
+    width: 100%;
+  }
+}
+
+.card {
+  height: 100%;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Ajustes para centralização e espaçamento */
+.text-center {
+  text-align: center;
+}
+
+.my-5 {
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+}
+
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+
+.g-4 {
+  gap: 1.5rem;
 }

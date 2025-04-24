@@ -1,0 +1,451 @@
+.card-header {
+  margin-bottom: 1.5rem;
+}
+
+.card-header h5 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-body .form-section {
+  margin-bottom: 1.5rem;
+}
+
+.card-body .form-section:last-child {
+  margin-bottom: 0;
+}
+
+.card-body .section-title {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+}
+
+.card-body .form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0;
+}
+
+.card-body .form-group {
+  flex: 1;
+  min-width: 200px;
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.card-body .form-group:last-child {
+  margin-bottom: 0;
+}
+
+.input-container {
+  position: relative;
+  width: 100%;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  transition: border-color 0.2s;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.form-label {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--input-bg);
+  padding: 0 0.25rem;
+  color: var(--text-muted);
+  transition: all 0.2s;
+  pointer-events: none;
+  font-size: 1rem;
+}
+
+.form-control:focus + .form-label,
+.form-control:not(:placeholder-shown) + .form-label {
+  top: 0;
+  transform: translateY(-50%) scale(0.85);
+  color: var(--primary-color);
+}
+
+.clear-field-icon {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: color 0.2s;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.form-control:not(:placeholder-shown) + .form-label + .clear-field-icon {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.clear-field-icon:hover {
+  color: var(--danger-color);
+}
+
+.card-body .form-actions {
+  display: flex;
+  gap: 1rem;
+  padding-top: 0.5rem;
+  margin-top: 0;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Estilos para os campos do Material-UI */
+.MuiFormControl-root {
+  width: 100%;
+}
+
+.MuiOutlinedInput-root {
+  background-color: var(--input-bg) !important;
+}
+
+.MuiOutlinedInput-notchedOutline {
+  border-color: var(--border-color);
+  border-width: 1px;
+}
+
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: var(--primary-color);
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--primary-color);
+}
+
+.MuiInputLabel-root {
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.MuiInputLabel-root.Mui-focused {
+  color: var(--primary-color);
+}
+
+.MuiFormControlLabel-root {
+  color: var(--text-color);
+}
+
+.MuiCheckbox-root {
+  color: var(--text-muted);
+}
+
+.MuiCheckbox-root.Mui-checked {
+  color: var(--primary-color);
+}
+
+/* Estilos específicos para os selects */
+#root .MuiSelect-select {
+  padding: 0.75rem;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--text-color);
+  background-color: var(--input-bg) !important;
+}
+
+#root .MuiSelect-icon {
+  color: var(--text-muted);
+}
+
+#root .MuiSelect-select:focus {
+  background-color: var(--input-bg);
+}
+
+#root .MuiSelect-select.Mui-focused {
+  background-color: var(--input-bg);
+}
+
+#root .MuiMenuItem-root {
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--text-color);
+}
+
+#root .MuiMenuItem-root:hover {
+  background-color: var(--hover-bg);
+}
+
+#root .MuiMenuItem-root.Mui-selected {
+  background-color: var(--selected-bg);
+  color: var(--primary-color);
+}
+
+#root .MuiMenuItem-root.Mui-selected:hover {
+  background-color: var(--selected-hover-bg);
+}
+
+/* Ajustes específicos para o placeholder do select */
+#root .MuiSelect-nativeInput {
+  color: var(--text-muted) !important;
+}
+
+#root .MuiSelect-select[aria-expanded="false"] {
+  color: var(--text-muted) !important;
+}
+
+#root .MuiSelect-select[aria-expanded="true"] {
+  color: var(--text-color) !important;
+}
+
+#root .MuiSelect-icon {
+  color: var(--text-muted) !important;
+}
+
+#root .MuiOutlinedInput-root:hover .MuiSelect-icon {
+  color: var(--primary-color) !important;
+}
+
+#root .MuiOutlinedInput-root.Mui-focused .MuiSelect-icon {
+  color: var(--primary-color) !important;
+}
+
+/* Ajuste para o placeholder do select quando vazio */
+#root .MuiSelect-select:not([value]) {
+  color: var(--text-muted) !important;
+  background-color: var(--input-bg) !important;
+}
+
+#root .MuiSelect-select:not([value]) + .MuiOutlinedInput-notchedOutline {
+  border-color: var(--border-color) !important;
+}
+
+#root .MuiSelect-select:not([value]) + .MuiOutlinedInput-notchedOutline:hover {
+  border-color: var(--primary-color) !important;
+}
+
+/* Ajuste para a borda do select */
+#root .MuiOutlinedInput-notchedOutline {
+  border-color: var(--border-color) !important;
+}
+
+#root .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: var(--primary-color) !important;
+}
+
+#root .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--primary-color) !important;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .form-group {
+    min-width: 100%;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+}
+
+/* Estilo do botão Copiar */
+.btn-copy,
+.card-body .btn-copy,
+.card-footer .btn-copy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  background-color: var(--bs-primary) !important;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 6px;
+}
+
+/* Hover do botão Copiar */
+.btn-copy:hover,
+.card-body .btn-copy:hover,
+.card-footer .btn-copy:hover {
+  background-color: var(--pink) !important;
+  color: white;
+  transform: none;
+  opacity: 1;
+  filter: none;
+}
+
+/* Remove outros estilos que possam interferir */
+.card-footer button {
+  border: none;
+}
+
+.card-footer .btn-copy {
+  background-color: var(--bs-primary) !important;
+}
+
+.card-footer .btn-copy:hover {
+  background-color: var(--pink) !important;
+}
+
+/* Ajustes para os selects */
+#root .MuiOutlinedInput-root {
+  background-color: var(--input-bg) !important;
+}
+
+#root .MuiSelect-select {
+  background-color: var(--input-bg) !important;
+}
+
+#root .MuiSelect-select.MuiSelect-outlined {
+  background-color: var(--input-bg) !important;
+}
+
+.MuiInputBase-root {
+  background-color: var(--input-bg) !important;
+}
+
+.card-body .MuiInputBase-root {
+  background-color: var(--card-bg) !important;
+}
+
+.card-body .MuiOutlinedInput-root {
+  background-color: var(--card-bg) !important;
+}
+
+.card-body .MuiSelect-select {
+  background-color: var(--card-bg) !important;
+}
+
+.card-body .form-control {
+  background-color: var(--card-bg) !important;
+}
+
+/* Mensagem de informação */
+.info-message {
+  grid-column: 1 / -1;
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-top: 16px;
+  padding: 12px;
+  background-color: var(--current-line);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--card-border);
+}
+
+/* Estilo do botão Limpar tudo */
+.btn-clear,
+.card-body .btn-clear,
+.card-footer .btn-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--card-border);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 6px;
+}
+
+/* Hover do botão Limpar tudo */
+.btn-clear:hover,
+.card-body .btn-clear:hover,
+.card-footer .btn-clear:hover {
+  background-color: var(--current-line);
+  border-color: var(--card-border);
+  color: var(--text-primary);
+}
+
+/* Container dos botões */
+.card-footer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 16px;
+}
+
+/* Ajuste do container de ações */
+.form-actions,
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Estilos para o menu dropdown do Select */
+body .MuiPopover-root .MuiPaper-root {
+  background-color: #1a1b26 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+body #root .MuiMenu-list {
+  padding: 0.5rem 0;
+  background-color: #1a1b26 !important;
+}
+
+body #root .MuiMenuItem-root {
+  padding: 0.75rem 1rem;
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-family: var(--font-family);
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background-color: transparent !important;
+}
+
+body #root .MuiMenuItem-root:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+body #root .MuiMenuItem-root.Mui-selected {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+body #root .MuiMenuItem-root.Mui-selected:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Ajuste do scroll do menu */
+body .MuiPopover-root .MuiPaper-root::-webkit-scrollbar {
+  width: 8px;
+}
+
+body .MuiPopover-root .MuiPaper-root::-webkit-scrollbar-track {
+  background: #1a1b26 !important;
+}
+
+body .MuiPopover-root .MuiPaper-root::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 4px;
+}
+
+body .MuiPopover-root .MuiPaper-root::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+} 

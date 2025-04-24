@@ -1,0 +1,157 @@
+/* Remover classes e estilos duplicados/desnecessários */
+#char-count,
+#generated-text,
+.btn-group,
+.text-muted,
+.input-group {
+  display: none;
+}
+
+/* Ajuste do card */
+.card {
+  height: 320px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  gap: 24px;
+}
+
+/* Ajuste dos form groups */
+.form-group {
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+.form-group:last-child {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ajuste do input de caracteres */
+.form-group .char-input {
+  height: 42px !important;
+}
+
+.form-group .form-control {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: var(--background);
+  border: 1px solid var(--card-border);
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+/* Ajuste do label flutuante */
+.form-group .form-label {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--background);
+  padding: 0 0.5rem;
+  color: var(--text-muted);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.form-control:focus ~ .form-label,
+.form-control:not(:placeholder-shown) ~ .form-label {
+  top: 0;
+  transform: translateY(-50%) scale(0.9);
+  color: var(--primary-color);
+}
+
+/* Ajuste do textarea */
+.form-group textarea.form-control {
+  height: 120px;
+  resize: none;
+  padding: 1rem;
+  margin: 0;
+}
+
+/* Ajuste dos ícones */
+.form-group .regenerate-icon,
+.form-group .clear-field-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  transition: color 0.2s ease;
+  color: var(--text-muted);
+  height: 16px;
+  width: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.form-group .regenerate-icon {
+  right: 2.5rem;
+}
+
+.form-group .clear-field-icon {
+  right: 1rem;
+}
+
+.form-group .regenerate-icon:hover {
+  color: var(--success-color);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.form-group .clear-field-icon:hover {
+  color: var(--danger-color);
+}
+
+/* Ajuste dos botões de ação */
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding: 0;
+}
+
+.form-actions .btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-actions .btn i {
+  font-size: 0.9em;
+}
+
+/* Estilo do botão secundário */
+.btn-secondary {
+  background-color: var(--current-line);
+  border-color: var(--current-line);
+  color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+  background-color: var(--selection);
+  border-color: var(--selection);
+  color: var(--text-primary);
+}
+
+/* Remover setas do input number */
+.form-group input[type="number"]::-webkit-inner-spin-button,
+.form-group input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.form-group input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+} 
