@@ -29,6 +29,45 @@ const tiposLogradouro = [
     'Vila', 'Passagem', 'Ladeira'
 ];
 
+// Faixas de CEP por estado
+const faixasCEP = {
+    'SP': { inicio: '01000000', fim: '19999999' },
+    'RJ': { inicio: '20000000', fim: '28999999' },
+    'ES': { inicio: '29000000', fim: '29999999' },
+    'MG': { inicio: '30000000', fim: '39999999' },
+    'BA': { inicio: '40000000', fim: '48999999' },
+    'SE': { inicio: '49000000', fim: '49999999' },
+    'PE': { inicio: '50000000', fim: '56999999' },
+    'AL': { inicio: '57000000', fim: '57999999' },
+    'PB': { inicio: '58000000', fim: '58999999' },
+    'RN': { inicio: '59000000', fim: '59999999' },
+    'CE': { inicio: '60000000', fim: '63999999' },
+    'PI': { inicio: '64000000', fim: '64999999' },
+    'MA': { inicio: '65000000', fim: '65999999' },
+    'PA': { inicio: '66000000', fim: '68899999' },
+    'AP': { inicio: '68900000', fim: '68999999' },
+    'AM': { inicio: '69000000', fim: '69299999' },
+    'RR': { inicio: '69300000', fim: '69399999' },
+    'AC': { inicio: '69900000', fim: '69999999' },
+    'DF': { inicio: '70000000', fim: '72799999' },
+    'GO': { inicio: '72800000', fim: '76799999' },
+    'TO': { inicio: '77000000', fim: '77999999' },
+    'MT': { inicio: '78000000', fim: '78899999' },
+    'RO': { inicio: '78900000', fim: '78999999' },
+    'MS': { inicio: '79000000', fim: '79999999' },
+    'PR': { inicio: '80000000', fim: '87999999' },
+    'SC': { inicio: '88000000', fim: '89999999' },
+    'RS': { inicio: '90000000', fim: '99999999' }
+};
+
+const gerarCEPValido = (estado) => {
+    const faixa = faixasCEP[estado];
+    const inicio = parseInt(faixa.inicio);
+    const fim = parseInt(faixa.fim);
+    const cep = inicio + Math.floor(Math.random() * (fim - inicio));
+    return cep.toString().padStart(8, '0').replace(/(\d{5})(\d{3})/, '$1-$2');
+};
+
 export const useDataGenerator = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -79,6 +118,7 @@ export const useDataGenerator = () => {
         const numeroBase = faker.string.numeric(8);
         const telefone = `(${ddd}) 9${numeroBase.slice(0, 4)}-${numeroBase.slice(4)}`;
         const tipoLogradouro = faker.helpers.arrayElement(tiposLogradouro);
+        const estado = faker.location.state({ abbreviated: true });
         
         return {
             nome,
@@ -90,8 +130,8 @@ export const useDataGenerator = () => {
                 complemento: faker.helpers.arrayElement(['', 'Apto', 'Casa', 'Sala']) + ' ' + faker.string.numeric(3),
                 bairro: faker.location.county(),
                 cidade: faker.location.city(),
-                estado: faker.location.state({ abbreviated: true }),
-                cep: faker.location.zipCode('#####-###')
+                estado,
+                cep: gerarCEPValido(estado)
             }
         };
     };
