@@ -28,6 +28,7 @@
 .copy-icon:hover,
 .regenerate-icon:hover {
   color: var(--primary-color);
+  transform: scale(1.1);
 }
 
 .regenerate-btn {

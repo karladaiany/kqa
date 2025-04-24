@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '../../context/ToastContext';
 import { Card, Switch } from '@mui/material';
-import { useTheme } from '../context/ThemeContext';
-import { useLocalStorage } from '../hooks/useLocalStorage';
-import { encryptData, decryptData } from '../utils/crypto';
+import { useTheme } from '../../context/ThemeContext';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { encryptData, decryptData } from '../../utils/crypto';
+import './BugReportCard.css';
 
 const BugReportCard = () => {
   const { isDarkMode } = useTheme();
@@ -18,6 +19,7 @@ const BugReportCard = () => {
     login: '',
     password: '',
     orgId: '',
+    additionalInfo: '',
     // Evidências
     evidence: '',
     evidenceLink: '',
@@ -68,7 +70,7 @@ ${bugData.expectedBehavior}
 url: ${bugData.url}
 login: ${decryptData(bugData.login)}
 senha: ${decryptData(bugData.password)}
-id_ambiente: ${decryptData(bugData.orgId)}
+id_ambiente: ${decryptData(bugData.orgId)}${bugData.additionalInfo ? `\nobs: ${bugData.additionalInfo}` : ''}
 
 :: Evidência(s) ::${bugData.evidence ? `\n${bugData.evidence}` : ''}${bugData.hasEvidence ? '\n✓ Evidência em anexo na atividade' : ''}${bugData.evidenceLink ? `\n✓ Evidência no link: ${bugData.evidenceLink}` : ''}`;
 
@@ -86,6 +88,7 @@ id_ambiente: ${decryptData(bugData.orgId)}
       login: '',
       password: '',
       orgId: '',
+      additionalInfo: '',
       evidence: '',
       evidenceLink: '',
       hasEvidence: false
@@ -94,26 +97,19 @@ id_ambiente: ${decryptData(bugData.orgId)}
   };
 
   const renderField = (field, label) => {
-    // Função auxiliar para formatar o label
-    const formatLabel = (label) => {
-      if (field === 'url') return 'URL';
-      if (field === 'orgId') {
-        return <><span className="id">ID</span> do ambiente</>;
-      }
-      return label;
-    };
-
     return (
       <div className="form-group" key={field}>
         <input
           type={field === 'password' ? 'password' : 'text'}
-          className={`form-control ${field === 'url' ? 'text-uppercase' : ''}`}
+          className="form-control"
           value={getDecryptedValue(field)}
           onChange={handleChange(field)}
           placeholder=" "
         />
-        <label className={`form-label ${field === 'url' ? 'text-uppercase' : ''}`}>
-          {formatLabel(label)}
+        <label className="form-label">
+          {field === 'url' ? 'URL' : 
+           field === 'orgId' ? <><span className="id">ID</span> do ambiente</> : 
+           label}
         </label>
         {bugData[field] && (
           <i 
@@ -131,18 +127,6 @@ id_ambiente: ${decryptData(bugData.orgId)}
     );
   };
 
-  // Adicionar aviso de dados locais
-  const renderLocalStorageWarning = () => (
-    <div className="storage-warning">
-      <i className="fas fa-info-circle"></i>
-      <span>
-        Os dados são salvos localmente no seu navegador. 
-        Dados sensíveis são criptografados. 
-        Use "Limpar tudo" para removê-los.
-      </span>
-    </div>
-  );
-
   return (
     <Card 
       sx={{ 
@@ -151,31 +135,28 @@ id_ambiente: ${decryptData(bugData.orgId)}
       }}
     >
       <div className="card-header">
-        <h5><i className="fas fa-bug"></i> Registro de BUG </h5>
+        <h5><i className="fas fa-bug"></i> Registro de BUG</h5>
       </div>
       <div className="card-body">
-        {renderLocalStorageWarning()}
-        {/* Campos principais */}
         <div className="form-section">
           {renderField('incident', 'Incidente identificado')}
           {renderField('steps', 'Passo a passo para reprodução')}
           {renderField('expectedBehavior', 'Comportamento esperado')}
         </div>
 
-        {/* Seção de Informações */}
         <div className="form-section">
           <h6 className="section-title">
             <i className="fas fa-info-circle"></i> Informações
           </h6>
-          <div className="form-row">
+          <div className="form-row column">
             {renderField('url', 'URL')}
             {renderField('login', 'Login')}
             {renderField('password', 'Senha')}
             {renderField('orgId', 'ID do ambiente')}
+            {renderField('additionalInfo', 'Observações')}
           </div>
         </div>
 
-        {/* Seção de Evidências */}
         <div className="form-section">
           <h6 className="section-title">
             <i className="fas fa-camera"></i> Evidências
@@ -194,19 +175,20 @@ id_ambiente: ${decryptData(bugData.orgId)}
           </div>
         </div>
 
-        {/* Botões de ação */}
         <div className="form-actions">
           <button 
             className="btn btn-primary" 
             onClick={copyTemplate}
           >
-            <i className="fas fa-copy"></i> Copiar
+            <i className="fas fa-copy"></i>
+            Copiar
           </button>
           <button 
             className="btn btn-secondary" 
             onClick={clearAll}
           >
-            <i className="fas fa-broom"></i> Limpar Tudo
+            <i className="fas fa-trash"></i>
+            Limpar tudo
           </button>
         </div>
       </div>

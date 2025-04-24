@@ -146,7 +146,7 @@ textarea.copyable:focus {
 .regenerate-icon:hover,
 .clear-icon:hover {
   opacity: 1;
-  filter: none;
+  color: var(--primary-color);
   transform: scale(1.1);
 }
 

@@ -1,0 +1,51 @@
+:root {
+  /* Cores base do tema Dracula */
+  --background: #282a36;
+  --current-line: #44475a;
+  --selection: #44475a;
+  --foreground: #f8f8f2;
+  --comment: #6272a4;
+  --cyan: #8be9fd;
+  --green: #50fa7b;
+  --orange: #ffb86c;
+  --pink: #ff79c6;
+  --purple: #bd93f9;
+  --red: #ff5555;
+  --yellow: #f1fa8c;
+
+  /* Variáveis semânticas */
+  --body-bg: var(--background);
+  --card-bg: #2d2f3d;
+  --card-border: var(--current-line);
+  --text-primary: var(--foreground);
+  --text-muted: var(--comment);
+  --text-highlight: var(--cyan);
+  --primary-color: var(--purple);
+  --secondary-color: var(--pink);
+  --success-color: var(--green);
+  --warning-color: var(--orange);
+  --danger-color: var(--red);
+  --info-color: var(--cyan);
+
+  /* Efeitos */
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  --hover-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+  --text-shadow: 0 0 10px rgba(139, 233, 253, 0.3);
+
+  /* Espaçamentos */
+  --spacing-xs: 0.25rem;   /* 4px */
+  --spacing-sm: 0.5rem;    /* 8px */
+  --spacing-md: 1rem;      /* 16px */
+  --spacing-lg: 1.5rem;    /* 24px */
+  --spacing-xl: 2rem;      /* 32px */
+
+  /* Bordas */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+
+  /* Transições */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+} 

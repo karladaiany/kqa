@@ -3,14 +3,14 @@ import './FloatingMenu.css';
 
 export const FloatingMenu = () => {
   const menuItems = [
-    { id: 'personal-data', icon: 'fas fa-user', label: 'Dados pessoais' },
-    { id: 'credit-card', icon: 'fas fa-credit-card', label: 'Cartão de crédito' },
-    { id: 'documents', icon: 'fas fa-file-alt', label: 'Documentos' },
-    { id: 'products', icon: 'fas fa-box', label: 'Produtos' },
-    { id: 'char-generator', icon: 'fas fa-font', label: 'Gerador de caracteres' },
-    { id: 'char-counter', icon: 'fas fa-text-width', label: 'Contador de caracteres' },
+    { id: 'personal-data', icon: 'fas fa-user', label: 'Dados Pessoais' },
+    { id: 'credit-card', icon: 'fas fa-credit-card', label: 'Cartão de Crédito' },
+    { id: 'documents', icon: 'fas fa-id-card', label: 'Documentos' },
+    { id: 'products', icon: 'fas fa-graduation-cap', label: 'Cursos e Produtos' },
+    { id: 'char-generator', icon: 'fas fa-font', label: 'Gerador de Caracteres' },
+    { id: 'char-counter', icon: 'fas fa-text-width', label: 'Contador de Caracteres' },
     { id: 'bug-report', icon: 'fas fa-bug', label: 'Registro de BUG' },
-    { id: 'qa-comment', icon: 'fas fa-comment', label: 'Comentário de QA' }
+    { id: 'qa-comment', icon: 'fas fa-comment', label: 'Comentário QA' }
   ];
 
   const scrollToElement = (id) => {

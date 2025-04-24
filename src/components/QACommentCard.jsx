@@ -8,12 +8,12 @@ import {
   MenuItem, 
   FormControl,
   InputLabel,
-  Checkbox,
-  FormControlLabel
+  Switch
 } from '@mui/material';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
+import './QACommentCard.css';
 
 const QACommentCard = () => {
   const { isDarkMode } = useTheme();
@@ -25,20 +25,21 @@ const QACommentCard = () => {
     waiting: '',
     returnReason: '',
     blockReason: '',
-    hasEvidence: false,
+    evidence: '',
     evidenceLink: '',
-    hasEvidenceLink: false
+    hasEvidence: false
   });
 
   const { showToast } = useToast();
-  const [text, setText] = useState('');
 
   const fieldLabels = {
     validation: 'Validação',
     observation: 'Observação',
     waiting: 'Aguardando',
     returnReason: 'Motivo do retorno',
-    blockReason: 'Motivo do bloqueio'
+    blockReason: 'Motivo do bloqueio',
+    evidence: 'Descrição da evidência',
+    evidenceLink: 'Link da evidência'
   };
 
   const statusOptions = {
@@ -63,10 +64,10 @@ const QACommentCard = () => {
     }));
   };
 
-  const handleCheckboxChange = (field) => (event) => {
+  const handleToggle = () => {
     setQaData(prev => ({
       ...prev,
-      [field]: event.target.checked
+      hasEvidence: !prev.hasEvidence
     }));
   };
 
@@ -86,10 +87,11 @@ const QACommentCard = () => {
       waiting: '',
       returnReason: '',
       blockReason: '',
-      hasEvidence: false,
+      evidence: '',
       evidenceLink: '',
-      hasEvidenceLink: false
+      hasEvidence: false
     });
+    showToast('Todos os campos foram limpos!');
   };
 
   const getVisibleFields = () => {
@@ -109,19 +111,50 @@ const QACommentCard = () => {
   };
 
   const handleCopy = useCallback(() => {
-    if (!text) {
-      showToast('Digite um texto primeiro!');
-      return;
-    }
-    navigator.clipboard.writeText(text)
-      .then(() => showToast('Texto copiado!'))
-      .catch(err => console.error('Erro ao copiar:', err));
-  }, [text, showToast]);
+    const template = `:: Status do Teste ::
+${statusOptions[qaData.testStatus]?.label || ''}
 
-  const handleClear = useCallback(() => {
-    setText('');
-    showToast('Texto limpo!');
-  }, [showToast]);
+:: Ambiente ::
+${environmentOptions[qaData.environment]?.label || ''}
+
+:: Validação ::
+${qaData.validation}
+
+:: Observação ::
+${qaData.observation}
+
+${qaData.waiting ? `:: Aguardando ::\n${qaData.waiting}\n` : ''}
+${qaData.returnReason ? `:: Motivo do Retorno ::\n${qaData.returnReason}\n` : ''}
+${qaData.blockReason ? `:: Motivo do Bloqueio ::\n${qaData.blockReason}\n` : ''}
+
+:: Evidência(s) ::${qaData.evidence ? `\n${qaData.evidence}` : ''}${qaData.hasEvidence ? '\n✓ Evidência em anexo na atividade' : ''}${qaData.evidenceLink ? `\n✓ Evidência no link: ${qaData.evidenceLink}` : ''}`;
+
+    navigator.clipboard.writeText(template.trim())
+      .then(() => showToast('Template copiado!'))
+      .catch(err => console.error('Erro ao copiar:', err));
+  }, [qaData, showToast]);
+
+  const renderField = (field) => {
+    return (
+      <div className="form-group" key={field}>
+        <input
+          type="text"
+          className="form-control"
+          value={qaData[field]}
+          onChange={handleChange(field)}
+          placeholder=" "
+        />
+        <label className="form-label">{fieldLabels[field]}</label>
+        {qaData[field] && (
+          <i 
+            className="fas fa-times clear-field-icon"
+            onClick={() => clearField(field)}
+            title="Limpar campo"
+          />
+        )}
+      </div>
+    );
+  };
 
   return (
     <Card 
@@ -135,189 +168,77 @@ const QACommentCard = () => {
         color: isDarkMode ? 'var(--dark-text)' : 'inherit'
       }}
     >
-      <h5 style={{ 
-        marginBottom: '1rem',
-        color: isDarkMode ? 'var(--dark-text)' : 'inherit'
-      }}>
-        <i className="fas" style={{ marginRight: '0.5rem' }}></i>
-        🗣️ Comentário QA
-      </h5>
+      <div className="card-header">
+        <h5>
+          <i className="fas fa-comment"></i>
+          Comentário QA
+        </h5>
+      </div>
 
-      <FormControl fullWidth sx={{ mb: 2 }}>
-        <InputLabel sx={{ color: isDarkMode ? 'var(--dark-text)' : 'inherit' }}>
-          Status do Teste
-        </InputLabel>
-        <Select
-          value={qaData.testStatus}
-          onChange={handleChange('testStatus')}
-          label="Status do Teste"
-          sx={{
-            color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-            '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: isDarkMode ? 'var(--dark-border)' : 'inherit',
-            },
-          }}
-        >
-          {Object.entries(statusOptions).map(([key, { label }]) => (
-            <MenuItem key={key} value={key}>{label}</MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <div className="card-body">
+        <div className="form-section">
+          <FormControl fullWidth className="form-group">
+            <InputLabel>Status do teste</InputLabel>
+            <Select
+              value={qaData.testStatus}
+              onChange={handleChange('testStatus')}
+              label="Status do teste"
+            >
+              {Object.entries(statusOptions).map(([key, { label }]) => (
+                <MenuItem key={key} value={key}>{label}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-      {getVisibleFields().map(field => (
-        <Box key={field} sx={{ mb: 2 }}>
-          {field === 'environment' ? (
-            <FormControl fullWidth>
-              <InputLabel sx={{ color: isDarkMode ? 'var(--dark-text)' : 'inherit' }}>
-                Ambiente
-              </InputLabel>
-              <Select
-                value={qaData[field]}
-                onChange={handleChange(field)}
-                label="Ambiente"
-                sx={{
-                  color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    borderColor: isDarkMode ? 'var(--dark-border)' : 'inherit',
-                  },
-                }}
-              >
-                {Object.entries(environmentOptions).map(([key, { label }]) => (
-                  <MenuItem key={key} value={key}>{label}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          ) : (
-            <div className="form-group">
-              <label className="form-label">{fieldLabels[field]}</label>
-              <div className="input-container">
-                <TextField
-                  fullWidth
-                  multiline
-                  placeholder={`Digite ${fieldLabels[field].toLowerCase()} aqui...`}
+          {getVisibleFields().map(field => (
+            field === 'environment' ? (
+              <FormControl fullWidth key={field} className="form-group">
+                <InputLabel>Ambiente</InputLabel>
+                <Select
                   value={qaData[field]}
                   onChange={handleChange(field)}
-                  variant="outlined"
-                  InputProps={{
-                    endAdornment: (
-                      <i 
-                        className="fas fa-eraser" 
-                        style={{ 
-                          cursor: 'pointer',
-                          color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-                          marginRight: '8px'
-                        }}
-                        onClick={() => clearField(field)}
-                        title="Limpar"
-                      />
-                    ),
-                  }}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-                      '& fieldset': {
-                        borderColor: isDarkMode ? 'var(--dark-border)' : 'inherit',
-                      },
-                    },
-                    '& .MuiInputLabel-root': {
-                      color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-                    },
-                  }}
-                />
-                {qaData[field] && (
-                  <i 
-                    className="fas fa-times clear-field-icon"
-                    onClick={() => clearField(field)}
-                    title="Limpar campo"
-                  />
-                )}
-              </div>
+                  label="Ambiente"
+                >
+                  {Object.entries(environmentOptions).map(([key, { label }]) => (
+                    <MenuItem key={key} value={key}>{label}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            ) : (
+              renderField(field)
+            )
+          ))}
+        </div>
+
+        <div className="form-section">
+          <h6 className="section-title">
+            <i className="fas fa-camera"></i> Evidências
+          </h6>
+          <div className="form-row">
+            {renderField('evidence')}
+            {renderField('evidenceLink')}
+            <div className="evidence-toggle">
+              <Switch
+                checked={qaData.hasEvidence}
+                onChange={handleToggle}
+                color="primary"
+              />
+              <span>Evidência em anexo na atividade</span>
             </div>
-          )}
-        </Box>
-      ))}
+          </div>
+        </div>
 
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={qaData.hasEvidence}
-            onChange={handleCheckboxChange('hasEvidence')}
-            sx={{
-              color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-              '&.Mui-checked': {
-                color: 'var(--primary-color)',
-              },
-            }}
-          />
-        }
-        label="Evidência em anexo na atividade"
-        sx={{
-          color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-        }}
-      />
-
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={qaData.hasEvidenceLink}
-              onChange={handleCheckboxChange('hasEvidenceLink')}
-              sx={{
-                color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-                '&.Mui-checked': {
-                  color: 'var(--primary-color)',
-                },
-              }}
-            />
-          }
-          label="Evidência no link:"
-          sx={{
-            color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-          }}
-        />
-        {qaData.hasEvidenceLink && (
-          <TextField
-            size="small"
-            value={qaData.evidenceLink}
-            onChange={handleChange('evidenceLink')}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-                '& fieldset': {
-                  borderColor: isDarkMode ? 'var(--dark-border)' : 'inherit',
-                },
-              },
-            }}
-          />
-        )}
-      </Box>
-
-      <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-        <Button 
-          variant="contained" 
-          onClick={handleCopy}
-          sx={{
-            bgcolor: 'var(--primary-color)',
-            '&:hover': {
-              bgcolor: 'var(--secondary-color)',
-            },
-          }}
-        >
-          <i className="fas fa-copy" style={{ marginRight: '0.5rem' }}></i>
-          Copiar
-        </Button>
-        <Button 
-          variant="outlined" 
-          onClick={clearAll}
-          sx={{
-            color: isDarkMode ? 'var(--dark-text)' : 'inherit',
-            borderColor: isDarkMode ? 'var(--dark-border)' : 'inherit',
-          }}
-        >
-          <i className="fas fa-broom" style={{ marginRight: '0.5rem' }}></i>
-          Limpar Tudo
-        </Button>
-      </Box>
+        <div className="card-footer">
+          <button className="btn-copy" onClick={handleCopy}>
+            <i className="fas fa-copy"></i>
+            Copiar
+          </button>
+          <button className="btn-clear" onClick={clearAll}>
+            <i className="fas fa-trash"></i>
+            Limpar tudo
+          </button>
+        </div>
+      </div>
     </Card>
   );
 };
