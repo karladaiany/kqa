@@ -43,7 +43,7 @@ export const useDataGenerator = () => {
     };
 
     const generatePerson = () => ({
-        nome: faker.person.fullName(),
+        nome: `${faker.person.firstName()} ${faker.person.lastName()}`,
         email: faker.internet.email(),
         telefone: faker.helpers.fromRegExp('\\([0-9]{2}\\) [0-9]{5}-[0-9]{4}'),
         endereco: {
