@@ -16,20 +16,13 @@ import { ScrollToBottom } from './components/ScrollToBottom/ScrollToBottom';
 import './App.css';
 
 function AppContent() {
-  const { isDarkMode, toggleTheme } = useTheme();
+  const { isDarkMode } = useTheme();
 
   return (
     <div className="app-container">
       <header className="page-header">
         <div className="header-content">
           <h1>🎲 KQA :: Gerador de Dados para QA ::</h1>
-          <button 
-            className="theme-toggle" 
-            onClick={toggleTheme}
-            title={isDarkMode ? "Mudar para tema claro" : "Mudar para tema escuro"}
-          >
-            <i className={`fas ${isDarkMode ? 'fa-sun' : 'fa-moon'}`}></i>
-          </button>
         </div>
         <p className="lead">Sua ferramenta essencial para dados de teste</p>
       </header>
