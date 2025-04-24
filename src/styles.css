@@ -77,9 +77,45 @@ h1 {
 }
 
 .card h2 {
-  margin: 0 0 1rem 0;
+  margin: 0;
   font-size: 1.4rem;
   color: var(--text-primary);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.generate-all-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.generate-all-btn:hover {
+  background-color: var(--card-bg);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.generate-all-btn .generate-icon {
+  font-size: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.generate-all-btn:hover .generate-icon {
+  transform: rotate(180deg);
 }
 
 .card-content {

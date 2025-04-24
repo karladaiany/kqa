@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDataGenerator } from '../hooks/useDataGenerator';
 import { toast } from 'react-toastify';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { FaCopy, FaSync, FaMask } from 'react-icons/fa';
+import { FaCopy, FaSync, FaMask, FaRedo } from 'react-icons/fa';
 
 const DataField = ({ label, value, raw, onRegenerate, onToggleMask, showMask = true }) => {
   const handleCopy = () => {
@@ -114,7 +114,17 @@ export const DataGenerator = () => {
       </section>
 
       <section className="card">
-        <h2>Dados Pessoais</h2>
+        <div className="card-header">
+          <h2>Dados Pessoais</h2>
+          <button 
+            className="generate-all-btn" 
+            onClick={() => setPerson(generatePerson())}
+            title="Gerar todos os dados pessoais novamente"
+          >
+            <FaRedo className="generate-icon" />
+            Gerar tudo
+          </button>
+        </div>
         <div className="card-content">
           <DataField 
             label="Nome" 
