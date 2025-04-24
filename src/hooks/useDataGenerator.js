@@ -205,6 +205,15 @@ const cartoesBandeiras = {
     }
 };
 
+const formatCardNumber = (numero, bandeira) => {
+    // AMEX: 4 + 6 + 5 dígitos
+    if (bandeira.toLowerCase() === 'amex') {
+        return numero.replace(/(\d{4})(\d{6})(\d{5})/, '$1 $2 $3');
+    }
+    // Outros cartões: grupos de 4 dígitos
+    return numero.replace(/(\d{4})(\d{4})(\d{4})(\d{4})/, '$1 $2 $3 $4');
+};
+
 const gerarNumeroCartao = (bandeira, tipo) => {
     if (!bandeira || !cartoesBandeiras[bandeira] || !cartoesBandeiras[bandeira][tipo]) {
         // Se não especificar bandeira ou tipo, gera aleatório
@@ -316,6 +325,7 @@ export const useDataGenerator = () => {
         
         return {
             numero,
+            numeroFormatado: formatCardNumber(numero, bandeiraSelecionada),
             nome: faker.person.fullName().toUpperCase(),
             validade: faker.date.future().toLocaleDateString('pt-BR', { month: '2-digit', year: '2-digit' }),
             cvv: faker.string.numeric(bandeiraSelecionada === 'amex' ? 4 : 3),

@@ -94,11 +94,46 @@ h1 {
   gap: 1rem;
 }
 
+.card-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-select {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--background-color);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  height: 36px;
+}
+
+.card-select:hover {
+  border-color: var(--accent-color);
+}
+
+.card-select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+}
+
+.card-select option {
+  padding: 8px;
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+}
+
 .generate-all-btn {
+  height: 36px;
+  padding: 0 1rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
   background-color: transparent;
   border: 1px solid var(--border-color);
   border-radius: 4px;
@@ -289,35 +324,4 @@ h1 {
 .tag-copy-icon:hover {
   color: var(--accent-color);
   transform: scale(1.2);
-}
-
-.card-filters {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.card-select {
-  padding: 6px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: white;
-  font-size: 14px;
-  color: #333;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.card-select:hover {
-  border-color: #007bff;
-}
-
-.card-select:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-}
-
-.card-select option {
-  padding: 8px;
 } 

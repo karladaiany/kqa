@@ -310,7 +310,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 
       <section className="card">
         <div className="card-header">
-          <h2>Cartão de Crédito</h2>
+          <h2>Cartão</h2>
           <div className="card-filters">
             <select 
               name="bandeira"
@@ -337,37 +337,29 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 
             <button 
               onClick={() => setCard(generateCreditCard(cardConfig.bandeira, cardConfig.tipo))}
-              className="btn-generate"
+              className="generate-all-btn"
             >
-              <FaCreditCard /> Gerar Novo Cartão
+              <FaRedo className="generate-icon" /> Gerar novo cartão
             </button>
           </div>
         </div>
         <div className="card-content">
           <DataField 
             label="Número" 
-            value={card.numero}
-            onRegenerate={() => setCard(generateCreditCard(cardConfig.bandeira, cardConfig.tipo))}
+            value={card.numeroFormatado}
+            rawValue={card.numero}
           />
           <DataField 
             label="Nome" 
             value={card.nome}
-            onRegenerate={() => setCard(generateCreditCard(cardConfig.bandeira, cardConfig.tipo))}
           />
           <DataField 
             label="Validade" 
             value={card.validade}
-            onRegenerate={() => setCard(generateCreditCard(cardConfig.bandeira, cardConfig.tipo))}
           />
           <DataField 
             label="CVV" 
             value={card.cvv}
-            onRegenerate={() => setCard(generateCreditCard(cardConfig.bandeira, cardConfig.tipo))}
-          />
-          <DataField 
-            label="Bandeira" 
-            value={`${card.bandeira}${card.tipo ? ` (${card.tipo})` : ''}`}
-            onRegenerate={() => setCard(generateCreditCard(cardConfig.bandeira, cardConfig.tipo))}
           />
         </div>
       </section>

@@ -2,9 +2,10 @@ import React from 'react';
 import { FaCopy, FaSync } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
-const DataField = ({ label, value, onRegenerate }) => {
+const DataField = ({ label, value, rawValue, onRegenerate }) => {
   const handleCopy = () => {
-    navigator.clipboard.writeText(value)
+    const textToCopy = rawValue || value;
+    navigator.clipboard.writeText(textToCopy)
       .then(() => toast.success('Copiado para a área de transferência!'))
       .catch(() => toast.error('Erro ao copiar para a área de transferência'));
   };
