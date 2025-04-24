@@ -133,7 +133,12 @@ export const DataGenerator = () => {
           />
           <DataField 
             label="Endereço" 
-            value={`${person.endereco.rua}, ${person.endereco.numero}`}
+            value={person.endereco.rua}
+            onRegenerate={() => setPerson(generatePerson())}
+          />
+          <DataField 
+            label="Número" 
+            value={person.endereco.numero}
             onRegenerate={() => setPerson(generatePerson())}
           />
           <DataField 

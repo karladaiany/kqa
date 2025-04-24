@@ -23,6 +23,12 @@ const dddsValidos = [
     '41', '42', '43', '44', '45', '46', '51', '53', '54', '55', '47', '48', '49'
 ];
 
+const tiposLogradouro = [
+    'Rua', 'Avenida', 'Travessa', 'Alameda', 'Praça', 
+    'Estrada', 'Rodovia', 'Viela', 'Beco', 'Largo',
+    'Vila', 'Passagem', 'Ladeira'
+];
+
 export const useDataGenerator = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -70,15 +76,16 @@ export const useDataGenerator = () => {
         const nome = `${firstName} ${lastName}`;
         const emailNome = removeAcentos(`${firstName}.${lastName}`);
         const ddd = faker.helpers.arrayElement(dddsValidos);
-        const numeroBase = faker.string.numeric(8); // Gera 8 dígitos para completar o número
+        const numeroBase = faker.string.numeric(8);
         const telefone = `(${ddd}) 9${numeroBase.slice(0, 4)}-${numeroBase.slice(4)}`;
+        const tipoLogradouro = faker.helpers.arrayElement(tiposLogradouro);
         
         return {
             nome,
             email: `${emailNome}@teste.com`,
             telefone,
             endereco: {
-                rua: faker.location.street(),
+                rua: `${tipoLogradouro} ${faker.location.street()}`,
                 numero: faker.string.numeric(4),
                 complemento: faker.helpers.arrayElement(['', 'Apto', 'Casa', 'Sala']) + ' ' + faker.string.numeric(3),
                 bairro: faker.location.county(),
