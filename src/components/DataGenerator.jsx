@@ -248,39 +248,6 @@ export const DataGenerator = () => {
 
       <section className="card">
         <div className="card-header">
-          <h2>Cartão de Crédito</h2>
-        </div>
-        <div className="card-content">
-          <DataField 
-            label="Número" 
-            value={card.numero}
-            onRegenerate={() => setCard(generateCreditCard())}
-          />
-          <DataField 
-            label="Nome" 
-            value={card.nome}
-            onRegenerate={() => setCard(generateCreditCard())}
-          />
-          <DataField 
-            label="Validade" 
-            value={card.validade}
-            onRegenerate={() => setCard(generateCreditCard())}
-          />
-          <DataField 
-            label="CVV" 
-            value={card.cvv}
-            onRegenerate={() => setCard(generateCreditCard())}
-          />
-          <DataField 
-            label="Bandeira" 
-            value={card.bandeira}
-            onRegenerate={() => setCard(generateCreditCard())}
-          />
-        </div>
-      </section>
-
-      <section className="card">
-        <div className="card-header">
           <h2>Produto</h2>
         </div>
         <div className="card-content">
@@ -313,6 +280,39 @@ export const DataGenerator = () => {
             label="Fabricante" 
             value={product.fabricante}
             onRegenerate={() => setProduct(generateProduct())}
+          />
+        </div>
+      </section>
+
+      <section className="card">
+        <div className="card-header">
+          <h2>Cartão de Crédito</h2>
+        </div>
+        <div className="card-content">
+          <DataField 
+            label="Número" 
+            value={card.numero}
+            onRegenerate={() => setCard(generateCreditCard())}
+          />
+          <DataField 
+            label="Nome" 
+            value={card.nome}
+            onRegenerate={() => setCard(generateCreditCard())}
+          />
+          <DataField 
+            label="Validade" 
+            value={card.validade}
+            onRegenerate={() => setCard(generateCreditCard())}
+          />
+          <DataField 
+            label="CVV" 
+            value={card.cvv}
+            onRegenerate={() => setCard(generateCreditCard())}
+          />
+          <DataField 
+            label="Bandeira" 
+            value={card.bandeira}
+            onRegenerate={() => setCard(generateCreditCard())}
           />
         </div>
       </section>
