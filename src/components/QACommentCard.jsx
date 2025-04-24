@@ -183,6 +183,25 @@ ${qaData.blockReason ? `:: Motivo do Bloqueio ::\n${qaData.blockReason}\n` : ''}
               value={qaData.testStatus}
               onChange={handleChange('testStatus')}
               label="Status do teste"
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    bgcolor: '#1a1b26',
+                    '& .MuiMenuItem-root': {
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      '&:hover': {
+                        bgcolor: 'rgba(255, 255, 255, 0.05)',
+                      },
+                      '&.Mui-selected': {
+                        bgcolor: 'rgba(255, 255, 255, 0.05)',
+                        '&:hover': {
+                          bgcolor: 'rgba(255, 255, 255, 0.05)',
+                        }
+                      }
+                    }
+                  }
+                }
+              }}
             >
               {Object.entries(statusOptions).map(([key, { label }]) => (
                 <MenuItem key={key} value={key}>{label}</MenuItem>
@@ -198,6 +217,25 @@ ${qaData.blockReason ? `:: Motivo do Bloqueio ::\n${qaData.blockReason}\n` : ''}
                   value={qaData[field]}
                   onChange={handleChange(field)}
                   label="Ambiente"
+                  MenuProps={{
+                    PaperProps: {
+                      sx: {
+                        bgcolor: '#1a1b26',
+                        '& .MuiMenuItem-root': {
+                          color: 'rgba(255, 255, 255, 0.7)',
+                          '&:hover': {
+                            bgcolor: 'rgba(255, 255, 255, 0.05)',
+                          },
+                          '&.Mui-selected': {
+                            bgcolor: 'rgba(255, 255, 255, 0.05)',
+                            '&:hover': {
+                              bgcolor: 'rgba(255, 255, 255, 0.05)',
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }}
                 >
                   {Object.entries(environmentOptions).map(([key, { label }]) => (
                     <MenuItem key={key} value={key}>{label}</MenuItem>
