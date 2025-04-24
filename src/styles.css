@@ -121,16 +121,22 @@ h1 {
 }
 
 .copy-icon,
-.regenerate-icon {
+.regenerate-icon,
+.mask-icon {
   cursor: pointer;
   color: var(--text-secondary);
   transition: all 0.2s ease;
 }
 
 .copy-icon:hover,
-.regenerate-icon:hover {
+.regenerate-icon:hover,
+.mask-icon:hover {
   color: var(--accent-color);
   transform: scale(1.2);
+}
+
+.mask-icon.active {
+  color: var(--accent-color);
 }
 
 .regenerate-icon {

@@ -14,27 +14,31 @@ export const useDataGenerator = () => {
         }
     }, []);
 
+    const formatCPF = (cpf) => cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    const formatCNPJ = (cnpj) => cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+    const formatRG = (rg) => rg.replace(/(\d{2})(\d{3})(\d{3})(\d{1})/, '$1.$2.$3-$4');
+
     const generateCPF = () => {
-        const cpf = Array.from({ length: 11 }, () => Math.floor(Math.random() * 10)).join('');
+        const raw = Array.from({ length: 11 }, () => Math.floor(Math.random() * 10)).join('');
         return {
-            raw: cpf,
-            formatted: cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
+            raw,
+            formatted: formatCPF(raw)
         };
     };
 
     const generateCNPJ = () => {
-        const cnpj = Array.from({ length: 14 }, () => Math.floor(Math.random() * 10)).join('');
+        const raw = Array.from({ length: 14 }, () => Math.floor(Math.random() * 10)).join('');
         return {
-            raw: cnpj,
-            formatted: cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5')
+            raw,
+            formatted: formatCNPJ(raw)
         };
     };
 
     const generateRG = () => {
-        const rg = Array.from({ length: 9 }, () => Math.floor(Math.random() * 10)).join('');
+        const raw = Array.from({ length: 9 }, () => Math.floor(Math.random() * 10)).join('');
         return {
-            raw: rg,
-            formatted: rg.replace(/(\d{2})(\d{3})(\d{3})(\d{1})/, '$1.$2.$3-$4')
+            raw,
+            formatted: formatRG(raw)
         };
     };
 
@@ -78,6 +82,9 @@ export const useDataGenerator = () => {
         generateRG,
         generatePerson,
         generateCreditCard,
-        generateProduct
+        generateProduct,
+        formatCPF,
+        formatCNPJ,
+        formatRG
     };
 }; 

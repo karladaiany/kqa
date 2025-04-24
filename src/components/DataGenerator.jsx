@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useDataGenerator } from '../hooks/useDataGenerator';
 import { toast } from 'react-toastify';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { FaCopy, FaSync } from 'react-icons/fa';
+import { FaCopy, FaSync, FaMask } from 'react-icons/fa';
 
-const DataField = ({ label, value, onRegenerate }) => {
+const DataField = ({ label, value, raw, onRegenerate, onToggleMask, showMask = true }) => {
   const handleCopy = () => {
     toast.success('Copiado para a área de transferência!');
   };
@@ -13,10 +13,10 @@ const DataField = ({ label, value, onRegenerate }) => {
     <div className="campo-item">
       <label>{label}:</label>
       <div className="campo-valor">
-        <CopyToClipboard text={value} onCopy={handleCopy}>
-          <span className="copyable">{value}</span>
+        <CopyToClipboard text={showMask ? value : raw} onCopy={handleCopy}>
+          <span className="copyable">{showMask ? value : raw}</span>
         </CopyToClipboard>
-        <CopyToClipboard text={value} onCopy={handleCopy}>
+        <CopyToClipboard text={showMask ? value : raw} onCopy={handleCopy}>
           <FaCopy className="copy-icon" title="Copiar" />
         </CopyToClipboard>
         {onRegenerate && (
@@ -24,6 +24,13 @@ const DataField = ({ label, value, onRegenerate }) => {
             className="regenerate-icon" 
             title="Gerar novo"
             onClick={onRegenerate}
+          />
+        )}
+        {onToggleMask && (
+          <FaMask
+            className={`mask-icon ${showMask ? 'active' : ''}`}
+            title={showMask ? "Remover máscara" : "Aplicar máscara"}
+            onClick={onToggleMask}
           />
         )}
       </div>
@@ -49,9 +56,22 @@ export const DataGenerator = () => {
     rg: generateRG()
   });
 
+  const [masks, setMasks] = useState({
+    cpf: true,
+    cnpj: true,
+    rg: true
+  });
+
   const [person, setPerson] = useState(generatePerson());
   const [card, setCard] = useState(generateCreditCard());
   const [product, setProduct] = useState(generateProduct());
+
+  const toggleMask = (field) => {
+    setMasks(prev => ({
+      ...prev,
+      [field]: !prev[field]
+    }));
+  };
 
   if (isLoading) {
     return <div>Carregando gerador de dados...</div>;
@@ -69,17 +89,26 @@ export const DataGenerator = () => {
           <DataField 
             label="CPF" 
             value={documents.cpf.formatted}
+            raw={documents.cpf.raw}
+            showMask={masks.cpf}
             onRegenerate={() => setDocuments(prev => ({ ...prev, cpf: generateCPF() }))}
+            onToggleMask={() => toggleMask('cpf')}
           />
           <DataField 
             label="CNPJ" 
             value={documents.cnpj.formatted}
+            raw={documents.cnpj.raw}
+            showMask={masks.cnpj}
             onRegenerate={() => setDocuments(prev => ({ ...prev, cnpj: generateCNPJ() }))}
+            onToggleMask={() => toggleMask('cnpj')}
           />
           <DataField 
             label="RG" 
             value={documents.rg.formatted}
+            raw={documents.rg.raw}
+            showMask={masks.rg}
             onRegenerate={() => setDocuments(prev => ({ ...prev, rg: generateRG() }))}
+            onToggleMask={() => toggleMask('rg')}
           />
         </div>
       </section>
