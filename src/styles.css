@@ -176,19 +176,24 @@ h1 {
 }
 
 .regenerate-icon {
-  animation: spin 1s linear infinite;
-  animation-play-state: paused;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.regenerate-icon:hover {
+  color: var(--accent-color);
 }
 
 .regenerate-icon:active {
-  animation-play-state: running;
+  animation: spinOnce 0.4s ease-in-out;
 }
 
-@keyframes spin {
-  from {
+@keyframes spinOnce {
+  0% {
     transform: rotate(0deg);
   }
-  to {
+  100% {
     transform: rotate(360deg);
   }
 }
