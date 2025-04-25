@@ -436,4 +436,49 @@ textarea.number-input {
 textarea.number-input::placeholder {
   color: var(--text-secondary);
   opacity: 0.7;
+}
+
+.floating-nav {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.floating-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.floating-nav-item:hover {
+  background-color: var(--background-color);
+  color: var(--text-primary);
+}
+
+.floating-nav-item svg {
+  font-size: 1.1rem;
+}
+
+/* Ajuste para o tema escuro */
+body.dark-theme .floating-nav {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+body.dark-theme .floating-nav-item:hover {
+  background-color: var(--background-color);
 } 

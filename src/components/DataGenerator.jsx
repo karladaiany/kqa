@@ -14,7 +14,9 @@ import {
   FaCreditCard,
   FaRandom,
   FaTimes,
-  FaCalculator
+  FaCalculator,
+  FaBug,
+  FaComment
 } from 'react-icons/fa';
 import DataField from './DataField';
 
@@ -31,6 +33,44 @@ const CategoryTag = ({ category }) => {
         <FaCopy className="tag-copy-icon" title="Copiar categoria" />
       </CopyToClipboard>
     </div>
+  );
+};
+
+const FloatingNav = () => {
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <nav className="floating-nav">
+      <div className="floating-nav-item" onClick={() => scrollToSection('documentos')}>
+        <FaIdCard /> Documentos
+      </div>
+      <div className="floating-nav-item" onClick={() => scrollToSection('dados-pessoais')}>
+        <FaUserAlt /> Dados Pessoais
+      </div>
+      <div className="floating-nav-item" onClick={() => scrollToSection('produto')}>
+        <FaGraduationCap /> Produtos
+      </div>
+      <div className="floating-nav-item" onClick={() => scrollToSection('cartao')}>
+        <FaCreditCard /> Cartão
+      </div>
+      <div className="floating-nav-item" onClick={() => scrollToSection('caracteres')}>
+        <FaRandom /> Gerador de Caracteres
+      </div>
+      <div className="floating-nav-item" onClick={() => scrollToSection('contador')}>
+        <FaCalculator /> Contador de Caracteres
+      </div>
+      <div className="floating-nav-item" onClick={() => scrollToSection('bug')}>
+        <FaBug /> Registro de BUG
+      </div>
+      <div className="floating-nav-item" onClick={() => scrollToSection('qa')}>
+        <FaComment /> Comentário QA
+      </div>
+    </nav>
   );
 };
 
@@ -249,7 +289,8 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 
   return (
     <div className="data-generator">
-      <section className="card">
+      <FloatingNav />
+      <section className="card" id="documentos">
         <div className="card-header">
           <h2><FaIdCard className="header-icon" /> Documentos</h2>
         </div>
@@ -281,7 +322,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
         </div>
       </section>
 
-      <section className="card">
+      <section className="card" id="dados-pessoais">
         <div className="card-header">
           <h2><FaUserAlt className="header-icon" /> Dados Pessoais</h2>
           <button 
@@ -347,7 +388,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
         </div>
       </section>
 
-      <section className="card">
+      <section className="card" id="produto">
         <div className="card-header">
           <h2><FaGraduationCap className="header-icon" /> Produto</h2>
           <button 
@@ -388,7 +429,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
         </div>
       </section>
 
-      <section className="card">
+      <section className="card" id="cartao">
         <div className="card-header">
           <h2><FaCreditCard className="header-icon" /> Cartão</h2>
           <div className="card-filters">
@@ -444,7 +485,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
         </div>
       </section>
 
-      <section className="card">
+      <section className="card" id="caracteres">
         <div className="card-header">
           <h2><FaRandom className="header-icon" /> Gerador de caracteres</h2>
           <div className="card-filters">
@@ -495,7 +536,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
         </div>
       </section>
 
-      <section className="card">
+      <section className="card" id="contador">
         <div className="card-header">
           <h2><FaCalculator className="header-icon" /> Contador de caracteres</h2>
         </div>
@@ -542,6 +583,14 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
             </div>
           </div>
         </div>
+      </section>
+
+      <section className="card" id="bug">
+        {/* ... rest of the existing code ... */}
+      </section>
+
+      <section className="card" id="qa">
+        {/* ... rest of the existing code ... */}
       </section>
     </div>
   );
