@@ -2,7 +2,17 @@ import React, { useState } from 'react';
 import { useDataGenerator } from '../hooks/useDataGenerator';
 import { toast } from 'react-toastify';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { FaCopy, FaSync, FaMask, FaRedo, FaTag, FaCreditCard } from 'react-icons/fa';
+import { 
+  FaCopy, 
+  FaSync, 
+  FaMask, 
+  FaRedo, 
+  FaTag, 
+  FaIdCard, 
+  FaUserAlt,
+  FaBox,
+  FaCreditCard
+} from 'react-icons/fa';
 import DataField from './DataField';
 
 const CategoryTag = ({ category }) => {
@@ -171,7 +181,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
     <div className="data-generator">
       <section className="card">
         <div className="card-header">
-          <h2>Documentos</h2>
+          <h2><FaIdCard className="header-icon" /> Documentos</h2>
         </div>
         <div className="card-content">
           <DataField 
@@ -203,7 +213,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 
       <section className="card">
         <div className="card-header">
-          <h2>Dados Pessoais</h2>
+          <h2><FaUserAlt className="header-icon" /> Dados Pessoais</h2>
           <button 
             className="generate-all-btn" 
             onClick={() => setPerson(generatePerson())}
@@ -269,7 +279,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 
       <section className="card">
         <div className="card-header">
-          <h2>Produto</h2>
+          <h2><FaBox className="header-icon" /> Produto</h2>
           <button 
             className="generate-all-btn" 
             onClick={() => setProduct(generateProduct())}
@@ -310,7 +320,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 
       <section className="card">
         <div className="card-header">
-          <h2>Cartão</h2>
+          <h2><FaCreditCard className="header-icon" /> Cartão</h2>
           <div className="card-filters">
             <select 
               name="bandeira"
