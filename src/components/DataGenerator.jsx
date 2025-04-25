@@ -12,7 +12,8 @@ import {
   FaUserAlt,
   FaGraduationCap,
   FaCreditCard,
-  FaRandom
+  FaRandom,
+  FaTimes
 } from 'react-icons/fa';
 import DataField from './DataField';
 
@@ -68,7 +69,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
   });
 
   const [randomChars, setRandomChars] = useState({
-    length: 10,
+    length: '',
     value: ''
   });
 
@@ -177,22 +178,44 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
   };
 
   const handleRandomCharsChange = (e) => {
-    const length = parseInt(e.target.value) || 1;
+    const value = e.target.value;
+    // Permite campo vazio ou números positivos
+    if (value === '' || (parseInt(value) > 0 && parseInt(value) <= 9999999)) {
+      setRandomChars(prev => ({
+        ...prev,
+        length: value
+      }));
+    }
+  };
+
+  const handleClearLength = () => {
     setRandomChars(prev => ({
       ...prev,
-      length: Math.min(Math.max(length, 1), 9999999) // Aumenta o limite máximo
+      length: ''
     }));
   };
 
   const generateNewRandomChars = () => {
-    setRandomChars(prev => ({
-      ...prev,
-      value: generateRandomChars(prev.length)
-    }));
+    // Só gera se houver um número válido
+    if (randomChars.length && parseInt(randomChars.length) > 0) {
+      setRandomChars(prev => ({
+        ...prev,
+        value: generateRandomChars(parseInt(prev.length))
+      }));
+    }
   };
 
   useEffect(() => {
-    generateNewRandomChars();
+    // Só gera automaticamente se houver um número válido
+    if (randomChars.length && parseInt(randomChars.length) > 0) {
+      generateNewRandomChars();
+    } else {
+      // Limpa o valor gerado se o comprimento não for válido
+      setRandomChars(prev => ({
+        ...prev,
+        value: ''
+      }));
+    }
   }, [randomChars.length]);
 
   if (isLoading) {
@@ -404,19 +427,36 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
         <div className="card-header">
           <h2><FaRandom className="header-icon" /> Gerador de caracteres</h2>
           <div className="card-filters">
-            <input
-              type="number"
-              min="1"
-              max="9999999"
-              value={randomChars.length}
-              onChange={handleRandomCharsChange}
-              className="number-input"
-              style={{ 
-                width: '120px',
-                height: '36px',
-                padding: '0 12px'
-              }}
-            />
+            <div style={{ position: 'relative', display: 'inline-block' }}>
+              <input
+                type="number"
+                min="1"
+                max="9999999"
+                value={randomChars.length}
+                onChange={handleRandomCharsChange}
+                className="number-input"
+                style={{ 
+                  width: '120px',
+                  height: '36px',
+                  padding: '0 28px 0 12px'
+                }}
+              />
+              {randomChars.length && (
+                <FaTimes
+                  className="clear-icon"
+                  onClick={handleClearLength}
+                  style={{
+                    position: 'absolute',
+                    right: '8px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    cursor: 'pointer',
+                    color: 'var(--text-secondary)',
+                    fontSize: '14px'
+                  }}
+                />
+              )}
+            </div>
             <button 
               onClick={generateNewRandomChars}
               className="generate-all-btn"

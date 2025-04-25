@@ -416,4 +416,13 @@ input[type="number"] {
   outline: none;
   border-color: var(--accent-color);
   box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+}
+
+.clear-icon {
+  transition: all 0.2s ease;
+}
+
+.clear-icon:hover {
+  color: var(--accent-color) !important;
+  transform: translateY(-50%) scale(1.2) !important;
 } 
