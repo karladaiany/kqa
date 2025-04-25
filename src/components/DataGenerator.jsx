@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDataGenerator } from '../hooks/useDataGenerator';
 import { toast } from 'react-toastify';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -16,7 +16,11 @@ import {
   FaTimes,
   FaCalculator,
   FaBug,
-  FaComment
+  FaComment,
+  FaInfoCircle,
+  FaCamera,
+  FaPaperclip,
+  FaBroom
 } from 'react-icons/fa';
 import DataField from './DataField';
 
@@ -71,6 +75,440 @@ const FloatingNav = () => {
         <FaComment /> Comentário QA
       </div>
     </nav>
+  );
+};
+
+const BugRegistrationCard = () => {
+  const [bugData, setBugData] = useState({
+    incident: '',
+    steps: '',
+    expectedBehavior: '',
+    url: '',
+    login: '',
+    password: '',
+    envId: '',
+    others: '',
+    evidenceDescription: '',
+    evidenceLink: '',
+    hasAttachment: false
+  });
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleInputChange = (field, value) => {
+    if (field === 'envId' && value.length > 7) return;
+    setBugData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleClearField = (field) => {
+    if (field === 'all') {
+      setBugData({
+        incident: '',
+        steps: '',
+        expectedBehavior: '',
+        url: '',
+        login: '',
+        password: '',
+        envId: '',
+        others: '',
+        evidenceDescription: '',
+        evidenceLink: '',
+        hasAttachment: false
+      });
+      return;
+    }
+
+    setBugData(prev => ({
+      ...prev,
+      [field]: ''
+    }));
+  };
+
+  const handleToggleAttachment = () => {
+    setBugData(prev => ({
+      ...prev,
+      hasAttachment: !prev.hasAttachment
+    }));
+  };
+
+  const handleCopyAll = () => {
+    const textToCopy = `🐞 Registro de BUG
+
+Incidente identificado:
+${bugData.incident}
+
+Passo a passo para reprodução:
+${bugData.steps}
+
+Comportamento esperado:
+${bugData.expectedBehavior}
+
+ℹ️ Informações:
+URL: ${bugData.url}
+Login: ${bugData.login}
+Senha: ${bugData.password}
+ID do ambiente: ${bugData.envId}
+Outros: ${bugData.others}
+
+📷 Evidências:
+Descrição: ${bugData.evidenceDescription}
+Link: ${bugData.evidenceLink}
+Anexo: ${bugData.hasAttachment ? 'Sim' : 'Não'}`;
+
+    navigator.clipboard.writeText(textToCopy);
+    toast.success('Conteúdo copiado para a área de transferência!');
+  };
+
+  return (
+    <section className="card" id="bug">
+      <div className="card-header">
+        <h2><FaBug className="header-icon" /> Registro de BUG</h2>
+      </div>
+      <div className="card-content">
+        <div className="campo-item">
+          <label>Incidente identificado:</label>
+          <div className="campo-valor" style={{ position: 'relative' }}>
+            <input
+              type="text"
+              value={bugData.incident}
+              onChange={(e) => handleInputChange('incident', e.target.value)}
+              className="copyable"
+              style={{ 
+                width: '100%', 
+                paddingRight: bugData.incident ? '30px' : '12px',
+                color: 'var(--text-primary)'
+              }}
+            />
+            {bugData.incident && (
+              <FaTimes
+                className="clear-icon"
+                onClick={() => handleClearField('incident')}
+                style={{
+                  position: 'absolute',
+                  right: '8px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  cursor: 'pointer'
+                }}
+              />
+            )}
+          </div>
+        </div>
+
+        <div className="campo-item">
+          <label>Passo a passo para reprodução:</label>
+          <div className="campo-valor" style={{ position: 'relative' }}>
+            <input
+              type="text"
+              value={bugData.steps}
+              onChange={(e) => handleInputChange('steps', e.target.value)}
+              className="copyable"
+              style={{ 
+                width: '100%', 
+                paddingRight: bugData.steps ? '30px' : '12px',
+                color: 'var(--text-primary)'
+              }}
+            />
+            {bugData.steps && (
+              <FaTimes
+                className="clear-icon"
+                onClick={() => handleClearField('steps')}
+                style={{
+                  position: 'absolute',
+                  right: '8px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  cursor: 'pointer'
+                }}
+              />
+            )}
+          </div>
+        </div>
+
+        <div className="campo-item">
+          <label>Comportamento esperado:</label>
+          <div className="campo-valor" style={{ position: 'relative' }}>
+            <input
+              type="text"
+              value={bugData.expectedBehavior}
+              onChange={(e) => handleInputChange('expectedBehavior', e.target.value)}
+              className="copyable"
+              style={{ 
+                width: '100%', 
+                paddingRight: bugData.expectedBehavior ? '30px' : '12px',
+                color: 'var(--text-primary)'
+              }}
+            />
+            {bugData.expectedBehavior && (
+              <FaTimes
+                className="clear-icon"
+                onClick={() => handleClearField('expectedBehavior')}
+                style={{
+                  position: 'absolute',
+                  right: '8px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  cursor: 'pointer'
+                }}
+              />
+            )}
+          </div>
+        </div>
+
+        <div className="section-divider">
+          <FaInfoCircle /> Informações
+        </div>
+
+        <div className="campo-item">
+          <label>URL:</label>
+          <div className="campo-valor" style={{ position: 'relative' }}>
+            <input
+              type="text"
+              value={bugData.url}
+              onChange={(e) => handleInputChange('url', e.target.value)}
+              className="copyable"
+              style={{ 
+                width: '100%', 
+                paddingRight: bugData.url ? '30px' : '12px',
+                color: 'var(--text-primary)'
+              }}
+            />
+            {bugData.url && (
+              <FaTimes
+                className="clear-icon"
+                onClick={() => handleClearField('url')}
+                style={{
+                  position: 'absolute',
+                  right: '8px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  cursor: 'pointer'
+                }}
+              />
+            )}
+          </div>
+        </div>
+
+        <div className="campo-item">
+          <label>Login:</label>
+          <div className="campo-valor" style={{ position: 'relative' }}>
+            <input
+              type="text"
+              value={bugData.login}
+              onChange={(e) => handleInputChange('login', e.target.value)}
+              className="copyable"
+              style={{ 
+                width: '100%', 
+                paddingRight: bugData.login ? '30px' : '12px',
+                color: 'var(--text-primary)'
+              }}
+            />
+            {bugData.login && (
+              <FaTimes
+                className="clear-icon"
+                onClick={() => handleClearField('login')}
+                style={{
+                  position: 'absolute',
+                  right: '8px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  cursor: 'pointer'
+                }}
+              />
+            )}
+          </div>
+        </div>
+
+        <div className="campo-item">
+          <label>Senha:</label>
+          <div className="campo-valor" style={{ position: 'relative' }}>
+            <input
+              type={showPassword ? 'text' : 'password'}
+              value={bugData.password}
+              onChange={(e) => handleInputChange('password', e.target.value)}
+              className="copyable"
+              style={{ 
+                width: '100%', 
+                paddingRight: '60px',
+                color: 'var(--text-primary)'
+              }}
+            />
+            {bugData.password && (
+              <>
+                <FaMask
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '32px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    cursor: 'pointer',
+                    color: showPassword ? 'var(--accent-color)' : 'var(--text-secondary)'
+                  }}
+                />
+                <FaTimes
+                  className="clear-icon"
+                  onClick={() => handleClearField('password')}
+                  style={{
+                    position: 'absolute',
+                    right: '8px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    cursor: 'pointer'
+                  }}
+                />
+              </>
+            )}
+          </div>
+        </div>
+
+        <div className="campo-item">
+          <label>ID do ambiente:</label>
+          <div className="campo-valor" style={{ position: 'relative' }}>
+            <input
+              type="number"
+              value={bugData.envId}
+              onChange={(e) => handleInputChange('envId', e.target.value)}
+              className="copyable"
+              style={{ 
+                width: '100%', 
+                paddingRight: bugData.envId ? '30px' : '12px',
+                color: 'var(--text-primary)'
+              }}
+              max="9999999"
+            />
+            {bugData.envId && (
+              <FaTimes
+                className="clear-icon"
+                onClick={() => handleClearField('envId')}
+                style={{
+                  position: 'absolute',
+                  right: '8px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  cursor: 'pointer'
+                }}
+              />
+            )}
+          </div>
+        </div>
+
+        <div className="campo-item">
+          <label>Outros:</label>
+          <div className="campo-valor" style={{ position: 'relative' }}>
+            <input
+              type="text"
+              value={bugData.others}
+              onChange={(e) => handleInputChange('others', e.target.value)}
+              className="copyable"
+              style={{ 
+                width: '100%', 
+                paddingRight: bugData.others ? '30px' : '12px',
+                color: 'var(--text-primary)'
+              }}
+            />
+            {bugData.others && (
+              <FaTimes
+                className="clear-icon"
+                onClick={() => handleClearField('others')}
+                style={{
+                  position: 'absolute',
+                  right: '8px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  cursor: 'pointer'
+                }}
+              />
+            )}
+          </div>
+        </div>
+
+        <div className="section-divider">
+          <FaCamera /> Evidências
+        </div>
+
+        <div className="campo-item">
+          <label>Descrição da evidência:</label>
+          <div className="campo-valor" style={{ position: 'relative' }}>
+            <input
+              type="text"
+              value={bugData.evidenceDescription}
+              onChange={(e) => handleInputChange('evidenceDescription', e.target.value)}
+              className="copyable"
+              style={{ 
+                width: '100%', 
+                paddingRight: bugData.evidenceDescription ? '30px' : '12px',
+                color: 'var(--text-primary)'
+              }}
+            />
+            {bugData.evidenceDescription && (
+              <FaTimes
+                className="clear-icon"
+                onClick={() => handleClearField('evidenceDescription')}
+                style={{
+                  position: 'absolute',
+                  right: '8px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  cursor: 'pointer'
+                }}
+              />
+            )}
+          </div>
+        </div>
+
+        <div className="campo-item">
+          <label>Link da evidência:</label>
+          <div className="campo-valor" style={{ position: 'relative' }}>
+            <input
+              type="text"
+              value={bugData.evidenceLink}
+              onChange={(e) => handleInputChange('evidenceLink', e.target.value)}
+              className="copyable"
+              style={{ 
+                width: '100%', 
+                paddingRight: bugData.evidenceLink ? '30px' : '12px',
+                color: 'var(--text-primary)'
+              }}
+            />
+            {bugData.evidenceLink && (
+              <FaTimes
+                className="clear-icon"
+                onClick={() => handleClearField('evidenceLink')}
+                style={{
+                  position: 'absolute',
+                  right: '8px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  cursor: 'pointer'
+                }}
+              />
+            )}
+          </div>
+        </div>
+
+        <div className="campo-item">
+          <div 
+            className={`attachment-toggle ${bugData.hasAttachment ? 'active' : ''}`}
+            onClick={handleToggleAttachment}
+          >
+            <FaPaperclip /> Evidência em anexo na atividade
+          </div>
+        </div>
+
+        <div className="card-actions">
+          <button className="action-button" onClick={handleCopyAll}>
+            <FaCopy /> Copiar
+          </button>
+          <button className="action-button clear" onClick={() => handleClearField('all')}>
+            <FaBroom /> Limpar tudo
+          </button>
+        </div>
+      </div>
+    </section>
   );
 };
 
@@ -585,9 +1023,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
         </div>
       </section>
 
-      <section className="card" id="bug">
-        {/* ... rest of the existing code ... */}
-      </section>
+      <BugRegistrationCard />
 
       <section className="card" id="qa">
         {/* ... rest of the existing code ... */}
