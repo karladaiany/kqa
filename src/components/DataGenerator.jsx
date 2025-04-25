@@ -13,7 +13,8 @@ import {
   FaGraduationCap,
   FaCreditCard,
   FaRandom,
-  FaTimes
+  FaTimes,
+  FaCalculator
 } from 'react-icons/fa';
 import DataField from './DataField';
 
@@ -71,6 +72,11 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
   const [randomChars, setRandomChars] = useState({
     length: '',
     value: ''
+  });
+
+  const [textCounter, setTextCounter] = useState({
+    text: '',
+    count: 0
   });
 
   const toggleMask = (field) => {
@@ -203,6 +209,21 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
         value: generateRandomChars(parseInt(prev.length))
       }));
     }
+  };
+
+  const handleTextChange = (e) => {
+    const newText = e.target.value;
+    setTextCounter({
+      text: newText,
+      count: newText.length
+    });
+  };
+
+  const handleClearText = () => {
+    setTextCounter({
+      text: '',
+      count: 0
+    });
   };
 
   useEffect(() => {
@@ -471,6 +492,55 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
             value={randomChars.value}
             rawValue={randomChars.value}
           />
+        </div>
+      </section>
+
+      <section className="card">
+        <div className="card-header">
+          <h2><FaCalculator className="header-icon" /> Contador de caracteres</h2>
+        </div>
+        <div className="card-content">
+          <div className="campo-item">
+            <div className="campo-valor" style={{ position: 'relative' }}>
+              <textarea
+                value={textCounter.text}
+                onChange={handleTextChange}
+                className="number-input"
+                placeholder="Cole seu texto aqui..."
+                style={{
+                  width: '100%',
+                  minHeight: '100px',
+                  resize: 'vertical',
+                  padding: '12px 28px 12px 12px',
+                  fontFamily: 'var(--font-primary)'
+                }}
+              />
+              {textCounter.text && (
+                <FaTimes
+                  className="clear-icon"
+                  onClick={handleClearText}
+                  style={{
+                    position: 'absolute',
+                    right: '24px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    cursor: 'pointer',
+                    color: 'var(--text-secondary)',
+                    fontSize: '14px',
+                    zIndex: 1
+                  }}
+                />
+              )}
+            </div>
+          </div>
+          <div className="campo-item">
+            <label>Total de caracteres:</label>
+            <div className="campo-valor">
+              <span className="copyable" style={{ textAlign: 'center' }}>
+                {textCounter.count}
+              </span>
+            </div>
+          </div>
         </div>
       </section>
     </div>
