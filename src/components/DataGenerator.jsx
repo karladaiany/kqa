@@ -10,7 +10,7 @@ import {
   FaTag, 
   FaIdCard, 
   FaUserAlt,
-  FaBox,
+  FaGraduationCap,
   FaCreditCard
 } from 'react-icons/fa';
 import DataField from './DataField';
@@ -279,7 +279,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 
       <section className="card">
         <div className="card-header">
-          <h2><FaBox className="header-icon" /> Produto</h2>
+          <h2><FaGraduationCap className="header-icon" /> Produto</h2>
           <button 
             className="generate-all-btn" 
             onClick={() => setProduct(generateProduct())}
