@@ -353,6 +353,71 @@ export const useDataGenerator = () => {
         categorias: gerarCategoriasUnicas(3)
     });
 
+    const generateRandomChars = (length) => {
+        // Para comprimentos muito pequenos, gera palavras curtas do lorem
+        if (length < 5) {
+            const word = faker.lorem.word();
+            return word.substring(0, length);
+        }
+
+        // Gera um texto maior e ajusta para o tamanho exato
+        let text = '';
+        
+        // Decide se vai usar palavras ou um texto contínuo baseado no tamanho
+        if (length < 50) {
+            // Para textos curtos, usa palavras individuais
+            while (text.length < length) {
+                const word = faker.lorem.word();
+                if (text.length === 0) {
+                    text = word;
+                } else if (text.length + word.length + 1 <= length) {
+                    text += ' ' + word;
+                } else {
+                    break;
+                }
+            }
+        } else {
+            // Para textos maiores, gera parágrafos e ajusta
+            text = faker.lorem.paragraphs(Math.ceil(length / 100)).replace(/\n/g, ' ');
+        }
+
+        // Ajusta o texto para o tamanho exato
+        if (text.length < length) {
+            // Se faltam caracteres, adiciona palavras até atingir ou ultrapassar
+            while (text.length < length) {
+                const word = faker.lorem.word();
+                if (text.length + word.length + 1 <= length) {
+                    text += ' ' + word;
+                } else {
+                    // Completa com caracteres do último word para atingir o tamanho exato
+                    const remaining = length - text.length - 1;
+                    if (remaining > 0) {
+                        text += ' ' + word.substring(0, remaining);
+                    }
+                    break;
+                }
+            }
+        } else if (text.length > length) {
+            // Se passou do tamanho, corta no último espaço antes do limite
+            text = text.substring(0, length);
+            const lastSpace = text.lastIndexOf(' ');
+            if (lastSpace > length * 0.8) { // Só corta no espaço se não perder mais de 20% do texto
+                text = text.substring(0, lastSpace);
+            }
+            
+            // Se ainda estiver maior que o limite, corta exatamente no limite
+            if (text.length > length) {
+                text = text.substring(0, length);
+            }
+            // Se ficou menor, completa com caracteres do lorem
+            while (text.length < length) {
+                text += faker.lorem.word().charAt(0);
+            }
+        }
+
+        return text;
+    };
+
     return {
         isLoading,
         error,
@@ -363,8 +428,6 @@ export const useDataGenerator = () => {
         generateCreditCard,
         generateProduct,
         gerarCEPValido,
-        formatCPF,
-        formatCNPJ,
-        formatRG
+        generateRandomChars
     };
 }; 

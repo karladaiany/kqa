@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDataGenerator } from '../hooks/useDataGenerator';
 import { toast } from 'react-toastify';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -11,7 +11,8 @@ import {
   FaIdCard, 
   FaUserAlt,
   FaGraduationCap,
-  FaCreditCard
+  FaCreditCard,
+  FaRandom
 } from 'react-icons/fa';
 import DataField from './DataField';
 
@@ -41,7 +42,8 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
     generatePerson,
     generateCreditCard,
     generateProduct,
-    gerarCEPValido
+    gerarCEPValido,
+    generateRandomChars
   } = useDataGenerator();
 
   const [documents, setDocuments] = useState({
@@ -63,6 +65,11 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
   const [cardConfig, setCardConfig] = useState({
     bandeira: 'visa',
     tipo: 'credito'
+  });
+
+  const [randomChars, setRandomChars] = useState({
+    length: 10,
+    value: ''
   });
 
   const toggleMask = (field) => {
@@ -168,6 +175,25 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
       return newConfig;
     });
   };
+
+  const handleRandomCharsChange = (e) => {
+    const length = parseInt(e.target.value) || 1;
+    setRandomChars(prev => ({
+      ...prev,
+      length: Math.min(Math.max(length, 1), 9999999) // Aumenta o limite máximo
+    }));
+  };
+
+  const generateNewRandomChars = () => {
+    setRandomChars(prev => ({
+      ...prev,
+      value: generateRandomChars(prev.length)
+    }));
+  };
+
+  useEffect(() => {
+    generateNewRandomChars();
+  }, [randomChars.length]);
 
   if (isLoading) {
     return <div>Carregando gerador de dados...</div>;
@@ -370,6 +396,40 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
           <DataField 
             label="CVV" 
             value={card.cvv}
+          />
+        </div>
+      </section>
+
+      <section className="card">
+        <div className="card-header">
+          <h2><FaRandom className="header-icon" /> Gerador de caracteres</h2>
+          <div className="card-filters">
+            <input
+              type="number"
+              min="1"
+              max="9999999"
+              value={randomChars.length}
+              onChange={handleRandomCharsChange}
+              className="number-input"
+              style={{ 
+                width: '120px',
+                height: '36px',
+                padding: '0 12px'
+              }}
+            />
+            <button 
+              onClick={generateNewRandomChars}
+              className="generate-all-btn"
+            >
+              <FaRedo className="generate-icon" /> Gerar
+            </button>
+          </div>
+        </div>
+        <div className="card-content">
+          <DataField 
+            label="Caracteres" 
+            value={randomChars.value}
+            rawValue={randomChars.value}
           />
         </div>
       </section>
