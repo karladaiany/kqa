@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import DataGenerator from './components/DataGenerator';
 import { ToastContainer } from 'react-toastify';
+import { FaSun, FaMoon } from 'react-icons/fa';
+import ScrollButtons from './components/ScrollButtons';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles.css';
 
@@ -17,6 +19,20 @@ window.addEventListener('error', (event) => {
 });
 
 const App = () => {
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const savedTheme = localStorage.getItem('theme');
+    return savedTheme ? savedTheme === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add('dark-theme');
+    } else {
+      document.body.classList.remove('dark-theme');
+    }
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+  }, [isDarkMode]);
+
   return (
     <div className="app">
       <header>
@@ -24,15 +40,16 @@ const App = () => {
         <button 
           id="theme-toggle" 
           className="theme-toggle" 
-          title="Alternar tema"
-          onClick={() => document.body.classList.toggle('dark-theme')}
+          title={isDarkMode ? "Mudar para tema claro" : "Mudar para tema escuro"}
+          onClick={() => setIsDarkMode(!isDarkMode)}
         >
-          🌓
+          {isDarkMode ? <FaSun /> : <FaMoon />}
         </button>
       </header>
       <main>
         <DataGenerator />
       </main>
+      <ScrollButtons />
       <ToastContainer
         position="bottom-right"
         autoClose={3000}
@@ -43,7 +60,7 @@ const App = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="dark"
+        theme={isDarkMode ? "dark" : "light"}
       />
     </div>
   );

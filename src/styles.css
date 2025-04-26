@@ -59,13 +59,28 @@ h1 {
   font-size: 1.2rem;
   color: var(--text-primary);
   transition: all 0.3s ease;
-  position: absolute;
-  right: 0;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background-color: var(--card-bg);
+  box-shadow: 0 2px 5px var(--shadow-color);
 }
 
 .theme-toggle:hover {
-  background-color: var(--card-bg);
   transform: scale(1.1);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.theme-toggle svg {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle:hover svg {
+  transform: rotate(30deg);
 }
 
 .card {
@@ -543,4 +558,56 @@ body.dark-theme .floating-nav-item:hover {
 .action-button.clear:hover {
   border-color: var(--error-color);
   color: var(--error-color);
+}
+
+.scroll-button {
+  position: fixed;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  box-shadow: 0 2px 5px var(--shadow-color);
+}
+
+.scroll-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.scroll-button.top {
+  bottom: 80px;
+}
+
+.scroll-button.bottom {
+  bottom: 20px;
+}
+
+.scroll-button:not(.disabled):hover {
+  transform: scale(1.1);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.scroll-button svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
+}
+
+.scroll-button:not(.disabled):hover svg {
+  transform: translateY(-2px);
+}
+
+.scroll-button.bottom:not(.disabled):hover svg {
+  transform: translateY(2px);
 } 
