@@ -15,6 +15,7 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
 import './QACommentCard.css';
+import QACard from './QACard';
 
 const QACommentCard = () => {
   const { isDarkMode } = useTheme();
@@ -158,17 +159,7 @@ ${qaData.blockReason ? `:: Motivo do Bloqueio ::\n${qaData.blockReason}\n` : ''}
   };
 
   return (
-    <Card 
-      id="qa-comment"
-      sx={{ 
-        p: 2, 
-        height: '100%',
-        boxShadow: '0 0.125rem 0.25rem rgba(0, 0, 0, 0.075)',
-        borderRadius: '0.25rem',
-        bgcolor: isDarkMode ? 'var(--dark-card-bg)' : 'var(--background-color)',
-        color: isDarkMode ? 'var(--dark-text)' : 'inherit'
-      }}
-    >
+    <QACard>
       <div className="card-header">
         <h5>
           <i className="fas fa-comment"></i>
@@ -350,7 +341,7 @@ ${qaData.blockReason ? `:: Motivo do Bloqueio ::\n${qaData.blockReason}\n` : ''}
           </button>
         </div>
       </div>
-    </Card>
+    </QACard>
   );
 };
 

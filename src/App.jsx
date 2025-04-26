@@ -4,6 +4,7 @@ import { BackToTop } from './components/BackToTop/BackToTop';
 import { ToastProvider } from './context/ToastContext';
 import BugReportCard from './components/BugReportCard/BugReportCard';
 import QACommentCard from './components/QACommentCard';
+import QACommentCardNovo from './components/QACommentCardNovo';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { PersonalData } from './components/PersonalData/PersonalData';
@@ -60,7 +61,7 @@ function AppContent() {
               <div id="bug-report"><BugReportCard /></div>
             </div>
             <div className="col-6">
-              <div id="qa-comment"><QACommentCard /></div>
+              <QACommentCardNovo />
             </div>
           </div>
         </div>

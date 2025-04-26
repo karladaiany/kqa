@@ -8,6 +8,11 @@
     --secondary-color: #6c757d;
     --success-color: #198754;
     --transition-speed: 0.2s;
+    --input-bg: rgba(0, 0, 0, 0.2);
+    --primary-color-dark: #0b5ed7;
+    --primary-color-rgb: 13, 110, 253;
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
 }
 
 body {
@@ -222,4 +227,19 @@ body {
     .fa-sync-alt {
         transition: none;
     }
+}
+
+/* Remover estilos específicos do deploy-card pois agora usa as classes padrão */
+
+/* Ajuste para inputs nos cards */
+.campo-valor input.copyable {
+    color: var(--text-primary);
+    background-color: var(--input-bg);
+    border: none;
+    width: 100%;
+    font-family: inherit;
+}
+
+.campo-valor input.copyable::placeholder {
+    color: var(--text-secondary);
 } 
