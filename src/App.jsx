@@ -11,8 +11,7 @@ import { CreditCard } from './components/CreditCard/CreditCard';
 import { Documents } from './components/Documents/Documents';
 import { Products } from './components/Products/Products';
 import { CharCounter } from './components/CharCounter/CharCounter';
-import { CharacterCounter } from './components/CharacterCounter/CharacterCounter';
-import { ScrollToBottom } from './components/ScrollToBottom/ScrollToBottom';
+import { ScrollButtons } from './components/ScrollButtons';
 import './App.css';
 
 function AppContent() {
@@ -42,7 +41,7 @@ function AppContent() {
               <div id="documents"><Documents /></div>
               <div id="products"><Products /></div>
               <div id="char-generator"><CharCounter /></div>
-              <div id="char-counter"><CharacterCounter /></div>
+              <div id="char-counter"><CharCounter /></div>
             </div>
           </div>
         </section>
@@ -67,7 +66,7 @@ function AppContent() {
         </div>
       </main>
       <FloatingMenu />
-      <ScrollToBottom />
+      <ScrollButtons />
       <BackToTop />
     </div>
   );
