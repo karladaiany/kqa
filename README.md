@@ -6,7 +6,7 @@ Uma aplicação web para gerar dados fictícios úteis para testes de qualidade 
 
 - Geração de documentos (CPF, CNPJ, RG)
 - Geração de dados pessoais
-- Geração de cartões de crédito
+- Geração de cartões de crédito e débito
 - Geração de produtos
 - Copiar dados para área de transferência
 - Alternar entre tema claro e escuro
@@ -69,26 +69,6 @@ Para criar uma versão de produção:
 ```bash
 npm run build
 ```
-
-## Testes
-
-Para executar os testes:
-```bash
-npm test
-```
-
-Para abrir o Cypress:
-```bash
-npm run test:open
-```
-
-## Contribuição
-
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
 
 ## Licença
 

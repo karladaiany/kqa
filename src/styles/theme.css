@@ -81,7 +81,7 @@ textarea.copyable {
   width: 100%;
   resize: none;
   min-height: 3.5em;
-  font-family: 'Fira Code', monospace;
+  font-family: 'Roboto', monospace;
   line-height: 1.5;
   box-shadow: 0 0 0 0.1rem rgba(189, 147, 249, 0.1);
   -webkit-appearance: none;
@@ -231,7 +231,7 @@ label::first-letter {
 }
 
 .copyable {
-  font-family: 'Fira Code', monospace;
+  font-family: 'Roboto', monospace;
   color: var(--text-primary);
 }
 

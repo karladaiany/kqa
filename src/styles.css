@@ -4,7 +4,7 @@
   --text-primary: #212529;
   --text-secondary: #6c757d;
   --border-color: #dee2e6;
-  --accent-color: #0d6efd;
+  --accent-color: #785DC8;
   --success-color: #198754;
   --error-color: #dc3545;
 }
@@ -19,7 +19,7 @@ body.dark-theme {
 
 body {
   margin: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Roboto', sans-serif;
   background-color: var(--background-color);
   color: var(--text-primary);
   transition: background-color 0.3s ease;
@@ -212,7 +212,7 @@ body.dark-theme .card-select option {
   background-color: var(--background-color);
   border: 1px solid var(--border-color);
   border-radius: 4px;
-  font-family: 'Fira Code', monospace;
+  font-family: 'Roboto', monospace;
   cursor: pointer;
   transition: all 0.2s ease;
 }

@@ -4,12 +4,12 @@
     --card-bg: #2f3136;
     --border-color: #40444b;
     --text-color: #ffffff;
-    --primary-color: #0d6efd;
+    --primary-color: #785DC8;
     --secondary-color: #6c757d;
     --success-color: #198754;
     --transition-speed: 0.2s;
     --input-bg: rgba(0, 0, 0, 0.2);
-    --primary-color-dark: #0b5ed7;
+    --primary-color-dark: #785DC8;
     --primary-color-rgb: 13, 110, 253;
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.7);
@@ -18,7 +18,7 @@
 body {
     background-color: var(--background-color);
     color: var(--text-color);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 20px 0;
 }
@@ -103,7 +103,7 @@ body {
 
 .copyable {
     flex: 1;
-    font-family: 'Fira Code', monospace;
+    font-family: 'Roboto', monospace;
     margin-right: 0.5rem;
     cursor: pointer;
     color: var(--text-color);
@@ -157,7 +157,7 @@ body {
 }
 
 .btn-primary:hover {
-    background-color: #0b5ed7;
+    background-color: #785DC8;
 }
 
 .btn-primary i {

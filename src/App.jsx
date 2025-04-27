@@ -3,8 +3,6 @@ import { FloatingMenu } from './components/FloatingMenu/FloatingMenu';
 import { BackToTop } from './components/BackToTop/BackToTop';
 import { ToastProvider } from './context/ToastContext';
 import BugReportCard from './components/BugReportCard/BugReportCard';
-import QACommentCard from './components/QACommentCard';
-import QACommentCardNovo from './components/QACommentCardNovo';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { PersonalData } from './components/PersonalData/PersonalData';
