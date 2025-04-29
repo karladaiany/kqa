@@ -5,7 +5,8 @@ import { ToastContainer } from 'react-toastify';
 import { FaSun, FaMoon } from 'react-icons/fa';
 import ScrollButtons from './components/ScrollButtons';
 import 'react-toastify/dist/ReactToastify.css';
-import './styles.css';
+import './styles/theme.css';
+import './styles/components.css';
 
 // Tratamento global de erros
 window.addEventListener('error', (event) => {
