@@ -16,7 +16,6 @@ import {
   FaTimes,
   FaCalculator,
   FaBug,
-  FaComment,
   FaInfoCircle,
   FaCamera,
   FaPaperclip,
@@ -73,9 +72,6 @@ const FloatingNav = () => {
       </div>
       <div className="floating-nav-item" onClick={() => scrollToSection('bug')}>
         <FaBug /> Registro de BUG
-      </div>
-      <div className="floating-nav-item" onClick={() => scrollToSection('qa')}>
-        <FaComment /> Comentário QA
       </div>
       <div className="floating-nav-item" onClick={() => scrollToSection('deploy')}>
         <FaRocket /> Deploy
