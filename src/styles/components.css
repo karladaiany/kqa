@@ -7,6 +7,9 @@
   --accent-color: #785DC8;
   --success-color: #198754;
   --error-color: #dc3545;
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-sm: 0.875rem;    /* 14px */
+  --font-size-lg: 1.125rem;    /* 18px */
 }
 
 body.dark-theme {
@@ -19,7 +22,7 @@ body.dark-theme {
 
 body {
   margin: 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   background-color: var(--background-color);
   color: var(--text-primary);
   transition: background-color 0.3s ease;
@@ -197,12 +200,14 @@ body.dark-theme .card-select option {
   min-width: 180px;
   color: var(--text-secondary);
   padding-top: 10px;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
 }
 
 .campo-valor {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.25rem;
   background-color: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: 4px;
@@ -211,6 +216,15 @@ body.dark-theme .card-select option {
   width: 100%;
   box-sizing: border-box;
   position: relative;
+  font-size: var(--font-size-base);
+}
+
+.campo-valor input,
+.campo-valor input.copyable,
+.campo-valor textarea,
+.copyable {
+  font-size: var(--font-size-base);
+  line-height: 1.5;
 }
 
 .campo-valor input,
@@ -228,7 +242,7 @@ body.dark-theme .card-select option {
 
 .copyable {
   flex: 1;
-  font-family: 'Roboto', monospace;
+  font-family: 'Inter', monospace;
   cursor: pointer;
   color: var(--text-primary);
   background: transparent;
@@ -464,7 +478,7 @@ input[type="number"] {
   border-radius: 4px;
   background-color: var(--background-color);
   color: var(--text-primary);
-  font-family: 'Roboto', monospace;
+  font-family: 'Inter', monospace;
   transition: all 0.2s ease;
 }
 
@@ -496,7 +510,7 @@ textarea.campo-valor {
   border: 1px solid var(--border-color);
   border-radius: 4px;
   color: var(--text-primary);
-  font-family: 'Roboto', monospace;
+  font-family: 'Inter', monospace;
   line-height: 1.5;
   resize: vertical;
 }
@@ -509,7 +523,7 @@ textarea.campo-valor {
   background-color: transparent;
   border: none;
   color: var(--text-primary);
-  font-family: 'Roboto', monospace;
+  font-family: 'Inter', monospace;
   line-height: 1.5;
   resize: vertical;
   outline: none;
@@ -579,10 +593,28 @@ body.dark-theme .floating-nav-item:hover {
 }
 
 .section-divider {
-  height: 1px;
-  background-color: var(--border-color);
-  margin: 2rem 0;
-  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-color);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.section-title i,
+.section-title svg {
+  color: var(--accent-color);
 }
 
 .attachment-toggle {
@@ -774,5 +806,4 @@ body.dark-theme .floating-nav-item:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 0.5rem;
 } 

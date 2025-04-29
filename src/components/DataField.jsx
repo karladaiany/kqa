@@ -1,13 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FaCopy, FaSync } from 'react-icons/fa';
+import { FaCopy, FaSync, FaMask } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
-const DataField = ({ label, value, rawValue, onRegenerate, testId, isTextArea }) => {
+const DataField = ({ 
+  label, 
+  value, 
+  raw = '', 
+  onRegenerate = null, 
+  testId = '', 
+  isTextArea = false,
+  showMask = true,
+  onToggleMask = null 
+}) => {
   const fieldId = testId || `field-${label.toLowerCase().replace(/\s+/g, '-')}`;
   
   const handleCopy = () => {
-    const textToCopy = rawValue || value;
+    const textToCopy = !showMask && raw ? raw : value;
     navigator.clipboard.writeText(textToCopy)
       .then(() => toast.success('Copiado para a área de transferência!'))
       .catch(() => toast.error('Erro ao copiar para a área de transferência'));
@@ -34,7 +43,7 @@ const DataField = ({ label, value, rawValue, onRegenerate, testId, isTextArea })
             tabIndex={0}
             onKeyPress={(e) => e.key === 'Enter' && handleCopy()}
           >
-            {value}
+            {showMask ? value : (raw || value)}
           </span>
         )}
         <button
@@ -55,6 +64,16 @@ const DataField = ({ label, value, rawValue, onRegenerate, testId, isTextArea })
             <FaSync className="regenerate-icon" />
           </button>
         )}
+        {onToggleMask && (
+          <button
+            type="button"
+            className="icon-button"
+            onClick={onToggleMask}
+            aria-label="Alternar máscara"
+          >
+            <FaMask className={`mask-icon ${showMask ? 'active' : ''}`} />
+          </button>
+        )}
       </div>
     </div>
   );
@@ -63,17 +82,12 @@ const DataField = ({ label, value, rawValue, onRegenerate, testId, isTextArea })
 DataField.propTypes = {
   label: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
-  rawValue: PropTypes.string,
+  raw: PropTypes.string,
   onRegenerate: PropTypes.func,
   testId: PropTypes.string,
   isTextArea: PropTypes.bool,
-};
-
-DataField.defaultProps = {
-  rawValue: '',
-  onRegenerate: null,
-  testId: '',
-  isTextArea: false,
+  showMask: PropTypes.bool,
+  onToggleMask: PropTypes.func
 };
 
 export default DataField; 

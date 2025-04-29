@@ -725,10 +725,13 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
     rg: generateRG()
   });
 
-  const [masks, setMasks] = useState({
-    cpf: true,
-    cnpj: true,
-    rg: true
+  const [masks, setMasks] = useState(() => {
+    const savedMasks = localStorage.getItem('document-masks');
+    return savedMasks ? JSON.parse(savedMasks) : {
+      cpf: true,
+      cnpj: true,
+      rg: true
+    };
   });
 
   const [person, setPerson] = useState(generatePerson());
@@ -751,10 +754,14 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
   });
 
   const toggleMask = (field) => {
-    setMasks(prev => ({
-      ...prev,
-      [field]: !prev[field]
-    }));
+    setMasks(prev => {
+      const newMasks = {
+        ...prev,
+        [field]: !prev[field]
+      };
+      localStorage.setItem('document-masks', JSON.stringify(newMasks));
+      return newMasks;
+    });
   };
 
   const regenerateField = (field) => {

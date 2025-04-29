@@ -58,9 +58,6 @@ function AppContent() {
             <div className="col-6">
               <div id="bug-report"><BugReportCard /></div>
             </div>
-            <div className="col-6">
-              <QACommentCardNovo />
-            </div>
           </div>
         </div>
       </main>

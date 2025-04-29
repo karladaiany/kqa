@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fakerPT_BR as faker } from '@faker-js/faker';
+import { generateCPF as generateValidCPF, generateCNPJ as generateValidCNPJ, generateRG as generateValidRG } from '../generators/documents';
 
 const removeAcentos = (texto) => {
     return texto
@@ -269,7 +270,7 @@ export const useDataGenerator = () => {
     const formatRG = (rg) => rg.replace(/(\d{2})(\d{3})(\d{3})(\d{1})/, '$1.$2.$3-$4');
 
     const generateCPF = () => {
-        const raw = Array.from({ length: 11 }, () => Math.floor(Math.random() * 10)).join('');
+        const raw = generateValidCPF();
         return {
             raw,
             formatted: formatCPF(raw)
@@ -277,7 +278,7 @@ export const useDataGenerator = () => {
     };
 
     const generateCNPJ = () => {
-        const raw = Array.from({ length: 14 }, () => Math.floor(Math.random() * 10)).join('');
+        const raw = generateValidCNPJ();
         return {
             raw,
             formatted: formatCNPJ(raw)
@@ -285,7 +286,7 @@ export const useDataGenerator = () => {
     };
 
     const generateRG = () => {
-        const raw = Array.from({ length: 9 }, () => Math.floor(Math.random() * 10)).join('');
+        const raw = generateValidRG();
         return {
             raw,
             formatted: formatRG(raw)

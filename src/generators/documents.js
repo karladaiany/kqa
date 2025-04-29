@@ -63,13 +63,31 @@ export function generateCNPJ() {
 }
 
 /**
- * Gera um RG válido
+ * Gera um RG válido no formato de São Paulo
+ * O dígito verificador é calculado usando a regra:
+ * 1. Multiplica cada dígito por um peso (2,3,4,5,6,7,8,9)
+ * 2. Soma os resultados
+ * 3. Divide por 11 e pega o resto
+ * 4. Se o resto for 10, o DV é X, senão é o próprio resto
  * @returns {string} RG gerado
  */
 export function generateRG() {
+    // Gera os 8 primeiros dígitos
     let rg = '';
     for (let i = 0; i < 8; i++) {
         rg += Math.floor(Math.random() * 10);
     }
-    return rg;
+
+    // Calcula o dígito verificador
+    let soma = 0;
+    const pesos = [2, 3, 4, 5, 6, 7, 8, 9];
+    
+    for (let i = 0; i < 8; i++) {
+        soma += parseInt(rg[i]) * pesos[i];
+    }
+
+    const resto = soma % 11;
+    const dv = resto === 10 ? 'X' : resto.toString();
+
+    return rg + dv;
 } 
