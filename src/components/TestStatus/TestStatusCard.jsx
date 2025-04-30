@@ -572,22 +572,22 @@ const TestStatusCard = () => {
         {renderConditionalFields()}
         {renderEvidenceSection()}
 
-        <div className="card-actions">
-          <button 
-            className="action-button" 
-            onClick={handleCopy}
-            disabled={!testStatus}
-          >
-            <FaCopy /> Copiar
-          </button>
-          <button 
-            className="action-button clear" 
-            onClick={handleClear}
-            disabled={!testStatus}
-          >
-            <FaBroom /> Limpar tudo
-          </button>
-        </div>
+        {testStatus && (
+          <div className="card-actions">
+            <button 
+              className="action-button" 
+              onClick={handleCopy}
+            >
+              <FaCopy /> Copiar
+            </button>
+            <button 
+              className="action-button clear" 
+              onClick={handleClear}
+            >
+              <FaBroom /> Limpar tudo
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );
