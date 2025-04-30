@@ -21,10 +21,12 @@ import {
   FaPaperclip,
   FaBroom,
   FaEye,
-  FaRocket
+  FaRocket,
+  FaComment
 } from 'react-icons/fa';
 import DataField from './DataField';
 import { useBugRegistration } from '../hooks/useBugRegistration';
+import TestStatusCard from './TestStatus/TestStatusCard';
 
 const CategoryTag = ({ category }) => {
   const handleCopy = () => {
@@ -72,6 +74,9 @@ const FloatingNav = () => {
       </div>
       <div className="floating-nav-item" onClick={() => scrollToSection('bug')}>
         <FaBug /> Registro de BUG
+      </div>
+      <div className="floating-nav-item" onClick={() => scrollToSection('test-status')}>
+        <FaComment /> Comentário QA
       </div>
       <div className="floating-nav-item" onClick={() => scrollToSection('deploy')}>
         <FaRocket /> Deploy
@@ -1220,11 +1225,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
       </section>
 
       <BugRegistrationCard />
-
-      <section className="card" id="qa">
-        {/* ... rest of the existing code ... */}
-      </section>
-
+      <TestStatusCard />
       <DeployCard />
     </div>
   );
