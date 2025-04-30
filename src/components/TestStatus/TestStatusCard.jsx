@@ -151,7 +151,6 @@ const TestStatusCard = () => {
                   id="observation"
                   value={formData.observation}
                   onChange={handleInputChange('observation')}
-                  placeholder="Digite sua observação"
                 />
                 {formData.observation && (
                   <FaTimes
@@ -174,7 +173,6 @@ const TestStatusCard = () => {
                   id="waiting"
                   value={formData.waiting}
                   onChange={handleInputChange('waiting')}
-                  placeholder="Digite o que está aguardando"
                 />
                 {formData.waiting && (
                   <FaTimes
@@ -204,7 +202,6 @@ const TestStatusCard = () => {
                   id="observation"
                   value={formData.observation}
                   onChange={handleInputChange('observation')}
-                  placeholder="Digite sua observação"
                 />
                 {formData.observation && (
                   <FaTimes
@@ -227,7 +224,6 @@ const TestStatusCard = () => {
                   id="blockReason"
                   value={formData.blockReason}
                   onChange={handleInputChange('blockReason')}
-                  placeholder="Digite o motivo do bloqueio"
                 />
                 {formData.blockReason && (
                   <FaTimes
@@ -255,7 +251,6 @@ const TestStatusCard = () => {
                 id="observation"
                 value={formData.observation}
                 onChange={handleInputChange('observation')}
-                placeholder="Digite sua observação"
               />
               {formData.observation && (
                 <FaTimes
@@ -284,7 +279,6 @@ const TestStatusCard = () => {
                   id="validation"
                   value={formData.validation}
                   onChange={handleInputChange('validation')}
-                  placeholder="Digite a validação realizada"
                 />
                 {formData.validation && (
                   <FaTimes
@@ -307,7 +301,6 @@ const TestStatusCard = () => {
                   id="observation"
                   value={formData.observation}
                   onChange={handleInputChange('observation')}
-                  placeholder="Digite sua observação"
                 />
                 {formData.observation && (
                   <FaTimes
@@ -337,7 +330,6 @@ const TestStatusCard = () => {
                   id="observation"
                   value={formData.observation}
                   onChange={handleInputChange('observation')}
-                  placeholder="Digite sua observação"
                 />
                 {formData.observation && (
                   <FaTimes
@@ -367,7 +359,6 @@ const TestStatusCard = () => {
                   id="validation"
                   value={formData.validation}
                   onChange={handleInputChange('validation')}
-                  placeholder="Digite a validação realizada"
                 />
                 {formData.validation && (
                   <FaTimes
@@ -390,7 +381,6 @@ const TestStatusCard = () => {
                   id="observation"
                   value={formData.observation}
                   onChange={handleInputChange('observation')}
-                  placeholder="Digite sua observação"
                 />
                 {formData.observation && (
                   <FaTimes
@@ -413,7 +403,6 @@ const TestStatusCard = () => {
                   id="information"
                   value={formData.information}
                   onChange={handleInputChange('information')}
-                  placeholder="Digite as informações adicionais"
                 />
                 {formData.information && (
                   <FaTimes
@@ -436,7 +425,6 @@ const TestStatusCard = () => {
                   id="returnReason"
                   value={formData.returnReason}
                   onChange={handleInputChange('returnReason')}
-                  placeholder="Digite o motivo do retorno"
                 />
                 {formData.returnReason && (
                   <FaTimes
@@ -476,7 +464,6 @@ const TestStatusCard = () => {
               id="evidenceDescription"
               value={formData.evidenceDescription}
               onChange={handleInputChange('evidenceDescription')}
-              placeholder="Digite a descrição da evidência"
             />
             {formData.evidenceDescription && (
               <FaTimes
@@ -502,7 +489,6 @@ const TestStatusCard = () => {
               value={formData.evidenceLink}
               onChange={handleInputChange('evidenceLink')}
               className="copyable"
-              placeholder="Cole o link da evidência"
               style={{ 
                 width: '100%', 
                 height: '36px',

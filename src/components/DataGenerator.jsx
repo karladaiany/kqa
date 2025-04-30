@@ -1136,10 +1136,13 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
                 value={randomChars.length}
                 onChange={handleRandomCharsChange}
                 className="number-input"
+                placeholder="Nº Caracteres"
                 style={{ 
                   width: '120px',
                   height: '36px',
-                  padding: '0 28px 0 12px'
+                  padding: '0 28px 0 12px',
+                  backgroundColor: 'var(--card-bg)',
+                  fontFamily: 'Inter, sans-serif'
                 }}
               />
               {randomChars.length && (
@@ -1168,7 +1171,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
         </div>
         <div className="card-content">
           <DataField 
-            label="Caracteres" 
+            label="Caracteres gerados" 
             value={randomChars.value}
             rawValue={randomChars.value}
           />
