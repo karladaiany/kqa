@@ -24,7 +24,7 @@ const DataField = ({
 
   return (
     <div className="campo-item" data-testid={fieldId}>
-      <label htmlFor={`${fieldId}-value`}>{label}:</label>
+      <label htmlFor={`${fieldId}-value`}>{label}</label>
       <div className={`campo-valor ${isTextArea ? 'textarea-container' : ''}`}>
         {isTextArea ? (
           <textarea

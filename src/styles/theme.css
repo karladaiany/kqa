@@ -113,7 +113,6 @@ body {
 }
 
 .campo-item label {
-    min-width: 180px;
     color: var(--text-secondary);
     font-weight: 500;
     padding-top: 10px;

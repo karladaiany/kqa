@@ -103,8 +103,8 @@ const BugRegistrationCard = () => {
       </div>
       <div className="card-content">
         <div className="campo-item">
-          <label>Incidente identificado:</label>
-          <div className="campo-valor" style={{ position: 'relative' }}>
+          <label>Incidente identificado</label>
+          <div className="campo-valor">
             <textarea
               value={bugData.incident}
               onChange={(e) => handleInputChange('incident', e.target.value)}
@@ -113,8 +113,7 @@ const BugRegistrationCard = () => {
                 width: '100%', 
                 minHeight: '60px',
                 resize: 'vertical',
-                paddingRight: bugData.incident ? '30px' : '12px',
-                color: 'var(--text-primary)'
+                paddingRight: bugData.incident ? '30px' : '12px'
               }}
             />
             {bugData.incident && (
@@ -133,20 +132,20 @@ const BugRegistrationCard = () => {
         </div>
 
         <div className="campo-item">
-          <label>Passo a passo para reprodução:</label>
-          <div className="campo-valor" style={{ position: 'relative' }}>
+          <div className="campo-valor">
             <textarea
               value={bugData.steps}
               onChange={(e) => handleInputChange('steps', e.target.value)}
               className="copyable"
+              placeholder=" "
               style={{ 
                 width: '100%', 
                 minHeight: '100px',
                 resize: 'vertical',
-                paddingRight: bugData.steps ? '30px' : '12px',
-                color: 'var(--text-primary)'
+                paddingRight: bugData.steps ? '30px' : '12px'
               }}
             />
+            <label>Passo a passo para reprodução</label>
             {bugData.steps && (
               <FaTimes
                 className="clear-icon"
@@ -163,20 +162,20 @@ const BugRegistrationCard = () => {
         </div>
 
         <div className="campo-item">
-          <label>Comportamento esperado:</label>
-          <div className="campo-valor" style={{ position: 'relative' }}>
+          <div className="campo-valor">
             <textarea
               value={bugData.expectedBehavior}
               onChange={(e) => handleInputChange('expectedBehavior', e.target.value)}
               className="copyable"
+              placeholder=" "
               style={{ 
                 width: '100%', 
                 minHeight: '60px',
                 resize: 'vertical',
-                paddingRight: bugData.expectedBehavior ? '30px' : '12px',
-                color: 'var(--text-primary)'
+                paddingRight: bugData.expectedBehavior ? '30px' : '12px'
               }}
             />
+            <label>Comportamento esperado</label>
             {bugData.expectedBehavior && (
               <FaTimes
                 className="clear-icon"
@@ -197,19 +196,19 @@ const BugRegistrationCard = () => {
         </div>
 
         <div className="campo-item">
-          <label>URL:</label>
-          <div className="campo-valor" style={{ position: 'relative' }}>
+          <div className="campo-valor">
             <input
               type="text"
               value={bugData.url}
               onChange={(e) => handleInputChange('url', e.target.value)}
               className="copyable"
+              placeholder=" "
               style={{ 
                 width: '100%', 
-                paddingRight: bugData.url ? '30px' : '12px',
-                color: 'var(--text-primary)'
+                paddingRight: bugData.url ? '30px' : '12px'
               }}
             />
+            <label>URL</label>
             {bugData.url && (
               <FaTimes
                 className="clear-icon"
@@ -227,19 +226,19 @@ const BugRegistrationCard = () => {
         </div>
 
         <div className="campo-item">
-          <label>Login:</label>
-          <div className="campo-valor" style={{ position: 'relative' }}>
+          <div className="campo-valor">
             <input
               type="text"
               value={bugData.login}
               onChange={(e) => handleInputChange('login', e.target.value)}
               className="copyable"
+              placeholder=" "
               style={{ 
                 width: '100%', 
-                paddingRight: bugData.login ? '30px' : '12px',
-                color: 'var(--text-primary)'
+                paddingRight: bugData.login ? '30px' : '12px'
               }}
             />
+            <label>Login</label>
             {bugData.login && (
               <FaTimes
                 className="clear-icon"
@@ -257,19 +256,19 @@ const BugRegistrationCard = () => {
         </div>
 
         <div className="campo-item">
-          <label>Senha:</label>
-          <div className="campo-valor" style={{ position: 'relative' }}>
+          <div className="campo-valor">
             <input
               type={showPassword ? 'text' : 'password'}
               value={bugData.password}
               onChange={(e) => handleInputChange('password', e.target.value)}
               className="copyable"
+              placeholder=" "
               style={{ 
                 width: '100%', 
-                paddingRight: '60px',
-                color: 'var(--text-primary)'
+                paddingRight: '60px'
               }}
             />
+            <label>Senha</label>
             <FaEye
               className="toggle-password"
               onClick={() => setShowPassword(!showPassword)}
@@ -299,20 +298,20 @@ const BugRegistrationCard = () => {
         </div>
 
         <div className="campo-item">
-          <label>ID do ambiente:</label>
-          <div className="campo-valor" style={{ position: 'relative' }}>
+          <div className="campo-valor">
             <input
               type="number"
               value={bugData.envId}
               onChange={(e) => handleInputChange('envId', e.target.value)}
               className="copyable"
+              placeholder=" "
               style={{ 
                 width: '100%', 
                 paddingRight: bugData.envId ? '30px' : '12px',
-                color: 'var(--text-primary)'
+                max: '9999999'
               }}
-              max="9999999"
             />
+            <label>ID do ambiente</label>
             {bugData.envId && (
               <FaTimes
                 className="clear-icon"
@@ -330,20 +329,20 @@ const BugRegistrationCard = () => {
         </div>
 
         <div className="campo-item">
-          <label>Outros:</label>
-          <div className="campo-valor" style={{ position: 'relative' }}>
+          <div className="campo-valor">
             <textarea
               value={bugData.others}
               onChange={(e) => handleInputChange('others', e.target.value)}
               className="copyable"
+              placeholder=" "
               style={{ 
                 width: '100%', 
                 minHeight: '60px',
                 resize: 'vertical',
-                paddingRight: bugData.others ? '30px' : '12px',
-                color: 'var(--text-primary)'
+                paddingRight: bugData.others ? '30px' : '12px'
               }}
             />
+            <label>Outros</label>
             {bugData.others && (
               <FaTimes
                 className="clear-icon"
@@ -364,20 +363,20 @@ const BugRegistrationCard = () => {
         </div>
 
         <div className="campo-item">
-          <label>Descrição da evidência:</label>
-          <div className="campo-valor" style={{ position: 'relative' }}>
+          <div className="campo-valor">
             <textarea
               value={bugData.evidenceDescription}
               onChange={(e) => handleInputChange('evidenceDescription', e.target.value)}
               className="copyable"
+              placeholder=" "
               style={{ 
                 width: '100%', 
                 minHeight: '60px',
                 resize: 'vertical',
-                paddingRight: bugData.evidenceDescription ? '30px' : '12px',
-                color: 'var(--text-primary)'
+                paddingRight: bugData.evidenceDescription ? '30px' : '12px'
               }}
             />
+            <label>Descrição da evidência</label>
             {bugData.evidenceDescription && (
               <FaTimes
                 className="clear-icon"
@@ -394,19 +393,19 @@ const BugRegistrationCard = () => {
         </div>
 
         <div className="campo-item">
-          <label>Link da evidência:</label>
-          <div className="campo-valor" style={{ position: 'relative' }}>
+          <div className="campo-valor">
             <input
               type="text"
               value={bugData.evidenceLink}
               onChange={(e) => handleInputChange('evidenceLink', e.target.value)}
               className="copyable"
+              placeholder=" "
               style={{ 
                 width: '100%', 
-                paddingRight: bugData.evidenceLink ? '30px' : '12px',
-                color: 'var(--text-primary)'
+                paddingRight: bugData.evidenceLink ? '30px' : '12px'
               }}
             />
+            <label>Link da evidência</label>
             {bugData.evidenceLink && (
               <FaTimes
                 className="clear-icon"
@@ -645,12 +644,12 @@ const DeployCard = () => {
       <div className="card-content">
         {fields.map((field) => (
           <div key={field.id} className="campo-item">
-            <label>{field.label}:</label>
-            <div className="campo-valor" style={{ position: 'relative' }}>
+            <div className="campo-valor">
               <textarea
                 value={fieldValues[field.id] || ''}
                 onChange={(e) => handleInputChange(field.id, e.target.value)}
                 className="copyable"
+                placeholder=" "
                 style={{ 
                   width: '100%', 
                   height: '24px',
@@ -665,6 +664,7 @@ const DeployCard = () => {
                 }}
                 rows="1"
               />
+              <label>{field.label}</label>
               {fieldValues[field.id] && (
                 <FaTimes
                   className="clear-icon"
@@ -1051,7 +1051,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
             onRegenerate={() => regenerateProductField('descricao')}
           />
           <div className="campo-item">
-            <label>Categorias:</label>
+            <label>Categorias</label>
             <div className="campo-valor">
               <div className="categories-container">
                 {product.categorias.map((categoria, index) => (
@@ -1217,7 +1217,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
             </div>
           </div>
           <div className="campo-item">
-            <label>Total de caracteres:</label>
+            <label>Total de caracteres</label>
             <div className="campo-valor">
               <span className="copyable" style={{ textAlign: 'center' }}>
                 {textCounter.count}
