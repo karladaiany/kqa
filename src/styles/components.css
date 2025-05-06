@@ -209,6 +209,8 @@ body.dark-theme .card-select option {
   min-height: var(--input-height);
   box-sizing: border-box;
   font-size: var(--font-size-base);
+  display: flex;
+  align-items: center;
 }
 
 .campo-item label {
@@ -391,8 +393,6 @@ body.dark-theme .card-select option {
   gap: 0.5rem;
   padding: 0.5rem;
   background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 20px;
   color: var(--text-primary);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -410,10 +410,11 @@ body.dark-theme .card-select option {
 
 .tag-text {
   font-size: 0.9rem;
+  font-family: 'Inter', sans-serif;
 }
 
 .regenerate-container {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   margin-left: auto;
   height: 100%;
@@ -488,7 +489,7 @@ input[type="number"] {
 
 .number-input {
   width: 100%;
-  padding: 0.5rem;
+  padding: 0 1rem;
   border: 1px solid var(--border-color);
   border-radius: 4px;
   background-color: var(--background-color);
@@ -843,12 +844,21 @@ body.dark-theme .floating-nav-item:hover {
 }
 
 .icon-button.regenerate {
-  height: 36px;
   width: 36px;
-  padding: 0;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: color 0.2s;
+  padding: 0;
+}
+
+.icon-button.regenerate:hover {
+  color: var(--accent-color);
 }
 
 .test-status-card {
@@ -1014,4 +1024,60 @@ body.dark-theme #test-status .campo-valor select.copyable option {
   outline: none;
   border-color: var(--accent-color);
   box-shadow: 0 0 0 2px rgba(120, 93, 200, 0.1);
+}
+
+#menu-toggle {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 1100;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(120, 93, 200, 0.08);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+#menu-toggle:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+#mobile-menu {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 1200;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  min-width: 220px;
+  padding: 0.5rem 0;
+  display: none;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+#mobile-menu.open {
+  display: flex;
+}
+
+#mobile-menu .floating-nav-item {
+  border-radius: 0;
+  width: 100%;
+  justify-content: flex-start;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+}
+
+#mobile-menu .floating-nav-item:hover {
+  background: rgba(120, 93, 200, 0.08);
+  color: var(--accent-color);
 } 

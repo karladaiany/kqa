@@ -32,6 +32,7 @@ const DataField = ({
             value={value}
             readOnly
             placeholder="Cole seu texto aqui..."
+            className="padronizado"
           />
         ) : (
           <span 

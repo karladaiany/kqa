@@ -146,44 +146,34 @@ const TestStatusCard = () => {
           <>
             <div className="campo-item">
               <label htmlFor="observation">Observação</label>
-              <div className="campo-valor textarea-container" style={{ position: 'relative' }}>
+              <div className="campo-valor textarea-container">
                 <textarea
                   id="observation"
                   value={formData.observation}
                   onChange={handleInputChange('observation')}
+                  className="padronizado"
                 />
                 {formData.observation && (
                   <FaTimes
                     className="clear-icon"
                     onClick={() => handleClearField('observation')}
-                    style={{
-                      position: 'absolute',
-                      right: '8px',
-                      top: '8px',
-                      cursor: 'pointer'
-                    }}
                   />
                 )}
               </div>
             </div>
             <div className="campo-item">
               <label htmlFor="waiting">Aguardando</label>
-              <div className="campo-valor textarea-container" style={{ position: 'relative' }}>
+              <div className="campo-valor textarea-container">
                 <textarea
                   id="waiting"
                   value={formData.waiting}
                   onChange={handleInputChange('waiting')}
+                  className="padronizado"
                 />
                 {formData.waiting && (
                   <FaTimes
                     className="clear-icon"
                     onClick={() => handleClearField('waiting')}
-                    style={{
-                      position: 'absolute',
-                      right: '8px',
-                      top: '8px',
-                      cursor: 'pointer'
-                    }}
                   />
                 )}
               </div>
@@ -197,44 +187,34 @@ const TestStatusCard = () => {
             {renderEnvironmentField()}
             <div className="campo-item">
               <label htmlFor="observation">Observação</label>
-              <div className="campo-valor textarea-container" style={{ position: 'relative' }}>
+              <div className="campo-valor textarea-container">
                 <textarea
                   id="observation"
                   value={formData.observation}
                   onChange={handleInputChange('observation')}
+                  className="padronizado"
                 />
                 {formData.observation && (
                   <FaTimes
                     className="clear-icon"
                     onClick={() => handleClearField('observation')}
-                    style={{
-                      position: 'absolute',
-                      right: '8px',
-                      top: '8px',
-                      cursor: 'pointer'
-                    }}
                   />
                 )}
               </div>
             </div>
             <div className="campo-item">
               <label htmlFor="blockReason">Motivo do bloqueio</label>
-              <div className="campo-valor textarea-container" style={{ position: 'relative' }}>
+              <div className="campo-valor textarea-container">
                 <textarea
                   id="blockReason"
                   value={formData.blockReason}
                   onChange={handleInputChange('blockReason')}
+                  className="padronizado"
                 />
                 {formData.blockReason && (
                   <FaTimes
                     className="clear-icon"
                     onClick={() => handleClearField('blockReason')}
-                    style={{
-                      position: 'absolute',
-                      right: '8px',
-                      top: '8px',
-                      cursor: 'pointer'
-                    }}
                   />
                 )}
               </div>
@@ -246,22 +226,17 @@ const TestStatusCard = () => {
         return (
           <div className="campo-item">
             <label htmlFor="observation">Observação</label>
-            <div className="campo-valor textarea-container" style={{ position: 'relative' }}>
+            <div className="campo-valor textarea-container">
               <textarea
                 id="observation"
                 value={formData.observation}
                 onChange={handleInputChange('observation')}
+                className="padronizado"
               />
               {formData.observation && (
                 <FaTimes
                   className="clear-icon"
                   onClick={() => handleClearField('observation')}
-                  style={{
-                    position: 'absolute',
-                    right: '8px',
-                    top: '8px',
-                    cursor: 'pointer'
-                  }}
                 />
               )}
             </div>
@@ -274,44 +249,34 @@ const TestStatusCard = () => {
             {renderEnvironmentField()}
             <div className="campo-item">
               <label htmlFor="validation">Validação</label>
-              <div className="campo-valor textarea-container" style={{ position: 'relative' }}>
+              <div className="campo-valor textarea-container">
                 <textarea
                   id="validation"
                   value={formData.validation}
                   onChange={handleInputChange('validation')}
+                  className="padronizado"
                 />
                 {formData.validation && (
                   <FaTimes
                     className="clear-icon"
                     onClick={() => handleClearField('validation')}
-                    style={{
-                      position: 'absolute',
-                      right: '8px',
-                      top: '8px',
-                      cursor: 'pointer'
-                    }}
                   />
                 )}
               </div>
             </div>
             <div className="campo-item">
               <label htmlFor="observation">Observação</label>
-              <div className="campo-valor textarea-container" style={{ position: 'relative' }}>
+              <div className="campo-valor textarea-container">
                 <textarea
                   id="observation"
                   value={formData.observation}
                   onChange={handleInputChange('observation')}
+                  className="padronizado"
                 />
                 {formData.observation && (
                   <FaTimes
                     className="clear-icon"
                     onClick={() => handleClearField('observation')}
-                    style={{
-                      position: 'absolute',
-                      right: '8px',
-                      top: '8px',
-                      cursor: 'pointer'
-                    }}
                   />
                 )}
               </div>
@@ -325,22 +290,17 @@ const TestStatusCard = () => {
             {renderEnvironmentField()}
             <div className="campo-item">
               <label htmlFor="observation">Observação</label>
-              <div className="campo-valor textarea-container" style={{ position: 'relative' }}>
+              <div className="campo-valor textarea-container">
                 <textarea
                   id="observation"
                   value={formData.observation}
                   onChange={handleInputChange('observation')}
+                  className="padronizado"
                 />
                 {formData.observation && (
                   <FaTimes
                     className="clear-icon"
                     onClick={() => handleClearField('observation')}
-                    style={{
-                      position: 'absolute',
-                      right: '8px',
-                      top: '8px',
-                      cursor: 'pointer'
-                    }}
                   />
                 )}
               </div>
@@ -354,88 +314,68 @@ const TestStatusCard = () => {
             {renderEnvironmentField()}
             <div className="campo-item">
               <label htmlFor="validation">Validação</label>
-              <div className="campo-valor textarea-container" style={{ position: 'relative' }}>
+              <div className="campo-valor textarea-container">
                 <textarea
                   id="validation"
                   value={formData.validation}
                   onChange={handleInputChange('validation')}
+                  className="padronizado"
                 />
                 {formData.validation && (
                   <FaTimes
                     className="clear-icon"
                     onClick={() => handleClearField('validation')}
-                    style={{
-                      position: 'absolute',
-                      right: '8px',
-                      top: '8px',
-                      cursor: 'pointer'
-                    }}
                   />
                 )}
               </div>
             </div>
             <div className="campo-item">
               <label htmlFor="observation">Observação</label>
-              <div className="campo-valor textarea-container" style={{ position: 'relative' }}>
+              <div className="campo-valor textarea-container">
                 <textarea
                   id="observation"
                   value={formData.observation}
                   onChange={handleInputChange('observation')}
+                  className="padronizado"
                 />
                 {formData.observation && (
                   <FaTimes
                     className="clear-icon"
                     onClick={() => handleClearField('observation')}
-                    style={{
-                      position: 'absolute',
-                      right: '8px',
-                      top: '8px',
-                      cursor: 'pointer'
-                    }}
                   />
                 )}
               </div>
             </div>
             <div className="campo-item">
               <label htmlFor="information">Informações</label>
-              <div className="campo-valor textarea-container" style={{ position: 'relative' }}>
+              <div className="campo-valor textarea-container">
                 <textarea
                   id="information"
                   value={formData.information}
                   onChange={handleInputChange('information')}
+                  className="padronizado"
                 />
                 {formData.information && (
                   <FaTimes
                     className="clear-icon"
                     onClick={() => handleClearField('information')}
-                    style={{
-                      position: 'absolute',
-                      right: '8px',
-                      top: '8px',
-                      cursor: 'pointer'
-                    }}
                   />
                 )}
               </div>
             </div>
             <div className="campo-item">
               <label htmlFor="returnReason">Motivo do retorno</label>
-              <div className="campo-valor textarea-container" style={{ position: 'relative' }}>
+              <div className="campo-valor textarea-container">
                 <textarea
                   id="returnReason"
                   value={formData.returnReason}
                   onChange={handleInputChange('returnReason')}
+                  className="padronizado"
                 />
                 {formData.returnReason && (
                   <FaTimes
                     className="clear-icon"
                     onClick={() => handleClearField('returnReason')}
-                    style={{
-                      position: 'absolute',
-                      right: '8px',
-                      top: '8px',
-                      cursor: 'pointer'
-                    }}
                   />
                 )}
               </div>
@@ -459,22 +399,17 @@ const TestStatusCard = () => {
 
         <div className="campo-item">
           <label htmlFor="evidenceDescription">Descrição da evidência</label>
-          <div className="campo-valor textarea-container" style={{ position: 'relative' }}>
+          <div className="campo-valor textarea-container">
             <textarea
               id="evidenceDescription"
               value={formData.evidenceDescription}
               onChange={handleInputChange('evidenceDescription')}
+              className="padronizado"
             />
             {formData.evidenceDescription && (
               <FaTimes
                 className="clear-icon"
                 onClick={() => handleClearField('evidenceDescription')}
-                style={{
-                  position: 'absolute',
-                  right: '8px',
-                  top: '8px',
-                  cursor: 'pointer'
-                }}
               />
             )}
           </div>

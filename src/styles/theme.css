@@ -39,7 +39,7 @@ body.dark-theme {
 body {
     background-color: var(--background-color);
     color: var(--text-color);
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Inter', sans-serif;
     margin: 0;
     padding: 20px 0;
     line-height: 1.5;
@@ -139,7 +139,7 @@ body {
 
 .copyable {
     flex: 1;
-    font-family: 'Roboto', monospace;
+    font-family: 'Inter', monospace;
     cursor: pointer;
     color: var(--text-primary);
     background: transparent;
@@ -173,7 +173,7 @@ textarea.campo-valor {
     width: 100%;
     resize: vertical;
     line-height: 1.5;
-    font-family: 'Roboto', monospace;
+    font-family: 'Inter', monospace;
     padding: 12px;
 }
 

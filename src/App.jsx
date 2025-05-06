@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import { DataGenerator } from './components/DataGenerator';
-import { FaSun, FaMoon } from 'react-icons/fa';
+import { FaSun, FaMoon, FaBars } from 'react-icons/fa';
 import ScrollButtons from './components/ScrollButtons';
 import TestStatusCard from './components/TestStatus/TestStatusCard';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles/theme.css';
 import './styles/components.css';
+import './styles.css';
+import SidebarMenu from './components/SidebarMenu';
 
 const App = () => {
   const [darkMode, setDarkMode] = React.useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   React.useEffect(() => {
     const isDarkMode = localStorage.getItem('darkMode') === 'true';
@@ -26,6 +29,16 @@ const App = () => {
 
   return (
     <div className="app">
+      <button
+        id="menu-toggle"
+        className="icon-button"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        aria-label="Abrir menu"
+        type="button"
+      >
+        <FaBars />
+      </button>
+      <SidebarMenu open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <button className="theme-toggle" onClick={toggleTheme}>
         {darkMode ? <FaSun /> : <FaMoon />}
       </button>

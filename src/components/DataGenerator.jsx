@@ -22,7 +22,10 @@ import {
   FaBroom,
   FaEye,
   FaRocket,
-  FaComment
+  FaComment,
+  FaSun,
+  FaMoon,
+  FaBars
 } from 'react-icons/fa';
 import DataField from './DataField';
 import { useBugRegistration } from '../hooks/useBugRegistration';
@@ -44,47 +47,6 @@ const CategoryTag = ({ category }) => {
   );
 };
 
-const FloatingNav = () => {
-  const scrollToSection = (id) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  return (
-    <nav className="floating-nav">
-      <div className="floating-nav-item" onClick={() => scrollToSection('documentos')}>
-        <FaIdCard /> Documentos
-      </div>
-      <div className="floating-nav-item" onClick={() => scrollToSection('dados-pessoais')}>
-        <FaUserAlt /> Dados Pessoais
-      </div>
-      <div className="floating-nav-item" onClick={() => scrollToSection('produto')}>
-        <FaGraduationCap /> Produtos
-      </div>
-      <div className="floating-nav-item" onClick={() => scrollToSection('cartao')}>
-        <FaCreditCard /> Cartão
-      </div>
-      <div className="floating-nav-item" onClick={() => scrollToSection('caracteres')}>
-        <FaRandom /> Gerador de Caracteres
-      </div>
-      <div className="floating-nav-item" onClick={() => scrollToSection('contador')}>
-        <FaCalculator /> Contador de Caracteres
-      </div>
-      <div className="floating-nav-item" onClick={() => scrollToSection('bug')}>
-        <FaBug /> Registro de BUG
-      </div>
-      <div className="floating-nav-item" onClick={() => scrollToSection('test-status')}>
-        <FaComment /> Comentário QA
-      </div>
-      <div className="floating-nav-item" onClick={() => scrollToSection('deploy')}>
-        <FaRocket /> Deploy
-      </div>
-    </nav>
-  );
-};
-
 const BugRegistrationCard = () => {
   const {
     bugData,
@@ -103,89 +65,52 @@ const BugRegistrationCard = () => {
       </div>
       <div className="card-content">
         <div className="campo-item">
-          <label>Incidente identificado</label>
-          <div className="campo-valor">
+          <div className="campo-valor textarea-container">
             <textarea
               value={bugData.incident}
               onChange={(e) => handleInputChange('incident', e.target.value)}
-              className="copyable"
-              style={{ 
-                width: '100%', 
-                minHeight: '60px',
-                resize: 'vertical',
-                paddingRight: bugData.incident ? '30px' : '12px'
-              }}
+              className="padronizado"
             />
             {bugData.incident && (
               <FaTimes
                 className="clear-icon"
                 onClick={() => handleClearField('incident')}
-                style={{
-                  position: 'absolute',
-                  right: '8px',
-                  top: '8px',
-                  cursor: 'pointer'
-                }}
               />
             )}
           </div>
         </div>
 
         <div className="campo-item">
-          <div className="campo-valor">
+          <div className="campo-valor textarea-container">
             <textarea
               value={bugData.steps}
               onChange={(e) => handleInputChange('steps', e.target.value)}
-              className="copyable"
+              className="padronizado"
               placeholder=" "
-              style={{ 
-                width: '100%', 
-                minHeight: '100px',
-                resize: 'vertical',
-                paddingRight: bugData.steps ? '30px' : '12px'
-              }}
             />
             <label>Passo a passo para reprodução</label>
             {bugData.steps && (
               <FaTimes
                 className="clear-icon"
                 onClick={() => handleClearField('steps')}
-                style={{
-                  position: 'absolute',
-                  right: '8px',
-                  top: '8px',
-                  cursor: 'pointer'
-                }}
               />
             )}
           </div>
         </div>
 
         <div className="campo-item">
-          <div className="campo-valor">
+          <div className="campo-valor textarea-container">
             <textarea
               value={bugData.expectedBehavior}
               onChange={(e) => handleInputChange('expectedBehavior', e.target.value)}
-              className="copyable"
+              className="padronizado"
               placeholder=" "
-              style={{ 
-                width: '100%', 
-                minHeight: '60px',
-                resize: 'vertical',
-                paddingRight: bugData.expectedBehavior ? '30px' : '12px'
-              }}
             />
             <label>Comportamento esperado</label>
             {bugData.expectedBehavior && (
               <FaTimes
                 className="clear-icon"
                 onClick={() => handleClearField('expectedBehavior')}
-                style={{
-                  position: 'absolute',
-                  right: '8px',
-                  top: '8px',
-                  cursor: 'pointer'
-                }}
               />
             )}
           </div>
@@ -196,163 +121,98 @@ const BugRegistrationCard = () => {
         </div>
 
         <div className="campo-item">
-          <div className="campo-valor">
+          <div className="campo-valor textarea-container">
             <input
               type="text"
               value={bugData.url}
               onChange={(e) => handleInputChange('url', e.target.value)}
-              className="copyable"
+              className="padronizado"
               placeholder=" "
-              style={{ 
-                width: '100%', 
-                paddingRight: bugData.url ? '30px' : '12px'
-              }}
             />
             <label>URL</label>
             {bugData.url && (
               <FaTimes
                 className="clear-icon"
                 onClick={() => handleClearField('url')}
-                style={{
-                  position: 'absolute',
-                  right: '8px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  cursor: 'pointer'
-                }}
               />
             )}
           </div>
         </div>
 
         <div className="campo-item">
-          <div className="campo-valor">
+          <div className="campo-valor textarea-container">
             <input
               type="text"
               value={bugData.login}
               onChange={(e) => handleInputChange('login', e.target.value)}
-              className="copyable"
+              className="padronizado"
               placeholder=" "
-              style={{ 
-                width: '100%', 
-                paddingRight: bugData.login ? '30px' : '12px'
-              }}
             />
             <label>Login</label>
             {bugData.login && (
               <FaTimes
                 className="clear-icon"
                 onClick={() => handleClearField('login')}
-                style={{
-                  position: 'absolute',
-                  right: '8px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  cursor: 'pointer'
-                }}
               />
             )}
           </div>
         </div>
 
         <div className="campo-item">
-          <div className="campo-valor">
+          <div className="campo-valor textarea-container">
             <input
               type={showPassword ? 'text' : 'password'}
               value={bugData.password}
               onChange={(e) => handleInputChange('password', e.target.value)}
-              className="copyable"
+              className="padronizado"
               placeholder=" "
-              style={{ 
-                width: '100%', 
-                paddingRight: '60px'
-              }}
             />
             <label>Senha</label>
             <FaEye
               className="toggle-password"
               onClick={() => setShowPassword(!showPassword)}
-              style={{
-                position: 'absolute',
-                right: '30px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                cursor: 'pointer',
-                color: showPassword ? 'var(--primary-color)' : 'var(--text-muted)'
-              }}
             />
             {bugData.password && (
               <FaTimes
                 className="clear-icon"
                 onClick={() => handleClearField('password')}
-                style={{
-                  position: 'absolute',
-                  right: '8px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  cursor: 'pointer'
-                }}
               />
             )}
           </div>
         </div>
 
         <div className="campo-item">
-          <div className="campo-valor">
+          <div className="campo-valor textarea-container">
             <input
               type="number"
               value={bugData.envId}
               onChange={(e) => handleInputChange('envId', e.target.value)}
-              className="copyable"
+              className="padronizado"
               placeholder=" "
-              style={{ 
-                width: '100%', 
-                paddingRight: bugData.envId ? '30px' : '12px',
-                max: '9999999'
-              }}
             />
             <label>ID do ambiente</label>
             {bugData.envId && (
               <FaTimes
                 className="clear-icon"
                 onClick={() => handleClearField('envId')}
-                style={{
-                  position: 'absolute',
-                  right: '8px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  cursor: 'pointer'
-                }}
               />
             )}
           </div>
         </div>
 
         <div className="campo-item">
-          <div className="campo-valor">
+          <div className="campo-valor textarea-container">
             <textarea
               value={bugData.others}
               onChange={(e) => handleInputChange('others', e.target.value)}
-              className="copyable"
+              className="padronizado"
               placeholder=" "
-              style={{ 
-                width: '100%', 
-                minHeight: '60px',
-                resize: 'vertical',
-                paddingRight: bugData.others ? '30px' : '12px'
-              }}
             />
             <label>Outros</label>
             {bugData.others && (
               <FaTimes
                 className="clear-icon"
                 onClick={() => handleClearField('others')}
-                style={{
-                  position: 'absolute',
-                  right: '8px',
-                  top: '8px',
-                  cursor: 'pointer'
-                }}
               />
             )}
           </div>
@@ -363,60 +223,37 @@ const BugRegistrationCard = () => {
         </div>
 
         <div className="campo-item">
-          <div className="campo-valor">
+          <div className="campo-valor textarea-container">
             <textarea
               value={bugData.evidenceDescription}
               onChange={(e) => handleInputChange('evidenceDescription', e.target.value)}
-              className="copyable"
+              className="padronizado"
               placeholder=" "
-              style={{ 
-                width: '100%', 
-                minHeight: '60px',
-                resize: 'vertical',
-                paddingRight: bugData.evidenceDescription ? '30px' : '12px'
-              }}
             />
             <label>Descrição da evidência</label>
             {bugData.evidenceDescription && (
               <FaTimes
                 className="clear-icon"
                 onClick={() => handleClearField('evidenceDescription')}
-                style={{
-                  position: 'absolute',
-                  right: '8px',
-                  top: '8px',
-                  cursor: 'pointer'
-                }}
               />
             )}
           </div>
         </div>
 
         <div className="campo-item">
-          <div className="campo-valor">
+          <div className="campo-valor textarea-container">
             <input
               type="text"
               value={bugData.evidenceLink}
               onChange={(e) => handleInputChange('evidenceLink', e.target.value)}
-              className="copyable"
+              className="padronizado"
               placeholder=" "
-              style={{ 
-                width: '100%', 
-                paddingRight: bugData.evidenceLink ? '30px' : '12px'
-              }}
             />
             <label>Link da evidência</label>
             {bugData.evidenceLink && (
               <FaTimes
                 className="clear-icon"
                 onClick={() => handleClearField('evidenceLink')}
-                style={{
-                  position: 'absolute',
-                  right: '8px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  cursor: 'pointer'
-                }}
               />
             )}
           </div>
@@ -431,18 +268,16 @@ const BugRegistrationCard = () => {
           </div>
         </div>
 
-        <div className="card-actions" style={{ justifyContent: 'flex-start' }}>
+        <div className="card-actions">
           <button 
             className="generate-all-btn" 
             onClick={handleCopyAll}
-            style={{ height: '36px', margin: '0 8px 0 0' }}
           >
             <FaCopy /> Copiar
           </button>
           <button 
             className="generate-all-btn" 
             onClick={() => handleClearField('all')}
-            style={{ height: '36px' }}
           >
             <FaBroom /> Limpar tudo
           </button>
@@ -644,57 +479,35 @@ const DeployCard = () => {
       <div className="card-content">
         {fields.map((field) => (
           <div key={field.id} className="campo-item">
-            <div className="campo-valor">
+            <div className="campo-valor textarea-container">
               <textarea
                 value={fieldValues[field.id] || ''}
                 onChange={(e) => handleInputChange(field.id, e.target.value)}
-                className="copyable"
+                className="padronizado"
                 placeholder=" "
-                style={{ 
-                  width: '100%', 
-                  height: '24px',
-                  minHeight: 'unset',
-                  resize: 'none',
-                  paddingRight: fieldValues[field.id] ? '30px' : '12px',
-                  color: 'var(--text-primary)',
-                  paddingTop: '2px',
-                  paddingBottom: '2px',
-                  overflow: 'hidden',
-                  lineHeight: '24px'
-                }}
-                rows="1"
               />
               <label>{field.label}</label>
               {fieldValues[field.id] && (
                 <FaTimes
                   className="clear-icon"
                   onClick={() => removeField(field.id)}
-                  style={{
-                    position: 'absolute',
-                    right: '8px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    cursor: 'pointer'
-                  }}
                 />
               )}
             </div>
           </div>
         ))}
-        <div className="card-actions" style={{ justifyContent: 'flex-start', marginTop: '16px', gap: '8px' }}>
+        <div className="card-actions">
           {fields.length > 0 && (
             <>
               <button 
                 className="generate-all-btn" 
                 onClick={handleCopy}
-                style={{ height: '36px' }}
               >
                 <FaCopy /> Copiar
               </button>
               <button 
                 className="generate-all-btn" 
                 onClick={handleClearAll}
-                style={{ height: '36px' }}
               >
                 <FaBroom /> Limpar tudo
               </button>
@@ -865,7 +678,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
   const handleRandomCharsChange = (e) => {
     const value = e.target.value;
     // Permite campo vazio ou números positivos
-    if (value === '' || (parseInt(value) > 0 && parseInt(value) <= 9999999)) {
+    if (value === '' || (parseInt(value) > 0 && parseInt(value) <= 99999)) {
       setRandomChars(prev => ({
         ...prev,
         length: value
@@ -928,7 +741,6 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 
   return (
     <div className="data-generator">
-      <FloatingNav />
       <section className="card" id="documentos">
         <div className="card-header">
           <h2><FaIdCard className="header-icon" /> Documentos</h2>
@@ -1058,11 +870,14 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
                   <CategoryTag key={index} category={categoria} />
                 ))}
               </div>
-              <FaSync 
-                className="regenerate-icon" 
-                title="Gerar novas categorias"
+              <button
+                type="button"
+                className="icon-button regenerate"
+                aria-label="Gerar novas categorias"
                 onClick={() => regenerateProductField('categorias')}
-              />
+              >
+                <FaSync className="regenerate-icon" />
+              </button>
             </div>
           </div>
         </div>
@@ -1128,45 +943,29 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
         <div className="card-header">
           <h2><FaRandom className="header-icon" /> Gerador de caracteres</h2>
           <div className="card-filters">
-            <div style={{ position: 'relative', display: 'inline-block' }}>
+            <div className="input-clearable">
               <input
                 type="number"
                 min="1"
-                max="9999999"
+                max="99999"
                 value={randomChars.length}
                 onChange={handleRandomCharsChange}
                 className="number-input"
-                placeholder="Nº Caracteres"
-                style={{ 
-                  width: '120px',
-                  height: '36px',
-                  padding: '0 28px 0 12px',
-                  backgroundColor: 'var(--card-bg)',
-                  fontFamily: 'Inter, sans-serif'
-                }}
+                placeholder="Quantidade"
               />
               {randomChars.length && (
                 <FaTimes
                   className="clear-icon"
                   onClick={handleClearLength}
-                  style={{
-                    position: 'absolute',
-                    right: '8px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    cursor: 'pointer',
-                    color: 'var(--text-secondary)',
-                    fontSize: '14px'
-                  }}
                 />
               )}
             </div>
-            <button 
-              onClick={generateNewRandomChars}
-              className="generate-all-btn"
-            >
+              <button 
+                  onClick={generateNewRandomChars}
+                  className="generate-all-btn"
+                >
               <FaRedo className="generate-icon" /> Gerar
-            </button>
+              </button>
           </div>
         </div>
         <div className="card-content">
@@ -1184,34 +983,17 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
         </div>
         <div className="card-content">
           <div className="campo-item">
-            <div className="campo-valor" style={{ position: 'relative' }}>
+            <div className="campo-valor textarea-container">
               <textarea
                 value={textCounter.text}
                 onChange={handleTextChange}
-                className="number-input"
+                className="padronizado"
                 placeholder="Cole seu texto aqui..."
-                style={{
-                  width: '100%',
-                  minHeight: '100px',
-                  resize: 'vertical',
-                  padding: '12px 28px 12px 12px',
-                  fontFamily: 'var(--font-primary)'
-                }}
               />
               {textCounter.text && (
                 <FaTimes
                   className="clear-icon"
                   onClick={handleClearText}
-                  style={{
-                    position: 'absolute',
-                    right: '24px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    cursor: 'pointer',
-                    color: 'var(--text-secondary)',
-                    fontSize: '14px',
-                    zIndex: 1
-                  }}
                 />
               )}
             </div>
@@ -1219,7 +1001,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
           <div className="campo-item">
             <label>Total de caracteres</label>
             <div className="campo-valor">
-              <span className="copyable" style={{ textAlign: 'center' }}>
+              <span className="copyable">
                 {textCounter.count}
               </span>
             </div>
@@ -1228,7 +1010,6 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
       </section>
 
       <BugRegistrationCard />
-      <TestStatusCard />
       <DeployCard />
     </div>
   );
