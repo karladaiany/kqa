@@ -675,4 +675,24 @@ body.dark-theme .floating-nav-item:hover {
 
 .sidebar-menu .floating-nav-item svg {
   font-size: 1.2rem;
+}
+
+.campo-valor span.copyable {
+  display: block;
+  min-height: 42px;
+  max-height: 126px;
+  overflow-y: auto;
+  width: 100%;
+  font-family: 'Inter', monospace;
+  font-size: 1rem;
+  color: var(--text-color);
+  background: var(--card-bg);
+  border: none;
+  outline: none;
+  padding: 8px 36px 8px 12px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) var(--card-bg);
 } 
