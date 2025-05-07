@@ -982,22 +982,14 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
           <h2><FaCalculator className="header-icon" /> Contador de caracteres</h2>
         </div>
         <div className="card-content">
-          <div className="campo-item">
-            <div className="campo-valor textarea-container">
-              <textarea
-                value={textCounter.text}
-                onChange={handleTextChange}
-                className="padronizado"
-                placeholder="Cole seu texto aqui..."
-              />
-              {textCounter.text && (
-                <FaTimes
-                  className="clear-icon"
-                  onClick={handleClearText}
-                />
-              )}
-            </div>
-          </div>
+          <DataField 
+            label="Texto"
+            value={textCounter.text}
+            onTextChange={handleTextChange}
+            isTextArea={true}
+            onClear={handleClearText}
+            showCopy={false}
+          />
           <div className="campo-item">
             <label>Total de caracteres</label>
             <div className="campo-valor">

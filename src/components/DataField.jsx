@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FaCopy, FaSync, FaMask } from 'react-icons/fa';
+import { FaCopy, FaSync, FaMask, FaTimes } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
 const DataField = ({ 
@@ -11,7 +11,10 @@ const DataField = ({
   testId = '', 
   isTextArea = false,
   showMask = true,
-  onToggleMask = null 
+  onToggleMask = null,
+  onTextChange = null,
+  onClear = null,
+  showCopy = true
 }) => {
   const fieldId = testId || `field-${label.toLowerCase().replace(/\s+/g, '-')}`;
   
@@ -25,14 +28,13 @@ const DataField = ({
   return (
     <div className="campo-item" data-testid={fieldId}>
       <label htmlFor={`${fieldId}-value`}>{label}</label>
-      <div className={`campo-valor ${isTextArea ? 'textarea-container' : ''}`}>
+      <div className="campo-valor">
         {isTextArea ? (
           <textarea
             id={`${fieldId}-value`}
             value={value}
-            readOnly
-            placeholder="Cole seu texto aqui..."
-            className="padronizado"
+            onChange={onTextChange}
+            className="copyable"
           />
         ) : (
           <span 
@@ -47,14 +49,16 @@ const DataField = ({
             {showMask ? value : (raw || value)}
           </span>
         )}
-        <button
-          type="button"
-          className="icon-button"
-          onClick={handleCopy}
-          aria-label="Copiar valor"
-        >
-          <FaCopy className="copy-icon" />
-        </button>
+        {showCopy && (
+          <button
+            type="button"
+            className="icon-button"
+            onClick={handleCopy}
+            aria-label="Copiar valor"
+          >
+            <FaCopy className="copy-icon" />
+          </button>
+        )}
         {onRegenerate && (
           <button
             type="button"
@@ -75,6 +79,16 @@ const DataField = ({
             <FaMask className={`mask-icon ${showMask ? 'active' : ''}`} />
           </button>
         )}
+        {onClear && value && (
+          <button
+            type="button"
+            className="icon-button"
+            onClick={onClear}
+            aria-label="Limpar campo"
+          >
+            <FaTimes className="clear-icon" />
+          </button>
+        )}
       </div>
     </div>
   );
@@ -88,7 +102,10 @@ DataField.propTypes = {
   testId: PropTypes.string,
   isTextArea: PropTypes.bool,
   showMask: PropTypes.bool,
-  onToggleMask: PropTypes.func
+  onToggleMask: PropTypes.func,
+  onTextChange: PropTypes.func,
+  onClear: PropTypes.func,
+  showCopy: PropTypes.bool
 };
 
 export default DataField; 

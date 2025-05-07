@@ -1,56 +1,3 @@
-:root {
-  --background-color: #ffffff;
-  --card-bg: #f8f9fa;
-  --text-primary: #212529;
-  --text-secondary: #6c757d;
-  --border-color: #dee2e6;
-  --accent-color: #785DC8;
-  --success-color: #198754;
-  --error-color: #dc3545;
-  --font-size-base: 1rem;      /* 16px */
-  --font-size-sm: 0.875rem;    /* 14px */
-  --font-size-lg: 1.125rem;    /* 18px */
-  --card-bg-rgb: 248, 249, 250;
-}
-
-body.dark-theme {
-  --background-color: #121212;
-  --card-bg: #1e1e1e;
-  --text-primary: #ffffff;
-  --text-secondary: #adb5bd;
-  --border-color: #2d2d2d;
-  --card-bg-rgb: 30, 30, 30;
-}
-
-body {
-  margin: 0;
-  font-family: 'Inter', sans-serif;
-  background-color: var(--background-color);
-  color: var(--text-primary);
-  transition: background-color 0.3s ease;
-}
-
-.app {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 2rem;
-  position: relative;
-}
-
-h1 {
-  margin: 0;
-  font-size: 1.8rem;
-  color: var(--text-primary);
-  text-align: center;
-}
-
 .theme-toggle {
   background: transparent;
   border: 1px solid var(--border-color);
@@ -92,7 +39,7 @@ h1 {
   background-color: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  padding: 1.5rem;
+  padding: 0 24px 24px 24px;
   margin-bottom: 1.5rem;
 }
 
@@ -101,6 +48,8 @@ h1 {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem;
 }
 
 .card h2 {
@@ -118,46 +67,6 @@ h1 {
   display: flex;
   align-items: center;
   gap: 10px;
-}
-
-.card-select {
-  padding: 0.5rem 30px 0.5rem 1rem;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  background-color: var(--background-color);
-  color: var(--text-primary);
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  height: 36px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%236c757d' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 8px center;
-  background-size: 16px;
-}
-
-.card-select:hover {
-  border-color: var(--accent-color);
-}
-
-.card-select:focus {
-  outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
-}
-
-.card-select option {
-  padding: 8px;
-  background-color: var(--background-color);
-  color: var(--text-primary);
-}
-
-body.dark-theme .card-select option {
-  background-color: var(--card-bg);
-  color: var(--text-primary);
 }
 
 .generate-all-btn {
@@ -200,19 +109,6 @@ body.dark-theme .card-select option {
   width: 100%;
 }
 
-.campo-valor {
-  position: relative;
-  width: 100%;
-  background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  min-height: var(--input-height);
-  box-sizing: border-box;
-  font-size: var(--font-size-base);
-  display: flex;
-  align-items: center;
-}
-
 .campo-item label {
   position: absolute;
   left: 8px;
@@ -229,26 +125,6 @@ body.dark-theme .card-select option {
   backdrop-filter: blur(4px);
 }
 
-.campo-valor input,
-.campo-valor textarea {
-  width: 100%;
-  background: transparent;
-  border: none;
-  color: var(--text-primary);
-  font-family: inherit;
-  font-size: var(--font-size-base);
-  outline: none;
-  box-shadow: none;
-  padding: 8px 12px;
-  min-height: 36px;
-  display: block;
-}
-
-.campo-valor textarea {
-  min-height: 120px;
-  resize: vertical;
-}
-
 .campo-valor:hover {
   border-color: var(--accent-color);
 }
@@ -256,24 +132,6 @@ body.dark-theme .card-select option {
 .campo-valor:focus-within {
   border-color: var(--accent-color);
   box-shadow: 0 0 0 2px rgba(120, 93, 200, 0.1);
-}
-
-.copyable {
-  flex: 1;
-  font-family: 'Inter', monospace;
-  cursor: pointer;
-  color: var(--text-primary);
-  background: transparent;
-  border: none;
-  outline: none;
-  box-shadow: none;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-}
-
-.campo-valor input.copyable::placeholder {
-  color: var(--text-secondary);
 }
 
 .copy-icon,
@@ -315,65 +173,6 @@ body.dark-theme .card-select option {
   }
   to {
     transform: rotate(360deg);
-  }
-}
-
-.Toastify__toast {
-  background-color: var(--card-bg);
-  color: var(--text-primary);
-}
-
-.Toastify__toast--success {
-  border-left: 4px solid var(--success-color);
-}
-
-.Toastify__toast--error {
-  border-left: 4px solid var(--error-color);
-}
-
-@media (max-width: 768px) {
-  .app {
-    padding: 1rem;
-  }
-
-  header {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .campo-item {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .campo-item label {
-    min-width: 100%;
-    padding-top: 0;
-  }
-
-  .campo-valor {
-    width: 100%;
-  }
-
-  textarea.campo-valor {
-    min-height: 100px;
-  }
-
-  .card-actions {
-    flex-direction: column;
-  }
-
-  .action-button {
-    width: 100%;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
 }
 
@@ -444,49 +243,6 @@ body.dark-theme .card-select option {
   color: var(--text-primary);
 }
 
-.card-option {
-  padding: 0.5rem;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.card-option.visa {
-  background-color: #1a1f71;
-  color: white;
-}
-
-.card-option.mastercard {
-  background-color: #eb001b;
-  color: white;
-}
-
-.card-option.amex {
-  background-color: #016fd0;
-  color: white;
-}
-
-.card-option.elo {
-  background-color: #00a4e0;
-  color: white;
-}
-
-body.dark-theme .card-option {
-  background-color: var(--card-bg);
-  color: var(--text-primary);
-}
-
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type="number"] {
-  -moz-appearance: textfield;
-}
-
 .number-input {
   width: 100%;
   padding: 0 1rem;
@@ -515,97 +271,6 @@ input[type="number"] {
 
 .clear-icon:hover {
   color: var(--error-color);
-}
-
-textarea.number-input,
-textarea.campo-valor {
-  min-height: 120px;
-  width: 100%;
-  padding: 12px;
-  background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  color: var(--text-primary);
-  font-family: 'Inter', monospace;
-  line-height: 1.5;
-  resize: vertical;
-}
-
-.campo-valor textarea {
-  width: 100%;
-  height: 100%;
-  min-height: 120px;
-  padding: 12px;
-  background-color: transparent;
-  border: none;
-  color: var(--text-primary);
-  font-family: 'Inter', monospace;
-  line-height: 1.5;
-  resize: vertical;
-  outline: none;
-}
-
-.campo-valor.textarea-container {
-  padding: 0;
-  overflow: hidden;
-}
-
-.floating-nav {
-  position: fixed;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  z-index: 1000;
-  background-color: var(--card-bg);
-  padding: 0.5rem;
-  border-left: 1px solid var(--border-color);
-  border-top: 1px solid var(--border-color);
-  border-bottom: 1px solid var(--border-color);
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
-}
-
-.floating-nav-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  white-space: nowrap;
-}
-
-.floating-nav-item:hover {
-  color: var(--accent-color);
-  background-color: rgba(120, 93, 200, 0.1);
-  border-radius: 4px;
-}
-
-.floating-nav-item svg {
-  width: 18px;
-  height: 18px;
-}
-
-.floating-nav-item span {
-  display: none;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.floating-nav:hover .floating-nav-item span {
-  display: inline;
-  opacity: 1;
-}
-
-body.dark-theme .floating-nav-item:hover {
-  background-color: rgba(120, 93, 200, 0.15);
 }
 
 .section-divider {
@@ -754,11 +419,6 @@ body.dark-theme .floating-nav-item:hover {
   font-size: 0.9rem;
 }
 
-.bug-report textarea {
-  min-height: 120px;
-  margin-bottom: 1rem;
-}
-
 .action-buttons {
   display: flex;
   gap: 0.5rem;
@@ -898,29 +558,6 @@ body.dark-theme .floating-nav-item:hover {
   padding: 0;
 }
 
-#test-status .campo-valor input[type="text"].copyable {
-  width: 100% !important;
-  height: 36px !important;
-  padding: 0 12px !important;
-  border: 1px solid var(--border-color) !important;
-  border-radius: 4px !important;
-  background-color: var(--card-bg) !important;
-  color: var(--text-primary) !important;
-  font-size: 0.9rem !important;
-  font-family: 'Inter', sans-serif !important;
-  transition: all 0.2s ease !important;
-}
-
-#test-status .campo-valor input[type="text"].copyable:hover {
-  border-color: var(--accent-color) !important;
-}
-
-#test-status .campo-valor input[type="text"].copyable:focus {
-  outline: none !important;
-  border-color: var(--accent-color) !important;
-  box-shadow: 0 0 0 2px rgba(120, 93, 200, 0.1) !important;
-}
-
 #test-status .campo-valor select.copyable {
   width: 100%;
   height: 36px;
@@ -932,7 +569,6 @@ body.dark-theme .floating-nav-item:hover {
   font-size: 0.9rem;
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%236c757d' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 8px center;
   background-size: 16px;
@@ -959,73 +595,6 @@ body.dark-theme #test-status .campo-valor select.copyable option {
   background-color: var(--card-bg);
 }
 
-#test-status .campo-valor {
-  min-height: 42px;
-}
-
-#test-status .campo-valor.textarea-container {
-  border: none;
-  background: none;
-  padding: 0;
-}
-
-#test-status .campo-valor.textarea-container textarea {
-  width: 100%;
-  min-height: 120px;
-  padding: 12px;
-  background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  color: var(--text-primary);
-  font-family: 'Inter', sans-serif;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  resize: vertical;
-}
-
-#test-status .campo-valor.textarea-container textarea:hover {
-  border-color: var(--accent-color);
-}
-
-#test-status .campo-valor.textarea-container textarea:focus {
-  outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
-}
-
-#test-status .campo-valor input[type="text"].copyable:hover {
-  border-color: var(--accent-color);
-}
-
-#test-status .campo-valor input[type="text"].copyable:focus {
-  outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
-}
-
-#test-status .campo-valor input[type="text"].copyable {
-  width: 100%;
-  height: 36px;
-  padding: 0 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  background-color: var(--card-bg);
-  color: var(--text-primary);
-  font-size: 0.9rem;
-  font-family: 'Inter', sans-serif;
-  transition: all 0.2s ease;
-}
-
-#test-status .campo-valor input[type="text"].copyable:hover {
-  border-color: var(--accent-color);
-}
-
-#test-status .campo-valor input[type="text"].copyable:focus {
-  outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px rgba(120, 93, 200, 0.1);
-}
-
 #menu-toggle {
   position: fixed;
   top: 80px;
@@ -1049,35 +618,44 @@ body.dark-theme #test-status .campo-valor select.copyable option {
   color: var(--accent-color);
 }
 
-#mobile-menu {
+.sidebar-menu {
   position: fixed;
-  top: 80px;
+  top: 70px; /* logo abaixo do ícone do menu */
   right: 20px;
-  z-index: 1200;
+  width: 240px;
   background: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-  min-width: 220px;
-  padding: 0.5rem 0;
-  display: none;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-#mobile-menu.open {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  z-index: 1200;
   display: flex;
+  flex-direction: column;
+  padding: 1rem 0.5rem;
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  overflow: hidden;
 }
 
-#mobile-menu .floating-nav-item {
-  border-radius: 0;
-  width: 100%;
-  justify-content: flex-start;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
+.sidebar-menu.closed {
+  width: 0;
+  padding: 0;
+  box-shadow: none;
+  border: none;
 }
 
-#mobile-menu .floating-nav-item:hover {
-  background: rgba(120, 93, 200, 0.08);
+.sidebar-menu .floating-nav-item {
+  border-radius: 6px;
+  margin-bottom: 2px;
+  padding: 10px 18px;
+  color: var(--text-secondary);
+  background: transparent;
+  transition: background 0.2s, color 0.2s;
+}
+
+.sidebar-menu .floating-nav-item:hover {
+  background: var(--background-color);
   color: var(--accent-color);
-} 
+}
+
+.sidebar-menu .floating-nav-item svg {
+  font-size: 1.2rem;
+}
