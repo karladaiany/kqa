@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './styles/theme.css';
 import './styles/components.css';
 import './styles.css';
+import './App.css';
 import SidebarMenu from './components/SidebarMenu';
 
 const App = () => {
@@ -44,7 +45,7 @@ const App = () => {
       </button>
 
       <header>
-        <h1>🎲 KQA :: Gerador de Dados para QA</h1>
+        <h1>🎲 KQA :: Gerador de Dados para QA ::</h1>
       </header>
 
       <main>
