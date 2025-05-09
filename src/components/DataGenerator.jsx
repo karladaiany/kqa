@@ -775,7 +775,9 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 
       <section className="card" id="dados-pessoais">
         <div className="card-header">
-          <h2><FaUserAlt className="header-icon" /> Dados Pessoais</h2>
+          <h2>
+            <FaUserAlt className="header-icon" /> Dados Pessoais
+          </h2>
           <button 
             className="generate-all-btn" 
             onClick={() => setPerson(generatePerson())}
@@ -885,7 +887,9 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 
       <section className="card" id="cartao">
         <div className="card-header">
-          <h2><FaCreditCard className="header-icon" /> Cartão</h2>
+          <h2>
+            <FaCreditCard className="header-icon" /> Cartão
+          </h2>
           <div className="card-filters">
             <select 
               name="bandeira"
@@ -898,7 +902,6 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
               <option value="amex">American Express</option>
               <option value="elo">Elo</option>
             </select>
-
             <select
               name="tipo"
               value={cardConfig.tipo}
@@ -909,39 +912,27 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
               <option value="debito">Débito</option>
               <option value="multiplo">Múltiplo</option>
             </select>
-
             <button 
               onClick={() => setCard(generateCreditCard(cardConfig.bandeira, cardConfig.tipo))}
               className="generate-all-btn"
             >
-              <FaRedo className="generate-icon" /> Gerar novo cartão
+              <FaRedo className="generate-icon" /> Gerar novo
             </button>
           </div>
         </div>
         <div className="card-content">
-          <DataField 
-            label="Número" 
-            value={card.numeroFormatado}
-            rawValue={card.numero}
-          />
-          <DataField 
-            label="Nome" 
-            value={card.nome}
-          />
-          <DataField 
-            label="Validade" 
-            value={card.validade}
-          />
-          <DataField 
-            label="CVV" 
-            value={card.cvv}
-          />
+          <DataField label="Número" value={card.numeroFormatado} raw={card.numero} />
+          <DataField label="Nome" value={card.nome} />
+          <DataField label="Validade" value={card.validade} />
+          <DataField label="CVV" value={card.cvv} />
         </div>
       </section>
 
       <section className="card" id="caracteres">
         <div className="card-header">
-          <h2><FaRandom className="header-icon" /> Gerador de caracteres</h2>
+          <h2>
+            <FaRandom className="header-icon" /> Gerador de caracteres
+          </h2>
           <div className="card-filters">
             <div className="input-clearable">
               <input
@@ -954,25 +945,24 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
                 placeholder="Quantidade"
               />
               {randomChars.length && (
-                <FaTimes
-                  className="clear-icon"
+                <button
+                  type="button"
+                  className="icon-button clear-input-btn"
+                  tabIndex={-1}
                   onClick={handleClearLength}
-                />
+                  aria-label="Limpar campo"
+                >
+                  <FaTimes className="clear-icon" />
+                </button>
               )}
             </div>
-              <button 
-                  onClick={generateNewRandomChars}
-                  className="generate-all-btn"
-                >
-              <FaRedo className="generate-icon" /> Gerar
-              </button>
           </div>
         </div>
         <div className="card-content">
           <DataField 
             label="Caracteres gerados" 
             value={randomChars.value}
-            rawValue={randomChars.value}
+            raw={randomChars.value}
           />
         </div>
       </section>
