@@ -36,13 +36,61 @@
 }
 
 .card {
+  display: block;
+  break-inside: avoid;
+  margin-bottom: 0.75rem;
+  padding: 0 16px 8px 16px;
   background-color: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: 8px;
 }
 
-.generate-all-btn {
+.card-content {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+}
+
+.card-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Estilos para o select de cartão */
+.card-select {
+  padding: 0.5rem 30px 0.5rem 1rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--background-color); 
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
   height: 36px;
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px;
+}
+
+.card-select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: var(--accent-color);
+  background: var(--background-color);
+}
+
+.card-select option {
+  padding: 8px;
+  background-color: var(--background-color);
+}
+
+.generate-all-btn {
+  min-height: 36px;
   padding: 0 16px;
   display: flex;
   align-items: center;
@@ -69,16 +117,14 @@
   transition: transform 0.3s ease;
 }
 
-.generate-all-btn:hover .generate-icon {
-  transform: rotate(180deg);
-}
-
 .campo-item {
   position: relative;
   display: flex;
-  flex-direction: column;
-  margin-bottom: 1rem;
   width: 100%;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .campo-item label {
@@ -98,6 +144,25 @@
   font-family: 'Inter', sans-serif;
 }
 
+.campo-item:last-child {
+  margin-bottom: 0;
+}
+
+.campo-valor {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  min-height: 32px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+  position: relative;
+  background: var(--card-bg);
+  padding: 4px 8px;
+}
+
 .campo-valor:hover {
   border-color: var(--accent-color);
 }
@@ -107,12 +172,54 @@
   box-shadow: 0 0 0 2px rgba(120, 93, 200, 0.1);
 }
 
+.campo-valor .copy-icon,
+.campo-valor .regenerate-icon {
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.campo-valor .copy-icon:hover,
+.campo-valor .regenerate-icon:hover {
+  color: var(--accent-color);
+}
+
+.copyable, .campo-valor span.copyable, .campo-valor textarea.copyable {
+  flex: 1;
+  display: block;
+  min-height: 32px;
+  max-height: 96px;
+  overflow-y: auto;
+  width: 100%;
+  font-family: 'Inter', monospace;
+  color: var(--text-color);
+  background: var(--card-bg);
+  border: none;
+  outline: none;
+  padding: 8px 12px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) var(--card-bg);
+  resize: none;
+}
+
+.copyable:hover {
+  border-color: var(--accent-color);
+}
+
 .copy-icon,
 .regenerate-icon,
 .mask-icon {
   cursor: pointer;
   color: var(--text-secondary);
   transition: all 0.2s ease;
+  font-size: 1rem;
+  margin-left: 0.25rem;
 }
 
 .copy-icon:hover,
@@ -137,7 +244,7 @@
 }
 
 .regenerate-icon:active {
-  transform: rotate(360deg);
+  animation: spinOnce 0.4s ease-in-out;
 }
 
 @keyframes spinOnce {
@@ -151,7 +258,7 @@
 
 .categories-container {
   display: flex;
-  flex-wrap: wrap;
+  flex: 1;
   gap: 0.5rem;
   align-items: center;
   background-color: transparent;
@@ -160,10 +267,10 @@
 }
 
 .category-tag {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem;
+  padding: 0.25rem 0.75rem;
   background-color: var(--card-bg);
   color: var(--text-primary);
   cursor: pointer;
@@ -182,6 +289,7 @@
 
 .tag-text {
   font-size: 0.9rem;
+  color: var(--text-primary);
   font-family: 'Inter', sans-serif;
 }
 
@@ -195,7 +303,15 @@
 .tag-copy-icon {
   margin-left: 0.5rem;
   opacity: 0;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 1rem;
   transition: opacity 0.2s ease;
+}
+
+.tag-copy-icon:hover {
+  color: var(--accent-color);
+  transform: scale(1.2);
 }
 
 .category-tag:hover .tag-copy-icon {
@@ -205,26 +321,58 @@
 .header-icon {
   font-size: 1.5rem;
   margin-right: 0.5rem;
+  vertical-align: text-bottom;
   color: var(--accent-color);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+  min-height: 37px;
 }
 
 .card-header h2 {
   display: flex;
   align-items: center;
   margin: 0;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   color: var(--text-primary);
 }
 
+.card-header .card-actions,
+.card-header .generate-all-btn,
+.card-header .card-select {
+  margin-left: 0.5rem;
+  font-size: 0.9rem;
+  height: 28px;
+  padding: 0 0.5rem;
+}
+
 .number-input {
+  height: 36px;
   width: 100%;
   padding: 0 1rem;
+  padding-right: 32px;
   border: 1px solid var(--border-color);
   border-radius: 4px;
+  box-sizing: border-box;
   background-color: var(--background-color);
   color: var(--text-primary);
+  font-size: 0.9rem;
   font-family: 'Inter', monospace;
   transition: all 0.2s ease;
+  cursor: text;
+}
+
+.number-input::placeholder {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: var(--text-secondary);
+  opacity: 0.7;
 }
 
 .number-input:hover {
@@ -240,6 +388,11 @@
 .clear-icon {
   cursor: pointer;
   color: var(--text-secondary);
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, transform 0.2s;
 }
 
 .clear-icon:hover {
@@ -255,6 +408,10 @@
   border-bottom: 1px solid var(--border-color);
   font-weight: 600;
   color: var(--text-primary);
+  /* margin: 24px 0 16px;
+  padding-bottom: 8px;
+  color: var(--text-secondary);
+  font-size: 1rem; */
 }
 
 .section-title {
@@ -281,15 +438,21 @@
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
+  /* gap: 8px;
+  padding: 8px 12px;
+  color: var(--text-secondary);
+  user-select: none; */
 }
 
 .attachment-toggle:hover {
   border-color: var(--accent-color);
+  /* background-color: var(--card-bg); */
 }
 
 .attachment-toggle.active {
   background-color: var(--accent-color);
-  color: white;
+  /*   background-color: var(--card-bg); */
+  color: var(--accent-color);
   border-color: var(--accent-color);
 }
 
@@ -316,6 +479,8 @@
   justify-content: center;
   font-family: 'Inter', sans-serif;
   font-weight: 400;
+  /* gap: 8px;
+  background-color: transparent; */
 }
 
 .action-button:hover {
@@ -352,38 +517,45 @@
   cursor: pointer;
   transition: all 0.2s ease;
   z-index: 1000;
+  color: var(--text-primary);
+  box-shadow: 0 2px 5px var(--shadow-color);
 }
 
 .scroll-button.disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  box-shadow: none;
+  pointer-events: none;
 }
 
 .scroll-button.top {
-  bottom: 2rem;
+  bottom: 80px;
 }
 
 .scroll-button.bottom {
-  bottom: 5rem;
+  bottom: 20px;
 }
 
 .scroll-button:not(.disabled):hover {
+  transform: scale(1.1);
   border-color: var(--accent-color);
   color: var(--accent-color);
 }
 
 .scroll-button svg {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   transition: transform 0.2s ease;
 }
 
 .scroll-button:not(.disabled):hover svg {
   transform: scale(1.2);
+  transform: translateY(-2px);
 }
 
 .scroll-button.bottom:not(.disabled):hover svg {
   transform: scale(1.2);
+  transform: translateY(2px);
 }
 
 .character-counter {
@@ -437,21 +609,6 @@
   color: var(--text-primary);
 }
 
-.campo-valor .copy-icon,
-.campo-valor .regenerate-icon {
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: color 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.campo-valor .copy-icon:hover,
-.campo-valor .regenerate-icon:hover {
-  color: var(--accent-color);
-}
-
 .icon-button {
   background: transparent;
   border: none;
@@ -461,9 +618,16 @@
   justify-content: center;
   color: var(--text-secondary);
   transition: color 0.2s ease;
+  padding: 0 6px;
+  height: 100%;
+  font-size: 1.2rem;
 }
 
 .icon-button:hover {
+  color: var(--accent-color);
+}
+
+.icon-button:hover .clear-icon {
   color: var(--accent-color);
 }
 
@@ -473,6 +637,10 @@
 }
 
 .icon-button:active {
+  transform: scale(0.95);
+}
+
+.icon-button:active .clear-icon {
   transform: scale(0.95);
 }
 
@@ -568,6 +736,51 @@ body.dark-theme #test-status .campo-valor select.copyable option {
   background-color: var(--card-bg);
 }
 
+body.dark-theme .card-option {
+  filter: brightness(1.2);
+  background-color: var(--card-bg) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Remove controles do input number */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.input-clearable {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+input-clearable .number-input {
+  width: 100%;
+  padding-right: 32px; /* Espaço para o ícone */
+}
+
+.input-clearable .clear-input-btn {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  cursor: pointer;
+}
+
+/* Menu lateral */
 #menu-toggle {
   position: fixed;
   top: 80px;
