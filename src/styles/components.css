@@ -41,32 +41,6 @@
   border-radius: 8px;
 }
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border-color);
-  padding: 1rem;
-}
-
-.card h2 {
-  margin: 0;
-  font-size: 1.4rem;
-  color: var(--text-primary);
-}
-
-.card-content {
-  display: grid;
-  gap: 1rem;
-}
-
-.card-filters {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .generate-all-btn {
   height: 36px;
   padding: 0 16px;
@@ -113,14 +87,15 @@
   top: -0.6em;
   color: var(--text-secondary);
   font-size: var(--font-size-sm);
-  background-color: rgba(var(--card-bg-rgb), 0.7);
   padding: 0 4px;
-  line-height: 1;
   z-index: 1;
   display: inline-block;
   height: 1.2em;
   white-space: nowrap;
   backdrop-filter: blur(4px);
+  font-weight: 500;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
 }
 
 .campo-valor:hover {

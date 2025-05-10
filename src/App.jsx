@@ -50,9 +50,6 @@ const App = () => {
 
       <main>
         <DataGenerator />
-        <div className="qa-section">
-          <TestStatusCard />
-        </div>
       </main>
 
       <ScrollButtons />

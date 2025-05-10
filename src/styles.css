@@ -1,10 +1,3 @@
-label {
-  font-weight: 300;
-  font-size: 14px;
-  font-family: 'Inter', sans-serif;
-  color: var(--text-primary);
-}
-
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
@@ -93,10 +86,6 @@ body {
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 0.25rem;
-}
-
-.campo-item label {
-  font-size: 0.85rem;
 }
 
 .campo-item:last-child {
@@ -198,8 +187,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.5rem 0;
+  margin-bottom: 0.5rem;
+  padding: 8px 0;
   border-bottom: 1px solid var(--border-color);
+  min-height: 37px;
 }
 
 .card-header h2 {
@@ -493,25 +484,24 @@ textarea.number-input::placeholder {
 
 /* Responsividade dos cards */
 .cards-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
-  align-items: start;
-  grid-auto-rows: min-content;
+  column-count: 2;
+  column-gap: 0.75rem;
 }
 
 @media (max-width: 800px) {
   .cards-container {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    column-count: 1;
   }
+}
+
+.card {
+  display: block;
+  break-inside: avoid;
+  margin-bottom: 0.75rem;
+  padding: 0 16px 8px 16px;
 }
 
 /* Redução de fontes gerais */
 body, label, .campo-valor, .card-header h2 {
   font-size: 0.95rem;
-}
-
-.card {
-  padding: 0 16px 8px 16px; /* ou menos */
 }
