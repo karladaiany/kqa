@@ -740,7 +740,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
   }
 
   return (
-    <div className="data-generator">
+    <div className="cards-container">
       <section className="card" id="documentos">
         <div className="card-header">
           <h2><FaIdCard className="header-icon" /> Documentos</h2>
@@ -772,7 +772,49 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
           />
         </div>
       </section>
-
+      <section className="card" id="produto">
+        <div className="card-header">
+          <h2><FaGraduationCap className="header-icon" /> Produto</h2>
+          <button 
+            className="generate-all-btn" 
+            onClick={() => setProduct(generateProduct())}
+            title="Gerar todos os dados do produto novamente"
+          >
+            <FaRedo className="generate-icon" />
+            Gerar tudo
+          </button>
+        </div>
+        <div className="card-content">
+          <DataField 
+            label="Nome" 
+            value={product.nome}
+            onRegenerate={() => regenerateProductField('nome')}
+          />
+          <DataField 
+            label="Descrição" 
+            value={product.descricao}
+            onRegenerate={() => regenerateProductField('descricao')}
+          />
+          <div className="campo-item">
+            <label>Categorias</label>
+            <div className="campo-valor">
+              <div className="categories-container">
+                {product.categorias.map((categoria, index) => (
+                  <CategoryTag key={index} category={categoria} />
+                ))}
+              </div>
+              <button
+                type="button"
+                className="icon-button regenerate"
+                aria-label="Gerar novas categorias"
+                onClick={() => regenerateProductField('categorias')}
+              >
+                <FaSync className="regenerate-icon" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
       <section className="card" id="dados-pessoais">
         <div className="card-header">
           <h2>
@@ -840,51 +882,6 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
           />
         </div>
       </section>
-
-      <section className="card" id="produto">
-        <div className="card-header">
-          <h2><FaGraduationCap className="header-icon" /> Produto</h2>
-          <button 
-            className="generate-all-btn" 
-            onClick={() => setProduct(generateProduct())}
-            title="Gerar todos os dados do produto novamente"
-          >
-            <FaRedo className="generate-icon" />
-            Gerar tudo
-          </button>
-        </div>
-        <div className="card-content">
-          <DataField 
-            label="Nome" 
-            value={product.nome}
-            onRegenerate={() => regenerateProductField('nome')}
-          />
-          <DataField 
-            label="Descrição" 
-            value={product.descricao}
-            onRegenerate={() => regenerateProductField('descricao')}
-          />
-          <div className="campo-item">
-            <label>Categorias</label>
-            <div className="campo-valor">
-              <div className="categories-container">
-                {product.categorias.map((categoria, index) => (
-                  <CategoryTag key={index} category={categoria} />
-                ))}
-              </div>
-              <button
-                type="button"
-                className="icon-button regenerate"
-                aria-label="Gerar novas categorias"
-                onClick={() => regenerateProductField('categorias')}
-              >
-                <FaSync className="regenerate-icon" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section className="card" id="cartao">
         <div className="card-header">
           <h2>
@@ -927,7 +924,6 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
           <DataField label="CVV" value={card.cvv} />
         </div>
       </section>
-
       <section className="card" id="caracteres">
         <div className="card-header">
           <h2>
@@ -966,7 +962,6 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
           />
         </div>
       </section>
-
       <section className="card" id="contador">
         <div className="card-header">
           <h2><FaCalculator className="header-icon" /> Contador de caracteres</h2>
@@ -990,7 +985,6 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
           </div>
         </div>
       </section>
-
       <BugRegistrationCard />
       <DeployCard />
     </div>

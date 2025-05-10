@@ -16,7 +16,7 @@ body {
 .card-content {
   display: grid;
   gap: 0.5rem;
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0;
 }
 
 .card-filters {
@@ -198,8 +198,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 0.25rem;
-  margin-bottom: 0.5rem;
+  padding: 0.5rem 0;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -493,17 +492,26 @@ textarea.number-input::placeholder {
 }
 
 /* Responsividade dos cards */
-@media (max-width: 900px) {
+.cards-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  align-items: start;
+  grid-auto-rows: min-content;
+}
+
+@media (max-width: 800px) {
   .cards-container {
     grid-template-columns: 1fr;
     gap: 1rem;
-  }
-  .card-content {
-    padding: 0.5rem;
   }
 }
 
 /* Redução de fontes gerais */
 body, label, .campo-valor, .card-header h2 {
   font-size: 0.95rem;
+}
+
+.card {
+  padding: 0 16px 8px 16px; /* ou menos */
 }
