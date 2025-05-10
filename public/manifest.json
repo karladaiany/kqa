@@ -1,0 +1,9 @@
+{
+  "name": "KQA :: Gerador de Dados para QA ::",
+  "short_name": "KQA",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#282a36",
+  "theme_color": "#785DC8",
+  "description": "Gerador de dados para QA"
+}
