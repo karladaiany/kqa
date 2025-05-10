@@ -1,492 +1,434 @@
 import { useState, useEffect } from 'react';
-import { faker } from '@faker-js/faker';
+import { fakerPT_BR as faker } from '@faker-js/faker';
+import { generateCPF as generateValidCPF, generateCNPJ as generateValidCNPJ, generateRG as generateValidRG } from '../generators/documents';
 
-// Configurar locale para pt_BR
-faker.setLocale('pt_BR');
+const removeAcentos = (texto) => {
+    return texto
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '.');
+};
 
-// Mover as funções de geração de dados para cá
-export const useDataGenerator = () => {
-  // Estado para controlar máscaras
-  const [useCPFMask, setUseCPFMask] = useState(true);
-  const [useCNPJMask, setUseCNPJMask] = useState(true);
+// DDDs válidos no Brasil por região
+const dddsValidos = [
+    // Norte
+    '68', '96', '92', '97', '91', '93', '94', '69', '95',
+    // Nordeste
+    '82', '71', '73', '74', '75', '77', '85', '88', '98', '99', '83', '81', '87', '86', '89', '84', '79',
+    // Centro-Oeste
+    '61', '62', '64', '65', '66', '67',
+    // Sudeste
+    '27', '28', '31', '32', '33', '34', '35', '37', '38', '21', '22', '24', '11', '12', '13', '14', '15', '16', '17', '18', '19',
+    // Sul
+    '41', '42', '43', '44', '45', '46', '51', '53', '54', '55', '47', '48', '49'
+];
 
-  // Funções auxiliares
-  const generateRandomNumber = (min, max) => {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
+const tiposLogradouro = [
+    'Rua', 'Avenida', 'Travessa', 'Alameda', 'Praça', 
+    'Estrada', 'Rodovia', 'Viela', 'Beco', 'Largo',
+    'Vila', 'Passagem', 'Ladeira'
+];
 
-  const calculateCPFDigit = (numbers) => {
-    let sum = 0;
-    for (let i = 0; i < numbers.length; i++) {
-      sum += numbers[i] * (numbers.length + 1 - i);
+const produtosTecnologia = [
+    'Sistema de Automação de Testes',
+    'Framework de Desenvolvimento Web',
+    'Plataforma de Machine Learning',
+    'Software de Análise de Dados',
+    'Ferramenta de DevOps',
+    'Sistema de Gestão Ágil',
+    'Plataforma de Testes A/B',
+    'Software de Monitoramento de Performance',
+    'IDE Inteligente',
+    'Ferramenta de Code Review',
+    'Sistema de CI/CD',
+    'Plataforma de Design System',
+    'Software de Prototipação',
+    'Ferramenta de Versionamento',
+    'Sistema de Análise de Código',
+    'Plataforma de Documentação',
+    'Software de Gerenciamento de APIs',
+    'Ferramenta de Debug',
+    'Sistema de Logging',
+    'Plataforma de Cloud Computing'
+];
+
+const categoriasTecnologia = [
+    'Desenvolvimento de Software',
+    'Qualidade de Software',
+    'DevOps',
+    'Inteligência Artificial',
+    'Machine Learning',
+    'UI/UX Design',
+    'Gestão de Projetos',
+    'Metodologias Ágeis',
+    'Automação de Testes',
+    'Cloud Computing',
+    'Segurança da Informação',
+    'Arquitetura de Software',
+    'Frontend Development',
+    'Backend Development',
+    'Mobile Development',
+    'Data Science',
+    'Big Data',
+    'Blockchain',
+    'IoT',
+    'Microserviços',
+    'API Development',
+    'Design System',
+    'Code Quality',
+    'Performance',
+    'Acessibilidade',
+    'DevSecOps',
+    'SRE',
+    'Infraestrutura',
+    'Banco de Dados',
+    'Business Intelligence'
+];
+
+const descricoesProdutosTecnologia = [
+    'Solução avançada que automatiza todo o ciclo de testes, desde a criação até a execução e relatórios, aumentando a eficiência da equipe de QA.',
+    'Plataforma integrada que utiliza inteligência artificial para otimizar processos de desenvolvimento e garantir a qualidade do código.',
+    'Sistema completo de gestão de projetos ágeis com recursos de planejamento, monitoramento e métricas em tempo real.',
+    'Ferramenta inovadora para análise estática e dinâmica de código, identificando vulnerabilidades e sugerindo melhorias.',
+    'Software especializado em testes de performance, permitindo simulações de carga e análise detalhada de desempenho.',
+    'Plataforma colaborativa para design e prototipação, facilitando a criação e validação de interfaces com usuários.',
+    'Sistema robusto de integração contínua e entrega contínua (CI/CD) com suporte a múltiplas tecnologias e ambientes.',
+    'Ferramenta completa para documentação técnica, com suporte a versionamento e colaboração em tempo real.',
+    'Solução moderna para monitoramento e análise de APIs, garantindo performance e segurança em todas as integrações.',
+    'Plataforma unificada de DevOps que integra ferramentas de desenvolvimento, teste e implantação em um único ambiente.',
+    'Sistema inteligente de revisão de código que utiliza ML para identificar padrões e sugerir melhorias.',
+    'Ferramenta especializada em testes de acessibilidade e usabilidade, garantindo a melhor experiência para todos os usuários.',
+    'Plataforma avançada de análise de dados com recursos de visualização e geração de relatórios personalizados.',
+    'Software de gerenciamento de configuração que automatiza processos de deploy e rollback com zero downtime.',
+    'Sistema integrado de logging e monitoramento com alertas em tempo real e análise preditiva de problemas.',
+    'Ferramenta de automação de processos de QA com suporte a testes funcionais, de integração e end-to-end.',
+    'Plataforma completa para desenvolvimento de APIs com recursos de documentação, teste e monitoramento.',
+    'Solução especializada em testes de segurança, identificando vulnerabilidades e sugerindo correções.',
+    'Sistema de versionamento avançado com recursos de branching, merging e resolução de conflitos.',
+    'Ferramenta de análise de qualidade de código com métricas detalhadas e sugestões de refatoração.'
+];
+
+// Faixas de CEP por estado
+const faixasCEP = {
+    'SP': { inicio: '01000000', fim: '19999999' },
+    'RJ': { inicio: '20000000', fim: '28999999' },
+    'ES': { inicio: '29000000', fim: '29999999' },
+    'MG': { inicio: '30000000', fim: '39999999' },
+    'BA': { inicio: '40000000', fim: '48999999' },
+    'SE': { inicio: '49000000', fim: '49999999' },
+    'PE': { inicio: '50000000', fim: '56999999' },
+    'AL': { inicio: '57000000', fim: '57999999' },
+    'PB': { inicio: '58000000', fim: '58999999' },
+    'RN': { inicio: '59000000', fim: '59999999' },
+    'CE': { inicio: '60000000', fim: '63999999' },
+    'PI': { inicio: '64000000', fim: '64999999' },
+    'MA': { inicio: '65000000', fim: '65999999' },
+    'PA': { inicio: '66000000', fim: '68899999' },
+    'AP': { inicio: '68900000', fim: '68999999' },
+    'AM': { inicio: '69000000', fim: '69299999' },
+    'RR': { inicio: '69300000', fim: '69399999' },
+    'AC': { inicio: '69900000', fim: '69999999' },
+    'DF': { inicio: '70000000', fim: '72799999' },
+    'GO': { inicio: '72800000', fim: '76799999' },
+    'TO': { inicio: '77000000', fim: '77999999' },
+    'MT': { inicio: '78000000', fim: '78899999' },
+    'RO': { inicio: '78900000', fim: '78999999' },
+    'MS': { inicio: '79000000', fim: '79999999' },
+    'PR': { inicio: '80000000', fim: '87999999' },
+    'SC': { inicio: '88000000', fim: '89999999' },
+    'RS': { inicio: '90000000', fim: '99999999' }
+};
+
+const gerarCEPValido = (estado) => {
+    const faixa = faixasCEP[estado];
+    const inicio = parseInt(faixa.inicio);
+    const fim = parseInt(faixa.fim);
+    const cep = inicio + Math.floor(Math.random() * (fim - inicio));
+    return cep.toString().padStart(8, '0').replace(/(\d{5})(\d{3})/, '$1-$2');
+};
+
+const gerarCategoriasUnicas = (quantidade) => {
+    const categorias = [...categoriasTecnologia];
+    const selecionadas = [];
+    
+    for (let i = 0; i < quantidade; i++) {
+        if (categorias.length === 0) break;
+        const index = Math.floor(Math.random() * categorias.length);
+        selecionadas.push(categorias.splice(index, 1)[0]);
     }
-    const digit = 11 - (sum % 11);
-    return digit > 9 ? 0 : digit;
-  };
+    
+    return selecionadas;
+};
 
-  // Gerador de CPF
-  const generateCPF = () => {
-    const numbers = [];
-    for (let i = 0; i < 9; i++) {
-      numbers.push(generateRandomNumber(0, 9));
-    }
-
-    const digit1 = calculateCPFDigit(numbers);
-    numbers.push(digit1);
-    const digit2 = calculateCPFDigit(numbers);
-    numbers.push(digit2);
-
-    const cpf = numbers.join('');
-    const cpfElement = document.getElementById('cpf');
-    if (cpfElement) {
-      cpfElement.textContent = useCPFMask ? 
-        cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : 
-        cpf;
-    }
-  };
-
-  // Gerador de CNPJ
-  const generateCNPJ = () => {
-    const numbers = [];
-    for (let i = 0; i < 12; i++) {
-      numbers.push(generateRandomNumber(0, 9));
-    }
-
-    // Cálculo dos dígitos verificadores
-    let sum = 0;
-    let pos = 5;
-    for (let i = 0; i < 12; i++) {
-      sum += numbers[i] * pos;
-      pos = pos === 2 ? 9 : pos - 1;
-    }
-
-    let digit = 11 - (sum % 11);
-    numbers.push(digit > 9 ? 0 : digit);
-
-    sum = 0;
-    pos = 6;
-    for (let i = 0; i < 13; i++) {
-      sum += numbers[i] * pos;
-      pos = pos === 2 ? 9 : pos - 1;
-    }
-
-    digit = 11 - (sum % 11);
-    numbers.push(digit > 9 ? 0 : digit);
-
-    const cnpj = numbers.join('');
-    const cnpjElement = document.getElementById('cnpj');
-    if (cnpjElement) {
-      cnpjElement.textContent = useCNPJMask ? 
-        cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : 
-        cnpj;
-    }
-  };
-
-  // Gerador de RG
-  const generateRG = () => {
-    const numbers = [];
-    for (let i = 0; i < 8; i++) {
-      numbers.push(generateRandomNumber(0, 9));
-    }
-
-    let sum = 0;
-    for (let i = 0; i < 8; i++) {
-      sum += numbers[i] * (2 + i);
-    }
-
-    const digit = 11 - (sum % 11);
-    numbers.push(digit === 11 ? 0 : digit);
-
-    const rg = numbers.join('');
-    const rgElement = document.getElementById('rg');
-    if (rgElement) {
-      rgElement.textContent = rg.replace(/(\d{2})(\d{3})(\d{3})(\d{1})/, '$1.$2.$3-$4');
-    }
-  };
-
-  // Lista de DDDs válidos
-  const DDDsValidos = [
-    11, 12, 13, 14, 15, 16, 17, 18, 19, // São Paulo
-    21, 22, 24, 27, 28, // Rio de Janeiro e Espírito Santo
-    31, 32, 33, 34, 35, 37, 38, // Minas Gerais
-    41, 42, 43, 44, 45, 46, 47, 48, 49, // Paraná e Santa Catarina
-    51, 53, 54, 55, // Rio Grande do Sul
-    61, 62, 63, 64, 65, 66, 67, 68, 69, // Centro-Oeste
-    71, 73, 74, 75, 77, 79, // Bahia e Sergipe
-    81, 82, 83, 84, 85, 86, 87, 88, 89, // Nordeste
-    91, 92, 93, 94, 95, 96, 97, 98, 99 // Norte
-  ];
-
-  // Gerador de Dados Pessoais
-  const generatePerson = () => {
-    const pessoa = {
-      nome: faker.name.findName(),
-      email: faker.internet.email().toLowerCase(),
-      telefone: `(${DDDsValidos[Math.floor(Math.random() * DDDsValidos.length)]}) ${faker.phone.phoneNumber('####-####')}`,
-      celular: `(${DDDsValidos[Math.floor(Math.random() * DDDsValidos.length)]}) ${faker.phone.phoneNumber('#####-####')}`,
-      rua: faker.address.streetName(),
-      numero: faker.random.number({ min: 1, max: 9999 }),
-      bairro: faker.address.county(),
-      cidade: faker.address.city(),
-      estado: faker.address.stateAbbr(),
-      cep: faker.address.zipCode('#####-###')
-    };
-
-    const pessoaDados = document.getElementById('pessoa-dados');
-    if (pessoaDados) {
-      pessoaDados.innerHTML = `
-        <div class="campo-item">
-          <label>Nome:</label>
-          <div class="campo-valor">
-            <span class="copyable">${pessoa.nome}</span>
-            <i class="fas fa-copy copy-icon" title="Copiar"></i>
-            <i class="fas fa-sync-alt regenerate-icon" id="generate-nome" title="Gerar novo"></i>
-          </div>
-        </div>
-        <div class="campo-item">
-          <label>Email:</label>
-          <div class="campo-valor">
-            <span class="copyable">${pessoa.email}</span>
-            <i class="fas fa-copy copy-icon" title="Copiar"></i>
-            <i class="fas fa-sync-alt regenerate-icon" id="generate-email" title="Gerar novo"></i>
-          </div>
-        </div>
-        <div class="campo-item">
-          <label>Telefone:</label>
-          <div class="campo-valor">
-            <span class="copyable">${pessoa.telefone}</span>
-            <i class="fas fa-copy copy-icon" title="Copiar"></i>
-            <i class="fas fa-sync-alt regenerate-icon" id="generate-telefone" title="Gerar novo"></i>
-          </div>
-        </div>
-        <div class="campo-item">
-          <label>Celular:</label>
-          <div class="campo-valor">
-            <span class="copyable">${pessoa.celular}</span>
-            <i class="fas fa-copy copy-icon" title="Copiar"></i>
-            <i class="fas fa-sync-alt regenerate-icon" id="generate-celular" title="Gerar novo"></i>
-          </div>
-        </div>
-        <div class="campo-item">
-          <label>Endereço:</label>
-          <div class="campo-valor">
-            <span class="copyable">${pessoa.rua}, ${pessoa.numero}</span>
-            <i class="fas fa-copy copy-icon" title="Copiar"></i>
-            <i class="fas fa-sync-alt regenerate-icon" id="generate-endereco" title="Gerar novo"></i>
-          </div>
-        </div>
-        <div class="campo-item">
-          <label>Bairro:</label>
-          <div class="campo-valor">
-            <span class="copyable">${pessoa.bairro}</span>
-            <i class="fas fa-copy copy-icon" title="Copiar"></i>
-            <i class="fas fa-sync-alt regenerate-icon" id="generate-bairro" title="Gerar novo"></i>
-          </div>
-        </div>
-        <div class="campo-item">
-          <label>Cidade/UF:</label>
-          <div class="campo-valor">
-            <span class="copyable">${pessoa.cidade}/${pessoa.estado}</span>
-            <i class="fas fa-copy copy-icon" title="Copiar"></i>
-            <i class="fas fa-sync-alt regenerate-icon" id="generate-cidade" title="Gerar novo"></i>
-          </div>
-        </div>
-        <div class="campo-item">
-          <label>CEP:</label>
-          <div class="campo-valor">
-            <span class="copyable">${pessoa.cep}</span>
-            <i class="fas fa-copy copy-icon" title="Copiar"></i>
-            <i class="fas fa-sync-alt regenerate-icon" id="generate-cep" title="Gerar novo"></i>
-          </div>
-        </div>
-      `;
-    }
-  };
-
-  // Gerador de Cartão de Crédito
-  const generateCard = () => {
-    const card = {
-      number: faker.finance.creditCardNumber(),
-      brand: faker.finance.creditCardIssuer(),
-      expiry: faker.date.future().toLocaleDateString('pt-BR', { month: '2-digit', year: '2-digit' }),
-      cvv: faker.finance.creditCardCVV()
-    };
-
-    const cardData = document.getElementById('credit-card-data');
-    if (cardData) {
-      cardData.innerHTML = `
-        <div class="campo-item">
-          <label>Número:</label>
-          <div class="campo-valor">
-            <span class="copyable">${card.number}</span>
-            <i class="fas fa-copy copy-icon" title="Copiar"></i>
-            <i class="fas fa-sync-alt regenerate-icon" id="generate-card-number" title="Gerar novo"></i>
-          </div>
-        </div>
-        <div class="campo-item">
-          <label>Bandeira:</label>
-          <div class="campo-valor">
-            <span class="copyable">${card.brand}</span>
-            <i class="fas fa-copy copy-icon" title="Copiar"></i>
-            <i class="fas fa-sync-alt regenerate-icon" id="generate-card-brand" title="Gerar novo"></i>
-          </div>
-        </div>
-        <div class="campo-item">
-          <label>Validade:</label>
-          <div class="campo-valor">
-            <span class="copyable">${card.expiry}</span>
-            <i class="fas fa-copy copy-icon" title="Copiar"></i>
-            <i class="fas fa-sync-alt regenerate-icon" id="generate-card-expiry" title="Gerar novo"></i>
-          </div>
-        </div>
-        <div class="campo-item">
-          <label>CVV:</label>
-          <div class="campo-valor">
-            <span class="copyable">${card.cvv}</span>
-            <i class="fas fa-copy copy-icon" title="Copiar"></i>
-            <i class="fas fa-sync-alt regenerate-icon" id="generate-card-cvv" title="Gerar novo"></i>
-          </div>
-        </div>
-      `;
-    }
-  };
-
-  // Gerador de Produtos/Cursos
-  const generateProduct = () => {
-    const categorias = [
-      'Desenvolvimento', 'QA', 'DevOps', 'Agile', 
-      'Cloud', 'Security', 'Data Science', 'Mobile'
-    ];
-
-    const produto = {
-      nome: `Curso de ${faker.random.arrayElement(categorias)} ${faker.random.number({ min: 1, max: 3 })}`,
-      descricao: faker.lorem.sentence(),
-      preco: faker.commerce.price(297, 1997, 2, 'R$ '),
-      categoria: faker.random.arrayElement(categorias)
-    };
-
-    const produtoDados = document.getElementById('produto-dados');
-    if (produtoDados) {
-      produtoDados.innerHTML = `
-        <div class="campo-item">
-          <label>Nome:</label>
-          <div class="campo-valor">
-            <span class="copyable">${produto.nome}</span>
-            <i class="fas fa-copy copy-icon" title="Copiar"></i>
-            <i class="fas fa-sync-alt regenerate-icon" id="generate-produto-nome" title="Gerar novo"></i>
-          </div>
-        </div>
-        <div class="campo-item">
-          <label>Descrição:</label>
-          <div class="campo-valor">
-            <span class="copyable">${produto.descricao}</span>
-            <i class="fas fa-copy copy-icon" title="Copiar"></i>
-            <i class="fas fa-sync-alt regenerate-icon" id="generate-produto-descricao" title="Gerar novo"></i>
-          </div>
-        </div>
-        <div class="campo-item">
-          <label>Preço:</label>
-          <div class="campo-valor">
-            <span class="copyable">${produto.preco}</span>
-            <i class="fas fa-copy copy-icon" title="Copiar"></i>
-            <i class="fas fa-sync-alt regenerate-icon" id="generate-produto-preco" title="Gerar novo"></i>
-          </div>
-        </div>
-        <div class="campo-item">
-          <label>Categoria:</label>
-          <div class="campo-valor">
-            <span class="copyable">${produto.categoria}</span>
-            <i class="fas fa-copy copy-icon" title="Copiar"></i>
-            <i class="fas fa-sync-alt regenerate-icon" id="generate-produto-categoria" title="Gerar novo"></i>
-          </div>
-        </div>
-      `;
-    }
-  };
-
-  // Handlers de eventos
-  const handleCopy = (text) => {
-    navigator.clipboard.writeText(text).then(() => {
-      showToast('Copiado para a área de transferência!');
-    });
-  };
-
-  const showToast = (message) => {
-    const toast = document.createElement('div');
-    toast.className = 'toast show';
-    toast.textContent = message;
-    document.querySelector('.toast-container').appendChild(toast);
-
-    setTimeout(() => {
-      toast.remove();
-    }, 2000);
-  };
-
-  // Contador de Caracteres
-  const updateCount = () => {
-    const text = document.getElementById('character-counter')?.value || '';
-    const charCount = document.getElementById('char-count');
-    const wordCount = document.getElementById('word-count');
-
-    if (charCount) {
-      charCount.textContent = text.length;
-    }
-    if (wordCount) {
-      wordCount.textContent = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
-    }
-  };
-
-  // Gerador de Texto Aleatório
-  const words = [
-    'teste', 'qualidade', 'software', 'automação', 'desenvolvimento',
-    'sistema', 'projeto', 'análise', 'dados', 'processo', 'método',
-    'código', 'programa', 'função', 'classe', 'objeto', 'variável',
-    'interface', 'módulo', 'componente', 'estrutura', 'padrão'
-  ];
-
-  const generateText = (length) => {
-    let text = '';
-    while (text.length < length) {
-      const word = words[Math.floor(Math.random() * words.length)];
-      if (text.length + word.length + 1 <= length) {
-        text += (text ? ' ' : '') + word;
-      } else if (text.length < length) {
-        text += 'a'.repeat(length - text.length);
-      }
-    }
-    return text;
-  };
-
-  // Event listeners setup
-  useEffect(() => {
-    // Copiar ao clicar
-    document.querySelectorAll('.copy-icon').forEach(icon => {
-      icon.addEventListener('click', (e) => {
-        const text = e.target.previousElementSibling.textContent;
-        handleCopy(text);
-      });
-    });
-
-    // Toggle de máscaras
-    document.getElementById('cpf-mask-toggle')?.addEventListener('click', () => {
-      toggleCPFMask();
-      generateCPF();
-    });
-
-    document.getElementById('cnpj-mask-toggle')?.addEventListener('click', () => {
-      toggleCNPJMask();
-      generateCNPJ();
-    });
-
-    // Limpar campos
-    document.getElementById('clear-counter')?.addEventListener('click', () => {
-      const counter = document.getElementById('character-counter');
-      if (counter) {
-        counter.value = '';
-        updateCount();
-      }
-    });
-
-    document.getElementById('clear-generator')?.addEventListener('click', () => {
-      const length = document.getElementById('char-length');
-      const text = document.getElementById('generated-text');
-      if (length && text) {
-        length.value = '';
-        text.value = '';
-        document.getElementById('generate-chars').disabled = true;
-      }
-    });
-
-    // Contador de caracteres
-    const counter = document.getElementById('character-counter');
-    counter?.addEventListener('input', updateCount);
-
-    // Gerador de caracteres
-    const lengthInput = document.getElementById('char-length');
-    const generateButton = document.getElementById('generate-chars');
-    const outputText = document.getElementById('generated-text');
-
-    lengthInput?.addEventListener('input', (e) => {
-      const value = parseInt(e.target.value);
-      if (generateButton) {
-        generateButton.disabled = !value || value <= 0;
-      }
-    });
-
-    generateButton?.addEventListener('click', () => {
-      const length = parseInt(lengthInput?.value || '0');
-      if (length > 0 && outputText) {
-        outputText.value = generateText(length);
-      }
-    });
-
-    // Event listeners para campos individuais do cartão
-    const setupCardField = (fieldId, generateFunction) => {
-      const icon = document.getElementById(`generate-card-${fieldId}`);
-      if (icon) {
-        icon.addEventListener('click', generateFunction);
-      }
-    };
-
-    setupCardField('number', () => {
-      const cardData = document.getElementById('credit-card-data');
-      if (cardData) {
-        const number = faker.finance.creditCardNumber();
-        cardData.querySelector('#card-number').textContent = number;
-      }
-    });
-
-    setupCardField('brand', () => {
-      const cardData = document.getElementById('credit-card-data');
-      if (cardData) {
-        const brand = faker.finance.creditCardIssuer();
-        cardData.querySelector('#card-brand').textContent = brand;
-      }
-    });
-
-    setupCardField('expiry', () => {
-      const cardData = document.getElementById('credit-card-data');
-      if (cardData) {
-        const expiry = faker.date.future().toLocaleDateString('pt-BR', { month: '2-digit', year: '2-digit' });
-        cardData.querySelector('#card-expiry').textContent = expiry;
-      }
-    });
-
-    setupCardField('cvv', () => {
-      const cardData = document.getElementById('credit-card-data');
-      if (cardData) {
-        const cvv = faker.finance.creditCardCVV();
-        cardData.querySelector('#card-cvv').textContent = cvv;
-      }
-    });
-
-    return () => {
-      counter?.removeEventListener('input', updateCount);
-      lengthInput?.removeEventListener('input', () => {});
-      generateButton?.removeEventListener('click', () => {});
-      
-      // Cleanup para campos do cartão
-      ['number', 'brand', 'expiry', 'cvv'].forEach(field => {
-        const icon = document.getElementById(`generate-card-${field}`);
-        if (icon) {
-          icon.removeEventListener('click', () => {});
+const cartoesBandeiras = {
+    visa: {
+        credito: {
+            prefixos: ['4'],
+            tamanho: 16
+        },
+        debito: {
+            prefixos: ['4'],
+            tamanho: 16
         }
-      });
-    };
-  }, []);
+    },
+    mastercard: {
+        credito: {
+            prefixos: ['51', '52', '53', '54', '55'],
+            tamanho: 16
+        },
+        debito: {
+            prefixos: ['51', '52', '53', '54', '55'],
+            tamanho: 16
+        }
+    },
+    amex: {
+        credito: {
+            prefixos: ['34', '37'],
+            tamanho: 15
+        }
+    },
+    elo: {
+        credito: {
+            prefixos: ['636368', '636369', '438935', '504175', '451416', '509048', '509067', '509049', '509069', '509050', '509074', '509068', '509040', '509045', '509051', '509046', '509066', '509047', '509042', '509052', '509043', '509064', '509040'],
+            tamanho: 16
+        },
+        debito: {
+            prefixos: ['636368', '636369', '438935', '504175', '451416', '509048', '509067', '509049', '509069', '509050', '509074', '509068', '509040', '509045', '509051', '509046', '509066', '509047', '509042', '509052', '509043', '509064', '509040'],
+            tamanho: 16
+        }
+    },
+    hipercard: {
+        credito: {
+            prefixos: ['606282'],
+            tamanho: 16
+        }
+    }
+};
 
-  return {
-    generateCPF,
-    generateCNPJ,
-    generateRG,
-    generatePerson,
-    generateCard,
-    generateProduct,
-    toggleCPFMask,
-    toggleCNPJMask,
-    handleCopy,
-    showToast,
-    updateCount,
-    generateText
-  };
+const formatCardNumber = (numero, bandeira) => {
+    // AMEX: 4 + 6 + 5 dígitos
+    if (bandeira.toLowerCase() === 'amex') {
+        return numero.replace(/(\d{4})(\d{6})(\d{5})/, '$1 $2 $3');
+    }
+    // Outros cartões: grupos de 4 dígitos
+    return numero.replace(/(\d{4})(\d{4})(\d{4})(\d{4})/, '$1 $2 $3 $4');
+};
+
+const gerarNumeroCartao = (bandeira, tipo) => {
+    if (!bandeira || !cartoesBandeiras[bandeira] || !cartoesBandeiras[bandeira][tipo]) {
+        // Se não especificar bandeira ou tipo, gera aleatório
+        const todasBandeiras = Object.keys(cartoesBandeiras);
+        bandeira = faker.helpers.arrayElement(todasBandeiras);
+        tipo = faker.helpers.arrayElement(Object.keys(cartoesBandeiras[bandeira]));
+    }
+
+    const config = cartoesBandeiras[bandeira][tipo];
+    const prefixo = faker.helpers.arrayElement(config.prefixos);
+    const tamanho = config.tamanho;
+    
+    // Gera os dígitos restantes
+    const numeroBase = prefixo + faker.string.numeric(tamanho - prefixo.length - 1);
+    
+    // Implementação do algoritmo de Luhn para gerar o dígito verificador
+    let soma = 0;
+    let dobra = false;
+    
+    for (let i = numeroBase.length - 1; i >= 0; i--) {
+        let digito = parseInt(numeroBase[i]);
+        
+        if (dobra) {
+            digito *= 2;
+            if (digito > 9) {
+                digito -= 9;
+            }
+        }
+        
+        soma += digito;
+        dobra = !dobra;
+    }
+    
+    const digitoVerificador = ((Math.floor(soma / 10) + 1) * 10 - soma) % 10;
+    return numeroBase + digitoVerificador;
+};
+
+export const useDataGenerator = () => {
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        try {
+            setIsLoading(false);
+        } catch (err) {
+            setError('Erro ao inicializar o gerador de dados');
+            console.error('Erro ao inicializar faker:', err);
+        }
+    }, []);
+
+    const formatCPF = (cpf) => cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    const formatCNPJ = (cnpj) => cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+    const formatRG = (rg) => rg.replace(/(\d{2})(\d{3})(\d{3})(\d{1})/, '$1.$2.$3-$4');
+
+    const generateCPF = () => {
+        const raw = generateValidCPF();
+        return {
+            raw,
+            formatted: formatCPF(raw)
+        };
+    };
+
+    const generateCNPJ = () => {
+        const raw = generateValidCNPJ();
+        return {
+            raw,
+            formatted: formatCNPJ(raw)
+        };
+    };
+
+    const generateRG = () => {
+        const raw = generateValidRG();
+        return {
+            raw,
+            formatted: formatRG(raw)
+        };
+    };
+
+    const generatePerson = () => {
+        const firstName = faker.person.firstName();
+        const lastName = faker.person.lastName();
+        const nome = `${firstName} ${lastName}`;
+        const emailNome = removeAcentos(`${firstName}.${lastName}`);
+        const ddd = faker.helpers.arrayElement(dddsValidos);
+        const numeroBase = faker.string.numeric(8);
+        const telefone = `(${ddd}) 9${numeroBase.slice(0, 4)}-${numeroBase.slice(4)}`;
+        const tipoLogradouro = faker.helpers.arrayElement(tiposLogradouro);
+        const estado = faker.location.state({ abbreviated: true });
+        
+        return {
+            nome,
+            email: `${emailNome}@teste.com`,
+            telefone,
+            endereco: {
+                rua: `${tipoLogradouro} ${faker.location.street()}`,
+                numero: faker.string.numeric(4),
+                complemento: faker.helpers.arrayElement(['', 'Apto', 'Casa', 'Sala']) + ' ' + faker.string.numeric(3),
+                bairro: faker.location.county(),
+                cidade: faker.location.city(),
+                estado,
+                cep: gerarCEPValido(estado)
+            }
+        };
+    };
+
+    const generateCreditCard = (bandeira = '', tipo = '') => {
+        const numero = gerarNumeroCartao(bandeira, tipo);
+        const bandeiraSelecionada = bandeira || detectarBandeira(numero);
+        
+        return {
+            numero,
+            numeroFormatado: formatCardNumber(numero, bandeiraSelecionada),
+            nome: faker.person.fullName().toUpperCase(),
+            validade: faker.date.future().toLocaleDateString('pt-BR', { month: '2-digit', year: '2-digit' }),
+            cvv: faker.string.numeric(bandeiraSelecionada === 'amex' ? 4 : 3),
+            bandeira: bandeiraSelecionada.toUpperCase(),
+            tipo: tipo || 'credito'
+        };
+    };
+
+    const detectarBandeira = (numero) => {
+        for (const [bandeira, config] of Object.entries(cartoesBandeiras)) {
+            for (const tipo of Object.values(config)) {
+                for (const prefixo of tipo.prefixos) {
+                    if (numero.startsWith(prefixo)) {
+                        return bandeira;
+                    }
+                }
+            }
+        }
+        return 'desconhecida';
+    };
+
+    const generateProduct = () => ({
+        nome: faker.helpers.arrayElement(produtosTecnologia),
+        descricao: faker.helpers.arrayElement(descricoesProdutosTecnologia),
+        categorias: gerarCategoriasUnicas(3)
+    });
+
+    const generateRandomChars = (length) => {
+        // Para comprimentos muito pequenos, gera palavras curtas do lorem
+        if (length < 5) {
+            const word = faker.lorem.word();
+            return word.substring(0, length);
+        }
+
+        // Gera um texto maior e ajusta para o tamanho exato
+        let text = '';
+        
+        // Decide se vai usar palavras ou um texto contínuo baseado no tamanho
+        if (length < 50) {
+            // Para textos curtos, usa palavras individuais
+            while (text.length < length) {
+                const word = faker.lorem.word();
+                if (text.length === 0) {
+                    text = word;
+                } else if (text.length + word.length + 1 <= length) {
+                    text += ' ' + word;
+                } else {
+                    break;
+                }
+            }
+        } else {
+            // Para textos maiores, gera parágrafos e ajusta
+            text = faker.lorem.paragraphs(Math.ceil(length / 100)).replace(/\n/g, ' ');
+        }
+
+        // Ajusta o texto para o tamanho exato
+        if (text.length < length) {
+            // Se faltam caracteres, adiciona palavras até atingir ou ultrapassar
+            while (text.length < length) {
+                const word = faker.lorem.word();
+                if (text.length + word.length + 1 <= length) {
+                    text += ' ' + word;
+                } else {
+                    // Completa com caracteres do último word para atingir o tamanho exato
+                    const remaining = length - text.length - 1;
+                    if (remaining > 0) {
+                        text += ' ' + word.substring(0, remaining);
+                    }
+                    break;
+                }
+            }
+        } else if (text.length > length) {
+            // Se passou do tamanho, corta no último espaço antes do limite
+            text = text.substring(0, length);
+            const lastSpace = text.lastIndexOf(' ');
+            if (lastSpace > length * 0.8) { // Só corta no espaço se não perder mais de 20% do texto
+                text = text.substring(0, lastSpace);
+            }
+            
+            // Se ainda estiver maior que o limite, corta exatamente no limite
+            if (text.length > length) {
+                text = text.substring(0, length);
+            }
+            // Se ficou menor, completa com caracteres do lorem
+            while (text.length < length) {
+                text += faker.lorem.word().charAt(0);
+            }
+        }
+
+        return text;
+    };
+
+    return {
+        isLoading,
+        error,
+        generateCPF,
+        generateCNPJ,
+        generateRG,
+        generatePerson,
+        generateCreditCard,
+        generateProduct,
+        gerarCEPValido,
+        generateRandomChars
+    };
 }; 

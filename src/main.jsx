@@ -1,8 +1,6 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App'
-import './styles/theme.css'
-import './index.css'
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App'; // Importa o App.jsx
 
 // Tratamento global de erros
 window.addEventListener('error', (event) => {
@@ -15,20 +13,11 @@ window.addEventListener('error', (event) => {
   }
 });
 
-// Garantir que o DOM está pronto
-const renderApp = () => {
-  const root = document.getElementById('root');
-  if (root) {
-    ReactDOM.createRoot(root).render(
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-    );
-  }
-};
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', renderApp);
-} else {
-  renderApp();
+const root = document.getElementById('root');
+if (root) {
+  createRoot(root).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
 } 
