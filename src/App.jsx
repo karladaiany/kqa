@@ -4,12 +4,15 @@ import { DataGenerator } from './components/DataGenerator';
 import { FaSun, FaMoon, FaBars } from 'react-icons/fa';
 import ScrollButtons from './components/ScrollButtons';
 import TestStatusCard from './components/TestStatus/TestStatusCard';
+import BugRegistrationCard from './components/BugRegistration/BugRegistrationCard';
+import DeployCard from './components/Deploy/DeployCard';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles/theme.css';
 import './styles/components.css';
 import './styles.css';
 import './App.css';
 import SidebarMenu from './components/SidebarMenu';
+import { Container, Typography, Box } from '@mui/material';
 
 const App = () => {
   const [darkMode, setDarkMode] = React.useState(false);
@@ -52,6 +55,12 @@ const App = () => {
         <DataGenerator />
       </main>
 
+      <main>
+        <BugRegistrationCard />
+        <DeployCard />
+        <TestStatusCard />
+      </main>
+      
       <ScrollButtons />
       <ToastContainer
         position="bottom-right"
