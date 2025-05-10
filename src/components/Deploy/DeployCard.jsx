@@ -194,11 +194,11 @@ const DeployCard = () => {
       <div className="card-content">
         {fields.map((field) => (
           <div key={field.id} className="campo-item">
-            <div className="campo-valor textarea-container">
-              <textarea
+            <div className="campo-valor">
+              <input
                 value={fieldValues[field.id] || ''}
                 onChange={(e) => handleInputChange(field.id, e.target.value)}
-                className="padronizado"
+                className="copyable"
                 placeholder=" "
               />
               <label>{field.label}</label>
