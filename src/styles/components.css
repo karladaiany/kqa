@@ -776,3 +776,61 @@ input-clearable .number-input {
 .sidebar-menu .floating-nav-item svg {
   font-size: 1.2rem;
 }
+
+/* Componentes da estrutura principal */
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Layout em colunas */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.col-6 {
+  flex: 1;
+  min-width: 300px;
+}
+
+@media (max-width: 991px) {
+  .row {
+    flex-direction: column;
+  }
+  .col-6 {
+    width: 100%;
+  }
+}
+
+/* Títulos de seção principais */
+.section-title {
+  display: flex;
+  align-items: center;
+  margin: 0.5rem 0;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  padding: 0.5rem 0;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.section-icon {
+  margin-right: 0.5rem;
+  color: var(--accent-color);
+  font-size: 1.4rem;
+}
+
+/* Ajustes específicos para os cards na visualização em colunas */
+.col-6 .card {
+  height: 100%;
+}
+
+/* Cards específicos */
+#bug, #test-status {
+  height: 100%;
+}
