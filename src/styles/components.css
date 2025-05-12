@@ -396,7 +396,7 @@
 }
 
 .clear-icon:hover {
-  color: var(--error-color);
+  color: var(--accent-color);
 }
 
 .section-divider {
@@ -438,10 +438,10 @@
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
-  /* gap: 8px;
+  gap: 8px;
   padding: 8px 12px;
   color: var(--text-secondary);
-  user-select: none; */
+  user-select: none;
 }
 
 .attachment-toggle:hover {
@@ -450,8 +450,7 @@
 }
 
 .attachment-toggle.active {
-  background-color: var(--accent-color);
-  /*   background-color: var(--card-bg); */
+  background-color: var(--card-bg);
   color: var(--accent-color);
   border-color: var(--accent-color);
 }
@@ -459,7 +458,6 @@
 .card-actions {
   display: flex;
   gap: 0.5rem;
-  margin-top: 1rem;
 }
 
 .action-button {
@@ -662,77 +660,7 @@
   color: var(--accent-color);
 }
 
-.test-status-card {
-  margin-bottom: 1.5rem;
-}
-
-.test-status-card .form-group {
-  margin-bottom: 1rem;
-}
-
-.test-status-card select {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  background-color: var(--input-bg);
-  color: var(--text-color);
-  font-size: 1rem;
-}
-
-.test-status-card select:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
-}
-
-.test-status-card .card-actions {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-/* Estilos para o TestStatusCard */
-#test-status .campo-valor {
-  border: none;
-  background: none;
-  padding: 0;
-}
-
-#test-status .campo-valor select.copyable {
-  width: 100%;
-  height: 36px;
-  padding: 0 30px 0 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  background-color: var(--card-bg);
-  color: var(--text-primary);
-  font-size: 0.9rem;
-  cursor: pointer;
-  appearance: none;
-  background-repeat: no-repeat;
-  background-position: right 8px center;
-  background-size: 16px;
-}
-
-#test-status .campo-valor select.copyable:hover {
-  border-color: var(--accent-color);
-}
-
-#test-status .campo-valor select.copyable:focus {
-  outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
-}
-
-#test-status .campo-valor select.copyable option {
-  padding: 8px 12px;
-  background-color: var(--card-bg);
-  color: var(--text-primary);
-  white-space: pre;
-}
-
-body.dark-theme #test-status .campo-valor select.copyable option {
+body.dark-theme .campo-valor select.copyable option {
   background-color: var(--card-bg);
 }
 
@@ -829,6 +757,9 @@ input-clearable .number-input {
 }
 
 .sidebar-menu .floating-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem; 
   border-radius: 6px;
   margin-bottom: 2px;
   padding: 10px 18px;
@@ -844,4 +775,62 @@ input-clearable .number-input {
 
 .sidebar-menu .floating-nav-item svg {
   font-size: 1.2rem;
+}
+
+/* Componentes da estrutura principal */
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Layout em colunas */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.col-6 {
+  flex: 1;
+  min-width: 300px;
+}
+
+@media (max-width: 991px) {
+  .row {
+    flex-direction: column;
+  }
+  .col-6 {
+    width: 100%;
+  }
+}
+
+/* Títulos de seção principais */
+.section-title {
+  display: flex;
+  align-items: center;
+  margin: 0.5rem 0;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  padding: 0.5rem 0;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.section-icon {
+  margin-right: 0.5rem;
+  color: var(--accent-color);
+  font-size: 1.4rem;
+}
+
+/* Ajustes específicos para os cards na visualização em colunas */
+.col-6 .card {
+  height: 100%;
+}
+
+/* Cards específicos */
+#bug, #test-status {
+  height: 100%;
 }
