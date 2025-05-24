@@ -498,48 +498,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
           </div>
         </div>
       </section>
-      <section className="card" id="cartao">
-        <div className="card-header">
-          <h2>
-            <FaCreditCard className="header-icon" /> Cartão
-          </h2>
-          <div className="card-filters">
-            <select 
-              name="bandeira"
-              value={cardConfig.bandeira}
-              onChange={handleCardConfigChange}
-              className="card-select"
-            >
-              <option value="visa">Visa</option>
-              <option value="mastercard">Mastercard</option>
-              <option value="amex">American Express</option>
-              <option value="elo">Elo</option>
-            </select>
-            <select
-              name="tipo"
-              value={cardConfig.tipo}
-              onChange={handleCardConfigChange}
-              className="card-select"
-            >
-              <option value="credito">Crédito</option>
-              <option value="debito">Débito</option>
-              <option value="multiplo">Múltiplo</option>
-            </select>
-            <button 
-              onClick={() => setCard(generateCreditCard(cardConfig.bandeira, cardConfig.tipo))}
-              className="generate-all-btn"
-            >
-              <FaRedo className="generate-icon" /> Gerar novo
-            </button>
-          </div>
-        </div>
-        <div className="card-content">
-          <DataField label="Número" value={card.numeroFormatado} raw={card.numero} />
-          <DataField label="Nome" value={card.nome} />
-          <DataField label="Validade" value={card.validade} />
-          <DataField label="CVV" value={card.cvv} />
-        </div>
-      </section>
+      {/* Duplicated Cartão card section has been removed. */}
 
       {/* New layout wrapper for the next set of cards */}
       <div className="data-generator-row"> {/* This row is for Caracteres/Contador and Complementares */}

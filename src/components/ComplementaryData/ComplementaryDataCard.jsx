@@ -123,35 +123,39 @@ const ComplementaryDataCard = () => {
               className="password-length-input" // New class for specific styling
               title="Tamanho da Senha (1-128)"
             />
-            {/* Icon-only buttons for character types */}
+            {/* Buttons with text and icons */}
             <button
-              className={`option-toggle icon-only ${includeUppercase ? 'active' : ''}`}
+              className={`option-toggle ${includeUppercase ? 'active' : ''}`}
               onClick={createToggleHandler(setIncludeUppercase)}
-              title="Incluir Maiúsculas (ABC)"
+              title="Incluir Maiúsculas"
             >
-              <FaFont /> {/* Using FaFont as a placeholder for 'ABC' or similar */}
+              <FaFont style={{ marginRight: '4px' }} /> {/* Icon for Uppercase */}
+              ABC
             </button>
             <button
-              className={`option-toggle icon-only ${includeLowercase ? 'active' : ''}`}
+              className={`option-toggle ${includeLowercase ? 'active' : ''}`}
               onClick={createToggleHandler(setIncludeLowercase)}
-              title="Incluir Minúsculas (abc)"
+              title="Incluir Minúsculas"
             >
-              {/* Need a different icon for lowercase, reusing FaFont or specific icon */}
-              <span style={{fontFamily: 'monospace', fontSize: '0.9em'}}>abc</span>
+              {/* Using a simple text representation for lowercase, adjust if specific icon is preferred */}
+              <span style={{ fontFamily: 'monospace', fontSize: '1em', display: 'inline-block', marginRight: '4px' }}>abc</span>
+              abc
             </button>
             <button
-              className={`option-toggle icon-only ${includeNumbers ? 'active' : ''}`}
+              className={`option-toggle ${includeNumbers ? 'active' : ''}`}
               onClick={createToggleHandler(setIncludeNumbers)}
-              title="Incluir Números (123)"
+              title="Incluir Números"
             >
-              <FaSortNumericDown />
+              <FaSortNumericDown style={{ marginRight: '4px' }} />
+              123
             </button>
             <button
-              className={`option-toggle icon-only ${includeSpecialChars ? 'active' : ''}`}
+              className={`option-toggle ${includeSpecialChars ? 'active' : ''}`}
               onClick={createToggleHandler(setIncludeSpecialChars)}
-              title="Incluir Caracteres Especiais (@#%)"
+              title="Incluir Caracteres Especiais"
             >
-              <FaHashtag />
+              <FaHashtag style={{ marginRight: '4px' }} />
+              #%@
             </button>
           </div>
         </div>
