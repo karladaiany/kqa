@@ -1004,40 +1004,75 @@ input-clearable .number-input {
   align-self: center; /* If they are direct children of a flex container */
 }
 
-/* Layout for DataGenerator two-column section */
+/* --- START: New DataGenerator Layout Styles --- */
+.data-generator-columns-container {
+  display: flex;
+  flex-direction: row; /* Colunas lado a lado */
+  gap: 20px; /* Espaçamento entre as colunas */
+  width: 100%;
+}
+
+.data-column-left,
+.data-column-right {
+  display: flex;
+  flex-direction: column; /* Cards empilhados verticalmente dentro de cada coluna */
+  gap: 20px; /* Espaçamento entre os cards dentro de uma coluna */
+  flex: 1; /* Cada coluna ocupa metade do espaço */
+  min-width: 0; /* Para evitar problemas de overflow com flex items */
+}
+
+/* Estilos para os cards individuais (section.card) devem ser mantidos: */
+.data-generator-columns-container .card { /* Ensure cards in new layout take full width and no extra bottom margin */
+  width: 100%; 
+  box-sizing: border-box;
+  margin-bottom: 0; /* Rely on parent's gap */
+}
+
+/* Responsividade: Empilhar colunas em telas menores */
+@media (max-width: 992px) { /* Ajuste o breakpoint conforme necessário */
+  .data-generator-columns-container {
+    flex-direction: column; /* Empilha as colunas */
+  }
+  .data-column-left,
+  .data-column-right {
+    flex-basis: 100%; /* Cada coluna ocupa a largura total quando empilhada */
+  }
+}
+/* --- END: New DataGenerator Layout Styles --- */
+
+/* --- START: Commented out Old DataGenerator Layout Styles --- */
+/*
 .data-generator-row {
   display: flex;
-  flex-wrap: wrap; /* Allow wrapping on smaller screens if needed */
-  gap: 0.75rem; /* Same gap as cards-container main items */
-  /* margin-bottom: 0.75rem; */ /* Removed, rely on parent's gap for vertical spacing if needed */
+  flex-wrap: wrap; 
+  gap: 0.75rem; 
 }
+*/
 
+/*
 .data-generator-col {
-  flex: 1; /* Allows columns to grow and share space */
-  min-width: 300px; /* Minimum width before wrapping or shrinking too much */
+  flex: 1; 
+  min-width: 300px; 
   display: flex;
   flex-direction: column;
-  gap: 0.75rem; /* Gap between cards within a column */
+  gap: 0.75rem; 
 }
 
-/* Ensure cards within columns take full width of the column */
 .data-generator-col .card {
   width: 100%;
-  margin-bottom: 0; /* Remove margin as gap is handled by parent */
-  height: auto; /* Let cards size to their content, especially in nested rows */
+  margin-bottom: 0; 
+  height: auto; 
 }
 
-/* Responsive adjustments if needed */
-@media (max-width: 768px) { /* Example breakpoint */
+@media (max-width: 768px) { 
   .data-generator-row {
-    flex-direction: column; /* Stack columns on smaller screens */
+    flex-direction: column; 
   }
   .data-generator-col {
-    min-width: 100%; /* Columns take full width when stacked */
+    min-width: 100%; 
   }
 }
 
-/* New layout for DataGenerator main page grid */
 .data-generator-layout-grid {
   display: flex;
   flex-wrap: wrap;
@@ -1046,18 +1081,16 @@ input-clearable .number-input {
 }
 
 .data-generator-main-col {
-  flex: 2; /* Main column takes more space */
-  min-width: 0; /* Allow shrinking below content intrinsic size */
-  /* Original min-width: 300px; is still respected by flex-basis or content */
+  flex: 2; 
+  min-width: 0; 
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
 .data-generator-sidebar-col {
-  flex: 1; /* Sidebar column takes less space */
-  min-width: 0; /* Allow shrinking below content intrinsic size */
-  /* Original min-width: 300px; is still respected by flex-basis or content */
+  flex: 1; 
+  min-width: 0; 
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -1067,20 +1100,20 @@ input-clearable .number-input {
 .data-generator-sidebar-col .card {
   width: 100%;
   margin-bottom: 0;
-  /* height: 100%; */ /* Re-evaluate if cards need to stretch to fill height */
 }
 
-/* Responsive adjustments for the new grid */
-@media (max-width: 991px) { /* Adjust breakpoint as needed */
+@media (max-width: 991px) { 
   .data-generator-layout-grid {
     flex-direction: column;
   }
   .data-generator-main-col,
   .data-generator-sidebar-col {
     min-width: 100%;
-    flex: 1; /* Reset flex basis for stacked layout */
+    flex: 1; 
   }
 }
+*/
+/* --- END: Commented out Old DataGenerator Layout Styles --- */
 
 /* Styles for FileGeneratorCard specific elements (checkboxes, radios) */
 .checkbox-item, .radio-group label {

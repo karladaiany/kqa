@@ -280,299 +280,197 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
     return <div className="error">{error}</div>;
   }
 
-  return (
-    <div className="cards-container">
-      {/* Cartão card rendered first, maintaining its typical position */}
-      <section className="card" id="cartao">
-        <div className="card-header">
-          <h2>
-            <FaCreditCard className="header-icon" /> Cartão
-          </h2>
-          <div className="card-filters">
-            <select 
-              name="bandeira"
-              value={cardConfig.bandeira}
-              onChange={handleCardConfigChange}
-              className="card-select"
-            >
-              <option value="visa">Visa</option>
-              <option value="mastercard">Mastercard</option>
-              <option value="amex">American Express</option>
-              <option value="elo">Elo</option>
-              <option value="erede">Erede</option> {/* Added Erede option */}
-            </select>
-            
-            {cardConfig.bandeira.toLowerCase() === 'erede' ? (
-              <select
-                name="eredeStatus"
-                value={cardConfig.eredeStatus}
-                onChange={handleCardConfigChange}
-                className="card-select"
-              >
-                {eredeStatuses.map(s => (
-                  <option key={s.status} value={s.status}>{s.description}</option>
-                ))}
-              </select>
-            ) : (
-              <select
-                name="tipo"
-                value={cardConfig.tipo}
-                onChange={handleCardConfigChange}
-                className="card-select"
-              >
-                <option value="credito">Crédito</option>
-                <option value="debito">Débito</option>
-                <option value="multiplo">Múltiplo</option>
-              </select>
-            )}
-            <button 
-              onClick={() => {
-                if (cardConfig.bandeira.toLowerCase() === 'erede') {
-                  setCard(generateCreditCard(cardConfig.bandeira, '', cardConfig.eredeStatus));
-                } else {
-                  setCard(generateCreditCard(cardConfig.bandeira, cardConfig.tipo));
-                }
-              }}
-              className="generate-all-btn"
-            >
-              <FaRedo className="generate-icon" /> 
-              {cardConfig.bandeira.toLowerCase() === 'erede' ? 'Carregar' : 'Gerar novo'}
+  const renderDocumentosCard = () => (
+    <section className="card" id="documentos">
+      <div className="card-header">
+        <h2><FaIdCard className="header-icon" /> Documentos</h2>
+      </div>
+      <div className="card-content">
+        <DataField 
+          label="CPF" 
+          value={documents.cpf.formatted}
+          raw={documents.cpf.raw}
+          showMask={masks.cpf}
+          onRegenerate={() => setDocuments(prev => ({ ...prev, cpf: generateCPF() }))}
+          onToggleMask={() => toggleMask('cpf')}
+        />
+        <DataField 
+          label="CNPJ" 
+          value={documents.cnpj.formatted}
+          raw={documents.cnpj.raw}
+          showMask={masks.cnpj}
+          onRegenerate={() => setDocuments(prev => ({ ...prev, cnpj: generateCNPJ() }))}
+          onToggleMask={() => toggleMask('cnpj')}
+        />
+        <DataField 
+          label="RG" 
+          value={documents.rg.formatted}
+          raw={documents.rg.raw}
+          showMask={masks.rg}
+          onRegenerate={() => setDocuments(prev => ({ ...prev, rg: generateRG() }))}
+          onToggleMask={() => toggleMask('rg')}
+        />
+      </div>
+    </section>
+  );
+
+  const renderDadosPessoaisCard = () => (
+    <section className="card" id="dados-pessoais">
+      <div className="card-header">
+        <h2><FaUserAlt className="header-icon" /> Dados Pessoais</h2>
+        <button 
+          className="generate-all-btn" 
+          onClick={() => setPerson(generatePerson())}
+          title="Gerar todos os dados pessoais novamente"
+        >
+          <FaRedo className="generate-icon" /> Gerar tudo
+        </button>
+      </div>
+      <div className="card-content">
+        <DataField label="Nome" value={person.nome} onRegenerate={() => regenerateField('nome')} />
+        <DataField label="Email" value={person.email} onRegenerate={() => regenerateField('nome')} />
+        <DataField label="Telefone" value={person.telefone} onRegenerate={() => regenerateField('telefone')} />
+        <DataField label="Endereço" value={person.endereco.rua} onRegenerate={() => regenerateField('endereco')} />
+        <DataField label="Número" value={person.endereco.numero} onRegenerate={() => regenerateField('numero')} />
+        <DataField label="Complemento" value={person.endereco.complemento} onRegenerate={() => regenerateField('complemento')} />
+        <DataField label="Bairro" value={person.endereco.bairro} onRegenerate={() => regenerateField('bairro')} />
+        <DataField label="Cidade" value={person.endereco.cidade} onRegenerate={() => regenerateField('cidade')} />
+        <DataField label="UF" value={person.endereco.estado} onRegenerate={() => regenerateField('estado')} />
+        <DataField label="CEP" value={person.endereco.cep} onRegenerate={() => regenerateField('cep')} />
+      </div>
+    </section>
+  );
+
+  const renderProdutoCard = () => (
+    <section className="card" id="produto">
+      <div className="card-header">
+        <h2><FaGraduationCap className="header-icon" /> Produto</h2>
+        <button 
+          className="generate-all-btn" 
+          onClick={() => setProduct(generateProduct())}
+          title="Gerar todos os dados do produto novamente"
+        >
+          <FaRedo className="generate-icon" /> Gerar tudo
+        </button>
+      </div>
+      <div className="card-content">
+        <DataField label="Nome" value={product.nome} onRegenerate={() => regenerateProductField('nome')} />
+        <DataField label="Descrição" value={product.descricao} onRegenerate={() => regenerateProductField('descricao')} />
+        <div className="campo-item">
+          <label>Categorias</label>
+          <div className="campo-valor">
+            <div className="categories-container">
+              {product.categorias.map((categoria, index) => (
+                <CategoryTag key={index} category={categoria} />
+              ))}
+            </div>
+            <button type="button" className="icon-button regenerate" aria-label="Gerar novas categorias" onClick={() => regenerateProductField('categorias')}>
+              <FaSync className="regenerate-icon" />
             </button>
           </div>
         </div>
-        <div className="card-content">
-          <DataField label="Número" value={card.numeroFormatado} raw={card.numero} />
-          <DataField label="Nome" value={card.nome} />
-          <DataField label="Validade" value={card.validade} />
-          <DataField label="CVV" value={card.cvv} />
-        </div>
-      </section>
+      </div>
+    </section>
+  );
 
-      {/* New layout grid for remaining cards */}
-      <div className="data-generator-layout-grid">
-        <div className="data-generator-main-col"> {/* Main column for Dados Pessoais and FileGenerator */}
-          <section className="card" id="dados-pessoais">
-            <div className="card-header">
-              <h2>
-                <FaUserAlt className="header-icon" /> Dados Pessoais
-              </h2>
-              <button 
-                className="generate-all-btn" 
-                onClick={() => setPerson(generatePerson())}
-                title="Gerar todos os dados pessoais novamente"
-              >
-                <FaRedo className="generate-icon" />
-                Gerar tudo
+  const renderCartaoCard = () => (
+    <section className="card" id="cartao">
+      <div className="card-header">
+        <h2><FaCreditCard className="header-icon" /> Cartão</h2>
+        <div className="card-filters">
+          <select name="bandeira" value={cardConfig.bandeira} onChange={handleCardConfigChange} className="card-select">
+            <option value="visa">Visa</option>
+            <option value="mastercard">Mastercard</option>
+            <option value="amex">American Express</option>
+            <option value="elo">Elo</option>
+            <option value="erede">Erede</option>
+          </select>
+          {cardConfig.bandeira.toLowerCase() === 'erede' ? (
+            <select name="eredeStatus" value={cardConfig.eredeStatus} onChange={handleCardConfigChange} className="card-select">
+              {eredeStatuses.map(s => (<option key={s.status} value={s.status}>{s.description}</option>))}
+            </select>
+          ) : (
+            <select name="tipo" value={cardConfig.tipo} onChange={handleCardConfigChange} className="card-select">
+              <option value="credito">Crédito</option>
+              <option value="debito">Débito</option>
+              <option value="multiplo">Múltiplo</option>
+            </select>
+          )}
+          <button onClick={() => {
+            if (cardConfig.bandeira.toLowerCase() === 'erede') {
+              setCard(generateCreditCard(cardConfig.bandeira, '', cardConfig.eredeStatus));
+            } else {
+              setCard(generateCreditCard(cardConfig.bandeira, cardConfig.tipo));
+            }
+          }} className="generate-all-btn">
+            <FaRedo className="generate-icon" /> {cardConfig.bandeira.toLowerCase() === 'erede' ? 'Carregar' : 'Gerar novo'}
+          </button>
+        </div>
+      </div>
+      <div className="card-content">
+        <DataField label="Número" value={card.numeroFormatado} raw={card.numero} />
+        <DataField label="Nome" value={card.nome} />
+        <DataField label="Validade" value={card.validade} />
+        <DataField label="CVV" value={card.cvv} />
+      </div>
+    </section>
+  );
+
+  const renderCaracteresCard = () => (
+    <section className="card" id="caracteres">
+      <div className="card-header">
+        <h2><FaRandom className="header-icon" /> Gerador de caracteres</h2>
+        <div className="card-filters">
+          <div className="input-clearable">
+            <input type="number" min="1" max="99999" value={randomChars.length} onChange={handleRandomCharsChange} className="number-input" placeholder="Quantidade" />
+            {randomChars.length && (
+              <button type="button" className="icon-button clear-input-btn" tabIndex={-1} onClick={handleClearLength} aria-label="Limpar campo">
+                <FaTimes className="clear-icon" />
               </button>
-            </div>
-            <div className="card-content">
-              <DataField 
-                label="Nome" 
-                value={person.nome}
-                onRegenerate={() => regenerateField('nome')}
-              />
-              <DataField 
-                label="Email" 
-                value={person.email}
-                onRegenerate={() => regenerateField('nome')}
-              />
-              <DataField 
-                label="Telefone" 
-                value={person.telefone}
-                onRegenerate={() => regenerateField('telefone')}
-              />
-              <DataField 
-                label="Endereço" 
-                value={person.endereco.rua}
-                onRegenerate={() => regenerateField('endereco')}
-              />
-              <DataField 
-                label="Número" 
-                value={person.endereco.numero}
-                onRegenerate={() => regenerateField('numero')}
-              />
-              <DataField 
-                label="Complemento" 
-                value={person.endereco.complemento}
-                onRegenerate={() => regenerateField('complemento')}
-              />
-              <DataField 
-                label="Bairro" 
-                value={person.endereco.bairro}
-                onRegenerate={() => regenerateField('bairro')}
-              />
-              <DataField 
-                label="Cidade" 
-                value={person.endereco.cidade}
-                onRegenerate={() => regenerateField('cidade')}
-              />
-              <DataField 
-                label="UF" 
-                value={person.endereco.estado}
-                onRegenerate={() => regenerateField('estado')}
-              />
-              <DataField 
-                label="CEP" 
-                value={person.endereco.cep}
-                onRegenerate={() => regenerateField('cep')}
-              />
-            </div>
-          </section>
-          
+            )}
+          </div>
+        </div>
+      </div>
+      <div className="card-content">
+        <DataField label="Caracteres gerados" value={randomChars.value} raw={randomChars.value} />
+      </div>
+    </section>
+  );
+
+  const renderContadorCard = () => (
+    <section className="card" id="contador">
+      <div className="card-header">
+        <h2><FaCalculator className="header-icon" /> Contador de caracteres</h2>
+      </div>
+      <div className="card-content">
+        <DataField label="Texto" value={textCounter.text} onTextChange={handleTextChange} isTextArea={true} onClear={handleClearText} showCopy={false} />
+        <div className="campo-item">
+          <label>Total de caracteres</label>
+          <div className="campo-valor"><span className="copyable">{textCounter.count}</span></div>
+        </div>
+      </div>
+    </section>
+  );
+
+  return (
+    <div className="cards-container"> {/* This is the outermost container from App.jsx's perspective */}
+      <div className="data-generator-columns-container">
+        {/* Coluna da Esquerda */}
+        <div className="data-column-left">
+          {renderDocumentosCard()}
+          {renderDadosPessoaisCard()}
           <FileGeneratorCard generatorFunctions={allGeneratorFunctions} />
-
-        </div> {/* End of main column */}
-
-        <div className="data-generator-sidebar-col">
-          <section className="card" id="documentos">
-            <div className="card-header">
-              <h2><FaIdCard className="header-icon" /> Documentos</h2>
-            </div>
-            <div className="card-content">
-          <DataField 
-            label="CPF" 
-            value={documents.cpf.formatted}
-            raw={documents.cpf.raw}
-            showMask={masks.cpf}
-            onRegenerate={() => setDocuments(prev => ({ ...prev, cpf: generateCPF() }))}
-            onToggleMask={() => toggleMask('cpf')}
-          />
-          <DataField 
-            label="CNPJ" 
-            value={documents.cnpj.formatted}
-            raw={documents.cnpj.raw}
-            showMask={masks.cnpj}
-            onRegenerate={() => setDocuments(prev => ({ ...prev, cnpj: generateCNPJ() }))}
-            onToggleMask={() => toggleMask('cnpj')}
-          />
-          <DataField 
-            label="RG" 
-            value={documents.rg.formatted}
-            raw={documents.rg.raw}
-            showMask={masks.rg}
-            onRegenerate={() => setDocuments(prev => ({ ...prev, rg: generateRG() }))}
-            onToggleMask={() => toggleMask('rg')}
-          />
         </div>
-          </section>
-          <section className="card" id="produto">
-            <div className="card-header">
-              <h2><FaGraduationCap className="header-icon" /> Produto</h2>
-              <button 
-                className="generate-all-btn" 
-                onClick={() => setProduct(generateProduct())}
-                title="Gerar todos os dados do produto novamente"
-              >
-                <FaRedo className="generate-icon" />
-                Gerar tudo
-              </button>
-            </div>
-            <div className="card-content">
-          <DataField 
-            label="Nome" 
-            value={product.nome}
-            onRegenerate={() => regenerateProductField('nome')}
-          />
-          <DataField 
-            label="Descrição" 
-            value={product.descricao}
-            onRegenerate={() => regenerateProductField('descricao')}
-          />
-          <div className="campo-item">
-            <label>Categorias</label>
-            <div className="campo-valor">
-              <div className="categories-container">
-                {product.categorias.map((categoria, index) => (
-                  <CategoryTag key={index} category={categoria} />
-                ))}
-              </div>
-              <button
-                type="button"
-                className="icon-button regenerate"
-                aria-label="Gerar novas categorias"
-                onClick={() => regenerateProductField('categorias')}
-              >
-                <FaSync className="regenerate-icon" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-      {/* Duplicated Cartão card section has been removed. */}
 
-      {/* New layout wrapper for the next set of cards */}
-      <div className="data-generator-row"> {/* This row is for Caracteres/Contador and Complementares */}
-        <div className="data-generator-col"> {/* Col 1: Caracteres & Contador */}
-          <section className="card" id="caracteres">
-            <div className="card-header">
-              <h2>
-            <FaRandom className="header-icon" /> Gerador de caracteres
-          </h2>
-          <div className="card-filters">
-            <div className="input-clearable">
-              <input
-                type="number"
-                min="1"
-                max="99999"
-                value={randomChars.length}
-                onChange={handleRandomCharsChange}
-                className="number-input"
-                placeholder="Quantidade"
-              />
-              {randomChars.length && (
-                <button
-                  type="button"
-                  className="icon-button clear-input-btn"
-                  tabIndex={-1}
-                  onClick={handleClearLength}
-                  aria-label="Limpar campo"
-                >
-                  <FaTimes className="clear-icon" />
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="card-content">
-          <DataField 
-            label="Caracteres gerados" 
-            value={randomChars.value}
-            raw={randomChars.value}
-          />
-            </div>
-          </section>
-          <section className="card" id="contador">
-            <div className="card-header">
-              <h2><FaCalculator className="header-icon" /> Contador de caracteres</h2>
-            </div>
-            <div className="card-content">
-          <DataField 
-            label="Texto"
-            value={textCounter.text}
-            onTextChange={handleTextChange}
-            isTextArea={true}
-            onClear={handleClearText}
-            showCopy={false}
-          />
-          <div className="campo-item">
-            <label>Total de caracteres</label>
-            <div className="campo-valor">
-              <span className="copyable">
-                {textCounter.count}
-              </span>
-            </div>
-          </div>
-        </div>
-          </section>
-        </div> {/* End of first column */}
-
-        <div className="data-generator-col"> {/* Col 2: ComplementaryDataCard */}
+        {/* Coluna da Direita */}
+        <div className="data-column-right">
+          {renderProdutoCard()}
+          {renderCartaoCard()}
+          {renderCaracteresCard()}
+          {renderContadorCard()}
           <ComplementaryDataCard />
         </div>
-      </div> {/* End of inner data-generator-row */}
-      
-        </div> {/* End of sidebar column data-generator-sidebar-col */}
-      </div> {/* End of data-generator-layout-grid */}
+      </div>
     </div>
   );
 };
