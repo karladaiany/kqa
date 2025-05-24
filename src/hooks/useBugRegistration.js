@@ -78,25 +78,29 @@ export const useBugRegistration = () => {
   };
 
   const formatEvidenceSection = () => {
+    // If evidenceLink is empty, the entire evidence section is omitted
+    if (!bugData.evidenceLink) {
+      return '';
+    }
+
     const evidences = [];
-    
     if (bugData.evidenceDescription) {
       evidences.push(bugData.evidenceDescription);
     }
-    
-    if (bugData.evidenceLink) {
-      evidences.push(`Link da evidência: ${bugData.evidenceLink}`);
-    }
+    // evidenceLink is guaranteed to be non-empty here
+    evidences.push(`Link da evidência: ${bugData.evidenceLink}`);
     
     if (bugData.hasAttachment) {
       evidences.push('Evidência em anexo na atividade');
     }
 
-    return evidences.length > 0 ? evidences.join('\n') : '';
+    // If evidenceLink is present, join collected evidences. 
+    // This will always include at least the link.
+    return evidences.join('\n');
   };
 
   const handleCopyAll = () => {
-    const evidenceSection = formatEvidenceSection();
+    const evidenceSectionContent = formatEvidenceSection();
     
     const formattedSteps = bugData.steps
       .split('\n')
@@ -117,12 +121,29 @@ url: ${bugData.url}
 login: ${bugData.login}
 senha: ${bugData.password}
 org_id: ${bugData.envId}
-${bugData.others}
+${bugData.others}`;
 
-    :: Evidência(s) ::
-${evidenceSection}`;
+    let textToCopy = `    :: Incidente identificado ::
+${bugData.incident}
 
-    navigator.clipboard.writeText(textToCopy);
+    :: Passo a passo para reprodução ::
+${formattedSteps}
+
+    :: Comportamento esperado ::
+${bugData.expectedBehavior}
+
+    :: Informações ::
+url: ${bugData.url}
+login: ${bugData.login}
+senha: ${bugData.password}
+org_id: ${bugData.envId}
+${bugData.others}`;
+
+    if (evidenceSectionContent) {
+      textToCopy += `\n\n    :: Evidência(s) ::\n${evidenceSectionContent}`;
+    }
+
+    navigator.clipboard.writeText(textToCopy.trim());
   };
 
   return {

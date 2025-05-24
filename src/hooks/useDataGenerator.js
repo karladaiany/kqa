@@ -109,6 +109,8 @@ const descricoesProdutosTecnologia = [
     'Ferramenta de análise de qualidade de código com métricas detalhadas e sugestões de refatoração.'
 ];
 
+import { eredeTestCards, getEredeTestCardByStatus, getEredeTestCardStatuses } from '../generators/eredeTestCards';
+
 // Faixas de CEP por estado
 const faixasCEP = {
     'SP': { inicio: '01000000', fim: '19999999' },
@@ -202,6 +204,14 @@ const cartoesBandeiras = {
         credito: {
             prefixos: ['606282'],
             tamanho: 16
+        }
+    },
+    // Erede does not have generated prefixes/tamanhos in the same way,
+    // its data comes from a fixed list. Placeholder here for structure.
+    erede: { 
+        credito: { // Type 'credito'/'debito' is not really applicable but structure expects it
+            prefixos: [], // Not used for Erede
+            tamanho: 16   // Not used for Erede
         }
     }
 };
@@ -320,9 +330,24 @@ export const useDataGenerator = () => {
         };
     };
 
-    const generateCreditCard = (bandeira = '', tipo = '') => {
+    const generateCreditCard = (bandeira = '', tipo = '', eredeStatus = '') => {
+        if (bandeira.toLowerCase() === 'erede') {
+            const eredeCard = getEredeTestCardByStatus(eredeStatus);
+            return {
+                numero: eredeCard.number,
+                numeroFormatado: formatCardNumber(eredeCard.number, 'erede'), // Erede might not need special formatting like Amex
+                nome: eredeCard.name,
+                validade: eredeCard.expiry,
+                cvv: eredeCard.cvv,
+                bandeira: 'EREDE', // Standardize to uppercase
+                tipo: '', // Tipo is not applicable for Erede test cards
+                isErede: true, // Flag to indicate this is an Erede card
+            };
+        }
+        
+        // Existing logic for other card types
         const numero = gerarNumeroCartao(bandeira, tipo);
-        const bandeiraSelecionada = bandeira || detectarBandeira(numero);
+        const bandeiraSelecionada = bandeira || detectarBandeira(numero); // Fallback if bandeira not provided
         
         return {
             numero,
@@ -331,11 +356,13 @@ export const useDataGenerator = () => {
             validade: faker.date.future().toLocaleDateString('pt-BR', { month: '2-digit', year: '2-digit' }),
             cvv: faker.string.numeric(bandeiraSelecionada === 'amex' ? 4 : 3),
             bandeira: bandeiraSelecionada.toUpperCase(),
-            tipo: tipo || 'credito'
+            tipo: tipo || 'credito',
+            isErede: false,
         };
     };
 
     const detectarBandeira = (numero) => {
+        if (!numero) return 'desconhecida';
         for (const [bandeira, config] of Object.entries(cartoesBandeiras)) {
             for (const tipo of Object.values(config)) {
                 for (const prefixo of tipo.prefixos) {
@@ -429,6 +456,7 @@ export const useDataGenerator = () => {
         generateCreditCard,
         generateProduct,
         gerarCEPValido,
-        generateRandomChars
+        generateRandomChars,
+        getEredeTestCardStatuses // Expose this for the UI dropdown
     };
 }; 

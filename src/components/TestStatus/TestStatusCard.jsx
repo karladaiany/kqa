@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { useTestStatus } from '../../hooks/useTestStatus';
 
 // Componente dinâmico para campo (textarea ou input)
-const CampoDinamico = ({ id, label, value, onChange, onClear, type = 'textarea' }) => (
+const CampoDinamico = ({ id, label, value, onChange, onClear, type = 'textarea', placeholder }) => (
   <div className="campo-item">
     <label htmlFor={id}>{label}</label>
     <div className="campo-valor">
@@ -22,6 +22,7 @@ const CampoDinamico = ({ id, label, value, onChange, onClear, type = 'textarea' 
           onChange={onChange}
           className="copyable"
           type={type}
+          placeholder={placeholder}
         />
       )}
       {value && (
@@ -180,6 +181,7 @@ const TestStatusCard = () => {
         onChange={handleInputChange(id)}
         onClear={() => handleClearField(id)}
         type={type === 'input' ? 'text' : 'textarea'}
+        placeholder={id === 'evidenceLink' ? 'https://jam.dev/' : undefined}
       />
     ))
   );

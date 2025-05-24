@@ -95,7 +95,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: transparent;
+  background-color: var(--card-bg); /* Changed from transparent */
   border: 1px solid var(--border-color);
   border-radius: 4px;
   color: var(--text-primary);
@@ -107,9 +107,14 @@
 }
 
 .generate-all-btn:hover {
-  background-color: var(--card-bg);
+  /* background-color: var(--card-bg); */ /* Default is now card-bg, hover might need a slight change or just rely on border/color */
   border-color: var(--accent-color);
   color: var(--accent-color);
+}
+
+.generate-all-btn:active {
+  box-shadow: 0 0 15px rgba(120, 93, 200, 0.5);
+  /* Optionally, slightly change background or border for more feedback */
 }
 
 .generate-all-btn .generate-icon {
@@ -191,7 +196,7 @@
   flex: 1;
   display: block;
   min-height: 32px;
-  max-height: 96px;
+  /* max-height: 96px; */ /* Removed to allow unrestricted vertical resize */
   overflow-y: auto;
   width: 100%;
   font-family: 'Inter', monospace;
@@ -205,7 +210,7 @@
   transition: background 0.2s, color 0.2s;
   scrollbar-width: thin;
   scrollbar-color: var(--primary-color) var(--card-bg);
-  resize: none;
+  resize: vertical; /* Changed from none to vertical */
 }
 
 .copyable:hover {
@@ -484,11 +489,22 @@
 .action-button:hover {
   border-color: var(--accent-color);
   color: var(--accent-color);
+  /* background-color is already var(--card-bg) by default */
 }
 
-.action-button.clear:hover {
+.action-button:active {
+  box-shadow: 0 0 15px rgba(120, 93, 200, 0.5);
+  /* Optionally, slightly change background or border for more feedback */
+}
+
+.action-button.clear:hover { /* This specific selector might need review if .clear has different bg */
   border-color: var(--accent-color);
   color: var(--accent-color);
+}
+
+/* Ensure .action-button.clear also gets the active style if it's distinct */
+.action-button.clear:active {
+  box-shadow: 0 0 15px rgba(120, 93, 200, 0.5);
 }
 
 .action-button:disabled {
@@ -832,5 +848,159 @@ input-clearable .number-input {
 
 /* Cards específicos */
 #bug, #test-status {
-  height: 100%;
+  height: auto; /* Changed from 100% to auto to allow card to grow */
+}
+
+/* Styles for ComplementaryDataCard password options */
+.password-options .options-group {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  width: 100%;
+}
+
+.password-options .option-toggle {
+  padding: 6px 10px; /* Reduced padding */
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--background-color); /* Use background-color for non-active */
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem; /* Smaller gap */
+  font-size: 0.85rem; /* Smaller font size */
+  flex-grow: 1; /* Allow buttons to grow and fill space */
+  justify-content: center;
+}
+
+.password-options .option-toggle:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  background-color: var(--card-bg); /* Slightly different background on hover */
+}
+
+.password-options .option-toggle.active {
+  background-color: var(--accent-color);
+  color: var(--button-text-color, #fff); /* Ensure contrast, define if needed */
+  border-color: var(--accent-color);
+}
+
+.password-options .option-toggle.active:hover {
+  filter: brightness(1.1);
+}
+
+.password-options .option-toggle svg {
+  font-size: 1rem; /* Adjust icon size if needed */
+}
+
+/* Layout for DataGenerator two-column section */
+.data-generator-row {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens if needed */
+  gap: 0.75rem; /* Same gap as cards-container main items */
+  margin-bottom: 0.75rem; /* Consistent margin */
+}
+
+.data-generator-col {
+  flex: 1; /* Allows columns to grow and share space */
+  min-width: 300px; /* Minimum width before wrapping or shrinking too much */
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem; /* Gap between cards within a column */
+}
+
+/* Ensure cards within columns take full width of the column */
+.data-generator-col .card {
+  width: 100%;
+  margin-bottom: 0; /* Remove margin as gap is handled by parent */
+  height: 100%; /* Make cards in columns take full height of their content row */
+}
+
+/* Responsive adjustments if needed */
+@media (max-width: 768px) { /* Example breakpoint */
+  .data-generator-row {
+    flex-direction: column; /* Stack columns on smaller screens */
+  }
+  .data-generator-col {
+    min-width: 100%; /* Columns take full width when stacked */
+  }
+}
+
+/* New layout for DataGenerator main page grid */
+.data-generator-layout-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.data-generator-main-col {
+  flex: 2; /* Main column takes more space */
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.data-generator-sidebar-col {
+  flex: 1; /* Sidebar column takes less space */
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.data-generator-main-col .card,
+.data-generator-sidebar-col .card {
+  width: 100%;
+  margin-bottom: 0;
+  /* height: 100%; */ /* Re-evaluate if cards need to stretch to fill height */
+}
+
+/* Responsive adjustments for the new grid */
+@media (max-width: 991px) { /* Adjust breakpoint as needed */
+  .data-generator-layout-grid {
+    flex-direction: column;
+  }
+  .data-generator-main-col,
+  .data-generator-sidebar-col {
+    min-width: 100%;
+    flex: 1; /* Reset flex basis for stacked layout */
+  }
+}
+
+/* Styles for FileGeneratorCard specific elements (checkboxes, radios) */
+.checkbox-item, .radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+.checkbox-item input[type="checkbox"], .radio-group input[type="radio"] {
+  margin-right: 0.3rem;
+  accent-color: var(--accent-color);
+  cursor: pointer;
+}
+.radio-group {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+.field-group h4 {
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.3rem;
+  margin-top: 0.5rem; /* Added margin for spacing */
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+#file-generator .campo-item > label { /* Specificity for labels inside FileGeneratorCard */
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+  display: block; 
 }

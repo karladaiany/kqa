@@ -235,7 +235,7 @@ const BugRegistrationCard = () => {
                 value={bugData.evidenceLink}
                 onChange={(e) => handleInputChange('evidenceLink', e.target.value)}
                 className="copyable"
-                placeholder=" "
+                placeholder="https://jam.dev/"
               />
               <label>Link da evidência</label>
               {bugData.evidenceLink && (

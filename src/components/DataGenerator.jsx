@@ -17,6 +17,9 @@ import {
   FaCalculator
 } from 'react-icons/fa';
 import DataField from './DataField';
+import ComplementaryDataCard from './ComplementaryData/ComplementaryDataCard';
+import FileGeneratorCard from './FileGenerator/FileGeneratorCard'; // Import FileGeneratorCard
+import * as companyGenerators from '../generators/companyData'; // Import all company data generators
 
 const CategoryTag = ({ category }) => {
   const handleCopy = () => {
@@ -44,9 +47,21 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
     generatePerson,
     generateCreditCard,
     generateProduct,
-    gerarCEPValido,
-    generateRandomChars
+    // gerarCEPValido, // Not used directly here for card config
+    // generateRandomChars, // Not used directly here for card config
+    getEredeTestCardStatuses // For populating Erede status dropdown
   } = useDataGenerator();
+
+  const eredeStatuses = getEredeTestCardStatuses ? getEredeTestCardStatuses() : [];
+
+  // Consolidate generator functions to pass to FileGeneratorCard
+  const allGeneratorFunctions = {
+    generatePerson,
+    generateCPF,
+    generateCNPJ, // Included for completeness if FileGeneratorCard ever needs it
+    generateRG,
+    ...companyGenerators // Spread all exports from companyData.js
+  };
 
   const [documents, setDocuments] = useState({
     cpf: generateCPF(),
@@ -64,13 +79,22 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
   });
 
   const [person, setPerson] = useState(generatePerson());
-  const [card, setCard] = useState(generateCreditCard());
+  const [card, setCard] = useState(generateCreditCard('visa', 'credito')); // Initial card
   const [product, setProduct] = useState(generateProduct());
 
   const [cardConfig, setCardConfig] = useState({
     bandeira: 'visa',
-    tipo: 'credito'
+    tipo: 'credito',
+    eredeStatus: eredeStatuses.length > 0 ? eredeStatuses[0].status : '' // Default to first Erede status if available
   });
+
+  // Update card state when eredeStatus changes and Erede is the selected brand
+  useEffect(() => {
+    if (cardConfig.bandeira.toLowerCase() === 'erede') {
+      setCard(generateCreditCard(cardConfig.bandeira, '', cardConfig.eredeStatus));
+    }
+  }, [cardConfig.bandeira, cardConfig.eredeStatus, generateCreditCard]);
+
 
   const [randomChars, setRandomChars] = useState({
     length: '',
@@ -181,11 +205,13 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
   const handleCardConfigChange = (e) => {
     const { name, value } = e.target;
     setCardConfig(prev => {
-      const newConfig = {
-        ...prev,
-        [name]: value
-      };
-      setCard(generateCreditCard(newConfig.bandeira, newConfig.tipo));
+      const newConfig = { ...prev, [name]: value };
+      // Regenerate card based on new configuration
+      if (newConfig.bandeira.toLowerCase() === 'erede') {
+        setCard(generateCreditCard(newConfig.bandeira, '', newConfig.eredeStatus));
+      } else {
+        setCard(generateCreditCard(newConfig.bandeira, newConfig.tipo));
+      }
       return newConfig;
     });
   };
@@ -256,11 +282,153 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 
   return (
     <div className="cards-container">
-      <section className="card" id="documentos">
+      {/* Cartão card rendered first, maintaining its typical position */}
+      <section className="card" id="cartao">
         <div className="card-header">
-          <h2><FaIdCard className="header-icon" /> Documentos</h2>
+          <h2>
+            <FaCreditCard className="header-icon" /> Cartão
+          </h2>
+          <div className="card-filters">
+            <select 
+              name="bandeira"
+              value={cardConfig.bandeira}
+              onChange={handleCardConfigChange}
+              className="card-select"
+            >
+              <option value="visa">Visa</option>
+              <option value="mastercard">Mastercard</option>
+              <option value="amex">American Express</option>
+              <option value="elo">Elo</option>
+              <option value="erede">Erede</option> {/* Added Erede option */}
+            </select>
+            
+            {cardConfig.bandeira.toLowerCase() === 'erede' ? (
+              <select
+                name="eredeStatus"
+                value={cardConfig.eredeStatus}
+                onChange={handleCardConfigChange}
+                className="card-select"
+              >
+                {eredeStatuses.map(s => (
+                  <option key={s.status} value={s.status}>{s.description}</option>
+                ))}
+              </select>
+            ) : (
+              <select
+                name="tipo"
+                value={cardConfig.tipo}
+                onChange={handleCardConfigChange}
+                className="card-select"
+              >
+                <option value="credito">Crédito</option>
+                <option value="debito">Débito</option>
+                <option value="multiplo">Múltiplo</option>
+              </select>
+            )}
+            <button 
+              onClick={() => {
+                if (cardConfig.bandeira.toLowerCase() === 'erede') {
+                  setCard(generateCreditCard(cardConfig.bandeira, '', cardConfig.eredeStatus));
+                } else {
+                  setCard(generateCreditCard(cardConfig.bandeira, cardConfig.tipo));
+                }
+              }}
+              className="generate-all-btn"
+            >
+              <FaRedo className="generate-icon" /> 
+              {cardConfig.bandeira.toLowerCase() === 'erede' ? 'Carregar' : 'Gerar novo'}
+            </button>
+          </div>
         </div>
         <div className="card-content">
+          <DataField label="Número" value={card.numeroFormatado} raw={card.numero} />
+          <DataField label="Nome" value={card.nome} />
+          <DataField label="Validade" value={card.validade} />
+          <DataField label="CVV" value={card.cvv} />
+        </div>
+      </section>
+
+      {/* New layout grid for remaining cards */}
+      <div className="data-generator-layout-grid">
+        <div className="data-generator-main-col"> {/* Main column for Dados Pessoais and FileGenerator */}
+          <section className="card" id="dados-pessoais">
+            <div className="card-header">
+              <h2>
+                <FaUserAlt className="header-icon" /> Dados Pessoais
+              </h2>
+              <button 
+                className="generate-all-btn" 
+                onClick={() => setPerson(generatePerson())}
+                title="Gerar todos os dados pessoais novamente"
+              >
+                <FaRedo className="generate-icon" />
+                Gerar tudo
+              </button>
+            </div>
+            <div className="card-content">
+              <DataField 
+                label="Nome" 
+                value={person.nome}
+                onRegenerate={() => regenerateField('nome')}
+              />
+              <DataField 
+                label="Email" 
+                value={person.email}
+                onRegenerate={() => regenerateField('nome')}
+              />
+              <DataField 
+                label="Telefone" 
+                value={person.telefone}
+                onRegenerate={() => regenerateField('telefone')}
+              />
+              <DataField 
+                label="Endereço" 
+                value={person.endereco.rua}
+                onRegenerate={() => regenerateField('endereco')}
+              />
+              <DataField 
+                label="Número" 
+                value={person.endereco.numero}
+                onRegenerate={() => regenerateField('numero')}
+              />
+              <DataField 
+                label="Complemento" 
+                value={person.endereco.complemento}
+                onRegenerate={() => regenerateField('complemento')}
+              />
+              <DataField 
+                label="Bairro" 
+                value={person.endereco.bairro}
+                onRegenerate={() => regenerateField('bairro')}
+              />
+              <DataField 
+                label="Cidade" 
+                value={person.endereco.cidade}
+                onRegenerate={() => regenerateField('cidade')}
+              />
+              <DataField 
+                label="UF" 
+                value={person.endereco.estado}
+                onRegenerate={() => regenerateField('estado')}
+              />
+              <DataField 
+                label="CEP" 
+                value={person.endereco.cep}
+                onRegenerate={() => regenerateField('cep')}
+              />
+            </div>
+          </section>
+          
+          <FileGeneratorCard generatorFunctions={allGeneratorFunctions} />
+
+        </div> {/* End of main column */}
+
+        <div className="data-generator-sidebar-col">
+          <section className="card" id="documentos">
+            <div className="card-header">
+              <h2><FaIdCard className="header-icon" /> Documentos</h2>
+            </div>
+            <div className="card-content">
           <DataField 
             label="CPF" 
             value={documents.cpf.formatted}
@@ -286,87 +454,20 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
             onToggleMask={() => toggleMask('rg')}
           />
         </div>
-      </section>
-      <section className="card" id="dados-pessoais">
-        <div className="card-header">
-          <h2>
-            <FaUserAlt className="header-icon" /> Dados Pessoais
-          </h2>
-          <button 
-            className="generate-all-btn" 
-            onClick={() => setPerson(generatePerson())}
-            title="Gerar todos os dados pessoais novamente"
-          >
-            <FaRedo className="generate-icon" />
-            Gerar tudo
-          </button>
-        </div>
-        <div className="card-content">
-          <DataField 
-            label="Nome" 
-            value={person.nome}
-            onRegenerate={() => regenerateField('nome')}
-          />
-          <DataField 
-            label="Email" 
-            value={person.email}
-            onRegenerate={() => regenerateField('nome')} // Email é atualizado junto com o nome
-          />
-          <DataField 
-            label="Telefone" 
-            value={person.telefone}
-            onRegenerate={() => regenerateField('telefone')}
-          />
-          <DataField 
-            label="Endereço" 
-            value={person.endereco.rua}
-            onRegenerate={() => regenerateField('endereco')}
-          />
-          <DataField 
-            label="Número" 
-            value={person.endereco.numero}
-            onRegenerate={() => regenerateField('numero')}
-          />
-          <DataField 
-            label="Complemento" 
-            value={person.endereco.complemento}
-            onRegenerate={() => regenerateField('complemento')}
-          />
-          <DataField 
-            label="Bairro" 
-            value={person.endereco.bairro}
-            onRegenerate={() => regenerateField('bairro')}
-          />
-          <DataField 
-            label="Cidade" 
-            value={person.endereco.cidade}
-            onRegenerate={() => regenerateField('cidade')}
-          />
-          <DataField 
-            label="UF" 
-            value={person.endereco.estado}
-            onRegenerate={() => regenerateField('estado')}
-          />
-          <DataField 
-            label="CEP" 
-            value={person.endereco.cep}
-            onRegenerate={() => regenerateField('cep')}
-          />
-        </div>
-      </section>
-      <section className="card" id="produto">
-        <div className="card-header">
-          <h2><FaGraduationCap className="header-icon" /> Produto</h2>
-          <button 
-            className="generate-all-btn" 
-            onClick={() => setProduct(generateProduct())}
-            title="Gerar todos os dados do produto novamente"
-          >
-            <FaRedo className="generate-icon" />
-            Gerar tudo
-          </button>
-        </div>
-        <div className="card-content">
+          </section>
+          <section className="card" id="produto">
+            <div className="card-header">
+              <h2><FaGraduationCap className="header-icon" /> Produto</h2>
+              <button 
+                className="generate-all-btn" 
+                onClick={() => setProduct(generateProduct())}
+                title="Gerar todos os dados do produto novamente"
+              >
+                <FaRedo className="generate-icon" />
+                Gerar tudo
+              </button>
+            </div>
+            <div className="card-content">
           <DataField 
             label="Nome" 
             value={product.nome}
@@ -439,9 +540,13 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
           <DataField label="CVV" value={card.cvv} />
         </div>
       </section>
-      <section className="card" id="caracteres">
-        <div className="card-header">
-          <h2>
+
+      {/* New layout wrapper for the next set of cards */}
+      <div className="data-generator-row"> {/* This row is for Caracteres/Contador and Complementares */}
+        <div className="data-generator-col"> {/* Col 1: Caracteres & Contador */}
+          <section className="card" id="caracteres">
+            <div className="card-header">
+              <h2>
             <FaRandom className="header-icon" /> Gerador de caracteres
           </h2>
           <div className="card-filters">
@@ -475,13 +580,13 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
             value={randomChars.value}
             raw={randomChars.value}
           />
-        </div>
-      </section>
-      <section className="card" id="contador">
-        <div className="card-header">
-          <h2><FaCalculator className="header-icon" /> Contador de caracteres</h2>
-        </div>
-        <div className="card-content">
+            </div>
+          </section>
+          <section className="card" id="contador">
+            <div className="card-header">
+              <h2><FaCalculator className="header-icon" /> Contador de caracteres</h2>
+            </div>
+            <div className="card-content">
           <DataField 
             label="Texto"
             value={textCounter.text}
@@ -499,7 +604,16 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
             </div>
           </div>
         </div>
-      </section>
+          </section>
+        </div> {/* End of first column */}
+
+        <div className="data-generator-col"> {/* Col 2: ComplementaryDataCard */}
+          <ComplementaryDataCard />
+        </div>
+      </div> {/* End of inner data-generator-row */}
+      
+        </div> {/* End of sidebar column data-generator-sidebar-col */}
+      </div> {/* End of data-generator-layout-grid */}
     </div>
   );
 };
