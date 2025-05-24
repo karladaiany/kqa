@@ -1,30 +1,46 @@
-import { faker } from '@faker-js/faker'; // Assuming faker is available
+import { fakerPT_BR as faker } from '@faker-js/faker'; // Explicitly use pt_BR
+
+const ptBRCompanyNames = [
+  "Soluções KQA", "Tecnologia Delta", "Inovações Brasil", "Consultoria Alfa",
+  "Sistemas Omega", "Digital Max", "Web Prime", "Conecta BR", "Grupo Vanguarda",
+  "PontoCom Inovações", "Avanço Digital", "Métrica Soluções", "Proativa Consultoria",
+  "União Tech", "Fênix Desenvolvimento"
+];
+
+const ptBRDepartments = [
+  "Recursos Humanos", "Desenvolvimento", "Marketing", "Vendas", "Suporte Técnico",
+  "Financeiro", "Operações", "Qualidade", "Pesquisa e Desenvolvimento", "Logística",
+  "Administrativo", "Jurídico", "Produto", "Infraestrutura", "Comercial"
+];
+
+const ptBRJobTitles = [
+  "Analista de Sistemas", "Engenheiro de Software", "Gerente de Projetos", "Designer UX",
+  "Especialista em Redes", "Desenvolvedor Frontend", "Desenvolvedor Backend", "Analista de Qualidade",
+  "Cientista de Dados", "Arquiteto de Soluções", "Consultor de TI", "Gerente de Marketing",
+  "Analista Financeiro", "Coordenador de Vendas", "Técnico de Suporte"
+];
 
 export const generateCompanyName = () => {
-  const formats = [
-    () => `${faker.company.name()} ${faker.company.companySuffix()}`,
-    () => `${faker.commerce.department()} Soluções`,
-    () => `Tecnologia ${faker.word.adjective()} ${faker.word.noun()}`,
-    () => `${faker.word.verb().toUpperCase()} KQA`,
-    () => `Grupo ${faker.company.name()}`,
-  ];
-  return faker.helpers.arrayElement(formats)();
+  return faker.helpers.arrayElement(ptBRCompanyNames);
 };
 
 export const generateDepartment = () => {
-  return faker.commerce.department();
+  return faker.helpers.arrayElement(ptBRDepartments);
 };
 
 export const generateJobTitle = () => {
-  return faker.name.jobTitle();
+  return faker.helpers.arrayElement(ptBRJobTitles);
 };
 
 export const generateBusinessSector = () => {
-  // Combining job area with a broader sector for more variety
+  // For BusinessSector, combining Faker's jobArea (often in PT-BR) with a fixed list is still good.
+  // If faker.name.jobArea() is not reliably in PT-BR, this could also be replaced.
+  // For now, assuming jobArea() from fakerPT_BR is mostly fine.
   const sectors = [
-    faker.name.jobArea(),
-    'Tecnologia', 'Saúde', 'Finanças', 'Varejo', 'Educação', 
-    'Consultoria', 'Manufatura', 'Serviços', 'Imobiliário', 'Entretenimento'
+    faker.person.jobArea(), // Changed from name.jobArea() to person.jobArea() for v8+
+    'Tecnologia', 'Saúde', 'Finanças', 'Varejo', 'Educação',
+    'Consultoria', 'Manufatura', 'Serviços', 'Imobiliário', 'Entretenimento',
+    'Agronegócio', 'Construção Civil', 'Energia', 'Logística', 'Turismo'
   ];
   return faker.helpers.arrayElement(sectors);
 };

@@ -100,6 +100,13 @@ export const useBugRegistration = () => {
   };
 
   const handleCopyAll = () => {
+    // Prevent copying if evidenceLink is empty
+    if (!bugData.evidenceLink) {
+      // Optionally, show a toast message or console log, though the button should be disabled in UI
+      console.warn("Copy action aborted: evidenceLink is empty.");
+      return;
+    }
+
     const evidenceSectionContent = formatEvidenceSection();
     
     const formattedSteps = bugData.steps

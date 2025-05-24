@@ -95,10 +95,10 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: var(--card-bg); /* Changed from transparent */
-  border: 1px solid var(--border-color);
+  background-color: var(--primary-color-dark); /* New background */
+  border: 1px solid var(--primary-color-dark); /* Adjusted border */
   border-radius: 4px;
-  color: var(--text-primary);
+  color: white; /* New text color */
   cursor: pointer;
   font-size: 14.4px;
   font-family: 'Inter', sans-serif;
@@ -107,14 +107,14 @@
 }
 
 .generate-all-btn:hover {
-  /* background-color: var(--card-bg); */ /* Default is now card-bg, hover might need a slight change or just rely on border/color */
-  border-color: var(--accent-color);
-  color: var(--accent-color);
+  color: white; /* Explicitly white on hover */
+  border-color: var(--accent-color); /* Accent color is same as primary-color-dark */
+  filter: brightness(110%); /* Feedback on hover */
 }
 
 .generate-all-btn:active {
   box-shadow: 0 0 15px rgba(120, 93, 200, 0.5);
-  /* Optionally, slightly change background or border for more feedback */
+  filter: brightness(95%); /* Feedback on active */
 }
 
 .generate-all-btn .generate-icon {
@@ -210,7 +210,12 @@
   transition: background 0.2s, color 0.2s;
   scrollbar-width: thin;
   scrollbar-color: var(--primary-color) var(--card-bg);
-  resize: vertical; /* Changed from none to vertical */
+  /* resize: vertical; */ /* Moved to a more specific selector for textareas */
+}
+
+/* Apply resize only to textareas with the copyable class */
+textarea.copyable {
+  resize: vertical;
 }
 
 .copyable:hover {
@@ -467,10 +472,10 @@
 
 .action-button {
   padding: 8px 16px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--primary-color-dark); /* Adjusted border */
   border-radius: 4px;
-  background-color: var(--card-bg);
-  color: var(--text-primary);
+  background-color: var(--primary-color-dark); /* New background */
+  color: white; /* New text color */
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -487,24 +492,32 @@
 }
 
 .action-button:hover {
-  border-color: var(--accent-color);
-  color: var(--accent-color);
-  /* background-color is already var(--card-bg) by default */
+  color: white; /* Explicitly white on hover */
+  border-color: var(--accent-color); /* Accent color is same as primary-color-dark */
+  filter: brightness(110%); /* Feedback on hover */
 }
 
 .action-button:active {
   box-shadow: 0 0 15px rgba(120, 93, 200, 0.5);
-  /* Optionally, slightly change background or border for more feedback */
+  filter: brightness(95%); /* Feedback on active */
 }
 
-.action-button.clear:hover { /* This specific selector might need review if .clear has different bg */
+/* Styles for .action-button.clear */
+.action-button.clear {
+  background-color: var(--card-bg); /* Keep original background for clear button */
+  color: var(--text-primary); /* Keep original text color for clear button */
+  border: 1px solid var(--border-color); /* Keep original border */
+}
+
+.action-button.clear:hover {
   border-color: var(--accent-color);
-  color: var(--accent-color);
+  color: var(--accent-color); /* Original hover color for clear */
+  background-color: var(--card-bg); /* Keep original hover background */
 }
 
-/* Ensure .action-button.clear also gets the active style if it's distinct */
 .action-button.clear:active {
-  box-shadow: 0 0 15px rgba(120, 93, 200, 0.5);
+  box-shadow: 0 0 15px rgba(120, 93, 200, 0.5); /* Keep active shadow consistent */
+  filter: brightness(95%);
 }
 
 .action-button:disabled {
@@ -895,6 +908,52 @@ input-clearable .number-input {
   font-size: 1rem; /* Adjust icon size if needed */
 }
 
+/* Styles for the new password configuration group */
+.password-config-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  /* It already inherits .campo-valor styles if class is applied, otherwise replicate: */
+  /* border: 1px solid var(--border-color); */
+  /* border-radius: 4px; */
+  /* padding: 4px 8px; */ /* Match .campo-valor padding */
+  /* background: var(--card-bg); */
+}
+
+.password-length-input {
+  /* Remove default input styling to blend with container */
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: 'Inter', monospace;
+  /* Adjust width and padding as needed */
+  width: 50px; /* Reduced width for ~3 digits + small buffer */
+  padding: 6px 4px; /* Minimal padding */
+  text-align: center;
+  font-size: 0.9rem; /* Match other input text */
+  min-height: auto; /* Override if .number-input base style affects this */
+}
+
+.password-length-input:focus {
+  /* Optional: subtle focus indicator if needed, though parent .campo-valor:focus-within handles border */
+  box-shadow: none; /* Remove any default focus shadow if it appears */
+}
+
+/* Styles for icon-only toggle buttons */
+.option-toggle.icon-only {
+  padding: 6px 8px; /* Adjust padding for icon-only */
+  min-width: 32px; /* Ensure enough space for icon and clickability */
+  font-size: 1rem; /* Icon size */
+  line-height: 1; /* Ensure icon is centered if text was causing height issues */
+  flex-grow: 0; /* Don't grow, fixed size */
+}
+
+.option-toggle.icon-only span { /* For the 'abc' text span */
+  display: inline-block;
+  line-height: 1;
+}
+
 /* Layout for DataGenerator two-column section */
 .data-generator-row {
   display: flex;
@@ -1003,4 +1062,66 @@ input-clearable .number-input {
   color: var(--text-secondary);
   margin-bottom: 0.25rem;
   display: block; 
+}
+
+/* Styles for inline checkbox option next to main field checkbox */
+.field-with-extra-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* Space between main checkbox group and inline option */
+  width: 100%; /* Take full width of the grid cell */
+}
+
+.main-checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Space between checkbox and its label */
+  flex-shrink: 0; /* Prevent this group from shrinking */
+}
+
+.inline-checkbox-option {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem; /* Smaller gap for compact inline option */
+  font-size: 0.85em; /* Slightly smaller font for the inline option */
+}
+
+.inline-checkbox-option input[type="checkbox"] {
+  margin-right: 0.15rem; /* Fine-tune spacing */
+}
+
+.inline-checkbox-option label {
+  color: var(--text-secondary); /* Softer color for the inline option label */
+  font-weight: normal; /* Normal weight for inline option label */
+}
+
+/* Styles for the quantity input container and hint */
+.quantity-config-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  /* .campo-valor styles are applied directly via class in JSX */
+}
+
+.quantity-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: 'Inter', monospace;
+  width: 70px; /* Adjust as needed for 1-1000 range */
+  padding: 6px 4px;
+  text-align: center;
+  font-size: 0.9rem;
+  min-height: auto; /* Override if .number-input base style affects this */
+}
+
+.quantity-input:focus {
+  box-shadow: none; /* Remove any default focus shadow */
+}
+
+.input-hint {
+  font-size: 0.85em;
+  color: var(--text-secondary);
+  white-space: nowrap; /* Prevent hint from wrapping */
 }

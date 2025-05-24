@@ -109,13 +109,10 @@ const ComplementaryDataCard = () => {
           icon={<FaUsers />}
         />
 
-        <div className="section-divider" style={{ marginTop: '1rem', marginBottom: '1rem' }}>
-          <FaShieldAlt /> Configurações da Senha
-        </div>
-        
+        {/* Combined Password Configuration Section */}
         <div className="campo-item">
-          <label htmlFor="password-length">Tamanho da Senha</label>
-          <div className="campo-valor">
+          <label htmlFor="password-length">Configurações da Senha</label>
+          <div className="campo-valor password-config-container"> {/* Apply estilo de campo-valor aqui */}
             <input
               type="number"
               id="password-length"
@@ -123,42 +120,38 @@ const ComplementaryDataCard = () => {
               onChange={handleLengthChange}
               min="1"
               max="128"
-              className="number-input" 
-              style={{ width: '80px', textAlign: 'center', flexGrow: 0, marginRight: '10px' }}
-              placeholder=" "
+              className="password-length-input" // New class for specific styling
+              title="Tamanho da Senha (1-128)"
             />
-             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)'}}> (1-128)</span>
-          </div>
-        </div>
-
-        <div className="campo-item password-options">
-          <label>Tipos de Caracteres</label>
-          <div className="campo-valor options-group" style={{ justifyContent: 'space-around', flexWrap: 'wrap' }}>
-            <button 
-              className={`option-toggle ${includeLowercase && includeUppercase ? 'active' : ''}`}
-              onClick={() => {
-                const bothOff = !includeLowercase && !includeUppercase;
-                const nextState = bothOff ? true : !(includeLowercase && includeUppercase);
-                setIncludeLowercase(nextState);
-                setIncludeUppercase(nextState);
-              }}
-              title="Incluir Maiúsculas e Minúsculas (Aa)"
+            {/* Icon-only buttons for character types */}
+            <button
+              className={`option-toggle icon-only ${includeUppercase ? 'active' : ''}`}
+              onClick={createToggleHandler(setIncludeUppercase)}
+              title="Incluir Maiúsculas (ABC)"
             >
-              <FaFont /> Aa
+              <FaFont /> {/* Using FaFont as a placeholder for 'ABC' or similar */}
             </button>
-            <button 
-              className={`option-toggle ${includeNumbers ? 'active' : ''}`}
+            <button
+              className={`option-toggle icon-only ${includeLowercase ? 'active' : ''}`}
+              onClick={createToggleHandler(setIncludeLowercase)}
+              title="Incluir Minúsculas (abc)"
+            >
+              {/* Need a different icon for lowercase, reusing FaFont or specific icon */}
+              <span style={{fontFamily: 'monospace', fontSize: '0.9em'}}>abc</span>
+            </button>
+            <button
+              className={`option-toggle icon-only ${includeNumbers ? 'active' : ''}`}
               onClick={createToggleHandler(setIncludeNumbers)}
               title="Incluir Números (123)"
             >
-              <FaSortNumericDown /> 123
+              <FaSortNumericDown />
             </button>
-            <button 
-              className={`option-toggle ${includeSpecialChars ? 'active' : ''}`}
+            <button
+              className={`option-toggle icon-only ${includeSpecialChars ? 'active' : ''}`}
               onClick={createToggleHandler(setIncludeSpecialChars)}
               title="Incluir Caracteres Especiais (@#%)"
             >
-              <FaHashtag /> @#%
+              <FaHashtag />
             </button>
           </div>
         </div>
@@ -167,9 +160,9 @@ const ComplementaryDataCard = () => {
           label="Senha Gerada"
           value={password}
           onRegenerate={regeneratePassword}
-          isPassword={true}
-          showMask={!showPassword}
-          onToggleMask={() => setShowPassword(prev => !prev)}
+          // isPassword={true} // This prop is not standard for DataField
+          showMask={false}  // Ensure password is always visible
+          onToggleMask={null} // Do not pass onToggleMask to hide the eye icon
           icon={<FaKey />}
         />
       </div>

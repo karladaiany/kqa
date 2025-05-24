@@ -72,7 +72,16 @@ const FileGeneratorCard = ({ generatorFunctions }) => {
         record.last_name = lastName;
     }
     if (selectedFields.email) record.email = person.email;
-    if (selectedFields.telefone) record.cell_phone = person.telefone; // Assuming person.telefone is cell
+    
+    if (selectedFields.telefone) {
+      record.cell_phone = person.telefone; // First phone number from the initial person object
+      record.phone1 = generatorFunctions.generatePerson().telefone; // Second distinct phone number
+      record.phone2 = generatorFunctions.generatePerson().telefone; // Third distinct phone number
+    } else {
+      record.cell_phone = '';
+      record.phone1 = '';
+      record.phone2 = '';
+    }
     
     if (selectedFields.endereco) record.address = person.endereco.rua;
     if (selectedFields.numero) record.address_number = person.endereco.numero;
@@ -99,8 +108,7 @@ const FileGeneratorCard = ({ generatorFunctions }) => {
     
     // Fixos ou em branco
     record.country = 'Brasil';
-    record.phone1 = ''; // Or generate new: generatorFunctions.generatePerson().telefone;
-    record.phone2 = ''; // Or generate new: generatorFunctions.generatePerson().telefone;
+    // phone1 and phone2 are now handled by the selectedFields.telefone block
 
     // Ensure all selected fields are present, even if empty from generator
     const allJsonKeys = [
@@ -205,44 +213,64 @@ const FileGeneratorCard = ({ generatorFunctions }) => {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.5rem' }}>
               {fields.map(field => (
                 <div key={field} className="checkbox-item">
-                  <input
-                    type="checkbox"
-                    id={`field-${field}`}
-                    checked={selectedFields[field]}
-                    onChange={() => handleCheckboxChange(field)}
-                  />
-                  <label htmlFor={`field-${field}`}>{fieldLabels[field]}</label>
+                  {field === 'senha' ? (
+                    <div className="field-with-extra-option">
+                      <div className="main-checkbox-group">
+                        <input
+                          type="checkbox"
+                          id="field-senha"
+                          checked={selectedFields.senha}
+                          onChange={() => handleCheckboxChange('senha')}
+                        />
+                        <label htmlFor="field-senha">{fieldLabels.senha}</label>
+                      </div>
+                      {selectedFields.senha && (
+                        <div className="inline-checkbox-option">
+                          <input
+                            type="checkbox"
+                            id="useDefaultPassword"
+                            checked={useDefaultPassword}
+                            onChange={() => setUseDefaultPassword(prev => !prev)}
+                          />
+                          <label htmlFor="useDefaultPassword">Usar padrão 123456</label>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <>
+                      <input
+                        type="checkbox"
+                        id={`field-${field}`}
+                        checked={selectedFields[field]}
+                        onChange={() => handleCheckboxChange(field)}
+                      />
+                      <label htmlFor={`field-${field}`}>{fieldLabels[field]}</label>
+                    </>
+                  )}
                 </div>
               ))}
             </div>
           </div>
         ))}
 
-        {selectedFields.senha && (
-          <div className="checkbox-item" style={{ marginTop: '0.5rem', padding: '0.5rem', border: '1px solid var(--border-color)', borderRadius: '4px' }}>
-            <input
-              type="checkbox"
-              id="useDefaultPassword"
-              checked={useDefaultPassword}
-              onChange={() => setUseDefaultPassword(prev => !prev)}
-            />
-            <label htmlFor="useDefaultPassword">Usar senha padrão '123456'</label>
-          </div>
-        )}
+        {/* Default password checkbox is now inline with "Senha" field */}
 
         <div className="section-divider" style={{ marginTop: '1.5rem' }}>Configurações de Geração</div>
         <div className="campo-item">
-          <label htmlFor="numRecords">Quantidade de Registros (1-1000)</label>
-          <input
-            type="number"
-            id="numRecords"
-            className="number-input"
-            value={numRecords}
-            onChange={(e) => setNumRecords(e.target.value)}
-            min="1"
-            max="1000"
-            style={{ width: '100px' }}
-          />
+          <label htmlFor="numRecords">Quantidade de Registros</label>
+          <div className="campo-valor quantity-config-container">
+            <input
+              type="number"
+              id="numRecords"
+              className="quantity-input" // New class for specific styling
+              value={numRecords}
+              onChange={(e) => setNumRecords(e.target.value)}
+              min="1"
+              max="1000"
+              title="Quantidade de Registros (1-1000)"
+            />
+            <span className="input-hint">(1-1000)</span>
+          </div>
         </div>
 
         <div className="campo-item">

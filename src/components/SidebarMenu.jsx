@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import {
   FaIdCard, FaUserAlt, FaGraduationCap, FaCreditCard, FaRandom,
-  FaCalculator, FaBug, FaComment, FaRocket
+  FaCalculator, FaBug, FaComment, FaRocket,
+  FaBriefcase, FaFileExport // Added icons for new cards
 } from 'react-icons/fa';
 
 const SidebarMenu = ({ open = true, onClose }) => {
@@ -53,6 +54,14 @@ const SidebarMenu = ({ open = true, onClose }) => {
           </div>
           <div className="floating-nav-item" onClick={() => scrollToSection('contador')}>
             <FaCalculator /> Contador de Caracteres
+          </div>
+          {/* New Menu Item for Dados Complementares */}
+          <div className="floating-nav-item" onClick={() => scrollToSection('dados-complementares')}>
+            <FaBriefcase /> Dados Complementares
+          </div>
+          {/* New Menu Item for Geração de Arquivo */}
+          <div className="floating-nav-item" onClick={() => scrollToSection('file-generator')}>
+            <FaFileExport /> Geração de Arquivo
           </div>
           <div className="floating-nav-item" onClick={() => scrollToSection('bug')}>
             <FaBug /> Registro de BUG
