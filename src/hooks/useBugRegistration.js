@@ -107,22 +107,6 @@ export const useBugRegistration = () => {
       .map(step => `» ${step}`)
       .join('\n');
     
-    const textToCopy = `    :: Incidente identificado ::
-${bugData.incident}
-
-    :: Passo a passo para reprodução ::
-${formattedSteps}
-
-    :: Comportamento esperado ::
-${bugData.expectedBehavior}
-
-    :: Informações ::
-url: ${bugData.url}
-login: ${bugData.login}
-senha: ${bugData.password}
-org_id: ${bugData.envId}
-${bugData.others}`;
-
     let textToCopy = `    :: Incidente identificado ::
 ${bugData.incident}
 
