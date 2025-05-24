@@ -97,6 +97,14 @@ const TestStatusCard = () => {
   ];
 
   const handleCopy = () => {
+    // Prevent copying if evidenceLink is empty
+    if (!formData.evidenceLink) {
+      // Optionally, show a toast message or console log, though the button should be disabled in UI
+      console.warn("Copy action aborted: formData.evidenceLink is empty.");
+      // toast.warn("Preencha o link da evidência ou informe 'N/A' para copiar."); // Alternative feedback
+      return;
+    }
+
     const selectedStatusOption = testStatusOptions.find(option => option.value === testStatus);
     const selectedEnvironmentOption = environmentOptions.find(option => option.value === environment);
     const formatLabel = (label) => label.replace(/\s+/g, ' ').trim();
@@ -235,13 +243,19 @@ const TestStatusCard = () => {
         {renderEvidenceSection()}
         {testStatus && (
           <div className="card-actions">
-            <button 
-              className="action-button" 
+            <button
+              className="action-button"
               onClick={handleCopy}
+              disabled={!formData.evidenceLink}
+              title={
+                !formData.evidenceLink
+                  ? "Preencha o link da evidência ou informe 'N/A' para habilitar."
+                  : "Copiar"
+              }
             >
               <FaCopy /> Copiar
             </button>
-            <button 
+            <button
               className="action-button clear" 
               onClick={handleClear}
             >
