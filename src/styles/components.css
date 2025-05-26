@@ -1549,19 +1549,19 @@ input-clearable .number-input {
 }
 
 .separator-toggle:hover {
-	border-color: var(--accent-color);
+	border-color: var(--primary-color);
 	background-color: var(--card-bg);
-	color: var(--accent-color);
+	color: var(--primary-color);
 }
 
 .separator-toggle.active {
-	border-color: var(--accent-color);
-	background-color: var(--accent-color);
-	color: white;
+	border-color: var(--primary-color);
+	background-color: var(--primary-color);
+	color: var(--text-button);
 }
 
 .separator-toggle.active:hover {
-	background-color: var(--accent-color);
+	background-color: var(--primary-color);
 	filter: brightness(110%);
 }
 
@@ -2441,7 +2441,8 @@ transform: translateY(-2px);
 /* Espaçamento interno para campos com botões/toggles */
 .campo-valor:has(.file-format-toggles),
 .campo-valor:has(.csv-separator-toggles),
-.campo-valor:has(.password-config-container) {
+.campo-valor:has(.password-config-container),
+.campo-valor:has(.categories-container) {
 	padding-top: 0.8rem;
 	padding-bottom: 0.5rem;
 }
