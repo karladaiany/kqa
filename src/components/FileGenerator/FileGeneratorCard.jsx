@@ -325,7 +325,7 @@ const FileGeneratorCard = ({ generatorFunctions }) => {
 
 	const fieldLabels = {
 		nome: "Nome completo",
-		email: "Email",
+		email: "E-mail",
 		telefone: "Telefone",
 		endereco: "Endereço",
 		numero: "Número",
@@ -556,7 +556,7 @@ const internalStyles = `
   align-items: center;
   gap: 0.5rem;
   font-size: 0.9rem;
-  color: var(--text-primary);
+  color: var(--text-color);
 }
 .checkbox-item input[type="checkbox"], .radio-group input[type="radio"] {
   margin-right: 0.3rem;
