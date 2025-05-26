@@ -3,7 +3,7 @@
 	/* Cores base */
 	--background-color: #ffffff;
 	--text-color: #202124;
-	--accent-color: #1a73e8;
+	--accent-color: #8be9fd;
 	--border-color: #dadce0;
 	--card-background: #ffffff;
 	--hover-color: #f8f9fa;
@@ -26,13 +26,13 @@
 	--shadow-lg: 0 4px 8px var(--shadow-color);
 
 	--card-bg: #f8f9fa;
-	--primary-color: #785dc8;
+	--primary-color: #ff79c6;
 	--secondary-color: #6c757d;
 	--success-color: #198754;
 	--error-color: #dc3545;
 	--transition-speed: 0.2s;
 	--input-bg: transparent;
-	--primary-color-dark: #785dc8;
+	--primary-color-dark: #ff79c6;
 	--primary-color-rgb: 13, 110, 253;
 	--text-primary: #212529;
 	--text-secondary: #6c757d;
@@ -47,8 +47,8 @@
 
 body.dark-theme {
 	--background-color: #202124;
-	--text-color: #e8eaed;
-	--accent-color: #8ab4f8;
+	--text-color: #6272a4;
+	--accent-color: #8be9fd;
 	--border-color: #3c4043;
 	--card-background: #2d2e31;
 	--hover-color: #3c4043;
@@ -61,6 +61,7 @@ body.dark-theme {
 	--font-size-base: 1rem; /* 16px */
 	--font-size-sm: 0.875rem; /* 14px */
 	--font-size-lg: 1.125rem; /* 18px */
+	--text-button: #282a36;
 }
 
 /* Toast */

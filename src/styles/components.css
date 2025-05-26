@@ -115,7 +115,7 @@
 	background-color: var(--primary-color-dark); /* New background */
 	border: 1px solid var(--primary-color-dark); /* Adjusted border */
 	border-radius: 4px;
-	color: white; /* New text color */
+	color: var(--text-button);
 	cursor: pointer;
 	font-size: 14.4px;
 	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
@@ -124,11 +124,9 @@
 }
 
 .generate-all-btn:hover {
-	color: white; /* Explicitly white on hover */
-	border-color: var(
-		--accent-color
-	); /* Accent color is same as primary-color-dark */
-	filter: brightness(110%); /* Feedback on hover */
+	color: var(--text-button);
+	border-color: var(--primary-color);
+	filter: brightness(110%);
 }
 
 .generate-all-btn:active {
@@ -538,10 +536,10 @@ textarea.copyable::-webkit-scrollbar-thumb:hover {
 
 .action-button {
 	padding: 8px 16px;
-	border: 1px solid var(--primary-color-dark); /* Adjusted border */
+	border: 1px solid var(--primary-color);
 	border-radius: 4px;
-	background-color: var(--primary-color-dark); /* New background */
-	color: white; /* New text color */
+	background-color: var(--primary-color);
+	color: var(--text-color);
 	cursor: pointer;
 	transition: all 0.2s ease;
 	display: flex;
@@ -962,20 +960,17 @@ input-clearable .number-input {
 }
 
 .password-options .option-toggle:hover {
-	border-color: var(--accent-color);
-	color: var(--accent-color);
+	border-color: var(--primary-color);
+	color: var(--primary-color);
 	background-color: var(
 		--card-bg
 	); /* Slightly different background on hover */
 }
 
 .password-options .option-toggle.active {
-	background-color: var(--accent-color);
-	color: var(
-		--button-text-color,
-		#fff
-	); /* Ensure contrast, define if needed */
-	border-color: var(--accent-color);
+	background-color: var(--primary-color);
+	color: var(--text-button);
+	border-color: var(--primary-color);
 }
 
 .password-options .option-toggle.active:hover {
@@ -1051,19 +1046,19 @@ input-clearable .number-input {
 }
 
 .password-config-container .option-toggle:hover {
-	border-color: var(--accent-color);
+	border-color: var(--primary-color);
 	background-color: var(--card-bg);
-	color: var(--accent-color);
+	color: var(--primary-color);
 }
 
 .password-config-container .option-toggle.active {
-	border-color: var(--accent-color);
-	background-color: var(--accent-color);
-	color: white;
+	border-color: var(--primary-color);
+	background-color: var(--primary-color);
+	color: var(--text-button);
 }
 
 .password-config-container .option-toggle.active:hover {
-	background-color: var(--accent-color);
+	background-color: var(--primary-color);
 	filter: brightness(110%);
 }
 
@@ -1378,19 +1373,19 @@ input-clearable .number-input {
 }
 
 .format-toggle:hover {
-	border-color: var(--accent-color);
+	border-color: var(--primary-color);
 	background-color: var(--card-bg);
-	color: var(--accent-color);
+	color: var(--primary-color);
 }
 
 .format-toggle.active {
-	border-color: var(--accent-color);
-	background-color: var(--accent-color);
-	color: white;
+	border-color: var(--primary-color);
+	background-color: var(--primary-color);
+	color: var(--text-button);
 }
 
 .format-toggle.active:hover {
-	background-color: var(--accent-color);
+	background-color: var(--primary-color);
 	filter: brightness(110%);
 }
 
@@ -1499,7 +1494,7 @@ input-clearable .number-input {
 /* Estilo específico para o botão "Gerar Arquivo" */
 #file-generator .action-button {
 	background-color: var(--card-bg);
-	color: var(--text-primary);
+	color: var(--text-color);
 	border: 1px solid var(--border-color);
 	padding: 0.5rem 1rem;
 	font-size: 0.9rem;
@@ -1510,7 +1505,7 @@ input-clearable .number-input {
 
 #file-generator .action-button:hover {
 	border-color: var(--accent-color);
-	color: var(--accent-color);
+	color: var(--text-color);
 	background-color: var(--card-bg);
 	filter: none;
 }
@@ -1527,19 +1522,8 @@ input-clearable .number-input {
 
 #file-generator .action-button:disabled:hover {
 	border-color: var(--border-color);
-	color: var(--text-primary);
+	color: var(--text-color);
 	background-color: var(--card-bg);
-}
-
-/* Tornar o símbolo ➕ branco nos botões de ação */
-.generate-all-btn:contains("➕"),
-button:contains("➕") {
-	color: white;
-}
-
-/* Estilo específico para botões que contêm ➕ */
-.generate-all-btn {
-	color: white;
 }
 
 /* Estilos específicos para ícones FaEdit e FaCog */
