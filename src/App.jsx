@@ -7,8 +7,10 @@ import {
 	FaBars,
 	FaDatabase,
 	FaClipboardList,
+	FaDice,
 } from "react-icons/fa";
 import ScrollButtons from "./components/ScrollButtons";
+import MobileHeader from "./components/MobileHeader";
 import TestStatusCard from "./components/TestStatus/TestStatusCard";
 import BugRegistrationCard from "./components/BugRegistration/BugRegistrationCard";
 import DeployCard from "./components/Deploy/DeployCard";
@@ -29,10 +31,29 @@ const App = () => {
 		return savedTheme === null ? true : savedTheme === "true";
 	});
 	const [sidebarOpen, setSidebarOpen] = useState(false);
+	const [canScrollUp, setCanScrollUp] = useState(false);
+	const [canScrollDown, setCanScrollDown] = useState(true);
 
 	useEffect(() => {
 		// Aplica o tema inicial
 		document.body.classList.toggle("dark-theme", darkMode);
+	}, []);
+
+	useEffect(() => {
+		const handleScroll = () => {
+			const scrollTop =
+				window.pageYOffset || document.documentElement.scrollTop;
+			const scrollHeight = document.documentElement.scrollHeight;
+			const clientHeight = document.documentElement.clientHeight;
+
+			setCanScrollUp(scrollTop > 100);
+			setCanScrollDown(scrollTop < scrollHeight - clientHeight - 100);
+		};
+
+		window.addEventListener("scroll", handleScroll);
+		handleScroll(); // Check initial state
+
+		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
 
 	const toggleTheme = () => {
@@ -43,8 +64,30 @@ const App = () => {
 		document.body.classList.toggle("dark-theme", newDarkMode);
 	};
 
+	const scrollToTop = () => {
+		window.scrollTo({ top: 0, behavior: "smooth" });
+	};
+
+	const scrollToBottom = () => {
+		window.scrollTo({
+			top: document.documentElement.scrollHeight,
+			behavior: "smooth",
+		});
+	};
+
 	return (
 		<div className="app">
+			<MobileHeader
+				darkMode={darkMode}
+				toggleTheme={toggleTheme}
+				sidebarOpen={sidebarOpen}
+				setSidebarOpen={setSidebarOpen}
+				scrollToTop={scrollToTop}
+				scrollToBottom={scrollToBottom}
+				canScrollUp={canScrollUp}
+				canScrollDown={canScrollDown}
+			/>
+
 			<button
 				id="menu-toggle"
 				className="icon-button"
@@ -71,7 +114,10 @@ const App = () => {
 			</button>
 
 			<header>
-				<h1>🎲 KQA :: Gerador de Dados para QA ::</h1>
+				<h1>
+					<FaDice className="title-icon" /> KQA :: Gerador de Dados
+					para QA ::
+				</h1>
 			</header>
 
 			<div className="content-wrapper">

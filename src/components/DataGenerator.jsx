@@ -372,7 +372,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 					onRegenerate={() => regenerateField("nome")}
 				/>
 				<DataField
-					label="Email"
+					label="E-mail"
 					value={person.email}
 					onRegenerate={() => regenerateField("nome")}
 				/>
@@ -621,19 +621,25 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 	);
 
 	return (
-		<div className="geracao-dados-container">
-			<div className="coluna-esquerda">
-				{renderDocumentosCard()}
-				{renderDadosPessoaisCard()}
-				<FileGeneratorCard generatorFunctions={allGeneratorFunctions} />
+		<div className="row">
+			<div className="col-6">
+				<div className="card-stack">
+					{renderDocumentosCard()}
+					{renderDadosPessoaisCard()}
+					<FileGeneratorCard
+						generatorFunctions={allGeneratorFunctions}
+					/>
+				</div>
 			</div>
 
-			<div className="coluna-direita">
-				{renderProdutoCard()}
-				{renderCartaoCard()}
-				{renderCaracteresCard()}
-				{renderContadorCard()}
-				<ComplementaryDataCard />
+			<div className="col-6">
+				<div className="card-stack">
+					{renderProdutoCard()}
+					{renderCartaoCard()}
+					{renderCaracteresCard()}
+					{renderContadorCard()}
+					<ComplementaryDataCard />
+				</div>
 			</div>
 		</div>
 	);
