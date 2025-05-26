@@ -299,7 +299,7 @@ const FileGeneratorCard = ({ generatorFunctions }) => {
 	};
 
 	const fieldGroups = {
-		"Dados Pessoais": [
+		"Dados pessoais": [
 			"nome",
 			"email",
 			"telefone",
@@ -311,7 +311,7 @@ const FileGeneratorCard = ({ generatorFunctions }) => {
 			"uf",
 			"cep",
 		],
-		"Dados Complementares": [
+		"Dados complementares": [
 			"empresa",
 			"area",
 			"cargo",
@@ -323,11 +323,11 @@ const FileGeneratorCard = ({ generatorFunctions }) => {
 	};
 
 	const fieldLabels = {
-		nome: "Nome Completo",
+		nome: "Nome completo",
 		email: "Email",
 		telefone: "Telefone",
-		endereco: "Endereço (Rua)",
-		numero: "Número (End.)",
+		endereco: "Endereço",
+		numero: "Número",
 		complemento: "Complemento",
 		bairro: "Bairro",
 		cidade: "Cidade",
@@ -336,23 +336,23 @@ const FileGeneratorCard = ({ generatorFunctions }) => {
 		empresa: "Empresa",
 		area: "Área",
 		cargo: "Cargo",
-		ramo: "Ramo de Atuação",
-		numColaboradores: "Nº Colaboradores",
+		ramo: "Ramo de atuação",
+		numColaboradores: "Nº colaboradores",
 		senha: "Senha",
-		cpf: "CPF (sem máscara)",
-		rg: "RG (sem máscara)",
+		cpf: "CPF",
+		rg: "RG",
 	};
 
 	return (
 		<section className="card" id="file-generator">
 			<div className="card-header">
 				<h2>
-					<FaFileExport className="header-icon" /> Geração de Arquivo
+					<FaFileExport className="header-icon" /> Geração de arquivo
 				</h2>
 			</div>
 			<div className="card-content">
 				<div className="section-divider">
-					<FaEdit className="section-icon" /> Campos para Inclusão
+					<FaEdit className="section-icon" /> Campos para inclusão
 				</div>
 				{Object.entries(fieldGroups).map(([groupName, fields]) => (
 					<div key={groupName} className="field-group">
@@ -439,10 +439,10 @@ const FileGeneratorCard = ({ generatorFunctions }) => {
 					className="section-divider"
 					style={{ marginTop: "0.5rem" }}
 				>
-					<FaCog className="section-icon" /> Configurações de Geração
+					<FaCog className="section-icon" /> Configurações de geração
 				</div>
 				<div className="campo-item">
-					<label htmlFor="numRecords">Quantidade de Registros</label>
+					<label htmlFor="numRecords">Quantidade de registros</label>
 					<div className="campo-valor quantity-config-container">
 						<input
 							type="number"
@@ -452,69 +452,76 @@ const FileGeneratorCard = ({ generatorFunctions }) => {
 							onChange={(e) => setNumRecords(e.target.value)}
 							min="1"
 							max="1000"
-							title="Quantidade de Registros (1-1000)"
+							title="Quantidade de registros (1-1000)"
 						/>
 						<span className="input-hint">(1-1000)</span>
 					</div>
 				</div>
 
 				<div className="campo-item">
-					<label>Formato do Arquivo</label>
+					<label>Formato do arquivo</label>
 					<div className="campo-valor">
-						<div className="file-format-toggles">
-							<button
-								type="button"
-								className={`format-toggle ${
-									fileFormat === "json" ? "active" : ""
-								}`}
-								onClick={() => setFileFormat("json")}
-							>
-								<span className="format-icon">📄</span>
-								<span className="format-text">JSON</span>
-							</button>
-							<button
-								type="button"
-								className={`format-toggle ${
-									fileFormat === "csv" ? "active" : ""
-								}`}
-								onClick={() => setFileFormat("csv")}
-							>
-								<span className="format-icon">📊</span>
-								<span className="format-text">CSV</span>
-							</button>
-						</div>
-					</div>
-				</div>
+						<div className="format-and-separator-container">
+							<div className="format-section">
+								<div className="file-format-toggles">
+									<button
+										type="button"
+										className={`format-toggle ${
+											fileFormat === "json"
+												? "active"
+												: ""
+										}`}
+										onClick={() => setFileFormat("json")}
+									>
+										<span className="format-icon">📄</span>
+										<span className="format-text">
+											JSON
+										</span>
+									</button>
+									<button
+										type="button"
+										className={`format-toggle ${
+											fileFormat === "csv" ? "active" : ""
+										}`}
+										onClick={() => setFileFormat("csv")}
+									>
+										<span className="format-icon">📊</span>
+										<span className="format-text">CSV</span>
+									</button>
+								</div>
+							</div>
 
-				{fileFormat === "csv" && (
-					<div className="campo-item">
-						<label>Separador CSV</label>
-						<div className="campo-valor">
-							<div className="csv-separator-toggles">
-								<button
-									type="button"
-									className={`format-toggle ${
-										csvSeparator === "," ? "active" : ""
-									}`}
-									onClick={() => setCsvSeparator(",")}
-									title="Vírgula - Padrão internacional"
-								>
-									,
-								</button>
-								<button
-									type="button"
-									className={`format-toggle ${
-										csvSeparator === ";" ? "active" : ""
-									}`}
-									onClick={() => setCsvSeparator(";")}
-									title="Ponto e vírgula - Padrão brasileiro"
-								>
-									;
-								</button>
+							<div
+								className={`separator-section ${
+									fileFormat === "csv" ? "visible" : ""
+								}`}
+							>
+								<div className="csv-separator-toggles">
+									<button
+										type="button"
+										className={`separator-toggle ${
+											csvSeparator === "," ? "active" : ""
+										}`}
+										onClick={() => setCsvSeparator(",")}
+										title="Vírgula - Padrão internacional"
+									>
+										,
+									</button>
+									<button
+										type="button"
+										className={`separator-toggle ${
+											csvSeparator === ";" ? "active" : ""
+										}`}
+										onClick={() => setCsvSeparator(";")}
+										title="Ponto e vírgula - Padrão brasileiro"
+									>
+										;
+									</button>
+								</div>
 							</div>
 						</div>
 					</div>
-				)}
+				</div>
 
 				<div className="card-actions">
 					<button
@@ -524,11 +531,11 @@ const FileGeneratorCard = ({ generatorFunctions }) => {
 						title={
 							isButtonDisabled()
 								? "Selecione ao menos um campo e defina uma quantidade válida (1-1000)"
-								: "Gerar Arquivo"
+								: "Gerar arquivo"
 						}
 					>
 						<FaRedo className=".generate-all-btn" />
-						{isGenerating ? "Gerando..." : "Gerar Arquivo"}
+						{isGenerating ? "Gerando..." : "Gerar arquivo"}
 					</button>
 				</div>
 			</div>

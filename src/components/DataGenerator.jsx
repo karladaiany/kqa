@@ -356,7 +356,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 		<section className="card" id="dados-pessoais">
 			<div className="card-header">
 				<h2>
-					<FaUserAlt className="header-icon" /> Dados Pessoais
+					<FaUserAlt className="header-icon" /> Dados pessoais
 				</h2>
 				<button
 					className="generate-all-btn"

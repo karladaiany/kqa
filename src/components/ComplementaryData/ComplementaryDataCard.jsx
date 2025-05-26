@@ -93,7 +93,7 @@ const ComplementaryDataCard = () => {
 		<section className="card" id="dados-complementares">
 			<div className="card-header">
 				<h2>
-					<FaBriefcase className="header-icon" /> Dados Complementares
+					<FaBriefcase className="header-icon" /> Dados complementares
 				</h2>
 				<button
 					className="generate-all-btn"
@@ -124,7 +124,7 @@ const ComplementaryDataCard = () => {
 					icon={<FaUsers />} // Using FaUsers as a proxy for role/job title
 				/>
 				<DataField
-					label="Ramo de Atuação"
+					label="Ramo de atuação"
 					value={businessLine}
 					onRegenerate={() =>
 						setBusinessLine(generateBusinessSector())
@@ -132,7 +132,7 @@ const ComplementaryDataCard = () => {
 					icon={<FaIndustry />}
 				/>
 				<DataField
-					label="Nº Colaboradores"
+					label="Nº colaboradores"
 					value={numEmployees}
 					onRegenerate={() => setNumEmployees(generateNumEmployees())}
 					icon={<FaUsers />}
@@ -141,7 +141,7 @@ const ComplementaryDataCard = () => {
 				{/* Combined Password Configuration Section */}
 				<div className="campo-item">
 					<label htmlFor="password-length">
-						Configurações da Senha
+						Configurações da senha
 					</label>
 					<div className="campo-valor password-config-container">
 						{" "}
@@ -201,7 +201,7 @@ const ComplementaryDataCard = () => {
 				</div>
 
 				<DataField
-					label="Senha Gerada"
+					label="Senha gerada"
 					value={password}
 					onRegenerate={regeneratePassword}
 					// isPassword={true} // This prop is not standard for DataField
