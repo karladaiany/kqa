@@ -78,32 +78,43 @@ export const useBugRegistration = () => {
   };
 
   const formatEvidenceSection = () => {
+    // If evidenceLink is empty, the entire evidence section is omitted
+    if (!bugData.evidenceLink) {
+      return '';
+    }
+
     const evidences = [];
-    
     if (bugData.evidenceDescription) {
       evidences.push(bugData.evidenceDescription);
     }
-    
-    if (bugData.evidenceLink) {
-      evidences.push(`Link da evidência: ${bugData.evidenceLink}`);
-    }
+    // evidenceLink is guaranteed to be non-empty here
+    evidences.push(`Link da evidência: ${bugData.evidenceLink}`);
     
     if (bugData.hasAttachment) {
       evidences.push('Evidência em anexo na atividade');
     }
 
-    return evidences.length > 0 ? evidences.join('\n') : '';
+    // If evidenceLink is present, join collected evidences. 
+    // This will always include at least the link.
+    return evidences.join('\n');
   };
 
   const handleCopyAll = () => {
-    const evidenceSection = formatEvidenceSection();
+    // Prevent copying if evidenceLink is empty
+    if (!bugData.evidenceLink) {
+      // Optionally, show a toast message or console log, though the button should be disabled in UI
+      console.warn("Copy action aborted: evidenceLink is empty.");
+      return;
+    }
+
+    const evidenceSectionContent = formatEvidenceSection();
     
     const formattedSteps = bugData.steps
       .split('\n')
       .map(step => `» ${step}`)
       .join('\n');
     
-    const textToCopy = `    :: Incidente identificado ::
+    let textToCopy = `    :: Incidente identificado ::
 ${bugData.incident}
 
     :: Passo a passo para reprodução ::
@@ -117,12 +128,13 @@ url: ${bugData.url}
 login: ${bugData.login}
 senha: ${bugData.password}
 org_id: ${bugData.envId}
-${bugData.others}
+${bugData.others}`;
 
-    :: Evidência(s) ::
-${evidenceSection}`;
+    if (evidenceSectionContent) {
+      textToCopy += `\n\n    :: Evidência(s) ::\n${evidenceSectionContent}`;
+    }
 
-    navigator.clipboard.writeText(textToCopy);
+    navigator.clipboard.writeText(textToCopy.trim());
   };
 
   return {
