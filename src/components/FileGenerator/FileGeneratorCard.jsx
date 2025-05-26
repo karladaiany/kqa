@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { FaFileExport, FaRedo, FaEdit, FaCog } from "react-icons/fa";
+import { FaFileExport, FaRedo, FaEdit, FaCog, FaTable } from "react-icons/fa";
 import { toast } from "react-toastify";
+import DescriptionIcon from "@mui/icons-material/Description"; // Ícone de arquivo genérico (JSON)
 
 // Assuming generator functions will be passed as props or imported
 // Removed placeholderGenerator and defaultGeneratorFunctions as actual functions will be passed via props.
@@ -473,7 +474,7 @@ const FileGeneratorCard = ({ generatorFunctions }) => {
 										}`}
 										onClick={() => setFileFormat("json")}
 									>
-										<span className="format-icon">📄</span>
+										<DescriptionIcon className="format-icon" />
 										<span className="format-text">
 											JSON
 										</span>
@@ -485,7 +486,7 @@ const FileGeneratorCard = ({ generatorFunctions }) => {
 										}`}
 										onClick={() => setFileFormat("csv")}
 									>
-										<span className="format-icon">📊</span>
+										<FaTable className="format-icon" />
 										<span className="format-text">CSV</span>
 									</button>
 								</div>

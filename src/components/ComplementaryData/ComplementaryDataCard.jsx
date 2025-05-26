@@ -143,60 +143,63 @@ const ComplementaryDataCard = () => {
 					<label htmlFor="password-length">
 						Configurações da senha
 					</label>
-					<div className="campo-valor password-config-container">
-						{" "}
-						{/* Apply estilo de campo-valor aqui */}
-						<input
-							type="number"
-							id="password-length"
-							value={passwordLength}
-							onChange={handleLengthChange}
-							min="1"
-							max="128"
-							className="password-length-input" // New class for specific styling
-							title="Tamanho da Senha (1-128)"
-						/>
-						{/* Buttons with text and icons */}
-						<button
-							className={`option-toggle ${
-								includeUppercase ? "active" : ""
-							}`}
-							onClick={createToggleHandler(setIncludeUppercase)}
-							title="Incluir Maiúsculas"
-						>
-							<FaFont style={{ marginRight: "4px" }} />{" "}
-							{/* Icon for Uppercase */}
-						</button>
-						<button
-							className={`option-toggle ${
-								includeLowercase ? "active" : ""
-							}`}
-							onClick={createToggleHandler(setIncludeLowercase)}
-							title="Incluir Minúsculas"
-						>
-							{/* Using a simple text representation for lowercase, adjust if specific icon is preferred */}
-							<span>a</span>
-						</button>
-						<button
-							className={`option-toggle ${
-								includeNumbers ? "active" : ""
-							}`}
-							onClick={createToggleHandler(setIncludeNumbers)}
-							title="Incluir Números"
-						>
-							<FaSortNumericDown style={{ marginRight: "4px" }} />
-						</button>
-						<button
-							className={`option-toggle ${
-								includeSpecialChars ? "active" : ""
-							}`}
-							onClick={createToggleHandler(
-								setIncludeSpecialChars
-							)}
-							title="Incluir Caracteres Especiais"
-						>
-							<FaHashtag style={{ marginRight: "4px" }} />
-						</button>
+					<div className="campo-valor">
+						<div className="password-config-container">
+							<input
+								type="number"
+								id="password-length"
+								value={passwordLength}
+								onChange={handleLengthChange}
+								min="1"
+								max="128"
+								className="password-length-input"
+								title="Tamanho da Senha (1-128)"
+							/>
+							<button
+								className={`option-toggle ${
+									includeUppercase ? "active" : ""
+								}`}
+								onClick={createToggleHandler(
+									setIncludeUppercase
+								)}
+								title="Incluir Maiúsculas"
+							>
+								<FaFont style={{ marginRight: "4px" }} />
+							</button>
+							<button
+								className={`option-toggle ${
+									includeLowercase ? "active" : ""
+								}`}
+								onClick={createToggleHandler(
+									setIncludeLowercase
+								)}
+								title="Incluir Minúsculas"
+							>
+								<span>a</span>
+							</button>
+							<button
+								className={`option-toggle ${
+									includeNumbers ? "active" : ""
+								}`}
+								onClick={createToggleHandler(setIncludeNumbers)}
+								title="Incluir Números"
+							>
+								<FaSortNumericDown
+									style={{ marginRight: "4px" }}
+								/>
+							</button>
+							<button
+								className={`option-toggle ${
+									includeSpecialChars ? "active" : ""
+								}`}
+								onClick={createToggleHandler(
+									setIncludeSpecialChars
+								)}
+								title="Incluir Caracteres Especiais"
+							>
+								<FaHashtag style={{ marginRight: "4px" }} />
+							</button>
+						</div>
 					</div>
 				</div>
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import { DataGenerator } from "./components/DataGenerator";
 import {
@@ -22,18 +22,23 @@ import SidebarMenu from "./components/SidebarMenu";
 import { Container, Typography, Box } from "@mui/material";
 
 const App = () => {
-	const [darkMode, setDarkMode] = React.useState(false);
+	const [darkMode, setDarkMode] = useState(() => {
+		// Verifica se existe uma preferência salva no localStorage
+		const savedTheme = localStorage.getItem("darkMode");
+		// Se não existir, retorna true (tema escuro como padrão)
+		return savedTheme === null ? true : savedTheme === "true";
+	});
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 
-	React.useEffect(() => {
-		const isDarkMode = localStorage.getItem("darkMode") === "true";
-		setDarkMode(isDarkMode);
-		document.body.classList.toggle("dark-theme", isDarkMode);
+	useEffect(() => {
+		// Aplica o tema inicial
+		document.body.classList.toggle("dark-theme", darkMode);
 	}, []);
 
 	const toggleTheme = () => {
 		const newDarkMode = !darkMode;
 		setDarkMode(newDarkMode);
+		// Salva a preferência no localStorage
 		localStorage.setItem("darkMode", newDarkMode);
 		document.body.classList.toggle("dark-theme", newDarkMode);
 	};
@@ -53,7 +58,15 @@ const App = () => {
 				open={sidebarOpen}
 				onClose={() => setSidebarOpen(false)}
 			/>
-			<button className="theme-toggle" onClick={toggleTheme}>
+			<button
+				className="theme-toggle"
+				onClick={toggleTheme}
+				aria-label={
+					darkMode
+						? "Mudar para tema claro"
+						: "Mudar para tema escuro"
+				}
+			>
 				{darkMode ? <FaSun /> : <FaMoon />}
 			</button>
 
