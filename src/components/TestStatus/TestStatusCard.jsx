@@ -272,7 +272,7 @@ const TestStatusCard = () => {
 			</div>
 			<div className="card-content">
 				<div className="campo-item">
-					<label htmlFor="testStatus">Status do Teste</label>
+					<label htmlFor="testStatus">Status do teste</label>
 					<div className="campo-valor">
 						<select
 							id="testStatus"

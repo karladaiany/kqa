@@ -72,7 +72,7 @@
 	background-color: var(--background-color);
 	color: var(--text-primary);
 	font-size: 0.9rem;
-	font-family: "Inter", sans-serif;
+	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
 	cursor: pointer;
 	transition: all 0.2s ease;
 	height: 36px;
@@ -118,7 +118,7 @@
 	color: white; /* New text color */
 	cursor: pointer;
 	font-size: 14.4px;
-	font-family: "Inter", sans-serif;
+	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
 	font-weight: 600;
 	transition: all 0.2s ease;
 }
@@ -165,7 +165,7 @@
 	backdrop-filter: blur(4px);
 	font-weight: 500;
 	font-size: 14px;
-	font-family: "Inter", sans-serif;
+	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
 }
 
 .campo-item:last-child {
@@ -220,7 +220,7 @@
 	/* max-height: 96px; */ /* Removed to allow unrestricted vertical resize */
 	overflow-y: auto;
 	width: 100%;
-	font-family: "Inter", monospace;
+	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
 	color: var(--text-color);
 	background: var(--card-bg);
 	border: none;
@@ -357,7 +357,7 @@ textarea.copyable::-webkit-scrollbar-thumb:hover {
 .tag-text {
 	font-size: 0.9rem;
 	color: var(--text-primary);
-	font-family: "Inter", sans-serif;
+	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
 }
 
 .regenerate-container {
@@ -432,13 +432,13 @@ textarea.copyable::-webkit-scrollbar-thumb:hover {
 	background-color: var(--background-color);
 	color: var(--text-primary);
 	font-size: 0.9rem;
-	font-family: "Inter", monospace;
+	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
 	transition: all 0.2s ease;
 	cursor: text;
 }
 
 .number-input::placeholder {
-	font-family: "Inter", sans-serif;
+	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
 	font-size: 12px;
 	color: var(--text-secondary);
 	opacity: 0.7;
@@ -551,7 +551,7 @@ textarea.copyable::-webkit-scrollbar-thumb:hover {
 	font-size: 14.4px;
 	min-width: 100px;
 	justify-content: center;
-	font-family: "Inter", sans-serif;
+	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
 	font-weight: 400;
 	/* gap: 8px;
   background-color: transparent; */
@@ -682,7 +682,7 @@ textarea.copyable::-webkit-scrollbar-thumb:hover {
 	font-size: 14.4px;
 	min-width: 100px;
 	justify-content: center;
-	font-family: "Inter", sans-serif;
+	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
 	font-weight: 400;
 }
 
@@ -1005,7 +1005,7 @@ input-clearable .number-input {
 	border-radius: 6px;
 	background: var(--background-color);
 	color: var(--text-primary);
-	font-family: "Inter", sans-serif;
+	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
 	/* Adjust width and padding as needed */
 	width: 60px; /* Largura ajustada para melhor proporção */
 	padding: 0.5rem 0.75rem; /* Padding igual aos botões */
@@ -1042,7 +1042,7 @@ input-clearable .number-input {
 	color: var(--text-secondary);
 	cursor: pointer;
 	transition: all 0.2s ease;
-	font-family: "Inter", sans-serif;
+	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
 	font-size: 0.85rem;
 	font-weight: 500;
 	min-height: 40px;
@@ -1296,7 +1296,7 @@ input-clearable .number-input {
 	outline: none;
 	background: transparent;
 	color: var(--text-primary);
-	font-family: "Inter", monospace;
+	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
 	width: 70px; /* Adjust as needed for 1-1000 range */
 	padding: 6px 4px;
 	text-align: center;
@@ -1370,7 +1370,7 @@ input-clearable .number-input {
 	color: var(--text-secondary);
 	cursor: pointer;
 	transition: all 0.2s ease;
-	font-family: "Inter", sans-serif;
+	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
 	font-size: 0.85rem;
 	font-weight: 500;
 	min-height: 40px;
@@ -1422,7 +1422,7 @@ input-clearable .number-input {
 	color: var(--text-secondary);
 	cursor: pointer;
 	transition: all 0.2s ease;
-	font-family: "Courier New", monospace;
+	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
 	font-size: 1.2rem;
 	font-weight: bold;
 	min-height: 40px;
@@ -1749,6 +1749,7 @@ button:contains("➕") {
 	gap: 0.3rem;
 	font-size: 0.9rem;
 	color: var(--text-secondary);
+	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
 }
 
 .heart-icon {
@@ -1776,6 +1777,7 @@ button:contains("➕") {
 	font-size: 0.8rem;
 	color: var(--text-secondary);
 	opacity: 0.8;
+	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
 }
 
 .social-links {
@@ -1814,6 +1816,7 @@ button:contains("➕") {
 	font-size: 0.8rem;
 	color: var(--text-secondary);
 	opacity: 0.7;
+	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
 }
 
 .version {
@@ -1822,7 +1825,7 @@ button:contains("➕") {
 }
 
 .build-date {
-	font-family: "Courier New", monospace;
+	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
 }
 
 /* Responsividade do Footer */
@@ -2079,4 +2082,35 @@ transform: translateY(-2px);
 		opacity: 1;
 		transform: translateY(0);
 	}
+}
+
+/* Unificar estilo dos inputs numéricos especiais */
+.password-length-input,
+.quantity-input {
+	border: 2px solid var(--border-color);
+	border-radius: 6px;
+	background: var(--background-color);
+	color: var(--text-primary);
+	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
+	width: 60px;
+	padding: 0.5rem 0.75rem;
+	text-align: center;
+	font-size: 0.85rem;
+	font-weight: 500;
+	min-height: 40px;
+	transition: all 0.2s ease;
+}
+
+.password-length-input:hover,
+.quantity-input:hover {
+	border-color: var(--accent-color);
+	background-color: var(--card-bg);
+}
+
+.password-length-input:focus,
+.quantity-input:focus {
+	outline: none;
+	border-color: var(--accent-color);
+	background-color: var(--card-bg);
+	box-shadow: none;
 }

@@ -98,15 +98,14 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 	// Update card state when eredeStatus changes and Erede is the selected brand
 	useEffect(() => {
 		if (cardConfig.bandeira.toLowerCase() === "erede") {
-			setCard(
-				generateCreditCard(
-					cardConfig.bandeira,
-					"",
-					cardConfig.eredeStatus
-				)
+			const newCard = generateCreditCard(
+				cardConfig.bandeira,
+				"",
+				cardConfig.eredeStatus
 			);
+			setCard(newCard);
 		}
-	}, [cardConfig.bandeira, cardConfig.eredeStatus, generateCreditCard]);
+	}, [cardConfig.eredeStatus]); // Removido cardConfig.bandeira da dependência
 
 	const [randomChars, setRandomChars] = useState({
 		length: "",
