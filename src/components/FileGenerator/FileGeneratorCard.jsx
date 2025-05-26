@@ -405,7 +405,7 @@ const FileGeneratorCard = ({ generatorFunctions }) => {
 														htmlFor="useDefaultPassword"
 														style={{
 															fontSize: "0.8rem",
-															color: "var(--text-secondary)",
+															color: "var(--text-color)",
 														}}
 													>
 														'123456'
