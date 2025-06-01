@@ -21,7 +21,6 @@ import "./styles/components.css";
 import "./styles.css";
 import "./App.css";
 import SidebarMenu from "./components/SidebarMenu";
-import { Container, Typography, Box } from "@mui/material";
 
 const App = () => {
 	const [darkMode, setDarkMode] = useState(() => {
