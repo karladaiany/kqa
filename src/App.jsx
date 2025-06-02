@@ -22,21 +22,20 @@ import "./styles.css";
 import "./App.css";
 import SidebarMenu from "./components/SidebarMenu";
 
+// Importações das constantes centralizadas
+import { CONFIG_TOAST } from "./constants";
+import {
+	CONFIG_SCROLL,
+	CONFIG_ACESSIBILIDADE,
+	inicializarTema,
+	alternarTema,
+} from "./config/theme";
+
 const App = () => {
-	const [darkMode, setDarkMode] = useState(() => {
-		// Verifica se existe uma preferência salva no localStorage
-		const savedTheme = localStorage.getItem("darkMode");
-		// Se não existir, retorna true (tema escuro como padrão)
-		return savedTheme === null ? true : savedTheme === "true";
-	});
+	const [darkMode, setDarkMode] = useState(() => inicializarTema());
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 	const [canScrollUp, setCanScrollUp] = useState(false);
 	const [canScrollDown, setCanScrollDown] = useState(true);
-
-	useEffect(() => {
-		// Aplica o tema inicial
-		document.body.classList.toggle("dark-theme", darkMode);
-	}, []);
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -45,8 +44,11 @@ const App = () => {
 			const scrollHeight = document.documentElement.scrollHeight;
 			const clientHeight = document.documentElement.clientHeight;
 
-			setCanScrollUp(scrollTop > 100);
-			setCanScrollDown(scrollTop < scrollHeight - clientHeight - 100);
+			setCanScrollUp(scrollTop > CONFIG_SCROLL.offsetMinimo);
+			setCanScrollDown(
+				scrollTop <
+					scrollHeight - clientHeight - CONFIG_SCROLL.offsetMaximo
+			);
 		};
 
 		window.addEventListener("scroll", handleScroll);
@@ -56,21 +58,18 @@ const App = () => {
 	}, []);
 
 	const toggleTheme = () => {
-		const newDarkMode = !darkMode;
+		const newDarkMode = alternarTema(darkMode);
 		setDarkMode(newDarkMode);
-		// Salva a preferência no localStorage
-		localStorage.setItem("darkMode", newDarkMode);
-		document.body.classList.toggle("dark-theme", newDarkMode);
 	};
 
 	const scrollToTop = () => {
-		window.scrollTo({ top: 0, behavior: "smooth" });
+		window.scrollTo({ top: 0, behavior: CONFIG_SCROLL.comportamento });
 	};
 
 	const scrollToBottom = () => {
 		window.scrollTo({
 			top: document.documentElement.scrollHeight,
-			behavior: "smooth",
+			behavior: CONFIG_SCROLL.comportamento,
 		});
 	};
 
@@ -91,7 +90,7 @@ const App = () => {
 				id="menu-toggle"
 				className="icon-button"
 				onClick={() => setSidebarOpen(!sidebarOpen)}
-				aria-label="Abrir menu"
+				aria-label={CONFIG_ACESSIBILIDADE.ariaLabels.menuToggle}
 				type="button"
 			>
 				<FaBars />
@@ -105,8 +104,8 @@ const App = () => {
 				onClick={toggleTheme}
 				aria-label={
 					darkMode
-						? "Mudar para tema claro"
-						: "Mudar para tema escuro"
+						? CONFIG_ACESSIBILIDADE.ariaLabels.themeToLight
+						: CONFIG_ACESSIBILIDADE.ariaLabels.themeToDark
 				}
 			>
 				{darkMode ? <FaSun /> : <FaMoon />}
@@ -150,15 +149,7 @@ const App = () => {
 
 			<ScrollButtons />
 			<ToastContainer
-				position="bottom-right"
-				autoClose={3000}
-				hideProgressBar={false}
-				newestOnTop
-				closeOnClick
-				rtl={false}
-				pauseOnFocusLoss
-				draggable
-				pauseOnHover
+				{...CONFIG_TOAST}
 				theme={darkMode ? "dark" : "light"}
 			/>
 		</div>
