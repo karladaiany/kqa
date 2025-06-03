@@ -23,12 +23,12 @@ export const createLabelInputAssociation = (inputId, labelText) => {
   return {
     labelProps: {
       htmlFor: inputId,
-      children: labelText
+      children: labelText,
     },
     inputProps: {
       id: inputId,
-      'aria-label': labelText
-    }
+      'aria-label': labelText,
+    },
   };
 };
 
@@ -46,9 +46,9 @@ export const generateActionAriaLabel = (action, target) => {
     limpar: 'Limpar',
     alternar: 'Alternar',
     abrir: 'Abrir',
-    fechar: 'Fechar'
+    fechar: 'Fechar',
   };
-  
+
   const actionText = actionMap[action.toLowerCase()] || action;
   return `${actionText} ${target}`;
 };
@@ -63,14 +63,14 @@ export const createStatusAriaProps = (status, message) => {
   const statusMap = {
     loading: 'polite',
     success: 'polite',
-    error: 'assertive'
+    error: 'assertive',
   };
-  
+
   return {
     'aria-live': statusMap[status] || 'polite',
     'aria-atomic': 'true',
     role: status === 'error' ? 'alert' : 'status',
-    children: message
+    children: message,
   };
 };
 
@@ -99,7 +99,7 @@ export const createExpandableAriaProps = (isExpanded, controlsId) => {
     'aria-expanded': isExpanded,
     'aria-controls': controlsId,
     role: 'button',
-    tabIndex: 0
+    tabIndex: 0,
   };
 };
 
@@ -111,16 +111,18 @@ export const createExpandableAriaProps = (isExpanded, controlsId) => {
  */
 export const validateColorContrast = (foreground, background) => {
   // Função simplificada - em produção, usar biblioteca especializada
-  const hexToRgb = (hex) => {
+  const hexToRgb = hex => {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-      r: parseInt(result[1], 16),
-      g: parseInt(result[2], 16),
-      b: parseInt(result[3], 16)
-    } : null;
+    return result
+      ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16),
+        }
+      : null;
   };
-  
-  const getLuminance = (rgb) => {
+
+  const getLuminance = rgb => {
     const { r, g, b } = rgb;
     const [rs, gs, bs] = [r, g, b].map(c => {
       c = c / 255;
@@ -128,23 +130,24 @@ export const validateColorContrast = (foreground, background) => {
     });
     return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
   };
-  
+
   const fgRgb = hexToRgb(foreground);
   const bgRgb = hexToRgb(background);
-  
+
   if (!fgRgb || !bgRgb) {
     return { valid: false, ratio: 0, level: 'invalid' };
   }
-  
+
   const fgLum = getLuminance(fgRgb);
   const bgLum = getLuminance(bgRgb);
-  
-  const ratio = (Math.max(fgLum, bgLum) + 0.05) / (Math.min(fgLum, bgLum) + 0.05);
-  
+
+  const ratio =
+    (Math.max(fgLum, bgLum) + 0.05) / (Math.min(fgLum, bgLum) + 0.05);
+
   return {
     valid: ratio >= 4.5,
     ratio: Math.round(ratio * 100) / 100,
-    level: ratio >= 7 ? 'AAA' : ratio >= 4.5 ? 'AA' : 'fail'
+    level: ratio >= 7 ? 'AAA' : ratio >= 4.5 ? 'AA' : 'fail',
   };
 };
 
@@ -157,18 +160,20 @@ export const validateColorContrast = (foreground, background) => {
  */
 export const createFormFieldAriaProps = (isValid, errorMessage, fieldId) => {
   const errorId = `${fieldId}-error`;
-  
+
   return {
     fieldProps: {
       'aria-invalid': !isValid,
-      'aria-describedby': !isValid ? errorId : undefined
+      'aria-describedby': !isValid ? errorId : undefined,
     },
-    errorProps: !isValid ? {
-      id: errorId,
-      role: 'alert',
-      'aria-live': 'polite',
-      children: errorMessage
-    } : null
+    errorProps: !isValid
+      ? {
+          id: errorId,
+          role: 'alert',
+          'aria-live': 'polite',
+          children: errorMessage,
+        }
+      : null,
   };
 };
 
@@ -186,10 +191,10 @@ export const announceToScreenReader = (message, priority = 'polite') => {
   announcement.style.width = '1px';
   announcement.style.height = '1px';
   announcement.style.overflow = 'hidden';
-  
+
   document.body.appendChild(announcement);
   announcement.textContent = message;
-  
+
   setTimeout(() => {
     document.body.removeChild(announcement);
   }, 1000);
@@ -213,10 +218,10 @@ export const createSkipLinkProps = (targetId, text) => {
   return {
     href: `#${targetId}`,
     className: 'skip-link',
-    onClick: (e) => {
+    onClick: e => {
       e.preventDefault();
       manageFocus(targetId, 100);
     },
-    children: text
+    children: text,
   };
-}; 
+};

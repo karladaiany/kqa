@@ -38,14 +38,14 @@ class AnalyticsManager {
       label,
       metadata,
       url: window.location.href,
-      userAgent: navigator.userAgent
+      userAgent: navigator.userAgent,
     };
 
     this.events.push(event);
-    
+
     // Armazenar no localStorage para análise posterior
     this.saveToStorage(event);
-    
+
     // Log para desenvolvimento
     if (process.env.NODE_ENV === 'development') {
       console.log('Analytics Event:', event);
@@ -61,12 +61,12 @@ class AnalyticsManager {
       const stored = localStorage.getItem('kqa_analytics') || '[]';
       const events = JSON.parse(stored);
       events.push(event);
-      
+
       // Manter apenas os últimos 100 eventos
       if (events.length > 100) {
         events.splice(0, events.length - 100);
       }
-      
+
       localStorage.setItem('kqa_analytics', JSON.stringify(events));
     } catch (error) {
       console.warn('Erro ao salvar analytics:', error);
@@ -81,7 +81,7 @@ class AnalyticsManager {
     try {
       const stored = localStorage.getItem('kqa_analytics') || '[]';
       const events = JSON.parse(stored);
-      
+
       const stats = {
         totalEvents: events.length,
         categories: {},
@@ -89,13 +89,17 @@ class AnalyticsManager {
         sessionsCount: new Set(events.map(e => e.sessionId)).size,
         timeRange: {
           first: events.length > 0 ? new Date(events[0].timestamp) : null,
-          last: events.length > 0 ? new Date(events[events.length - 1].timestamp) : null
-        }
+          last:
+            events.length > 0
+              ? new Date(events[events.length - 1].timestamp)
+              : null,
+        },
       };
 
       // Contar por categoria e ação
       events.forEach(event => {
-        stats.categories[event.category] = (stats.categories[event.category] || 0) + 1;
+        stats.categories[event.category] =
+          (stats.categories[event.category] || 0) + 1;
         stats.actions[event.action] = (stats.actions[event.action] || 0) + 1;
       });
 
@@ -166,7 +170,7 @@ export const trackCreditCardGeneration = (cardBrand, cardType = 'normal') => {
  * Registra mudança de tema
  * @param {string} theme - Tema selecionado (light/dark)
  */
-export const trackThemeChange = (theme) => {
+export const trackThemeChange = theme => {
   analytics.trackEvent('ui', 'theme_change', theme);
 };
 
@@ -177,9 +181,9 @@ export const trackThemeChange = (theme) => {
  * @param {string} component - Componente onde ocorreu
  */
 export const trackError = (errorType, errorMessage, component = 'unknown') => {
-  analytics.trackEvent('error', errorType, component, { 
+  analytics.trackEvent('error', errorType, component, {
     message: errorMessage,
-    timestamp: Date.now()
+    timestamp: Date.now(),
   });
 };
 
@@ -188,9 +192,9 @@ export const trackError = (errorType, errorMessage, component = 'unknown') => {
  */
 export const trackSessionDuration = () => {
   const duration = Date.now() - analytics.startTime;
-  analytics.trackEvent('session', 'duration', 'end', { 
+  analytics.trackEvent('session', 'duration', 'end', {
     durationMs: duration,
-    durationMinutes: Math.round(duration / 60000)
+    durationMinutes: Math.round(duration / 60000),
   });
 };
 
@@ -200,9 +204,9 @@ export const trackSessionDuration = () => {
  * @param {number} loadTime - Tempo de carregamento em ms
  */
 export const trackPerformance = (component, loadTime) => {
-  analytics.trackEvent('performance', 'load_time', component, { 
+  analytics.trackEvent('performance', 'load_time', component, {
     loadTimeMs: loadTime,
-    loadTimeSec: Math.round(loadTime / 1000)
+    loadTimeSec: Math.round(loadTime / 1000),
   });
 };
 
@@ -234,14 +238,14 @@ export const clearAnalyticsData = () => {
  * Hook para monitoramento de performance de componentes
  * @param {string} componentName - Nome do componente
  */
-export const usePerformanceMonitoring = (componentName) => {
+export const usePerformanceMonitoring = componentName => {
   const startTime = Date.now();
-  
+
   return {
     markLoadComplete: () => {
       const loadTime = Date.now() - startTime;
       trackPerformance(componentName, loadTime);
-    }
+    },
   };
 };
 
@@ -250,13 +254,17 @@ export const usePerformanceMonitoring = (componentName) => {
  */
 export const initErrorTracking = () => {
   // Captura erros JavaScript
-  window.addEventListener('error', (event) => {
+  window.addEventListener('error', event => {
     trackError('javascript', event.message, event.filename);
   });
 
   // Captura erros de Promise rejeitadas
-  window.addEventListener('unhandledrejection', (event) => {
-    trackError('promise', event.reason?.message || 'Promise rejeitada', 'unknown');
+  window.addEventListener('unhandledrejection', event => {
+    trackError(
+      'promise',
+      event.reason?.message || 'Promise rejeitada',
+      'unknown'
+    );
   });
 };
 
@@ -270,9 +278,12 @@ export const initSessionTracking = () => {
   });
 
   // Registra atividade a cada 5 minutos
-  setInterval(() => {
-    analytics.trackEvent('session', 'heartbeat', 'active');
-  }, 5 * 60 * 1000);
+  setInterval(
+    () => {
+      analytics.trackEvent('session', 'heartbeat', 'active');
+    },
+    5 * 60 * 1000
+  );
 };
 
 // Exporta instância do analytics para uso direto se necessário
@@ -282,4 +293,4 @@ export { analytics };
 if (typeof window !== 'undefined') {
   initErrorTracking();
   initSessionTracking();
-} 
+}

@@ -20,7 +20,7 @@ export const useDebounce = (callback, delay) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
-      
+
       timeoutRef.current = setTimeout(() => {
         callback(...args);
       }, delay);
@@ -89,7 +89,7 @@ export const useThrottle = (callback, limit) => {
  * @param {Function} importFn - Função de import dinâmico
  * @returns {Object} Estado do lazy loading
  */
-export const useLazyComponent = (importFn) => {
+export const useLazyComponent = importFn => {
   const [component, setComponent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -117,4 +117,4 @@ export const useLazyComponent = (importFn) => {
   }, [importFn]);
 
   return { component, loading, error };
-}; 
+};

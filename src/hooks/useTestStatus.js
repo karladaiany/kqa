@@ -19,8 +19,8 @@ const getInitialData = () => {
           returnReason: parsedData.formData?.returnReason || '',
           evidenceDescription: parsedData.formData?.evidenceDescription || '',
           evidenceLink: parsedData.formData?.evidenceLink || '',
-          hasAttachment: parsedData.formData?.hasAttachment || false
-        }
+          hasAttachment: parsedData.formData?.hasAttachment || false,
+        },
       };
     } catch (error) {
       console.error('Erro ao carregar dados do localStorage:', error);
@@ -36,8 +36,8 @@ const getInitialData = () => {
           returnReason: '',
           evidenceDescription: '',
           evidenceLink: '',
-          hasAttachment: false
-        }
+          hasAttachment: false,
+        },
       };
     }
   }
@@ -53,14 +53,15 @@ const getInitialData = () => {
       returnReason: '',
       evidenceDescription: '',
       evidenceLink: '',
-      hasAttachment: false
-    }
+      hasAttachment: false,
+    },
   };
 };
 
 export const useTestStatus = () => {
-  const { initialTestStatus, initialEnvironment, initialFormData } = getInitialData();
-  
+  const { initialTestStatus, initialEnvironment, initialFormData } =
+    getInitialData();
+
   const [testStatus, setTestStatus] = useState(initialTestStatus);
   const [environment, setEnvironment] = useState(initialEnvironment);
   const [formData, setFormData] = useState(initialFormData);
@@ -70,37 +71,37 @@ export const useTestStatus = () => {
     const dataToSave = {
       testStatus,
       environment,
-      formData
+      formData,
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
   }, [testStatus, environment, formData]);
 
-  const handleStatusChange = (e) => {
+  const handleStatusChange = e => {
     setTestStatus(e.target.value);
   };
 
-  const handleEnvironmentChange = (e) => {
+  const handleEnvironmentChange = e => {
     setEnvironment(e.target.value);
   };
 
-  const handleInputChange = (field) => (e) => {
+  const handleInputChange = field => e => {
     setFormData(prev => ({
       ...prev,
-      [field]: e.target.value
+      [field]: e.target.value,
     }));
   };
 
-  const handleClearField = (field) => {
+  const handleClearField = field => {
     setFormData(prev => ({
       ...prev,
-      [field]: ''
+      [field]: '',
     }));
   };
 
   const handleToggleAttachment = () => {
     setFormData(prev => ({
       ...prev,
-      hasAttachment: !prev.hasAttachment
+      hasAttachment: !prev.hasAttachment,
     }));
   };
 
@@ -116,7 +117,7 @@ export const useTestStatus = () => {
       returnReason: '',
       evidenceDescription: '',
       evidenceLink: '',
-      hasAttachment: false
+      hasAttachment: false,
     });
   };
 
@@ -129,6 +130,6 @@ export const useTestStatus = () => {
     handleInputChange,
     handleClearField,
     handleToggleAttachment,
-    handleClear
+    handleClear,
   };
-}; 
+};

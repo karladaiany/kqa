@@ -9,9 +9,9 @@
  * @param {string} input - String a ser sanitizada
  * @returns {string} String sanitizada
  */
-export const sanitizeString = (input) => {
+export const sanitizeString = input => {
   if (typeof input !== 'string') return '';
-  
+
   return input
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove scripts
     .replace(/<[^>]*>/g, '') // Remove tags HTML
@@ -25,18 +25,18 @@ export const sanitizeString = (input) => {
  * @param {string} input - String a ser validada
  * @returns {boolean} True se a string for segura
  */
-export const isSafeString = (input) => {
+export const isSafeString = input => {
   if (typeof input !== 'string') return false;
-  
+
   // Verifica se contém caracteres perigosos
   const dangerousPatterns = [
     /<script/i,
     /javascript:/i,
     /on\w+\s*=/i,
     /data:text\/html/i,
-    /vbscript:/i
+    /vbscript:/i,
   ];
-  
+
   return !dangerousPatterns.some(pattern => pattern.test(input));
 };
 
@@ -45,23 +45,23 @@ export const isSafeString = (input) => {
  * @param {Object} formData - Dados do formulário
  * @returns {Object} Dados sanitizados
  */
-export const sanitizeFormData = (formData) => {
+export const sanitizeFormData = formData => {
   if (!formData || typeof formData !== 'object') return {};
-  
+
   const sanitized = {};
-  
+
   for (const [key, value] of Object.entries(formData)) {
     if (typeof value === 'string') {
       sanitized[key] = sanitizeString(value);
     } else if (Array.isArray(value)) {
-      sanitized[key] = value.map(item => 
+      sanitized[key] = value.map(item =>
         typeof item === 'string' ? sanitizeString(item) : item
       );
     } else {
       sanitized[key] = value;
     }
   }
-  
+
   return sanitized;
 };
 
@@ -70,9 +70,9 @@ export const sanitizeFormData = (formData) => {
  * @param {string} email - Email a ser validado
  * @returns {boolean} True se o email for seguro
  */
-export const isSafeEmail = (email) => {
+export const isSafeEmail = email => {
   if (!email || typeof email !== 'string') return false;
-  
+
   // Padrões de emails maliciosos conhecidos
   const maliciousPatterns = [
     /script/i,
@@ -80,9 +80,9 @@ export const isSafeEmail = (email) => {
     /vbscript/i,
     /<.*>/,
     /\.\./,
-    /[<>]/
+    /[<>]/,
   ];
-  
+
   return !maliciousPatterns.some(pattern => pattern.test(email));
 };
 
@@ -101,9 +101,9 @@ export const generateCSRFToken = () => {
  * @param {string} token - Token a ser validado
  * @returns {boolean} True se o token for válido
  */
-export const validateCSRFToken = (token) => {
+export const validateCSRFToken = token => {
   if (!token || typeof token !== 'string') return false;
-  
+
   // Token deve ter 64 caracteres hexadecimais
   return /^[a-f0-9]{64}$/i.test(token);
 };
@@ -116,7 +116,7 @@ export const validateCSRFToken = (token) => {
  */
 export const limitStringLength = (input, maxLength = 1000) => {
   if (typeof input !== 'string') return '';
-  
+
   return input.length > maxLength ? input.substring(0, maxLength) : input;
 };
 
@@ -125,11 +125,11 @@ export const limitStringLength = (input, maxLength = 1000) => {
  * @param {Object} obj - Objeto a ser validado
  * @returns {boolean} True se o objeto for seguro
  */
-export const isSafeObject = (obj) => {
+export const isSafeObject = obj => {
   if (!obj || typeof obj !== 'object') return false;
-  
+
   const dangerousKeys = ['__proto__', 'constructor', 'prototype'];
-  
+
   return !dangerousKeys.some(key => key in obj);
 };
 
@@ -145,32 +145,37 @@ export const checkRateLimit = (key, limit = 10, windowMs = 60000) => {
     const now = Date.now();
     const storageKey = `rateLimit_${key}`;
     const stored = localStorage.getItem(storageKey);
-    
+
     if (!stored) {
-      localStorage.setItem(storageKey, JSON.stringify({ count: 1, timestamp: now }));
+      localStorage.setItem(
+        storageKey,
+        JSON.stringify({ count: 1, timestamp: now })
+      );
       return true;
     }
-    
+
     const data = JSON.parse(stored);
-    
+
     // Reset se a janela de tempo passou
     if (now - data.timestamp > windowMs) {
-      localStorage.setItem(storageKey, JSON.stringify({ count: 1, timestamp: now }));
+      localStorage.setItem(
+        storageKey,
+        JSON.stringify({ count: 1, timestamp: now })
+      );
       return true;
     }
-    
+
     // Verifica se está dentro do limite
     if (data.count >= limit) {
       return false;
     }
-    
+
     // Incrementa contador
     data.count++;
     localStorage.setItem(storageKey, JSON.stringify(data));
     return true;
-    
   } catch (error) {
     console.warn('Erro no rate limiting:', error);
     return true; // Em caso de erro, permite a ação
   }
-}; 
+};

@@ -1,106 +1,106 @@
 .app {
-	max-width: 1200px;
-	margin: 0 auto;
-	padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
 }
 
 header {
-	text-align: center;
-	margin-bottom: 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
 h1 {
-	font-size: 1.8rem;
-	color: var(--text-primary);
-	margin-bottom: 1rem;
-	text-align: center;
-	background: linear-gradient(
-		135deg,
-		var(--accent-color),
-		var(--primary-color)
-	);
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
-	background-clip: text;
-	font-weight: 600;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 0.5rem;
-	line-height: 1.2;
+  font-size: 1.8rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  text-align: center;
+  background: linear-gradient(
+    135deg,
+    var(--accent-color),
+    var(--primary-color)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  line-height: 1.2;
 }
 
 .title-icon {
-	color: var(--accent-color);
-	font-size: 2rem;
-	/* Não aplicar o gradiente no ícone para manter a cor sólida */
-	background: none !important;
-	-webkit-background-clip: unset !important;
-	-webkit-text-fill-color: unset !important;
+  color: var(--accent-color);
+  font-size: 2rem;
+  /* Não aplicar o gradiente no ícone para manter a cor sólida */
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
 }
 
 /* Responsividade melhorada para o layout principal */
 @media (max-width: 1200px) {
-	.app {
-		max-width: 100%;
-		padding: 1.5rem;
-	}
+  .app {
+    max-width: 100%;
+    padding: 1.5rem;
+  }
 }
 
 @media (max-width: 992px) {
-	.app {
-		padding: 1rem;
-	}
+  .app {
+    padding: 1rem;
+  }
 
-	header {
-		margin-bottom: 1.5rem;
-	}
+  header {
+    margin-bottom: 1.5rem;
+  }
 
-	h1 {
-		font-size: 1.9rem;
-	}
+  h1 {
+    font-size: 1.9rem;
+  }
 
-	.title-icon {
-		font-size: 1.7rem;
-	}
+  .title-icon {
+    font-size: 1.7rem;
+  }
 }
 
 @media (max-width: 768px) {
-	.app {
-		padding: 0.75rem;
-	}
+  .app {
+    padding: 0.75rem;
+  }
 
-	header {
-		margin-bottom: 1rem;
-		display: none; /* Ocultar header original em mobile */
-	}
+  header {
+    margin-bottom: 1rem;
+    display: none; /* Ocultar header original em mobile */
+  }
 
-	h1 {
-		font-size: 1.6rem;
-		margin-bottom: 0.75rem;
-	}
+  h1 {
+    font-size: 1.6rem;
+    margin-bottom: 0.75rem;
+  }
 
-	.title-icon {
-		font-size: 1.4rem;
-	}
+  .title-icon {
+    font-size: 1.4rem;
+  }
 }
 
 @media (max-width: 480px) {
-	.app {
-		padding: 0.5rem;
-	}
+  .app {
+    padding: 0.5rem;
+  }
 
-	header {
-		margin-bottom: 0.75rem;
-	}
+  header {
+    margin-bottom: 0.75rem;
+  }
 
-	h1 {
-		font-size: 1.4rem;
-		margin-bottom: 0.5rem;
-		line-height: 1.3;
-	}
+  h1 {
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
 
-	.title-icon {
-		font-size: 1.2rem;
-	}
+  .title-icon {
+    font-size: 1.2rem;
+  }
 }

@@ -4,15 +4,15 @@
  * @description Funções para geração de cartões de crédito válidos
  */
 
-import { fakerPT_BR as faker } from "@faker-js/faker";
-import { BANDEIRAS_CARTAO, TIPOS_CARTAO } from "../constants";
+import { fakerPT_BR as faker } from '@faker-js/faker';
+import { BANDEIRAS_CARTAO, TIPOS_CARTAO } from '../constants';
 import {
-	formatarNumeroCartao,
-	formatarValidadeCartao,
-	formatarParaMaiusculas,
-} from "../utils/formatters";
-import { detectarBandeiraCartao } from "../utils/validators";
-import { getEredeTestCardByStatus } from "./eredeTestCards";
+  formatarNumeroCartao,
+  formatarValidadeCartao,
+  formatarParaMaiusculas,
+} from '../utils/formatters';
+import { detectarBandeiraCartao } from '../utils/validators';
+import { getEredeTestCardByStatus } from './eredeTestCards';
 
 // ============================================================================
 // GERAÇÃO DE NÚMERO DE CARTÃO
@@ -25,56 +25,56 @@ import { getEredeTestCardByStatus } from "./eredeTestCards";
  * @returns {string} Número de cartão válido
  */
 export const gerarNumeroCartao = (bandeira, tipo) => {
-	// Se o tipo for 'multiplo', seleciona aleatoriamente entre crédito e débito
-	if (tipo === "multiplo") {
-		tipo = faker.helpers.arrayElement(["credito", "debito"]);
-	}
+  // Se o tipo for 'multiplo', seleciona aleatoriamente entre crédito e débito
+  if (tipo === 'multiplo') {
+    tipo = faker.helpers.arrayElement(['credito', 'debito']);
+  }
 
-	// Validação da configuração da bandeira
-	if (!bandeira || !BANDEIRAS_CARTAO[bandeira]) {
-		// Se não especificar bandeira, gera aleatório (excluindo erede)
-		const todasBandeiras = Object.keys(BANDEIRAS_CARTAO).filter(
-			(b) => b !== "erede"
-		);
-		bandeira = faker.helpers.arrayElement(todasBandeiras);
-	}
+  // Validação da configuração da bandeira
+  if (!bandeira || !BANDEIRAS_CARTAO[bandeira]) {
+    // Se não especificar bandeira, gera aleatório (excluindo erede)
+    const todasBandeiras = Object.keys(BANDEIRAS_CARTAO).filter(
+      b => b !== 'erede'
+    );
+    bandeira = faker.helpers.arrayElement(todasBandeiras);
+  }
 
-	const config = BANDEIRAS_CARTAO[bandeira];
+  const config = BANDEIRAS_CARTAO[bandeira];
 
-	// Verifica se o array de prefixos não está vazio
-	if (!config.prefixos || config.prefixos.length === 0) {
-		throw new Error(
-			`Configuração inválida para bandeira ${bandeira}: prefixos vazio`
-		);
-	}
+  // Verifica se o array de prefixos não está vazio
+  if (!config.prefixos || config.prefixos.length === 0) {
+    throw new Error(
+      `Configuração inválida para bandeira ${bandeira}: prefixos vazio`
+    );
+  }
 
-	const prefixo = faker.helpers.arrayElement(config.prefixos);
-	const tamanho = faker.helpers.arrayElement(config.tamanhos);
+  const prefixo = faker.helpers.arrayElement(config.prefixos);
+  const tamanho = faker.helpers.arrayElement(config.tamanhos);
 
-	// Gera os dígitos restantes
-	const numeroBase =
-		prefixo + faker.string.numeric(tamanho - prefixo.length - 1);
+  // Gera os dígitos restantes
+  const numeroBase =
+    prefixo + faker.string.numeric(tamanho - prefixo.length - 1);
 
-	// Implementação do algoritmo de Luhn para gerar o dígito verificador
-	let soma = 0;
-	let dobra = false;
+  // Implementação do algoritmo de Luhn para gerar o dígito verificador
+  let soma = 0;
+  let dobra = false;
 
-	for (let i = numeroBase.length - 1; i >= 0; i--) {
-		let digito = parseInt(numeroBase[i]);
+  for (let i = numeroBase.length - 1; i >= 0; i--) {
+    let digito = parseInt(numeroBase[i]);
 
-		if (dobra) {
-			digito *= 2;
-			if (digito > 9) {
-				digito -= 9;
-			}
-		}
+    if (dobra) {
+      digito *= 2;
+      if (digito > 9) {
+        digito -= 9;
+      }
+    }
 
-		soma += digito;
-		dobra = !dobra;
-	}
+    soma += digito;
+    dobra = !dobra;
+  }
 
-	const digitoVerificador = ((Math.floor(soma / 10) + 1) * 10 - soma) % 10;
-	return numeroBase + digitoVerificador;
+  const digitoVerificador = ((Math.floor(soma / 10) + 1) * 10 - soma) % 10;
+  return numeroBase + digitoVerificador;
 };
 
 /**
@@ -82,11 +82,11 @@ export const gerarNumeroCartao = (bandeira, tipo) => {
  * @returns {string} Número de cartão válido aleatório
  */
 export const gerarNumeroCartaoAleatorio = () => {
-	const bandeiraAleatoria = faker.helpers.arrayElement(
-		Object.keys(BANDEIRAS_CARTAO)
-	);
-	const tipoAleatorio = faker.helpers.arrayElement(TIPOS_CARTAO);
-	return gerarNumeroCartao(bandeiraAleatoria, tipoAleatorio);
+  const bandeiraAleatoria = faker.helpers.arrayElement(
+    Object.keys(BANDEIRAS_CARTAO)
+  );
+  const tipoAleatorio = faker.helpers.arrayElement(TIPOS_CARTAO);
+  return gerarNumeroCartao(bandeiraAleatoria, tipoAleatorio);
 };
 
 // ============================================================================
@@ -98,7 +98,7 @@ export const gerarNumeroCartaoAleatorio = () => {
  * @returns {string} Nome em maiúsculas
  */
 export const gerarNomeCartao = () => {
-	return formatarParaMaiusculas(faker.person.fullName());
+  return formatarParaMaiusculas(faker.person.fullName());
 };
 
 /**
@@ -106,8 +106,8 @@ export const gerarNomeCartao = () => {
  * @returns {string} Data de validade no formato MM/AA
  */
 export const gerarValidadeCartao = () => {
-	const dataFutura = faker.date.future();
-	return formatarValidadeCartao(dataFutura);
+  const dataFutura = faker.date.future();
+  return formatarValidadeCartao(dataFutura);
 };
 
 /**
@@ -115,9 +115,9 @@ export const gerarValidadeCartao = () => {
  * @param {string} bandeira - Bandeira do cartão
  * @returns {string} CVV válido
  */
-export const gerarCVV = (bandeira) => {
-	const digitos = bandeira === "amex" ? 4 : 3;
-	return faker.string.numeric(digitos);
+export const gerarCVV = bandeira => {
+  const digitos = bandeira === 'amex' ? 4 : 3;
+  return faker.string.numeric(digitos);
 };
 
 // ============================================================================
@@ -132,38 +132,36 @@ export const gerarCVV = (bandeira) => {
  * @returns {Object} Objeto com dados completos do cartão
  */
 export const gerarCartaoCredito = (
-	bandeira = "",
-	tipo = "",
-	eredeStatus = ""
+  bandeira = '',
+  tipo = '',
+  eredeStatus = ''
 ) => {
-	// Caso especial para cartões Erede
-	if (bandeira.toLowerCase() === "erede") {
-		return gerarCartaoErede(eredeStatus);
-	}
+  // Caso especial para cartões Erede
+  if (bandeira.toLowerCase() === 'erede') {
+    return gerarCartaoErede(eredeStatus);
+  }
 
-	// Se o tipo for 'multiplo', seleciona aleatoriamente entre crédito e débito
-	let tipoReal = tipo;
-	if (tipo === "multiplo") {
-		tipoReal = faker.helpers.arrayElement(["credito", "debito"]);
-	}
+  // Se o tipo for 'multiplo', seleciona aleatoriamente entre crédito e débito
+  let tipoReal = tipo;
+  if (tipo === 'multiplo') {
+    tipoReal = faker.helpers.arrayElement(['credito', 'debito']);
+  }
 
-	// Gera número do cartão
-	const numero = gerarNumeroCartao(bandeira, tipoReal);
-	const bandeiraSelecionada = bandeira || detectarBandeiraCartao(numero);
+  // Gera número do cartão
+  const numero = gerarNumeroCartao(bandeira, tipoReal);
+  const bandeiraSelecionada = bandeira || detectarBandeiraCartao(numero);
 
-	return {
-		numero,
-		numeroFormatado: formatarNumeroCartao(numero, bandeiraSelecionada),
-		nome: gerarNomeCartao(),
-		validade: gerarValidadeCartao(),
-		cvv: gerarCVV(bandeiraSelecionada),
-		bandeira: bandeiraSelecionada.toUpperCase(),
-		tipo:
-			tipo === "multiplo"
-				? `${tipoReal} (múltiplo)`
-				: tipoReal || "credito",
-		isErede: false,
-	};
+  return {
+    numero,
+    numeroFormatado: formatarNumeroCartao(numero, bandeiraSelecionada),
+    nome: gerarNomeCartao(),
+    validade: gerarValidadeCartao(),
+    cvv: gerarCVV(bandeiraSelecionada),
+    bandeira: bandeiraSelecionada.toUpperCase(),
+    tipo:
+      tipo === 'multiplo' ? `${tipoReal} (múltiplo)` : tipoReal || 'credito',
+    isErede: false,
+  };
 };
 
 /**
@@ -171,19 +169,19 @@ export const gerarCartaoCredito = (
  * @param {string} eredeStatus - Status do cartão Erede
  * @returns {Object} Objeto com dados do cartão Erede
  */
-export const gerarCartaoErede = (eredeStatus = "APROVADA") => {
-	const eredeCard = getEredeTestCardByStatus(eredeStatus);
+export const gerarCartaoErede = (eredeStatus = 'APROVADA') => {
+  const eredeCard = getEredeTestCardByStatus(eredeStatus);
 
-	return {
-		numero: eredeCard.number,
-		numeroFormatado: formatarNumeroCartao(eredeCard.number, "erede"),
-		nome: eredeCard.name,
-		validade: eredeCard.expiry,
-		cvv: eredeCard.cvv,
-		bandeira: "EREDE",
-		tipo: "",
-		isErede: true,
-	};
+  return {
+    numero: eredeCard.number,
+    numeroFormatado: formatarNumeroCartao(eredeCard.number, 'erede'),
+    nome: eredeCard.name,
+    validade: eredeCard.expiry,
+    cvv: eredeCard.cvv,
+    bandeira: 'EREDE',
+    tipo: '',
+    isErede: true,
+  };
 };
 
 /**
@@ -191,11 +189,11 @@ export const gerarCartaoErede = (eredeStatus = "APROVADA") => {
  * @returns {Object} Objeto com dados completos do cartão aleatório
  */
 export const gerarCartaoAleatorio = () => {
-	const bandeiraAleatoria = faker.helpers.arrayElement(
-		Object.keys(BANDEIRAS_CARTAO)
-	);
-	const tipoAleatorio = faker.helpers.arrayElement(TIPOS_CARTAO);
-	return gerarCartaoCredito(bandeiraAleatoria, tipoAleatorio);
+  const bandeiraAleatoria = faker.helpers.arrayElement(
+    Object.keys(BANDEIRAS_CARTAO)
+  );
+  const tipoAleatorio = faker.helpers.arrayElement(TIPOS_CARTAO);
+  return gerarCartaoCredito(bandeiraAleatoria, tipoAleatorio);
 };
 
 // ============================================================================
@@ -207,7 +205,7 @@ export const gerarCartaoAleatorio = () => {
  * @returns {string[]} Array com nomes das bandeiras
  */
 export const obterBandeirasDisponiveis = () => {
-	return Object.keys(BANDEIRAS_CARTAO);
+  return Object.keys(BANDEIRAS_CARTAO);
 };
 
 /**
@@ -215,7 +213,7 @@ export const obterBandeirasDisponiveis = () => {
  * @returns {string[]} Array com tipos de cartão
  */
 export const obterTiposCartao = () => {
-	return [...TIPOS_CARTAO];
+  return [...TIPOS_CARTAO];
 };
 
 /**
@@ -223,8 +221,8 @@ export const obterTiposCartao = () => {
  * @param {string} bandeira - Nome da bandeira
  * @returns {Object|null} Configuração da bandeira ou null se não encontrada
  */
-export const obterConfiguracaoBandeira = (bandeira) => {
-	return BANDEIRAS_CARTAO[bandeira] || null;
+export const obterConfiguracaoBandeira = bandeira => {
+  return BANDEIRAS_CARTAO[bandeira] || null;
 };
 
 /**
@@ -232,8 +230,8 @@ export const obterConfiguracaoBandeira = (bandeira) => {
  * @param {string} bandeira - Nome da bandeira
  * @returns {boolean} True se a bandeira for válida
  */
-export const isBandeiraValida = (bandeira) => {
-	return bandeira && BANDEIRAS_CARTAO.hasOwnProperty(bandeira);
+export const isBandeiraValida = bandeira => {
+  return bandeira && BANDEIRAS_CARTAO.hasOwnProperty(bandeira);
 };
 
 /**
@@ -241,8 +239,8 @@ export const isBandeiraValida = (bandeira) => {
  * @param {string} tipo - Tipo do cartão
  * @returns {boolean} True se o tipo for válido
  */
-export const isTipoCartaoValido = (tipo) => {
-	return tipo && (TIPOS_CARTAO.includes(tipo) || tipo === "multiplo");
+export const isTipoCartaoValido = tipo => {
+  return tipo && (TIPOS_CARTAO.includes(tipo) || tipo === 'multiplo');
 };
 
 // ============================================================================
@@ -257,17 +255,17 @@ export const isTipoCartaoValido = (tipo) => {
  * @returns {Object[]} Array com cartões gerados
  */
 export const gerarMultiplosCartoes = (
-	quantidade,
-	bandeira = null,
-	tipo = null
+  quantidade,
+  bandeira = null,
+  tipo = null
 ) => {
-	const cartoes = [];
+  const cartoes = [];
 
-	for (let i = 0; i < quantidade; i++) {
-		cartoes.push(gerarCartaoCredito(bandeira, tipo));
-	}
+  for (let i = 0; i < quantidade; i++) {
+    cartoes.push(gerarCartaoCredito(bandeira, tipo));
+  }
 
-	return cartoes;
+  return cartoes;
 };
 
 /**
@@ -276,25 +274,25 @@ export const gerarMultiplosCartoes = (
  * @returns {Object} Cartão gerado com configurações específicas
  */
 export const gerarCartaoPersonalizado = (configuracao = {}) => {
-	const {
-		bandeira = "",
-		tipo = "",
-		eredeStatus = "",
-		nome = null,
-		cvvCustom = null,
-	} = configuracao;
+  const {
+    bandeira = '',
+    tipo = '',
+    eredeStatus = '',
+    nome = null,
+    cvvCustom = null,
+  } = configuracao;
 
-	let cartao = gerarCartaoCredito(bandeira, tipo, eredeStatus);
+  let cartao = gerarCartaoCredito(bandeira, tipo, eredeStatus);
 
-	// Sobrescreve nome se fornecido
-	if (nome) {
-		cartao.nome = formatarParaMaiusculas(nome);
-	}
+  // Sobrescreve nome se fornecido
+  if (nome) {
+    cartao.nome = formatarParaMaiusculas(nome);
+  }
 
-	// Sobrescreve CVV se fornecido
-	if (cvvCustom) {
-		cartao.cvv = cvvCustom;
-	}
+  // Sobrescreve CVV se fornecido
+  if (cvvCustom) {
+    cartao.cvv = cvvCustom;
+  }
 
-	return cartao;
+  return cartao;
 };
