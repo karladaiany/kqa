@@ -1,4 +1,5 @@
 import { DDDsValidos } from '../config/ddds.js';
+import { fakerPT_BR as faker } from '@faker-js/faker';
 
 /**
  * Normaliza texto removendo acentos

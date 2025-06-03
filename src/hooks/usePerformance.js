@@ -46,6 +46,7 @@ export const useDebounce = (callback, delay) => {
  * @returns {any} Valor memoizado
  */
 export const useMemoizedValue = (computeFn, deps) => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   return useMemo(computeFn, deps);
 };
 
@@ -56,6 +57,7 @@ export const useMemoizedValue = (computeFn, deps) => {
  * @returns {Function} Callback memoizado
  */
 export const useMemoizedCallback = (callback, deps) => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   return useCallback(callback, deps);
 };
 

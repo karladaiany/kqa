@@ -274,7 +274,7 @@ export const gerarDadosFormulario = (campos = [], estado = null) => {
   // Filtra apenas os campos solicitados
   const dadosFiltrados = {};
   campos.forEach(campo => {
-    if (pessoa.hasOwnProperty(campo)) {
+    if (Object.prototype.hasOwnProperty.call(pessoa, campo)) {
       dadosFiltrados[campo] = pessoa[campo];
     }
   });

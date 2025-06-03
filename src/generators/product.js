@@ -1,3 +1,5 @@
+import { fakerPT_BR as faker } from '@faker-js/faker';
+
 /**
  * Gera dados de um produto
  * @returns {Object} Dados do produto gerado

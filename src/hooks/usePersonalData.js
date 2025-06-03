@@ -23,11 +23,12 @@ export const usePersonalData = () => {
       const newPerson = { ...person };
 
       switch (field) {
-        case 'nome':
+        case 'nome': {
           const { nome, email } = generatePerson();
           newPerson.nome = nome;
           newPerson.email = email; // Atualiza email junto com nome pois são relacionados
           break;
+        }
         case 'telefone':
           newPerson.telefone = generatePerson().telefone;
           break;
@@ -61,7 +62,7 @@ export const usePersonalData = () => {
             cidade: generatePerson().endereco.cidade,
           };
           break;
-        case 'estado':
+        case 'estado': {
           const novaPessoa = generatePerson();
           newPerson.endereco = {
             ...newPerson.endereco,
@@ -69,6 +70,7 @@ export const usePersonalData = () => {
             cep: novaPessoa.endereco.cep, // Atualiza CEP junto com estado pois são relacionados
           };
           break;
+        }
         case 'cep':
           // Gera um novo CEP baseado no estado atual
           newPerson.endereco = {

@@ -231,7 +231,9 @@ export const obterConfiguracaoBandeira = bandeira => {
  * @returns {boolean} True se a bandeira for válida
  */
 export const isBandeiraValida = bandeira => {
-  return bandeira && BANDEIRAS_CARTAO.hasOwnProperty(bandeira);
+  return (
+    bandeira && Object.prototype.hasOwnProperty.call(BANDEIRAS_CARTAO, bandeira)
+  );
 };
 
 /**
@@ -282,7 +284,7 @@ export const gerarCartaoPersonalizado = (configuracao = {}) => {
     cvvCustom = null,
   } = configuracao;
 
-  let cartao = gerarCartaoCredito(bandeira, tipo, eredeStatus);
+  const cartao = gerarCartaoCredito(bandeira, tipo, eredeStatus);
 
   // Sobrescreve nome se fornecido
   if (nome) {

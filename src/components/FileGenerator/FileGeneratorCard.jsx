@@ -390,7 +390,7 @@ const FileGeneratorCard = ({ generatorFunctions }) => {
                               color: 'var(--text-color)',
                             }}
                           >
-                            '123456'
+                            &apos;123456&apos;
                           </label>
                         </div>
                       )}
