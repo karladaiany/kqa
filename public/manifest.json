@@ -1,9 +1,80 @@
 {
   "name": "KQA :: Gerador de Dados para QA ::",
   "short_name": "KQA",
-  "start_url": ".",
+  "description": "Gerador de dados para QA - Aplicativo para gerar dados fictícios para testes de qualidade de software",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#282a36",
   "theme_color": "#785DC8",
-  "description": "Gerador de dados para QA"
+  "categories": ["productivity", "developer", "utilities"],
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/vite.svg",
+      "sizes": "1280x720",
+      "type": "image/svg+xml",
+      "form_factor": "wide",
+      "label": "Tela principal do KQA"
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "shortcuts": [
+    {
+      "name": "Gerar CPF",
+      "short_name": "CPF",
+      "description": "Gerar CPF válido rapidamente",
+      "url": "/?action=cpf",
+      "icons": [
+        {
+          "src": "/vite.svg",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Gerar CNPJ",
+      "short_name": "CNPJ",
+      "description": "Gerar CNPJ válido rapidamente",
+      "url": "/?action=cnpj",
+      "icons": [
+        {
+          "src": "/vite.svg",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/share-target/",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "kqa",
+      "url": "/?data=%s"
+    }
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  }
 }
