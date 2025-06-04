@@ -129,13 +129,13 @@ const DataGenerator = () => {
   }
 
   const renderDocumentosCard = () => (
-    <section className='card' id='documentos'>
+    <section className='card' id='documentos' data-testid='documentos-card'>
       <div className='card-header'>
         <h2>
           <FaIdCard className='header-icon' /> Documentos
         </h2>
       </div>
-      <div className='card-content'>
+      <div className='card-content' data-testid='documentos-content'>
         <DataField
           label='CPF'
           value={documents.cpf.formatted}
@@ -165,7 +165,11 @@ const DataGenerator = () => {
   );
 
   const renderDadosPessoaisCard = () => (
-    <section className='card' id='dados-pessoais'>
+    <section
+      className='card'
+      id='dados-pessoais'
+      data-testid='dados-pessoais-card'
+    >
       <div className='card-header'>
         <h2>
           <FaUserAlt className='header-icon' /> Dados pessoais
@@ -174,11 +178,12 @@ const DataGenerator = () => {
           className='generate-all-btn'
           onClick={regenerateAllPersonData}
           title='Gerar todos os dados pessoais novamente'
+          data-testid='dados-pessoais-generate-all-btn'
         >
           <FaRedo className='generate-icon' /> Gerar tudo
         </button>
       </div>
-      <div className='card-content'>
+      <div className='card-content' data-testid='dados-pessoais-content'>
         <DataField
           label='Nome'
           value={person.nome}
@@ -234,7 +239,7 @@ const DataGenerator = () => {
   );
 
   const renderProdutoCard = () => (
-    <section className='card' id='produto'>
+    <section className='card' id='produto' data-testid='produto-card'>
       <div className='card-header'>
         <h2>
           <FaGraduationCap className='header-icon' /> Produto
@@ -243,11 +248,12 @@ const DataGenerator = () => {
           className='generate-all-btn'
           onClick={regenerateAllProduct}
           title='Gerar todos os dados do produto novamente'
+          data-testid='produto-generate-all-btn'
         >
           <FaRedo className='generate-icon' /> Gerar tudo
         </button>
       </div>
-      <div className='card-content'>
+      <div className='card-content' data-testid='produto-content'>
         <DataField
           label='Nome'
           value={product.nome}
@@ -258,7 +264,7 @@ const DataGenerator = () => {
           value={product.descricao}
           onRegenerate={() => regenerateProductField('descricao')}
         />
-        <div className='campo-item'>
+        <div className='campo-item' data-testid='produto-categorias-field'>
           <label>Categorias</label>
           <div className='campo-valor'>
             <div className='categories-container'>
@@ -271,6 +277,7 @@ const DataGenerator = () => {
               className='icon-button regenerate'
               aria-label='Gerar novas categorias'
               onClick={() => regenerateProductField('categorias')}
+              data-testid='produto-categorias-regenerate-btn'
             >
               <FaSync className='regenerate-icon' />
             </button>
@@ -281,7 +288,7 @@ const DataGenerator = () => {
   );
 
   const renderCartaoCard = () => (
-    <section className='card' id='cartao'>
+    <section className='card' id='cartao' data-testid='cartao-card'>
       <div className='card-header'>
         <h2>
           <FaCreditCard className='header-icon' /> Cartão
@@ -292,6 +299,7 @@ const DataGenerator = () => {
             value={cardConfig.bandeira}
             onChange={handleCardConfigChange}
             className='card-select'
+            data-testid='cartao-bandeira-select'
           >
             <option value='visa'>Visa</option>
             <option value='mastercard'>Mastercard</option>
@@ -305,6 +313,7 @@ const DataGenerator = () => {
               value={cardConfig.eredeStatus}
               onChange={handleCardConfigChange}
               className='card-select erede-status-select'
+              data-testid='cartao-erede-status-select'
             >
               {eredeStatuses.map(s => (
                 <option key={s.status} value={s.status}>
@@ -318,19 +327,24 @@ const DataGenerator = () => {
               value={cardConfig.tipo}
               onChange={handleCardConfigChange}
               className='card-select'
+              data-testid='cartao-tipo-select'
             >
               <option value='credito'>Crédito</option>
               <option value='debito'>Débito</option>
               <option value='multiplo'>Múltiplo</option>
             </select>
           )}
-          <button onClick={regenerateCard} className='generate-all-btn'>
+          <button
+            onClick={regenerateCard}
+            className='generate-all-btn'
+            data-testid='cartao-generate-btn'
+          >
             <FaRedo className='generate-icon' />{' '}
             {cardConfig.bandeira.toLowerCase() === 'erede' ? 'Gerar' : 'Novo'}
           </button>
         </div>
       </div>
-      <div className='card-content'>
+      <div className='card-content' data-testid='cartao-content'>
         <DataField
           label='Número'
           value={card.numeroFormatado}
@@ -344,7 +358,7 @@ const DataGenerator = () => {
   );
 
   const renderCaracteresCard = () => (
-    <section className='card' id='caracteres'>
+    <section className='card' id='caracteres' data-testid='caracteres-card'>
       <div className='card-header'>
         <h2>
           <FaRandom className='header-icon' /> Gerador de caracteres
@@ -359,6 +373,7 @@ const DataGenerator = () => {
               onChange={handleRandomCharsChange}
               className='number-input'
               placeholder='Quantidade'
+              data-testid='caracteres-length-input'
             />
             {randomChars.length && (
               <button
@@ -367,6 +382,7 @@ const DataGenerator = () => {
                 tabIndex={-1}
                 onClick={handleClearLength}
                 aria-label='Limpar campo'
+                data-testid='caracteres-clear-btn'
               >
                 <FaTimes className='clear-icon' />
               </button>
@@ -374,7 +390,7 @@ const DataGenerator = () => {
           </div>
         </div>
       </div>
-      <div className='card-content'>
+      <div className='card-content' data-testid='caracteres-content'>
         <DataField
           label='Caracteres gerados'
           value={randomChars.value}
@@ -385,13 +401,13 @@ const DataGenerator = () => {
   );
 
   const renderContadorCard = () => (
-    <section className='card' id='contador'>
+    <section className='card' id='contador' data-testid='contador-card'>
       <div className='card-header'>
         <h2>
           <FaCalculator className='header-icon' /> Contador de caracteres
         </h2>
       </div>
-      <div className='card-content'>
+      <div className='card-content' data-testid='contador-content'>
         <DataField
           label='Texto'
           value={textCounter.text}
@@ -400,10 +416,12 @@ const DataGenerator = () => {
           onClear={handleClearText}
           showCopy={false}
         />
-        <div className='campo-item'>
+        <div className='campo-item' data-testid='contador-total-field'>
           <label>Total de caracteres</label>
           <div className='campo-valor'>
-            <span className='copyable'>{textCounter.count}</span>
+            <span className='copyable' data-testid='contador-total-value'>
+              {textCounter.count}
+            </span>
           </div>
         </div>
       </div>

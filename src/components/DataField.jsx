@@ -21,6 +21,7 @@ const DataField = ({
   showCopy = true,
 }) => {
   const fieldId = testId || `field-${label.toLowerCase().replace(/\s+/g, '-')}`;
+  const baseTestId = `data-field-${label.toLowerCase().replace(/\s+/g, '-')}`;
 
   const handleCopy = () => {
     const textToCopy = !showMask && raw ? raw : value;
@@ -31,15 +32,21 @@ const DataField = ({
   };
 
   return (
-    <div className='campo-item' data-testid={fieldId}>
-      <label htmlFor={`${fieldId}-value`}>{label}</label>
-      <div className='campo-valor'>
+    <div className='campo-item' data-testid={`${baseTestId}-container`}>
+      <label htmlFor={`${fieldId}-value`} data-testid={`${baseTestId}-label`}>
+        {label}
+      </label>
+      <div
+        className='campo-valor'
+        data-testid={`${baseTestId}-value-container`}
+      >
         {isTextArea ? (
           <textarea
             id={`${fieldId}-value`}
             value={value}
             onChange={onTextChange}
             className='copyable'
+            data-testid={`${baseTestId}-textarea`}
           />
         ) : (
           <span
@@ -50,6 +57,7 @@ const DataField = ({
             role='button'
             tabIndex={0}
             onKeyPress={e => e.key === 'Enter' && handleCopy()}
+            data-testid={`${baseTestId}-value`}
           >
             {showMask ? value : raw || value}
           </span>
@@ -60,6 +68,7 @@ const DataField = ({
             className='icon-button'
             onClick={handleCopy}
             aria-label={CONFIG_ACESSIBILIDADE.ariaLabels.copyValue}
+            data-testid={`${baseTestId}-copy-btn`}
           >
             <FaCopy className='copy-icon' />
           </button>
@@ -70,6 +79,7 @@ const DataField = ({
             className='icon-button regenerate'
             onClick={onRegenerate}
             aria-label={CONFIG_ACESSIBILIDADE.ariaLabels.regenerateValue}
+            data-testid={`${baseTestId}-regenerate-btn`}
           >
             <FaSync className='regenerate-icon' />
           </button>
@@ -80,6 +90,7 @@ const DataField = ({
             className='icon-button'
             onClick={onToggleMask}
             aria-label={CONFIG_ACESSIBILIDADE.ariaLabels.toggleMask}
+            data-testid={`${baseTestId}-toggle-mask-btn`}
           >
             <FaMask className={`mask-icon ${showMask ? 'active' : ''}`} />
           </button>
@@ -90,6 +101,7 @@ const DataField = ({
             className='icon-button'
             onClick={onClear}
             aria-label={CONFIG_ACESSIBILIDADE.ariaLabels.clearField}
+            data-testid={`${baseTestId}-clear-btn`}
           >
             <FaTimes className='clear-icon' />
           </button>
