@@ -40,7 +40,9 @@ export const useDataGenerator = () => {
       setIsLoading(false);
     } catch (err) {
       setError('Erro ao inicializar o gerador de dados');
-      console.error('Erro ao inicializar faker:', err);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Erro ao inicializar faker:', err);
+      }
     }
   }, []);
 

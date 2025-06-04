@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 const STORAGE_KEY = 'testStatusData';
 
@@ -121,6 +121,12 @@ export const useTestStatus = () => {
     });
   };
 
+  const logFormData = useCallback(formData => {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Test status form data:', formData);
+    }
+  }, []);
+
   return {
     testStatus,
     environment,
@@ -131,5 +137,6 @@ export const useTestStatus = () => {
     handleClearField,
     handleToggleAttachment,
     handleClear,
+    logFormData,
   };
 };

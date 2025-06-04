@@ -6,7 +6,7 @@
 
 import { fakerPT_BR as faker } from '@faker-js/faker';
 import { TIPOS_LOGRADOURO, FAIXAS_CEP } from '../constants';
-import { DDDS_VALIDOS, obterDDDAleatorio } from '../constants/ddds';
+import { obterDDDAleatorio } from '../constants/ddds';
 
 // ============================================================================
 // GERAÇÃO DE CEP

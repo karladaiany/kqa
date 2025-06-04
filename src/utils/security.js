@@ -135,47 +135,36 @@ export const isSafeObject = obj => {
 
 /**
  * Rate limiting simples baseado em localStorage
- * @param {string} key - Chave para identificar a ação
- * @param {number} limit - Limite de tentativas
- * @param {number} windowMs - Janela de tempo em milissegundos
+ * @param {string} action - Ação a ser limitada
+ * @param {number} maxAttempts - Número máximo de tentativas
+ * @param {number} timeWindow - Janela de tempo em milissegundos
  * @returns {boolean} True se a ação está dentro do limite
  */
-export const checkRateLimit = (key, limit = 10, windowMs = 60000) => {
+export const checkRateLimit = (action, maxAttempts = 5, timeWindow = 60000) => {
   try {
     const now = Date.now();
-    const storageKey = `rateLimit_${key}`;
-    const stored = localStorage.getItem(storageKey);
+    const key = `rateLimit_${action}`;
+    const attempts = JSON.parse(localStorage.getItem(key) || '[]');
 
-    if (!stored) {
-      localStorage.setItem(
-        storageKey,
-        JSON.stringify({ count: 1, timestamp: now })
-      );
-      return true;
-    }
+    // Remove tentativas antigas
+    const recentAttempts = attempts.filter(
+      timestamp => now - timestamp < timeWindow
+    );
 
-    const data = JSON.parse(stored);
-
-    // Reset se a janela de tempo passou
-    if (now - data.timestamp > windowMs) {
-      localStorage.setItem(
-        storageKey,
-        JSON.stringify({ count: 1, timestamp: now })
-      );
-      return true;
-    }
-
-    // Verifica se está dentro do limite
-    if (data.count >= limit) {
+    if (recentAttempts.length >= maxAttempts) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(`Rate limit exceeded for action: ${action}`);
+      }
       return false;
     }
 
-    // Incrementa contador
-    data.count++;
-    localStorage.setItem(storageKey, JSON.stringify(data));
+    // Adiciona nova tentativa
+    recentAttempts.push(now);
+    localStorage.setItem(key, JSON.stringify(recentAttempts));
+
     return true;
   } catch (error) {
-    console.warn('Erro no rate limiting:', error);
-    return true; // Em caso de erro, permite a ação
+    // Em caso de erro, permite a ação
+    return true;
   }
 };

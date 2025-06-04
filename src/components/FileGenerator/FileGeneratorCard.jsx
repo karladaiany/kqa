@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   FaFileExport,
   FaRedo,
@@ -9,37 +10,8 @@ import {
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
-// Assuming generator functions will be passed as props or imported
-// Removed placeholderGenerator and defaultGeneratorFunctions as actual functions will be passed via props.
-
 const FileGeneratorCard = ({ generatorFunctions }) => {
-  // Ensure generatorFunctions is available, if not, use a safe fallback or throw error
-  if (!generatorFunctions) {
-    // This case should ideally not happen if DataGenerator.jsx correctly passes the props.
-    // For robustness, one might return null or an error message.
-    // For now, assuming it's always provided.
-    console.error('Generator functions not provided to FileGeneratorCard!');
-    // Fallback to prevent crashing, though functionality would be broken.
-    // A better approach might be to have a loading/error state in DataGenerator.jsx
-    // if these functions aren't ready.
-    generatorFunctions = {
-      generatePerson: () => ({
-        nome: '',
-        email: '',
-        telefone: '',
-        endereco: {},
-      }),
-      generateCPF: () => ({ raw: '' }),
-      generateRG: () => ({ raw: '' }),
-      generateCompanyName: () => '',
-      generateDepartment: () => '',
-      generateJobTitle: () => '',
-      generateBusinessSector: () => '',
-      generateNumEmployees: () => '',
-      generatePassword: () => '',
-    };
-  }
-
+  // Initialize all state hooks first (React hooks rule)
   const [selectedFields, setSelectedFields] = useState({
     // Dados Pessoais
     nome: true,
@@ -65,10 +37,26 @@ const FileGeneratorCard = ({ generatorFunctions }) => {
   });
   const [useDefaultPassword, setUseDefaultPassword] = useState(false);
   const [numRecords, setNumRecords] = useState('10');
-  const [fileFormat, setFileFormat] = useState('json'); // 'json' or 'csv'
-  const [csvSeparator, setCsvSeparator] = useState(','); // ',' or ';'
-
+  const [fileFormat, setFileFormat] = useState('json');
+  const [csvSeparator, setCsvSeparator] = useState(',');
   const [isGenerating, setIsGenerating] = useState(false);
+
+  // Validation check after hooks
+  if (!generatorFunctions) {
+    toast.error('Funções de geração não foram fornecidas!');
+    return (
+      <section className='card' id='file-generator'>
+        <div className='card-header'>
+          <h2>
+            <FaFileExport className='header-icon' /> Geração de arquivo
+          </h2>
+        </div>
+        <div className='card-content'>
+          <p>Erro: Funções de geração não disponíveis.</p>
+        </div>
+      </section>
+    );
+  }
 
   const handleCheckboxChange = field => {
     setSelectedFields(prev => ({ ...prev, [field]: !prev[field] }));
@@ -286,8 +274,8 @@ const FileGeneratorCard = ({ generatorFunctions }) => {
         }
         toast.success('Arquivo gerado com sucesso!');
       } catch (error) {
-        console.error('Erro ao gerar arquivo:', error);
-        toast.error('Erro ao gerar arquivo.');
+        // Use toast instead of console.error
+        toast.error(`Erro ao gerar arquivo: ${error.message}`);
       } finally {
         setIsGenerating(false);
       }
@@ -518,6 +506,20 @@ const FileGeneratorCard = ({ generatorFunctions }) => {
 };
 
 export default FileGeneratorCard;
+
+FileGeneratorCard.propTypes = {
+  generatorFunctions: PropTypes.shape({
+    generatePerson: PropTypes.func.isRequired,
+    generateCPF: PropTypes.func.isRequired,
+    generateRG: PropTypes.func.isRequired,
+    generateCompanyName: PropTypes.func.isRequired,
+    generateDepartment: PropTypes.func.isRequired,
+    generateJobTitle: PropTypes.func.isRequired,
+    generateBusinessSector: PropTypes.func.isRequired,
+    generateNumEmployees: PropTypes.func.isRequired,
+    generatePassword: PropTypes.func.isRequired,
+  }).isRequired,
+};
 
 // Basic styling for checkbox and radio groups - can be moved to components.css
 // For now, including here for brevity of example if direct CSS injection is not possible via tool

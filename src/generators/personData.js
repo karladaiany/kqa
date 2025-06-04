@@ -148,7 +148,8 @@ export const gerarPessoaCompleta = (opcoes = {}) => {
 
   // Adiciona data de nascimento se solicitado
   if (incluirDataNascimento) {
-    const dataNascimento = gerarDataNascimento();
+    const idadePersonalizada = gerarIdade(idadeMin, idadeMax);
+    const dataNascimento = gerarDataNascimento(idadePersonalizada);
     pessoa.nascimento = dataNascimento;
     pessoa.idade = dataNascimento.idade;
   }

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   FaComment,
   FaCamera,
@@ -45,6 +46,16 @@ const CampoDinamico = ({
     </div>
   </div>
 );
+
+CampoDinamico.propTypes = {
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  onClear: PropTypes.func.isRequired,
+  type: PropTypes.string,
+  placeholder: PropTypes.string,
+};
 
 const TestStatusCard = () => {
   const {
@@ -120,9 +131,7 @@ const TestStatusCard = () => {
   const handleCopy = () => {
     // Prevent copying if evidenceLink is empty
     if (!formData.evidenceLink) {
-      // Optionally, show a toast message or console log, though the button should be disabled in UI
-      console.warn('Copy action aborted: formData.evidenceLink is empty.');
-      // toast.warn("Preencha o link da evidência ou informe 'N/A' para copiar."); // Alternative feedback
+      toast.warn("Preencha o link da evidência ou informe 'N/A' para copiar.");
       return;
     }
 

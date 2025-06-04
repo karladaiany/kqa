@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { Suspense } from 'react';
+import PropTypes from 'prop-types';
 import { useDataGenerator } from '../hooks/useDataGenerator';
 import useTextareaResize from '../hooks/useTextareaResize';
 import { useDocumentMasks } from '../hooks/useDocumentMasks';
@@ -13,7 +14,6 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import {
   FaCopy,
   FaSync,
-  FaMask,
   FaRedo,
   FaTag,
   FaIdCard,
@@ -25,9 +25,28 @@ import {
   FaCalculator,
 } from 'react-icons/fa';
 import DataField from './DataField';
-import ComplementaryDataCard from './ComplementaryData/ComplementaryDataCard';
-import FileGeneratorCard from './FileGenerator/FileGeneratorCard';
+
+// Lazy loading dos componentes pesados
+const ComplementaryDataCard = React.lazy(
+  () => import('./ComplementaryData/ComplementaryDataCard')
+);
+const FileGeneratorCard = React.lazy(
+  () => import('./FileGenerator/FileGeneratorCard')
+);
+
 import * as companyGenerators from '../generators/companyData';
+
+// Loading component para lazy loading
+const LoadingSpinner = () => (
+  <div className='card'>
+    <div
+      className='card-content'
+      style={{ textAlign: 'center', padding: '2rem' }}
+    >
+      <div>Carregando...</div>
+    </div>
+  </div>
+);
 
 const CategoryTag = ({ category }) => {
   const handleCopy = () => {
@@ -45,7 +64,25 @@ const CategoryTag = ({ category }) => {
   );
 };
 
-const DataGenerator = ({ onGenerate = () => {} }) => {
+CategoryTag.propTypes = {
+  category: PropTypes.string.isRequired,
+};
+
+const CategoryCard = ({ category, children }) => (
+  <section className='card'>
+    <div className='card-header'>
+      <h2>{category}</h2>
+    </div>
+    <div className='card-content'>{children}</div>
+  </section>
+);
+
+CategoryCard.propTypes = {
+  category: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+};
+
+const DataGenerator = () => {
   useTextareaResize();
 
   const {
@@ -55,11 +92,6 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
     generateCNPJ,
     generateRG,
     generatePerson,
-    generateCreditCard,
-    generateProduct,
-    gerarCEPValido,
-    generateRandomChars,
-    getEredeTestCardStatuses,
   } = useDataGenerator();
 
   const { masks, toggleMask } = useDocumentMasks();
@@ -384,7 +416,9 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
         <div className='card-stack'>
           {renderDocumentosCard()}
           {renderDadosPessoaisCard()}
-          <FileGeneratorCard generatorFunctions={allGeneratorFunctions} />
+          <Suspense fallback={<LoadingSpinner />}>
+            <FileGeneratorCard generatorFunctions={allGeneratorFunctions} />
+          </Suspense>
         </div>
       </div>
 
@@ -394,7 +428,9 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
           {renderCartaoCard()}
           {renderCaracteresCard()}
           {renderContadorCard()}
-          <ComplementaryDataCard />
+          <Suspense fallback={<LoadingSpinner />}>
+            <ComplementaryDataCard />
+          </Suspense>
         </div>
       </div>
     </div>
@@ -403,3 +439,5 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 
 export { DataGenerator };
 export default DataGenerator;
+
+DataGenerator.propTypes = {};

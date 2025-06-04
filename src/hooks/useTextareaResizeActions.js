@@ -24,14 +24,13 @@ const useTextareaResizeActions = () => {
         const textareas = cardElement.querySelectorAll('textarea.copyable');
         textareas.forEach(textarea => {
           textarea.style.height = 'auto'; // Reset para altura automática
-          // Pequeno delay para garantir que o conteúdo seja processado
-          setTimeout(() => {
-            textarea.style.height = `${Math.max(textarea.scrollHeight, 32)}px`;
-          }, 0);
+          textarea.style.height = `${textarea.scrollHeight}px`; // Ajustar para conteúdo
         });
       }
     } catch (error) {
-      console.warn('Erro ao limpar tamanhos dos textareas:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Erro ao limpar tamanhos dos textareas:', error);
+      }
     }
   }, []);
 

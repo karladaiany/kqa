@@ -8,7 +8,6 @@ import {
   FaCopy,
   FaBroom,
   FaEye,
-  FaPlus,
 } from 'react-icons/fa';
 import { useBugRegistration } from '../../hooks/useBugRegistration';
 import useTextareaResizeActions from '../../hooks/useTextareaResizeActions';

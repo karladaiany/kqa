@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import {
   FaIdCard,
   FaUserAlt,
@@ -115,6 +116,11 @@ const SidebarMenu = ({ open = true, onClose }) => {
       )}
     </nav>
   );
+};
+
+SidebarMenu.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 export default SidebarMenu;

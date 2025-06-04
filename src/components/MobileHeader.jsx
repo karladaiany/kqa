@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   FaSun,
   FaMoon,
@@ -71,6 +72,17 @@ const MobileHeader = ({
       </div>
     </div>
   );
+};
+
+MobileHeader.propTypes = {
+  darkMode: PropTypes.bool.isRequired,
+  toggleTheme: PropTypes.func.isRequired,
+  sidebarOpen: PropTypes.bool.isRequired,
+  setSidebarOpen: PropTypes.func.isRequired,
+  scrollToTop: PropTypes.func.isRequired,
+  scrollToBottom: PropTypes.func.isRequired,
+  canScrollUp: PropTypes.bool.isRequired,
+  canScrollDown: PropTypes.bool.isRequired,
 };
 
 export default MobileHeader;

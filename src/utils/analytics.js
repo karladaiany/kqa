@@ -30,25 +30,32 @@ class AnalyticsManager {
    * @param {Object} metadata - Metadados adicionais
    */
   trackEvent(category, action, label = '', metadata = {}) {
-    const event = {
-      timestamp: Date.now(),
-      sessionId: this.sessionId,
-      category,
-      action,
-      label,
-      metadata,
-      url: window.location.href,
-      userAgent: navigator.userAgent,
-    };
+    try {
+      const event = {
+        id: this.generateEventId(),
+        name: 'analytics',
+        data: {
+          category,
+          action,
+          label,
+          metadata,
+          url: window.location.href,
+          userAgent: navigator.userAgent,
+        },
+        timestamp: new Date().toISOString(),
+        sessionId: this.sessionId,
+      };
 
-    this.events.push(event);
+      this.events.push(event);
+      this.saveToStorage(event);
 
-    // Armazenar no localStorage para análise posterior
-    this.saveToStorage(event);
-
-    // Log para desenvolvimento
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Analytics Event:', event);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Analytics event tracked:', event);
+      }
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error tracking analytics event:', error);
+      }
     }
   }
 
@@ -69,7 +76,9 @@ class AnalyticsManager {
 
       localStorage.setItem('kqa_analytics', JSON.stringify(events));
     } catch (error) {
-      console.warn('Erro ao salvar analytics:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Erro ao salvar analytics:', error);
+      }
     }
   }
 
@@ -105,7 +114,9 @@ class AnalyticsManager {
 
       return stats;
     } catch (error) {
-      console.warn('Erro ao obter estatísticas:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Erro ao obter estatísticas:', error);
+      }
       return { totalEvents: 0, categories: {}, actions: {}, sessionsCount: 0 };
     }
   }
@@ -118,8 +129,14 @@ class AnalyticsManager {
       localStorage.removeItem('kqa_analytics');
       this.events = [];
     } catch (error) {
-      console.warn('Erro ao limpar analytics:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Erro ao limpar analytics:', error);
+      }
     }
+  }
+
+  generateEventId() {
+    return Date.now() + '_' + Math.random().toString(36).substr(2, 9);
   }
 }
 
@@ -181,10 +198,34 @@ export const trackThemeChange = theme => {
  * @param {string} component - Componente onde ocorreu
  */
 export const trackError = (errorType, errorMessage, component = 'unknown') => {
-  analytics.trackEvent('error', errorType, component, {
-    message: errorMessage,
-    timestamp: Date.now(),
-  });
+  try {
+    const errorEvent = {
+      id: analytics.generateEventId(),
+      name: 'error',
+      data: {
+        message: errorMessage,
+        stack: new Error(errorMessage).stack,
+        context: {
+          type: errorType,
+          component,
+        },
+      },
+      timestamp: new Date().toISOString(),
+      sessionId: analytics.sessionId,
+      url: window.location.href,
+    };
+
+    analytics.events.push(errorEvent);
+    analytics.saveToStorage(errorEvent);
+
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error tracked:', errorEvent);
+    }
+  } catch (trackingError) {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error tracking error event:', trackingError);
+    }
+  }
 };
 
 /**
@@ -204,10 +245,31 @@ export const trackSessionDuration = () => {
  * @param {number} loadTime - Tempo de carregamento em ms
  */
 export const trackPerformance = (component, loadTime) => {
-  analytics.trackEvent('performance', 'load_time', component, {
-    loadTimeMs: loadTime,
-    loadTimeSec: Math.round(loadTime / 1000),
-  });
+  try {
+    const performanceEvent = {
+      id: analytics.generateEventId(),
+      name: 'performance',
+      data: {
+        metric: component,
+        value: loadTime,
+        unit: 'ms',
+      },
+      timestamp: new Date().toISOString(),
+      sessionId: analytics.sessionId,
+      url: window.location.href,
+    };
+
+    analytics.events.push(performanceEvent);
+    analytics.saveToStorage(performanceEvent);
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Performance metric tracked:', performanceEvent);
+    }
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error tracking performance metric:', error);
+    }
+  }
 };
 
 /**

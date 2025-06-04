@@ -11,7 +11,9 @@ const useTextareaResize = () => {
       savedSizes[textareaId] = height;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(savedSizes));
     } catch (error) {
-      console.warn('Erro ao salvar tamanho do textarea:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Erro ao salvar tamanho do textarea:', error);
+      }
     }
   }, []);
 
@@ -21,7 +23,9 @@ const useTextareaResize = () => {
       const savedSizes = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
       return savedSizes[textareaId] || null;
     } catch (error) {
-      console.warn('Erro ao carregar tamanho do textarea:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Erro ao carregar tamanho do textarea:', error);
+      }
       return null;
     }
   }, []);
@@ -51,7 +55,9 @@ const useTextareaResize = () => {
         });
       }
     } catch (error) {
-      console.warn('Erro ao limpar tamanhos dos textareas:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Erro ao limpar tamanhos dos textareas:', error);
+      }
     }
   }, []);
 

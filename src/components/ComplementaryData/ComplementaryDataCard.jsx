@@ -6,13 +6,10 @@ import {
   FaFont,
   FaHashtag,
   FaSortNumericDown,
-  FaToggleOn,
-  FaToggleOff,
   FaBriefcase,
   FaUsers,
   FaSitemap,
   FaIndustry,
-  FaShieldAlt,
 } from 'react-icons/fa';
 import DataField from '../DataField';
 import {
@@ -37,7 +34,6 @@ const ComplementaryDataCard = () => {
   const [includeNumbers, setIncludeNumbers] = useState(true);
   const [includeSpecialChars, setIncludeSpecialChars] = useState(true);
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
 
   const regeneratePassword = useCallback(() => {
     const newPassword = generatePasswordUtil(passwordLength, {
@@ -61,17 +57,13 @@ const ComplementaryDataCard = () => {
     setRole(generateJobTitle());
     setBusinessLine(generateBusinessSector());
     setNumEmployees(generateNumEmployees());
-    regeneratePassword();
-  }, []);
-
-  useEffect(() => {
-    generateAllFields();
-  }, []);
-
-  useEffect(() => {
-    if (password) {
-      regeneratePassword();
-    }
+    const newPassword = generatePasswordUtil(passwordLength, {
+      includeUppercase,
+      includeLowercase,
+      includeNumbers,
+      includeSpecialChars,
+    });
+    setPassword(newPassword);
   }, [
     passwordLength,
     includeUppercase,
@@ -79,6 +71,16 @@ const ComplementaryDataCard = () => {
     includeNumbers,
     includeSpecialChars,
   ]);
+
+  useEffect(() => {
+    generateAllFields();
+  }, [generateAllFields]);
+
+  useEffect(() => {
+    if (!password) {
+      regeneratePassword();
+    }
+  }, [password, regeneratePassword]);
 
   const handleLengthChange = e => {
     const val = e.target.value;

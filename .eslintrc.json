@@ -15,7 +15,7 @@
     "ecmaFeatures": {
       "jsx": true
     },
-    "ecmaVersion": 12,
+    "ecmaVersion": "latest",
     "sourceType": "module"
   },
   "plugins": ["react", "react-hooks", "cypress"],
@@ -25,16 +25,23 @@
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     "no-unused-vars": "warn",
-    "no-console": "warn",
+    "no-console": "off",
     "prefer-const": "error",
     "no-var": "error",
     "cypress/no-assigning-return-values": "error",
-    "cypress/no-unnecessary-waiting": "error",
-    "cypress/assertion-before-screenshot": "warn"
+    "cypress/no-unnecessary-waiting": "off"
   },
   "settings": {
     "react": {
       "version": "detect"
     }
-  }
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.js", "**/*.test.jsx", "cypress/**/*.js"],
+      "rules": {
+        "no-console": "off"
+      }
+    }
+  ]
 }

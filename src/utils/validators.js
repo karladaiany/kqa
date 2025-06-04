@@ -6,7 +6,6 @@
 
 import { BANDEIRAS_CARTAO } from '../constants';
 import { validarDDD } from '../constants/ddds';
-import { validarCEPPorEstado } from '../generators/address';
 
 // ============================================================================
 // VALIDAÇÃO DE DOCUMENTOS BRASILEIROS
