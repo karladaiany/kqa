@@ -260,7 +260,8 @@
 textarea.copyable {
   resize: vertical;
   padding-left: 1rem; /* Padding normal à esquerda */
-  padding-right: 2.5rem; /* Espaço para o ícone "x" à direita */
+  padding-right: 2.5rem; /* Espaço para o ícone "x" e barra de rolagem */
+  padding-top: 1.75rem; /* Espaço superior para o ícone fixo no topo */
   scrollbar-width: thin;
   scrollbar-color: var(--primary-color) var(--card-bg);
 }
@@ -284,17 +285,80 @@ textarea.copyable::-webkit-scrollbar-thumb:hover {
   background: var(--accent-color);
 }
 
-/* Posicionar o ícone "x" à direita nos textareas, ao lado da barra de rolagem */
-.campo-valor:has(textarea.copyable) .clear-icon {
+/* Posicionamento específico para botões clear em textareas - versão compatível */
+.campo-valor textarea.copyable ~ .icon-button,
+.campo-valor textarea.copyable ~ .clear-icon {
   position: absolute;
-  right: 0.75rem; /* Posicionado à direita */
-  left: auto;
-  top: 0.75rem; /* Posição fixa do topo para não interferir com resize */
-  transform: none;
-  z-index: 1;
-  background: var(--card-bg);
-  padding: 2px;
+  right: 0.75rem; /* Mais próximo da barra de rolagem para consistência */
+  top: 0.5rem; /* Fixo na parte superior do campo */
+  z-index: 10;
+  background: transparent; /* Fundo transparente para consistência */
+  border: none; /* Sem borda para ficar igual ao resto do projeto */
+  padding: 0; /* Sem padding no botão */
+  cursor: pointer;
+  transition: none; /* Sem transição no botão, apenas no ícone */
+}
+
+.campo-valor textarea.copyable ~ .icon-button:hover,
+.campo-valor textarea.copyable ~ .clear-icon:hover {
+  background: transparent; /* Manter fundo transparente no hover */
+  border: none; /* Sem borda no hover */
+}
+
+/* Estilo específico do ícone clear em textareas */
+.campo-valor textarea.copyable ~ .icon-button .clear-icon,
+.campo-valor textarea.copyable ~ .clear-icon {
+  color: var(--text-secondary);
+  font-size: 1.3rem; /* Aumentado para melhor visibilidade */
+  cursor: pointer;
+  transition: all 0.2s ease; /* Transição apenas no ícone */
+  padding: 4px; /* Padding apenas no ícone para área de clique */
   border-radius: 2px;
+}
+
+.campo-valor textarea.copyable ~ .icon-button:hover .clear-icon,
+.campo-valor textarea.copyable ~ .clear-icon:hover {
+  color: var(--accent-color);
+  transform: scale(1.1); /* Pequeno efeito de scale no hover */
+}
+
+/* Fallback para navegadores que suportam :has() */
+@supports selector(:has(*)) {
+  .campo-valor:has(textarea.copyable) .icon-button:has(.clear-icon),
+  .campo-valor:has(textarea.copyable) .clear-icon {
+    position: absolute;
+    right: 1.25rem; /* Posicionado bem à esquerda da barra de rolagem */
+    top: 0.5rem; /* Fixo na parte superior do campo */
+    z-index: 10;
+    background: transparent; /* Fundo transparente para consistência */
+    border: none; /* Sem borda para ficar igual ao resto do projeto */
+    padding: 0; /* Sem padding no botão */
+    cursor: pointer;
+    transition: none; /* Sem transição no botão, apenas no ícone */
+  }
+
+  .campo-valor:has(textarea.copyable) .icon-button:has(.clear-icon):hover,
+  .campo-valor:has(textarea.copyable) .clear-icon:hover {
+    background: transparent; /* Manter fundo transparente no hover */
+    border: none; /* Sem borda no hover */
+  }
+
+  .campo-valor:has(textarea.copyable) .clear-icon {
+    color: var(--text-secondary);
+    font-size: 1.3rem; /* Aumentado para melhor visibilidade */
+    cursor: pointer;
+    transition: all 0.2s ease; /* Transição apenas no ícone */
+    padding: 4px; /* Padding apenas no ícone para área de clique */
+    border-radius: 2px;
+  }
+
+  .campo-valor:has(textarea.copyable)
+    .icon-button:has(.clear-icon):hover
+    .clear-icon,
+  .campo-valor:has(textarea.copyable) .clear-icon:hover {
+    color: var(--accent-color);
+    transform: scale(1.1); /* Pequeno efeito de scale no hover */
+  }
 }
 
 .copyable:hover {
