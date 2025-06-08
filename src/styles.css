@@ -50,6 +50,74 @@ main {
 	}
 }
 
+/* Layout Grid System */
+.container {
+	max-width: 1400px;
+	margin: 0 auto;
+	padding: 0 2rem;
+}
+
+.row {
+	display: flex;
+	flex-wrap: wrap;
+	margin: 0 -1rem;
+}
+
+.col-6 {
+	width: 50%;
+	padding: 0 1rem;
+}
+
+.card-stack {
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+}
+
+/* Responsividade dos cards e grid */
+.cards-container {
+	column-count: 2;
+	column-gap: 0.75rem;
+}
+
+@media (max-width: 991px) {
+	.col-6 {
+		width: 100%;
+	}
+}
+
+@media (max-width: 800px) {
+	.cards-container {
+		column-count: 1;
+	}
+}
+
+/* Section styles */
+.section-title {
+	text-align: left;
+	margin-bottom: 2rem;
+	font-size: 1.75rem;
+	color: var(--text-color);
+}
+
+/* Utilitárias de layout */
+.text-center {
+	text-align: center;
+}
+
+.my-5 {
+	margin-top: 3rem;
+	margin-bottom: 3rem;
+}
+
+.mb-4 {
+	margin-bottom: 1.5rem;
+}
+
+.g-4 {
+	gap: 1.5rem;
+}
+
 /* Estilo para o textarea */
 textarea.number-input {
 	line-height: 1.5;
@@ -62,18 +130,6 @@ textarea.number-input::placeholder {
 	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
 	font-size: 0.9rem;
 	opacity: 0.7;
-}
-
-/* Responsividade dos cards */
-.cards-container {
-	column-count: 2;
-	column-gap: 0.75rem;
-}
-
-@media (max-width: 800px) {
-	.cards-container {
-		column-count: 1;
-	}
 }
 
 /* Redução de fontes gerais */
