@@ -4,7 +4,7 @@
  * @description Hook refatorado que utiliza geradores especializados modulares
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { fakerPT_BR as faker } from '@faker-js/faker';
 
 // Importações dos geradores especializados
@@ -54,37 +54,37 @@ export const useDataGenerator = () => {
    * Gera CPF válido com formatação
    * @returns {Object} Objeto com CPF raw e formatado
    */
-  const generateCPF = () => {
+  const generateCPF = useCallback(() => {
     const raw = gerarCPF();
     return {
       raw,
       formatted: formatarCPF(raw),
     };
-  };
+  }, []);
 
   /**
    * Gera CNPJ válido com formatação
    * @returns {Object} Objeto com CNPJ raw e formatado
    */
-  const generateCNPJ = () => {
+  const generateCNPJ = useCallback(() => {
     const raw = gerarCNPJ();
     return {
       raw,
       formatted: formatarCNPJ(raw),
     };
-  };
+  }, []);
 
   /**
    * Gera RG válido com formatação
    * @returns {Object} Objeto com RG raw e formatado
    */
-  const generateRG = () => {
+  const generateRG = useCallback(() => {
     const raw = gerarRG();
     return {
       raw,
       formatted: formatarRG(raw),
     };
-  };
+  }, []);
 
   // ============================================================================
   // GERADORES DE DADOS PESSOAIS
@@ -94,9 +94,9 @@ export const useDataGenerator = () => {
    * Gera pessoa completa com dados pessoais e endereço
    * @returns {Object} Objeto com dados completos da pessoa
    */
-  const generatePerson = () => {
+  const generatePerson = useCallback(() => {
     return gerarPessoaSimples();
-  };
+  }, []);
 
   // ============================================================================
   // GERADORES DE CARTÃO DE CRÉDITO
@@ -109,9 +109,12 @@ export const useDataGenerator = () => {
    * @param {string} [eredeStatus=""] - Status para cartões Erede (opcional)
    * @returns {Object} Objeto com dados completos do cartão
    */
-  const generateCreditCard = (bandeira = '', tipo = '', eredeStatus = '') => {
-    return gerarCartaoCredito(bandeira, tipo, eredeStatus);
-  };
+  const generateCreditCard = useCallback(
+    (bandeira = '', tipo = '', eredeStatus = '') => {
+      return gerarCartaoCredito(bandeira, tipo, eredeStatus);
+    },
+    []
+  );
 
   // ============================================================================
   // GERADORES DE PRODUTOS
@@ -121,11 +124,14 @@ export const useDataGenerator = () => {
    * Gera produto tecnológico com descrição e categorias
    * @returns {Object} Objeto com dados do produto
    */
-  const generateProduct = () => ({
-    nome: faker.helpers.arrayElement(PRODUTOS_TECNOLOGIA),
-    descricao: faker.helpers.arrayElement(DESCRICOES_PRODUTOS_TECNOLOGIA),
-    categorias: gerarCategoriasUnicas(3),
-  });
+  const generateProduct = useCallback(
+    () => ({
+      nome: faker.helpers.arrayElement(PRODUTOS_TECNOLOGIA),
+      descricao: faker.helpers.arrayElement(DESCRICOES_PRODUTOS_TECNOLOGIA),
+      categorias: gerarCategoriasUnicas(3),
+    }),
+    []
+  );
 
   // ============================================================================
   // GERADORES DE TEXTO
@@ -136,9 +142,9 @@ export const useDataGenerator = () => {
    * @param {number} length - Tamanho desejado do texto
    * @returns {string} Texto gerado com tamanho exato
    */
-  const generateRandomChars = length => {
+  const generateRandomChars = useCallback(length => {
     return gerarTextoAleatorio(length);
-  };
+  }, []);
 
   // ============================================================================
   // INTERFACE PÚBLICA DO HOOK

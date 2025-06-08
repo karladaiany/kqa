@@ -12,7 +12,10 @@ import {
   formatarParaMaiusculas,
 } from '../utils/formatters';
 import { detectarBandeiraCartao } from '../utils/validators';
-import { getEredeTestCardByStatus } from './eredeTestCards';
+import {
+  getEredeTestCardByOption,
+  gerarNomeCartaoErede,
+} from './eredeTestCards';
 
 // ============================================================================
 // GERAÇÃO DE NÚMERO DE CARTÃO
@@ -166,20 +169,20 @@ export const gerarCartaoCredito = (
 
 /**
  * Gera cartão Erede específico
- * @param {string} eredeStatus - Status do cartão Erede
+ * @param {string} eredeStatus - Status do cartão Erede (pode ser option bandeira+tipo)
  * @returns {Object} Objeto com dados do cartão Erede
  */
-export const gerarCartaoErede = (eredeStatus = 'APROVADA') => {
-  const eredeCard = getEredeTestCardByStatus(eredeStatus);
+export const gerarCartaoErede = (eredeStatus = 'Mastercard Crédito') => {
+  const eredeCard = getEredeTestCardByOption(eredeStatus);
 
   return {
-    numero: eredeCard.number,
-    numeroFormatado: formatarNumeroCartao(eredeCard.number, 'erede'),
-    nome: eredeCard.name,
-    validade: eredeCard.expiry,
+    numero: eredeCard.numero,
+    numeroFormatado: formatarNumeroCartao(eredeCard.numero, 'erede'),
+    nome: gerarNomeCartaoErede(),
+    validade: eredeCard.validade,
     cvv: eredeCard.cvv,
     bandeira: 'EREDE',
-    tipo: '',
+    tipo: `${eredeCard.bandeira} ${eredeCard.tipo}`,
     isErede: true,
   };
 };

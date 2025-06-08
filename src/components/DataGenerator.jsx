@@ -314,6 +314,7 @@ const DataGenerator = () => {
               onChange={handleCardConfigChange}
               className='card-select erede-status-select'
               data-testid='cartao-erede-status-select'
+              style={{ maxWidth: '200px' }}
             >
               {eredeStatuses.map(s => (
                 <option key={s.status} value={s.status}>
@@ -322,26 +323,27 @@ const DataGenerator = () => {
               ))}
             </select>
           ) : (
-            <select
-              name='tipo'
-              value={cardConfig.tipo}
-              onChange={handleCardConfigChange}
-              className='card-select'
-              data-testid='cartao-tipo-select'
-            >
-              <option value='credito'>Crédito</option>
-              <option value='debito'>Débito</option>
-              <option value='multiplo'>Múltiplo</option>
-            </select>
+            <>
+              <select
+                name='tipo'
+                value={cardConfig.tipo}
+                onChange={handleCardConfigChange}
+                className='card-select'
+                data-testid='cartao-tipo-select'
+              >
+                <option value='credito'>Crédito</option>
+                <option value='debito'>Débito</option>
+                <option value='multiplo'>Múltiplo</option>
+              </select>
+              <button
+                onClick={regenerateCard}
+                className='generate-all-btn'
+                data-testid='cartao-generate-btn'
+              >
+                <FaRedo className='generate-icon' /> Novo
+              </button>
+            </>
           )}
-          <button
-            onClick={regenerateCard}
-            className='generate-all-btn'
-            data-testid='cartao-generate-btn'
-          >
-            <FaRedo className='generate-icon' />{' '}
-            {cardConfig.bandeira.toLowerCase() === 'erede' ? 'Gerar' : 'Novo'}
-          </button>
         </div>
       </div>
       <div className='card-content' data-testid='cartao-content'>

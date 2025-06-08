@@ -4,7 +4,7 @@
  * @description Extrai lógica de cartão mantendo comportamento original idêntico
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useDataGenerator } from './useDataGenerator';
 
 /**
@@ -14,63 +14,62 @@ import { useDataGenerator } from './useDataGenerator';
 export const useCreditCard = () => {
   const { generateCreditCard, getEredeTestCardStatuses } = useDataGenerator();
 
-  const eredeStatuses = getEredeTestCardStatuses
-    ? getEredeTestCardStatuses()
-    : [];
+  const eredeStatuses = useMemo(() => {
+    return getEredeTestCardStatuses ? getEredeTestCardStatuses() : [];
+  }, [getEredeTestCardStatuses]);
 
-  // Estados idênticos ao original
-  const [card, setCard] = useState(generateCreditCard('visa', 'credito'));
+  // Estados atualizados para nova estrutura
+  const [card, setCard] = useState(() => generateCreditCard('visa', 'credito'));
   const [cardConfig, setCardConfig] = useState({
     bandeira: 'visa',
     tipo: 'credito',
-    eredeStatus: 'APROVADA',
+    eredeStatus: 'Mastercard Crédito',
   });
 
-  // Effect idêntico ao original para Erede
-  useEffect(() => {
-    if (cardConfig.bandeira.toLowerCase() === 'erede') {
-      const newCard = generateCreditCard(
-        cardConfig.bandeira,
-        '',
-        cardConfig.eredeStatus
-      );
-      setCard(newCard);
-    }
-  }, [cardConfig.eredeStatus, generateCreditCard, cardConfig.bandeira]);
-
-  // Função idêntica ao original do DataGenerator
+  // Função atualizada para nova estrutura - toda a lógica de atualização aqui
   const handleCardConfigChange = useCallback(
     e => {
       const { name, value } = e.target;
+
       setCardConfig(prev => {
         const newConfig = { ...prev, [name]: value };
 
-        if (name === 'bandeira' && value.toLowerCase() === 'erede') {
-          newConfig.eredeStatus = 'APROVADA';
-          setCard(generateCreditCard(value, '', 'APROVADA'));
-        } else if (newConfig.bandeira.toLowerCase() === 'erede') {
-          setCard(
-            generateCreditCard(newConfig.bandeira, '', newConfig.eredeStatus)
-          );
-        } else {
-          setCard(generateCreditCard(newConfig.bandeira, newConfig.tipo));
+        // Gera novo cartão apenas quando necessário
+        if (name === 'bandeira') {
+          if (value.toLowerCase() === 'erede') {
+            newConfig.eredeStatus = 'Mastercard Crédito';
+            const newCard = generateCreditCard(value, '', 'Mastercard Crédito');
+            setCard(newCard);
+          } else {
+            const newCard = generateCreditCard(value, newConfig.tipo);
+            setCard(newCard);
+          }
+        } else if (
+          name === 'eredeStatus' &&
+          newConfig.bandeira.toLowerCase() === 'erede'
+        ) {
+          const newCard = generateCreditCard(newConfig.bandeira, '', value);
+          setCard(newCard);
+        } else if (
+          name === 'tipo' &&
+          newConfig.bandeira.toLowerCase() !== 'erede'
+        ) {
+          const newCard = generateCreditCard(newConfig.bandeira, value);
+          setCard(newCard);
         }
+
         return newConfig;
       });
     },
     [generateCreditCard]
   );
 
-  // Função para regenerar cartão
+  // Função para regenerar cartão (apenas para bandeiras não-Erede)
   const regenerateCard = useCallback(() => {
-    if (cardConfig.bandeira.toLowerCase() === 'erede') {
-      setCard(
-        generateCreditCard(cardConfig.bandeira, '', cardConfig.eredeStatus)
-      );
-    } else {
+    if (cardConfig.bandeira.toLowerCase() !== 'erede') {
       setCard(generateCreditCard(cardConfig.bandeira, cardConfig.tipo));
     }
-  }, [generateCreditCard, cardConfig]);
+  }, [generateCreditCard, cardConfig.bandeira, cardConfig.tipo]);
 
   return {
     card,
