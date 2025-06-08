@@ -1,23 +1,57 @@
 import { fakerPT_BR as faker } from '@faker-js/faker'; // Explicitly use pt_BR
 
 const ptBRCompanyNames = [
-  "Soluções KQA", "Tecnologia Delta", "Inovações Brasil", "Consultoria Alfa",
-  "Sistemas Omega", "Digital Max", "Web Prime", "Conecta BR", "Grupo Vanguarda",
-  "PontoCom Inovações", "Avanço Digital", "Métrica Soluções", "Proativa Consultoria",
-  "União Tech", "Fênix Desenvolvimento"
+  'Soluções KQA',
+  'Tecnologia Delta',
+  'Inovações Brasil',
+  'Consultoria Alfa',
+  'Sistemas Omega',
+  'Digital Max',
+  'Web Prime',
+  'Conecta BR',
+  'Grupo Vanguarda',
+  'PontoCom Inovações',
+  'Avanço Digital',
+  'Métrica Soluções',
+  'Proativa Consultoria',
+  'União Tech',
+  'Fênix Desenvolvimento',
 ];
 
 const ptBRDepartments = [
-  "Recursos Humanos", "Desenvolvimento", "Marketing", "Vendas", "Suporte Técnico",
-  "Financeiro", "Operações", "Qualidade", "Pesquisa e Desenvolvimento", "Logística",
-  "Administrativo", "Jurídico", "Produto", "Infraestrutura", "Comercial"
+  'Recursos Humanos',
+  'Desenvolvimento',
+  'Marketing',
+  'Vendas',
+  'Suporte Técnico',
+  'Financeiro',
+  'Operações',
+  'Qualidade',
+  'Pesquisa e Desenvolvimento',
+  'Logística',
+  'Administrativo',
+  'Jurídico',
+  'Produto',
+  'Infraestrutura',
+  'Comercial',
 ];
 
 const ptBRJobTitles = [
-  "Analista de Sistemas", "Engenheiro de Software", "Gerente de Projetos", "Designer UX",
-  "Especialista em Redes", "Desenvolvedor Frontend", "Desenvolvedor Backend", "Analista de Qualidade",
-  "Cientista de Dados", "Arquiteto de Soluções", "Consultor de TI", "Gerente de Marketing",
-  "Analista Financeiro", "Coordenador de Vendas", "Técnico de Suporte"
+  'Analista de Sistemas',
+  'Engenheiro de Software',
+  'Gerente de Projetos',
+  'Designer UX',
+  'Especialista em Redes',
+  'Desenvolvedor Frontend',
+  'Desenvolvedor Backend',
+  'Analista de Qualidade',
+  'Cientista de Dados',
+  'Arquiteto de Soluções',
+  'Consultor de TI',
+  'Gerente de Marketing',
+  'Analista Financeiro',
+  'Coordenador de Vendas',
+  'Técnico de Suporte',
 ];
 
 export const generateCompanyName = () => {
@@ -38,9 +72,21 @@ export const generateBusinessSector = () => {
   // For now, assuming jobArea() from fakerPT_BR is mostly fine.
   const sectors = [
     faker.person.jobArea(), // Changed from name.jobArea() to person.jobArea() for v8+
-    'Tecnologia', 'Saúde', 'Finanças', 'Varejo', 'Educação',
-    'Consultoria', 'Manufatura', 'Serviços', 'Imobiliário', 'Entretenimento',
-    'Agronegócio', 'Construção Civil', 'Energia', 'Logística', 'Turismo'
+    'Tecnologia',
+    'Saúde',
+    'Finanças',
+    'Varejo',
+    'Educação',
+    'Consultoria',
+    'Manufatura',
+    'Serviços',
+    'Imobiliário',
+    'Entretenimento',
+    'Agronegócio',
+    'Construção Civil',
+    'Energia',
+    'Logística',
+    'Turismo',
   ];
   return faker.helpers.arrayElement(sectors);
 };
@@ -79,19 +125,31 @@ export const generatePassword = (
 
   if (includeLowercase) {
     availableChars += CHARSETS.LOWERCASE;
-    if (length > guaranteedChars.length) guaranteedChars.push(faker.helpers.arrayElement(CHARSETS.LOWERCASE.split('')));
+    if (length > guaranteedChars.length)
+      guaranteedChars.push(
+        faker.helpers.arrayElement(CHARSETS.LOWERCASE.split(''))
+      );
   }
   if (includeUppercase) {
     availableChars += CHARSETS.UPPERCASE;
-    if (length > guaranteedChars.length) guaranteedChars.push(faker.helpers.arrayElement(CHARSETS.UPPERCASE.split('')));
+    if (length > guaranteedChars.length)
+      guaranteedChars.push(
+        faker.helpers.arrayElement(CHARSETS.UPPERCASE.split(''))
+      );
   }
   if (includeNumbers) {
     availableChars += CHARSETS.NUMBERS;
-    if (length > guaranteedChars.length) guaranteedChars.push(faker.helpers.arrayElement(CHARSETS.NUMBERS.split('')));
+    if (length > guaranteedChars.length)
+      guaranteedChars.push(
+        faker.helpers.arrayElement(CHARSETS.NUMBERS.split(''))
+      );
   }
   if (includeSpecialChars) {
     availableChars += CHARSETS.SPECIAL;
-    if (length > guaranteedChars.length) guaranteedChars.push(faker.helpers.arrayElement(CHARSETS.SPECIAL.split('')));
+    if (length > guaranteedChars.length)
+      guaranteedChars.push(
+        faker.helpers.arrayElement(CHARSETS.SPECIAL.split(''))
+      );
   }
 
   if (!availableChars) {
@@ -106,6 +164,6 @@ export const generatePassword = (
 
   // Shuffle the array to ensure guaranteed characters are not always at the beginning
   passwordArray = faker.helpers.shuffle(passwordArray);
-  
+
   return passwordArray.join('');
 };

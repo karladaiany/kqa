@@ -4,7 +4,7 @@
  * @description Funções para formatação de documentos, números e textos
  */
 
-import { FORMATOS_DOCUMENTOS, MASCARAS_DOCUMENTOS } from "../constants";
+import { FORMATOS_DOCUMENTOS, MASCARAS_DOCUMENTOS } from '../constants';
 
 // ============================================================================
 // FORMATAÇÃO DE DOCUMENTOS
@@ -15,9 +15,9 @@ import { FORMATOS_DOCUMENTOS, MASCARAS_DOCUMENTOS } from "../constants";
  * @param {string} cpf - CPF sem formatação
  * @returns {string} CPF formatado
  */
-export const formatarCPF = (cpf) => {
-	if (!cpf) return "";
-	return cpf.replace(FORMATOS_DOCUMENTOS.CPF, MASCARAS_DOCUMENTOS.CPF);
+export const formatarCPF = cpf => {
+  if (!cpf) return '';
+  return cpf.replace(FORMATOS_DOCUMENTOS.CPF, MASCARAS_DOCUMENTOS.CPF);
 };
 
 /**
@@ -25,9 +25,9 @@ export const formatarCPF = (cpf) => {
  * @param {string} cnpj - CNPJ sem formatação
  * @returns {string} CNPJ formatado
  */
-export const formatarCNPJ = (cnpj) => {
-	if (!cnpj) return "";
-	return cnpj.replace(FORMATOS_DOCUMENTOS.CNPJ, MASCARAS_DOCUMENTOS.CNPJ);
+export const formatarCNPJ = cnpj => {
+  if (!cnpj) return '';
+  return cnpj.replace(FORMATOS_DOCUMENTOS.CNPJ, MASCARAS_DOCUMENTOS.CNPJ);
 };
 
 /**
@@ -35,9 +35,9 @@ export const formatarCNPJ = (cnpj) => {
  * @param {string} rg - RG sem formatação
  * @returns {string} RG formatado
  */
-export const formatarRG = (rg) => {
-	if (!rg) return "";
-	return rg.replace(FORMATOS_DOCUMENTOS.RG, MASCARAS_DOCUMENTOS.RG);
+export const formatarRG = rg => {
+  if (!rg) return '';
+  return rg.replace(FORMATOS_DOCUMENTOS.RG, MASCARAS_DOCUMENTOS.RG);
 };
 
 // ============================================================================
@@ -51,15 +51,15 @@ export const formatarRG = (rg) => {
  * @returns {string} Número formatado com espaços
  */
 export const formatarNumeroCartao = (numero, bandeira) => {
-	if (!numero) return "";
+  if (!numero) return '';
 
-	// AMEX: 4 + 6 + 5 dígitos
-	if (bandeira && bandeira.toLowerCase() === "amex") {
-		return numero.replace(/(\d{4})(\d{6})(\d{5})/, "$1 $2 $3");
-	}
+  // AMEX: 4 + 6 + 5 dígitos
+  if (bandeira && bandeira.toLowerCase() === 'amex') {
+    return numero.replace(/(\d{4})(\d{6})(\d{5})/, '$1 $2 $3');
+  }
 
-	// Outros cartões: grupos de 4 dígitos
-	return numero.replace(/(\d{4})(\d{4})(\d{4})(\d{4})/, "$1 $2 $3 $4");
+  // Outros cartões: grupos de 4 dígitos
+  return numero.replace(/(\d{4})(\d{4})(\d{4})(\d{4})/, '$1 $2 $3 $4');
 };
 
 /**
@@ -67,17 +67,17 @@ export const formatarNumeroCartao = (numero, bandeira) => {
  * @param {string|Date} validade - Data de validade
  * @returns {string} Validade formatada
  */
-export const formatarValidadeCartao = (validade) => {
-	if (!validade) return "";
+export const formatarValidadeCartao = validade => {
+  if (!validade) return '';
 
-	if (validade instanceof Date) {
-		return validade.toLocaleDateString("pt-BR", {
-			month: "2-digit",
-			year: "2-digit",
-		});
-	}
+  if (validade instanceof Date) {
+    return validade.toLocaleDateString('pt-BR', {
+      month: '2-digit',
+      year: '2-digit',
+    });
+  }
 
-	return validade;
+  return validade;
 };
 
 // ============================================================================
@@ -91,9 +91,9 @@ export const formatarValidadeCartao = (validade) => {
  * @returns {string} Telefone formatado
  */
 export const formatarTelefone = (ddd, numeroBase) => {
-	if (!ddd || !numeroBase) return "";
+  if (!ddd || !numeroBase) return '';
 
-	return `(${ddd}) 9${numeroBase.slice(0, 4)}-${numeroBase.slice(4)}`;
+  return `(${ddd}) 9${numeroBase.slice(0, 4)}-${numeroBase.slice(4)}`;
 };
 
 /**
@@ -101,19 +101,19 @@ export const formatarTelefone = (ddd, numeroBase) => {
  * @param {string} telefone - Telefone sem formatação (apenas números)
  * @returns {string} Telefone formatado
  */
-export const formatarTelefoneCompleto = (telefone) => {
-	if (!telefone) return "";
+export const formatarTelefoneCompleto = telefone => {
+  if (!telefone) return '';
 
-	// Remove todos os caracteres não numéricos
-	const apenasNumeros = telefone.replace(/\D/g, "");
+  // Remove todos os caracteres não numéricos
+  const apenasNumeros = telefone.replace(/\D/g, '');
 
-	// Verifica se tem o tamanho correto (11 dígitos)
-	if (apenasNumeros.length !== 11) return telefone;
+  // Verifica se tem o tamanho correto (11 dígitos)
+  if (apenasNumeros.length !== 11) return telefone;
 
-	const ddd = apenasNumeros.slice(0, 2);
-	const numero = apenasNumeros.slice(2);
+  const ddd = apenasNumeros.slice(0, 2);
+  const numero = apenasNumeros.slice(2);
 
-	return `(${ddd}) ${numero.slice(0, 5)}-${numero.slice(5)}`;
+  return `(${ddd}) ${numero.slice(0, 5)}-${numero.slice(5)}`;
 };
 
 // ============================================================================
@@ -125,13 +125,13 @@ export const formatarTelefoneCompleto = (telefone) => {
  * @param {string} cep - CEP sem formatação
  * @returns {string} CEP formatado
  */
-export const formatarCEP = (cep) => {
-	if (!cep) return "";
+export const formatarCEP = cep => {
+  if (!cep) return '';
 
-	const apenasNumeros = cep.replace(/\D/g, "");
-	if (apenasNumeros.length !== 8) return cep;
+  const apenasNumeros = cep.replace(/\D/g, '');
+  if (apenasNumeros.length !== 8) return cep;
 
-	return apenasNumeros.replace(/(\d{5})(\d{3})/, "$1-$2");
+  return apenasNumeros.replace(/(\d{5})(\d{3})/, '$1-$2');
 };
 
 /**
@@ -139,21 +139,21 @@ export const formatarCEP = (cep) => {
  * @param {Object} endereco - Objeto com dados do endereço
  * @returns {string} Endereço formatado em uma linha
  */
-export const formatarEnderecoCompleto = (endereco) => {
-	if (!endereco) return "";
+export const formatarEnderecoCompleto = endereco => {
+  if (!endereco) return '';
 
-	const { rua, numero, complemento, bairro, cidade, estado, cep } = endereco;
+  const { rua, numero, complemento, bairro, cidade, estado, cep } = endereco;
 
-	let enderecoFormatado = `${rua || ""}`;
-	if (numero) enderecoFormatado += `, ${numero}`;
-	if (complemento && complemento.trim())
-		enderecoFormatado += `, ${complemento}`;
-	if (bairro) enderecoFormatado += ` - ${bairro}`;
-	if (cidade) enderecoFormatado += `, ${cidade}`;
-	if (estado) enderecoFormatado += `/${estado}`;
-	if (cep) enderecoFormatado += ` - ${formatarCEP(cep)}`;
+  let enderecoFormatado = `${rua || ''}`;
+  if (numero) enderecoFormatado += `, ${numero}`;
+  if (complemento && complemento.trim())
+    enderecoFormatado += `, ${complemento}`;
+  if (bairro) enderecoFormatado += ` - ${bairro}`;
+  if (cidade) enderecoFormatado += `, ${cidade}`;
+  if (estado) enderecoFormatado += `/${estado}`;
+  if (cep) enderecoFormatado += ` - ${formatarCEP(cep)}`;
 
-	return enderecoFormatado;
+  return enderecoFormatado;
 };
 
 // ============================================================================
@@ -165,14 +165,14 @@ export const formatarEnderecoCompleto = (endereco) => {
  * @param {string} texto - Texto com acentos
  * @returns {string} Texto sem acentos e em lowercase
  */
-export const removerAcentos = (texto) => {
-	if (!texto) return "";
+export const removerAcentos = texto => {
+  if (!texto) return '';
 
-	return texto
-		.normalize("NFD")
-		.replace(/[\u0300-\u036f]/g, "")
-		.toLowerCase()
-		.replace(/[^a-z0-9]/g, ".");
+  return texto
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '.');
 };
 
 /**
@@ -180,10 +180,10 @@ export const removerAcentos = (texto) => {
  * @param {string} nome - Nome completo
  * @returns {string} Nome formatado para email
  */
-export const formatarNomeParaEmail = (nome) => {
-	if (!nome) return "";
+export const formatarNomeParaEmail = nome => {
+  if (!nome) return '';
 
-	return removerAcentos(nome.replace(/\s+/g, "."));
+  return removerAcentos(nome.replace(/\s+/g, '.'));
 };
 
 /**
@@ -191,14 +191,14 @@ export const formatarNomeParaEmail = (nome) => {
  * @param {string} texto - Texto a ser capitalizado
  * @returns {string} Texto com primeira letra de cada palavra em maiúscula
  */
-export const capitalizarPalavras = (texto) => {
-	if (!texto) return "";
+export const capitalizarPalavras = texto => {
+  if (!texto) return '';
 
-	return texto
-		.toLowerCase()
-		.split(" ")
-		.map((palavra) => palavra.charAt(0).toUpperCase() + palavra.slice(1))
-		.join(" ");
+  return texto
+    .toLowerCase()
+    .split(' ')
+    .map(palavra => palavra.charAt(0).toUpperCase() + palavra.slice(1))
+    .join(' ');
 };
 
 /**
@@ -206,9 +206,9 @@ export const capitalizarPalavras = (texto) => {
  * @param {string} texto - Texto a ser formatado
  * @returns {string} Texto em maiúsculas
  */
-export const formatarParaMaiusculas = (texto) => {
-	if (!texto) return "";
-	return texto.toUpperCase();
+export const formatarParaMaiusculas = texto => {
+  if (!texto) return '';
+  return texto.toUpperCase();
 };
 
 // ============================================================================
@@ -220,13 +220,13 @@ export const formatarParaMaiusculas = (texto) => {
  * @param {number} valor - Valor numérico
  * @returns {string} Valor formatado em BRL
  */
-export const formatarMoeda = (valor) => {
-	if (typeof valor !== "number") return "R$ 0,00";
+export const formatarMoeda = valor => {
+  if (typeof valor !== 'number') return 'R$ 0,00';
 
-	return new Intl.NumberFormat("pt-BR", {
-		style: "currency",
-		currency: "BRL",
-	}).format(valor);
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(valor);
 };
 
 /**
@@ -234,10 +234,10 @@ export const formatarMoeda = (valor) => {
  * @param {number} numero - Número a ser formatado
  * @returns {string} Número formatado com pontos separadores
  */
-export const formatarNumero = (numero) => {
-	if (typeof numero !== "number") return "0";
+export const formatarNumero = numero => {
+  if (typeof numero !== 'number') return '0';
 
-	return new Intl.NumberFormat("pt-BR").format(numero);
+  return new Intl.NumberFormat('pt-BR').format(numero);
 };
 
 // ============================================================================
@@ -249,14 +249,14 @@ export const formatarNumero = (numero) => {
  * @param {Date|string} data - Data a ser formatada
  * @returns {string} Data formatada
  */
-export const formatarData = (data) => {
-	if (!data) return "";
+export const formatarData = data => {
+  if (!data) return '';
 
-	const dataObj = data instanceof Date ? data : new Date(data);
+  const dataObj = data instanceof Date ? data : new Date(data);
 
-	if (isNaN(dataObj.getTime())) return "";
+  if (isNaN(dataObj.getTime())) return '';
 
-	return dataObj.toLocaleDateString("pt-BR");
+  return dataObj.toLocaleDateString('pt-BR');
 };
 
 /**
@@ -264,12 +264,12 @@ export const formatarData = (data) => {
  * @param {Date|string} data - Data a ser formatada
  * @returns {string} Data e hora formatadas
  */
-export const formatarDataHora = (data) => {
-	if (!data) return "";
+export const formatarDataHora = data => {
+  if (!data) return '';
 
-	const dataObj = data instanceof Date ? data : new Date(data);
+  const dataObj = data instanceof Date ? data : new Date(data);
 
-	if (isNaN(dataObj.getTime())) return "";
+  if (isNaN(dataObj.getTime())) return '';
 
-	return dataObj.toLocaleString("pt-BR");
+  return dataObj.toLocaleString('pt-BR');
 };

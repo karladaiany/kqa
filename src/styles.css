@@ -1,135 +1,137 @@
 /* Importação da fonte Google Sans Mono */
-@import url("https://fonts.googleapis.com/css2?family=Google+Sans+Mono&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Mono&display=swap');
 
 /* Reset e configurações base */
 * {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
-	font-weight: normal;
-	font-size: 13px;
-	font-feature-settings: "liga" 0, "calt" 0;
-	font-variation-settings: normal;
-	line-height: 18px;
-	letter-spacing: 0px;
-	background-color: var(--background-color);
-	color: var(--text-color);
-	min-height: 100vh;
-	display: flex;
-	flex-direction: column;
-	transition: background-color 0.3s ease;
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+  font-weight: normal;
+  font-size: 13px;
+  font-feature-settings:
+    'liga' 0,
+    'calt' 0;
+  font-variation-settings: normal;
+  line-height: 18px;
+  letter-spacing: 0px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.3s ease;
 }
 
 main {
-	display: flex;
-	flex-direction: column;
-	gap: 1rem;
-	padding: 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0.5rem 0;
 }
 
 @keyframes spinOnce {
-	0% {
-		transform: rotate(0deg);
-	}
-	100% {
-		transform: rotate(360deg);
-	}
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Redução de movimento */
 @media (prefers-reduced-motion: reduce) {
-	* {
-		animation-duration: 0.01ms !important;
-		animation-iteration-count: 1 !important;
-		transition-duration: 0.01ms !important;
-		scroll-behavior: auto !important;
-	}
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Layout Grid System */
 .container {
-	max-width: 1400px;
-	margin: 0 auto;
-	padding: 0 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
 }
 
 .row {
-	display: flex;
-	flex-wrap: wrap;
-	margin: 0 -1rem;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -1rem;
 }
 
 .col-6 {
-	width: 50%;
-	padding: 0 1rem;
+  width: 50%;
+  padding: 0 1rem;
 }
 
 .card-stack {
-	display: flex;
-	flex-direction: column;
-	gap: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 /* Responsividade dos cards e grid */
 .cards-container {
-	column-count: 2;
-	column-gap: 0.75rem;
+  column-count: 2;
+  column-gap: 0.75rem;
 }
 
 @media (max-width: 991px) {
-	.col-6 {
-		width: 100%;
-	}
+  .col-6 {
+    width: 100%;
+  }
 }
 
 @media (max-width: 800px) {
-	.cards-container {
-		column-count: 1;
-	}
+  .cards-container {
+    column-count: 1;
+  }
 }
 
 /* Section styles */
 .section-title {
-	text-align: left;
-	margin-bottom: 2rem;
-	font-size: 1.75rem;
-	color: var(--text-color);
+  text-align: left;
+  margin-bottom: 2rem;
+  font-size: 1.75rem;
+  color: var(--text-color);
 }
 
 /* Utilitárias de layout */
 .text-center {
-	text-align: center;
+  text-align: center;
 }
 
 .my-5 {
-	margin-top: 3rem;
-	margin-bottom: 3rem;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
 }
 
 .mb-4 {
-	margin-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .g-4 {
-	gap: 1.5rem;
+  gap: 1.5rem;
 }
 
 /* Estilo para o textarea */
 textarea.number-input {
-	line-height: 1.5;
-	font-size: 0.95rem;
-	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
+  line-height: 1.5;
+  font-size: 0.95rem;
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
 }
 
 textarea.number-input::placeholder {
-	color: var(--text-secondary);
-	font-family: "Google Sans Mono", Consolas, "Courier New", monospace;
-	font-size: 0.9rem;
-	opacity: 0.7;
+  color: var(--text-secondary);
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+  font-size: 0.9rem;
+  opacity: 0.7;
 }
 
 /* Redução de fontes gerais */
@@ -137,5 +139,5 @@ body,
 label,
 .campo-valor,
 .card-header h2 {
-	font-size: 0.95rem;
+  font-size: 0.95rem;
 }

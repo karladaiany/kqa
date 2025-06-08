@@ -10,19 +10,20 @@ const ScrollButtons = () => {
       const scrollTop = window.scrollY;
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
-      
+
       // Habilita o botão de início se houver qualquer scroll para cima
       setCanScrollTop(scrollTop > 0);
-      
+
       // Habilita o botão de fim se não estiver no final do documento
       // Considera uma pequena margem para evitar problemas com arredondamento
-      const isAtBottom = Math.abs((scrollTop + windowHeight) - documentHeight) < 5;
+      const isAtBottom =
+        Math.abs(scrollTop + windowHeight - documentHeight) < 5;
       setCanScrollBottom(!isAtBottom);
     };
 
     // Executa a verificação inicial
     handleScroll();
-    
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -31,7 +32,7 @@ const ScrollButtons = () => {
     if (canScrollTop) {
       window.scrollTo({
         top: 0,
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     }
   };
@@ -40,7 +41,7 @@ const ScrollButtons = () => {
     if (canScrollBottom) {
       window.scrollTo({
         top: document.documentElement.scrollHeight,
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     }
   };
@@ -50,7 +51,7 @@ const ScrollButtons = () => {
       <button
         className={`scroll-button top ${!canScrollTop ? 'disabled' : ''}`}
         onClick={scrollToTop}
-        title={canScrollTop ? "Ir para o início" : "Já está no início"}
+        title={canScrollTop ? 'Ir para o início' : 'Já está no início'}
         disabled={!canScrollTop}
       >
         <FaArrowUp />
@@ -58,7 +59,7 @@ const ScrollButtons = () => {
       <button
         className={`scroll-button bottom ${!canScrollBottom ? 'disabled' : ''}`}
         onClick={scrollToBottom}
-        title={canScrollBottom ? "Ir para o fim" : "Já está no fim"}
+        title={canScrollBottom ? 'Ir para o fim' : 'Já está no fim'}
         disabled={!canScrollBottom}
       >
         <FaArrowDown />
@@ -67,4 +68,4 @@ const ScrollButtons = () => {
   );
 };
 
-export default ScrollButtons; 
+export default ScrollButtons;

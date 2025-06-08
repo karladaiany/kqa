@@ -1,122 +1,121 @@
-import { useState, useEffect } from "react";
-import { encrypt, decrypt } from "../utils/crypto";
+import { useState, useEffect, useCallback } from 'react';
+import { encrypt, decrypt } from '../utils/crypto';
 
 export const useBugRegistration = () => {
-	const [bugData, setBugData] = useState(() => {
-		const savedData = localStorage.getItem("bugRegistration");
-		if (savedData) {
-			const parsedData = JSON.parse(savedData);
-			return {
-				...parsedData,
-				login: parsedData.login ? decrypt(parsedData.login) : "",
-				password: parsedData.password
-					? decrypt(parsedData.password)
-					: "",
-			};
-		}
-		return {
-			incident: "",
-			steps: "",
-			expectedBehavior: "",
-			url: "",
-			login: "",
-			password: "",
-			envId: "",
-			others: "",
-			evidenceDescription: "",
-			evidenceLink: "",
-			hasAttachment: false,
-		};
-	});
+  const [bugData, setBugData] = useState(() => {
+    const savedData = localStorage.getItem('bugRegistration');
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      return {
+        ...parsedData,
+        login: parsedData.login ? decrypt(parsedData.login) : '',
+        password: parsedData.password ? decrypt(parsedData.password) : '',
+      };
+    }
+    return {
+      incident: '',
+      steps: '',
+      expectedBehavior: '',
+      url: '',
+      login: '',
+      password: '',
+      envId: '',
+      others: '',
+      evidenceDescription: '',
+      evidenceLink: '',
+      hasAttachment: false,
+    };
+  });
 
-	const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-	useEffect(() => {
-		const dataToSave = {
-			...bugData,
-			login: bugData.login ? encrypt(bugData.login) : "",
-			password: bugData.password ? encrypt(bugData.password) : "",
-		};
-		localStorage.setItem("bugRegistration", JSON.stringify(dataToSave));
-	}, [bugData]);
+  useEffect(() => {
+    const dataToSave = {
+      ...bugData,
+      login: bugData.login ? encrypt(bugData.login) : '',
+      password: bugData.password ? encrypt(bugData.password) : '',
+    };
+    localStorage.setItem('bugRegistration', JSON.stringify(dataToSave));
+  }, [bugData]);
 
-	const handleInputChange = (field, value) => {
-		if (field === "envId" && value.length > 7) return;
-		setBugData((prev) => ({
-			...prev,
-			[field]: value,
-		}));
-	};
+  const handleInputChange = (field, value) => {
+    if (field === 'envId' && value.length > 7) return;
+    setBugData(prev => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
 
-	const handleClearField = (field) => {
-		if (field === "all") {
-			setBugData({
-				incident: "",
-				steps: "",
-				expectedBehavior: "",
-				url: "",
-				login: "",
-				password: "",
-				envId: "",
-				others: "",
-				evidenceDescription: "",
-				evidenceLink: "",
-				hasAttachment: false,
-			});
-			return;
-		}
+  const handleClearField = field => {
+    if (field === 'all') {
+      setBugData({
+        incident: '',
+        steps: '',
+        expectedBehavior: '',
+        url: '',
+        login: '',
+        password: '',
+        envId: '',
+        others: '',
+        evidenceDescription: '',
+        evidenceLink: '',
+        hasAttachment: false,
+      });
+      return;
+    }
 
-		setBugData((prev) => ({
-			...prev,
-			[field]: "",
-		}));
-	};
+    setBugData(prev => ({
+      ...prev,
+      [field]: '',
+    }));
+  };
 
-	const handleToggleAttachment = () => {
-		setBugData((prev) => ({
-			...prev,
-			hasAttachment: !prev.hasAttachment,
-		}));
-	};
+  const handleToggleAttachment = () => {
+    setBugData(prev => ({
+      ...prev,
+      hasAttachment: !prev.hasAttachment,
+    }));
+  };
 
-	const formatEvidenceSection = () => {
-		// If evidenceLink is empty, the entire evidence section is omitted
-		if (!bugData.evidenceLink) {
-			return "";
-		}
+  const formatEvidenceSection = () => {
+    // If evidenceLink is empty, the entire evidence section is omitted
+    if (!bugData.evidenceLink) {
+      return '';
+    }
 
-		const evidences = [];
-		if (bugData.evidenceDescription) {
-			evidences.push(bugData.evidenceDescription);
-		}
-		// evidenceLink is guaranteed to be non-empty here
-		evidences.push(`Link da evidência: ${bugData.evidenceLink}`);
+    const evidences = [];
+    if (bugData.evidenceDescription) {
+      evidences.push(bugData.evidenceDescription);
+    }
+    // evidenceLink is guaranteed to be non-empty here
+    evidences.push(`Link da evidência: ${bugData.evidenceLink}`);
 
-		if (bugData.hasAttachment) {
-			evidences.push("Evidência em anexo na atividade");
-		}
+    if (bugData.hasAttachment) {
+      evidences.push('Evidência em anexo na atividade');
+    }
 
-		// If evidenceLink is present, join collected evidences.
-		// This will always include at least the link.
-		return evidences.join("\n");
-	};
+    // If evidenceLink is present, join collected evidences.
+    // This will always include at least the link.
+    return evidences.join('\n');
+  };
 
-	const handleCopyAll = () => {
-		// Prevent copying if evidenceLink is empty
-		if (!bugData.evidenceLink) {
-			// Optionally, show a toast message or console log, though the button should be disabled in UI
-			console.warn("Copy action aborted: evidenceLink is empty.");
-			return;
-		}
+  const handleCopyAll = () => {
+    // Prevent copying if evidenceLink is empty
+    if (!bugData.evidenceLink) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Copy action aborted: evidenceLink is empty.');
+      }
+      return;
+    }
 
-		const evidenceSectionContent = formatEvidenceSection();
+    const evidenceSectionContent = formatEvidenceSection();
 
-		const formattedSteps = bugData.steps
-			.split("\n")
-			.map((step) => `» ${step}`)
-			.join("\n");
+    const formattedSteps = bugData.steps
+      .split('\n')
+      .map(step => `» ${step}`)
+      .join('\n');
 
-		let textToCopy = `    <b>:: Incidente identificado ::</b>
+    let textToCopy = `    <b>:: Incidente identificado ::</b>
 ${bugData.incident}
 
     <b>:: Passo a passo para reprodução ::</b>
@@ -132,20 +131,27 @@ senha: ${bugData.password}
 org_id: ${bugData.envId}
 ${bugData.others}`;
 
-		if (evidenceSectionContent) {
-			textToCopy += `\n\n    <b>:: Evidência(s) ::</b>\n${evidenceSectionContent}`;
-		}
+    if (evidenceSectionContent) {
+      textToCopy += `\n\n    <b>:: Evidência(s) ::</b>\n${evidenceSectionContent}`;
+    }
 
-		navigator.clipboard.writeText(textToCopy.trim());
-	};
+    navigator.clipboard.writeText(textToCopy.trim());
+  };
 
-	return {
-		bugData,
-		showPassword,
-		setShowPassword,
-		handleInputChange,
-		handleClearField,
-		handleToggleAttachment,
-		handleCopyAll,
-	};
+  const logBugData = useCallback(formData => {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Bug registration data:', formData);
+    }
+  }, []);
+
+  return {
+    bugData,
+    showPassword,
+    setShowPassword,
+    handleInputChange,
+    handleClearField,
+    handleToggleAttachment,
+    handleCopyAll,
+    logBugData,
+  };
 };

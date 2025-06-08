@@ -1,34 +1,48 @@
-const CRYPTO_KEY = 'kqa-secret-key'; // Esta chave deve ser armazenada em variáveis de ambiente em produção
+/**
+ * Utilitários de criptografia para dados sensíveis
+ */
 
-export const encrypt = (text) => {
+import CryptoJS from 'crypto-js';
+
+// Chave secreta para criptografia (em produção, deve vir de variável de ambiente)
+const SECRET_KEY = 'kqa-secret-key-2024';
+
+/**
+ * Criptografa um texto usando AES
+ * @param {string} text - Texto a ser criptografado
+ * @returns {string} Texto criptografado
+ */
+export const encrypt = text => {
   try {
-    const textToChars = text => text.split('').map(c => c.charCodeAt(0));
-    const byteHex = n => ("0" + Number(n).toString(16)).substr(-2);
-    const applySaltToChar = code => textToChars(CRYPTO_KEY).reduce((a, b) => a ^ b, code);
+    if (!text) return '';
 
-    return text.split('')
-      .map(textToChars)
-      .map(applySaltToChar)
-      .map(byteHex)
-      .join('');
+    const encrypted = CryptoJS.AES.encrypt(text, SECRET_KEY).toString();
+    return encrypted;
   } catch (error) {
-    console.error('Erro ao criptografar:', error);
-    return text;
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Erro ao criptografar:', error);
+    }
+    return text; // Retorna o texto original em caso de erro
   }
 };
 
-export const decrypt = (encoded) => {
+/**
+ * Descriptografa um texto usando AES
+ * @param {string} encryptedText - Texto criptografado
+ * @returns {string} Texto descriptografado
+ */
+export const decrypt = encryptedText => {
   try {
-    const textToChars = text => text.split('').map(c => c.charCodeAt(0));
-    const applySaltToChar = code => textToChars(CRYPTO_KEY).reduce((a, b) => a ^ b, code);
-    
-    return encoded.match(/.{1,2}/g)
-      .map(hex => parseInt(hex, 16))
-      .map(applySaltToChar)
-      .map(charCode => String.fromCharCode(charCode))
-      .join('');
+    if (!encryptedText) return '';
+
+    const bytes = CryptoJS.AES.decrypt(encryptedText, SECRET_KEY);
+    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+
+    return decrypted;
   } catch (error) {
-    console.error('Erro ao descriptografar:', error);
-    return encoded;
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Erro ao descriptografar:', error);
+    }
+    return encryptedText; // Retorna o texto original em caso de erro
   }
-}; 
+};
