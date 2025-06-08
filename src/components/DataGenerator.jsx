@@ -535,7 +535,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 						<FaRedo className="generate-icon" />{" "}
 						{cardConfig.bandeira.toLowerCase() === "erede"
 							? "Gerar"
-							: "Gerar novo"}
+							: "Novo"}
 					</button>
 				</div>
 			</div>
