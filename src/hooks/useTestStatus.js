@@ -8,6 +8,7 @@ const getInitialData = () => {
     try {
       const parsedData = JSON.parse(savedData);
       return {
+        initialActivityType: parsedData.activityType || 'manual',
         initialTestStatus: parsedData.testStatus || '',
         initialEnvironment: parsedData.environment || '',
         initialFormData: {
@@ -20,11 +21,16 @@ const getInitialData = () => {
           evidenceDescription: parsedData.formData?.evidenceDescription || '',
           evidenceLink: parsedData.formData?.evidenceLink || '',
           hasAttachment: parsedData.formData?.hasAttachment || false,
+          testPlan: parsedData.formData?.testPlan || '',
+          build: parsedData.formData?.build || '',
+          testCaseIds: parsedData.formData?.testCaseIds || '',
+          pullRequest: parsedData.formData?.pullRequest || '',
         },
       };
     } catch (error) {
       console.error('Erro ao carregar dados do localStorage:', error);
       return {
+        initialActivityType: 'manual',
         initialTestStatus: '',
         initialEnvironment: '',
         initialFormData: {
@@ -37,11 +43,16 @@ const getInitialData = () => {
           evidenceDescription: '',
           evidenceLink: '',
           hasAttachment: false,
+          testPlan: '',
+          build: '',
+          testCaseIds: '',
+          pullRequest: '',
         },
       };
     }
   }
   return {
+    initialActivityType: 'manual',
     initialTestStatus: '',
     initialEnvironment: '',
     initialFormData: {
@@ -54,14 +65,23 @@ const getInitialData = () => {
       evidenceDescription: '',
       evidenceLink: '',
       hasAttachment: false,
+      testPlan: '',
+      build: '',
+      testCaseIds: '',
+      pullRequest: '',
     },
   };
 };
 
 export const useTestStatus = () => {
-  const { initialTestStatus, initialEnvironment, initialFormData } =
-    getInitialData();
+  const {
+    initialActivityType,
+    initialTestStatus,
+    initialEnvironment,
+    initialFormData,
+  } = getInitialData();
 
+  const [activityType, setActivityType] = useState(initialActivityType);
   const [testStatus, setTestStatus] = useState(initialTestStatus);
   const [environment, setEnvironment] = useState(initialEnvironment);
   const [formData, setFormData] = useState(initialFormData);
@@ -69,12 +89,19 @@ export const useTestStatus = () => {
   // Salva os dados no localStorage sempre que houver mudanças
   useEffect(() => {
     const dataToSave = {
+      activityType,
       testStatus,
       environment,
       formData,
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
-  }, [testStatus, environment, formData]);
+  }, [activityType, testStatus, environment, formData]);
+
+  const handleActivityTypeChange = e => {
+    setActivityType(e.target.value);
+    // Reset status when changing activity type
+    setTestStatus('');
+  };
 
   const handleStatusChange = e => {
     setTestStatus(e.target.value);
@@ -106,6 +133,7 @@ export const useTestStatus = () => {
   };
 
   const handleClear = () => {
+    setActivityType('manual');
     setTestStatus('');
     setEnvironment('');
     setFormData({
@@ -118,6 +146,10 @@ export const useTestStatus = () => {
       evidenceDescription: '',
       evidenceLink: '',
       hasAttachment: false,
+      testPlan: '',
+      build: '',
+      testCaseIds: '',
+      pullRequest: '',
     });
   };
 
@@ -128,9 +160,11 @@ export const useTestStatus = () => {
   }, []);
 
   return {
+    activityType,
     testStatus,
     environment,
     formData,
+    handleActivityTypeChange,
     handleStatusChange,
     handleEnvironmentChange,
     handleInputChange,

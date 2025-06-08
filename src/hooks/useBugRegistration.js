@@ -78,36 +78,25 @@ export const useBugRegistration = () => {
   };
 
   const formatEvidenceSection = () => {
-    // If evidenceLink is empty, the entire evidence section is omitted
-    if (!bugData.evidenceLink) {
-      return '';
-    }
-
+    // Incluir seção de evidências apenas se houver algum conteúdo
     const evidences = [];
+
     if (bugData.evidenceDescription) {
       evidences.push(bugData.evidenceDescription);
     }
-    // evidenceLink is guaranteed to be non-empty here
-    evidences.push(`Link da evidência: ${bugData.evidenceLink}`);
+
+    if (bugData.evidenceLink) {
+      evidences.push(`Link da evidência: ${bugData.evidenceLink}`);
+    }
 
     if (bugData.hasAttachment) {
       evidences.push('Evidência em anexo na atividade');
     }
 
-    // If evidenceLink is present, join collected evidences.
-    // This will always include at least the link.
-    return evidences.join('\n');
+    return evidences.length > 0 ? evidences.join('\n') : '';
   };
 
   const handleCopyAll = async () => {
-    // Prevent copying if evidenceLink is empty
-    if (!bugData.evidenceLink) {
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('Copy action aborted: evidenceLink is empty.');
-      }
-      return;
-    }
-
     const evidenceSectionContent = formatEvidenceSection();
 
     const formattedSteps = bugData.steps
