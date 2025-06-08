@@ -99,7 +99,7 @@ export const useBugRegistration = () => {
     return evidences.join('\n');
   };
 
-  const handleCopyAll = () => {
+  const handleCopyAll = async () => {
     // Prevent copying if evidenceLink is empty
     if (!bugData.evidenceLink) {
       if (process.env.NODE_ENV === 'development') {
@@ -115,16 +115,17 @@ export const useBugRegistration = () => {
       .map(step => `» ${step}`)
       .join('\n');
 
-    let textToCopy = `    <b>:: Incidente identificado ::</b>
+    // Texto plano (sem formatação)
+    let plainText = `    :: Incidente identificado ::
 ${bugData.incident}
 
-    <b>:: Passo a passo para reprodução ::</b>
+    :: Passo a passo para reprodução ::
 ${formattedSteps}
 
-    <b>:: Comportamento esperado ::</b>
+    :: Comportamento esperado ::
 ${bugData.expectedBehavior}
 
-    <b>:: Informações ::</b>
+    :: Informações ::
 url: ${bugData.url}
 login: ${bugData.login}
 senha: ${bugData.password}
@@ -132,10 +133,49 @@ org_id: ${bugData.envId}
 ${bugData.others}`;
 
     if (evidenceSectionContent) {
-      textToCopy += `\n\n    <b>:: Evidência(s) ::</b>\n${evidenceSectionContent}`;
+      plainText += `\n\n    :: Evidência(s) ::\n${evidenceSectionContent}`;
     }
 
-    navigator.clipboard.writeText(textToCopy.trim());
+    // HTML formatado (com negrito, fonte e espaçamento)
+    let htmlText = `<div style="font-family: Verdana;">
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: #DC3545;">:: Incidente identificado ::</b><br>
+${bugData.incident}</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: #DC3545;">:: Passo a passo para reprodução ::</b><br>
+${formattedSteps.replace(/\n/g, '<br>')}</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: #DC3545;">:: Comportamento esperado ::</b><br>
+${bugData.expectedBehavior}</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: #DC3545;">:: Informações ::</b><br>
+<b>url:</b> ${bugData.url}<br>
+<b>login:</b> ${bugData.login}<br>
+<b>senha:</b> ${bugData.password}<br>
+<b>org_id:</b> ${bugData.envId}<br>
+${bugData.others}</p>`;
+
+    if (evidenceSectionContent) {
+      htmlText += `\n<p>&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: #DC3545;">:: Evidência(s) ::</b><br>${evidenceSectionContent.replace(/\n/g, '<br>')}</p>`;
+    }
+
+    htmlText += '</div>';
+
+    try {
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          'text/plain': new Blob([plainText.trim()], { type: 'text/plain' }),
+          'text/html': new Blob([htmlText.trim()], { type: 'text/html' }),
+        }),
+      ]);
+    } catch (err) {
+      try {
+        await navigator.clipboard.writeText(plainText.trim());
+      } catch (err) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Failed to copy to clipboard:', err);
+        }
+      }
+    }
   };
 
   const logBugData = useCallback(formData => {
