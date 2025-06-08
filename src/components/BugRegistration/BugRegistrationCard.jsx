@@ -285,12 +285,7 @@ const BugRegistrationCard = () => {
             <button
               className='generate-all-btn'
               onClick={handleCopyAll}
-              disabled={!bugData.evidenceLink}
-              title={
-                !bugData.evidenceLink
-                  ? "Preencha o link da evidência ou informe 'N/A' para habilitar."
-                  : 'Copiar'
-              }
+              title='Copiar'
             >
               <FaCopy /> Copiar
             </button>

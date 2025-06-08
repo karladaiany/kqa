@@ -7,6 +7,9 @@ import {
   FaTimes,
   FaCopy,
   FaBroom,
+  FaClipboardCheck,
+  FaRobot,
+  FaEllipsisH,
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { useTestStatus } from '../../hooks/useTestStatus';
@@ -31,6 +34,7 @@ const CampoDinamico = ({
           value={value}
           onChange={onChange}
           className='copyable'
+          placeholder={placeholder}
         />
       ) : (
         <input
@@ -59,9 +63,11 @@ CampoDinamico.propTypes = {
 
 const TestStatusCard = () => {
   const {
+    activityType,
     testStatus,
     environment,
     formData,
+    handleActivityTypeChange,
     handleStatusChange,
     handleEnvironmentChange,
     handleInputChange,
@@ -72,14 +78,38 @@ const TestStatusCard = () => {
 
   const { clearCardTextareaSizes } = useTextareaResizeActions();
 
-  const testStatusOptions = [
-    { value: 'waiting', label: '‼️   Aguardando' },
-    { value: 'blocked', label: '🚫   Bloqueado' },
-    { value: 'cancelled', label: '🗑️   Cancelado' },
-    { value: 'passed', label: '✅   Passou' },
-    { value: 'failed', label: '❌   Reprovado' },
-    { value: 'returned', label: '↩️   Retornado' },
+  // Opções de tipo de atividade
+  const activityTypeOptions = [
+    { value: 'manual', label: '📝 Diversos', icon: <FaEllipsisH /> },
+    {
+      value: 'execution',
+      label: '🔍 Execução de Testes',
+      icon: <FaClipboardCheck />,
+    },
+    { value: 'automation', label: '🤖 Automação de Testes', icon: <FaRobot /> },
   ];
+
+  // Status options baseados no tipo de atividade
+  const getStatusOptions = () => {
+    if (activityType === 'manual') {
+      return [
+        { value: 'waiting', label: '‼️   Aguardando' },
+        { value: 'blocked', label: '🚫   Bloqueado' },
+        { value: 'cancelled', label: '🗑️   Cancelado' },
+        { value: 'passed', label: '✅   Passou' },
+        { value: 'failed', label: '❌   Reprovado' },
+        { value: 'returned', label: '↩️   Retornado' },
+      ];
+    } else {
+      // Para execução e automação de testes
+      return [
+        { value: 'completed', label: '✅   Concluído' },
+        { value: 'waiting', label: '⏳   Aguardando' },
+        { value: 'blocked', label: '🚫   Bloqueado' },
+        { value: 'cancelled', label: '🗑️   Cancelado' },
+      ];
+    }
+  };
 
   const environmentOptions = [
     { value: 'alpha', label: '🔮   Alpha' },
@@ -87,36 +117,145 @@ const TestStatusCard = () => {
     { value: 'stage', label: '🧪   Stage' },
   ];
 
-  // Configuração dinâmica dos campos por status
-  const camposPorStatus = {
-    waiting: [
-      { id: 'observation', label: 'Observação', type: 'textarea' },
-      { id: 'waiting', label: 'Aguardando', type: 'textarea' },
-    ],
-    blocked: [
-      { id: 'observation', label: 'Observação', type: 'textarea' },
-      {
-        id: 'blockReason',
-        label: 'Motivo do bloqueio',
-        type: 'textarea',
-      },
-    ],
-    cancelled: [{ id: 'observation', label: 'Observação', type: 'textarea' }],
-    passed: [
-      { id: 'validation', label: 'Validação', type: 'textarea' },
-      { id: 'observation', label: 'Observação', type: 'textarea' },
-    ],
-    failed: [{ id: 'observation', label: 'Observação', type: 'textarea' }],
-    returned: [
-      { id: 'validation', label: 'Validação', type: 'textarea' },
-      { id: 'observation', label: 'Observação', type: 'textarea' },
-      { id: 'information', label: 'Informações', type: 'textarea' },
-      {
-        id: 'returnReason',
-        label: 'Motivo do retorno',
-        type: 'textarea',
-      },
-    ],
+  // Configuração dinâmica dos campos por tipo de atividade e status
+  const getCamposPorStatus = () => {
+    if (activityType === 'manual') {
+      return {
+        waiting: [
+          { id: 'observation', label: 'Observação', type: 'textarea' },
+          { id: 'waiting', label: 'Aguardando', type: 'textarea' },
+        ],
+        blocked: [
+          { id: 'observation', label: 'Observação', type: 'textarea' },
+          {
+            id: 'blockReason',
+            label: 'Motivo do bloqueio',
+            type: 'textarea',
+          },
+        ],
+        cancelled: [
+          { id: 'observation', label: 'Observação', type: 'textarea' },
+        ],
+        passed: [
+          { id: 'validation', label: 'Validação', type: 'textarea' },
+          { id: 'observation', label: 'Observação', type: 'textarea' },
+        ],
+        failed: [{ id: 'observation', label: 'Observação', type: 'textarea' }],
+        returned: [
+          { id: 'validation', label: 'Validação', type: 'textarea' },
+          { id: 'observation', label: 'Observação', type: 'textarea' },
+          { id: 'information', label: 'Informações', type: 'textarea' },
+          {
+            id: 'returnReason',
+            label: 'Motivo do retorno',
+            type: 'textarea',
+          },
+        ],
+      };
+    } else if (activityType === 'execution') {
+      return {
+        completed: [
+          {
+            id: 'testPlan',
+            label: 'Plano de Teste',
+            type: 'input',
+            placeholder: 'Ex: Plano de Teste Modo de uso',
+          },
+          {
+            id: 'build',
+            label: 'Build',
+            type: 'input',
+            placeholder: 'Ex: Baseline Outro ambiente / Ambiente interno',
+          },
+          {
+            id: 'testCaseIds',
+            label: "ID's dos CT",
+            type: 'textarea',
+            placeholder: 'Ex: T-1 a 4 / 10 a 19 / 34 e 35',
+          },
+          { id: 'observation', label: 'Obs', type: 'textarea' },
+        ],
+        waiting: [
+          {
+            id: 'testPlan',
+            label: 'Plano de Teste',
+            type: 'input',
+            placeholder: 'Ex: Plano de Teste Modo de uso',
+          },
+          {
+            id: 'build',
+            label: 'Build',
+            type: 'input',
+            placeholder: 'Ex: Baseline Outro ambiente / Ambiente interno',
+          },
+          {
+            id: 'testCaseIds',
+            label: "ID's dos CT",
+            type: 'textarea',
+            placeholder: 'Ex: T-1 a 4 / 10 a 19 / 34 e 35',
+          },
+          { id: 'waiting', label: 'Aguardando', type: 'textarea' },
+          { id: 'observation', label: 'Obs', type: 'textarea' },
+        ],
+        blocked: [
+          {
+            id: 'testPlan',
+            label: 'Plano de Teste',
+            type: 'input',
+            placeholder: 'Ex: Plano de Teste Modo de uso',
+          },
+          {
+            id: 'build',
+            label: 'Build',
+            type: 'input',
+            placeholder: 'Ex: Baseline Outro ambiente / Ambiente interno',
+          },
+          {
+            id: 'testCaseIds',
+            label: "ID's dos CT",
+            type: 'textarea',
+            placeholder: 'Ex: T-1 a 4 / 10 a 19 / 34 e 35',
+          },
+          { id: 'blockReason', label: 'Motivo do bloqueio', type: 'textarea' },
+          { id: 'observation', label: 'Obs', type: 'textarea' },
+        ],
+        cancelled: [{ id: 'observation', label: 'Obs', type: 'textarea' }],
+      };
+    } else if (activityType === 'automation') {
+      return {
+        completed: [
+          {
+            id: 'pullRequest',
+            label: 'PR',
+            type: 'input',
+            placeholder: 'Ex: #123 ou link do PR',
+          },
+          { id: 'observation', label: 'Obs', type: 'textarea' },
+        ],
+        waiting: [
+          {
+            id: 'pullRequest',
+            label: 'PR',
+            type: 'input',
+            placeholder: 'Ex: #123 ou link do PR',
+          },
+          { id: 'waiting', label: 'Aguardando', type: 'textarea' },
+          { id: 'observation', label: 'Obs', type: 'textarea' },
+        ],
+        blocked: [
+          {
+            id: 'pullRequest',
+            label: 'PR',
+            type: 'input',
+            placeholder: 'Ex: #123 ou link do PR',
+          },
+          { id: 'blockReason', label: 'Motivo do bloqueio', type: 'textarea' },
+          { id: 'observation', label: 'Obs', type: 'textarea' },
+        ],
+        cancelled: [{ id: 'observation', label: 'Obs', type: 'textarea' }],
+      };
+    }
+    return {};
   };
 
   const camposEvidencia = [
@@ -125,80 +264,167 @@ const TestStatusCard = () => {
       label: 'Descrição da evidência',
       type: 'textarea',
     },
-    { id: 'evidenceLink', label: 'Link da evidência', type: 'input' },
+    {
+      id: 'evidenceLink',
+      label: 'Link da evidência',
+      type: 'input',
+      placeholder: 'https://jam.dev/',
+    },
   ];
 
-  const handleCopy = () => {
-    // Prevent copying if evidenceLink is empty
-    if (!formData.evidenceLink) {
-      toast.warn("Preencha o link da evidência ou informe 'N/A' para copiar.");
-      return;
-    }
-
-    const selectedStatusOption = testStatusOptions.find(
+  const generateTemplate = () => {
+    const selectedStatusOption = getStatusOptions().find(
       option => option.value === testStatus
     );
     const selectedEnvironmentOption = environmentOptions.find(
       option => option.value === environment
     );
     const formatLabel = label => label.replace(/\s+/g, ' ').trim();
+
     let template = '⇝ QA ⇜\n\n';
-    template += ':: Teste ::\n';
-    template += `${formatLabel(selectedStatusOption.label)}\n\n`;
-    if (
-      environment &&
-      ['passed', 'failed', 'blocked', 'returned'].includes(testStatus)
-    ) {
-      template += ':: Ambiente ::\n';
-      template += `${formatLabel(selectedEnvironmentOption.label)}\n\n`;
-    }
-    if (['passed', 'returned'].includes(testStatus) && formData.validation) {
-      template += ':: Validação ::\n';
-      template += `${formData.validation}\n\n`;
-    }
-    if (formData.observation) {
-      template += ':: Obs ::\n';
-      template += `${formData.observation}\n\n`;
-    }
-    if (testStatus === 'waiting' && formData.waiting) {
-      template += ':: Aguardando ::\n';
-      template += `${formData.waiting}\n\n`;
-    }
-    if (testStatus === 'blocked' && formData.blockReason) {
-      template += ':: Motivo do bloqueio ::\n';
-      template += `${formData.blockReason}\n\n`;
-    }
-    if (testStatus === 'returned' && formData.information) {
-      template += ':: Informações ::\n';
-      template += `${formData.information}\n\n`;
-    }
-    if (testStatus === 'returned' && formData.returnReason) {
-      template += ':: Motivo retorno ::\n';
-      template += `${formData.returnReason}\n\n`;
-    }
-    if (
-      formData.evidenceDescription ||
-      formData.evidenceLink ||
-      formData.hasAttachment
-    ) {
-      template += ':: Evidência(s) ::\n';
-      if (formData.evidenceDescription) {
-        template += `${formData.evidenceDescription}\n`;
+
+    if (activityType === 'manual') {
+      // Template para teste manual (original)
+      template += ':: Teste ::\n';
+      template += `${formatLabel(selectedStatusOption.label)}\n\n`;
+      if (
+        environment &&
+        ['passed', 'failed', 'blocked', 'returned'].includes(testStatus)
+      ) {
+        template += ':: Ambiente ::\n';
+        template += `${formatLabel(selectedEnvironmentOption.label)}\n\n`;
       }
-      if (formData.evidenceLink) {
-        template += `Evidência no link: ${formData.evidenceLink}\n`;
+      if (['passed', 'returned'].includes(testStatus) && formData.validation) {
+        template += ':: Validação ::\n';
+        template += `${formData.validation}\n\n`;
       }
-      if (formData.hasAttachment) {
-        template += '📎 Evidência em anexo na atividade\n';
+      if (formData.observation) {
+        template += ':: Obs ::\n';
+        template += `${formData.observation}\n\n`;
+      }
+      if (testStatus === 'waiting' && formData.waiting) {
+        template += ':: Aguardando ::\n';
+        template += `${formData.waiting}\n\n`;
+      }
+      if (testStatus === 'blocked' && formData.blockReason) {
+        template += ':: Motivo do bloqueio ::\n';
+        template += `${formData.blockReason}\n\n`;
+      }
+      if (testStatus === 'returned' && formData.information) {
+        template += ':: Informações ::\n';
+        template += `${formData.information}\n\n`;
+      }
+      if (testStatus === 'returned' && formData.returnReason) {
+        template += ':: Motivo retorno ::\n';
+        template += `${formData.returnReason}\n\n`;
+      }
+      if (
+        formData.evidenceDescription ||
+        formData.evidenceLink ||
+        formData.hasAttachment
+      ) {
+        template += ':: Evidência(s) ::\n';
+        if (formData.evidenceDescription) {
+          template += `${formData.evidenceDescription}\n`;
+        }
+        if (formData.evidenceLink) {
+          template += `Evidência no link: ${formData.evidenceLink}\n`;
+        }
+        if (formData.hasAttachment) {
+          template += '📎 Evidência em anexo na atividade\n';
+        }
+        template += '\n';
+      }
+    } else if (activityType === 'execution') {
+      // Template para execução de testes
+      template += ':: 🔎 Teste 🔎 ::\n';
+      template += `${formatLabel(selectedStatusOption.label)}\n\n`;
+
+      if (environment) {
+        template += ':: 📍 Ambiente 📍 ::\n';
+        template += `${formatLabel(selectedEnvironmentOption.label)}\n\n`;
+      }
+
+      // Verificar se há dados na seção de validação
+      const hasValidationData =
+        formData.testPlan || formData.build || formData.testCaseIds;
+      if (hasValidationData) {
+        template += ':: 📑 Validação 📑 ::\n';
+        if (formData.testPlan) {
+          template += `Plano de Teste ${formData.testPlan}\n`;
+        }
+        if (formData.build) {
+          template += `Baseline ${formData.build}\n`;
+        }
+        if (formData.testCaseIds) {
+          template += `Execução dos casos de testes: ${formData.testCaseIds}\n`;
+        }
+        template += '\n';
+      }
+
+      if (testStatus === 'waiting' && formData.waiting) {
+        template += ':: ⏳ Aguardando ⏳ ::\n';
+        template += `${formData.waiting}\n\n`;
+      }
+
+      if (testStatus === 'blocked' && formData.blockReason) {
+        template += ':: 🚫 Motivo do bloqueio 🚫 ::\n';
+        template += `${formData.blockReason}\n\n`;
+      }
+
+      if (formData.observation) {
+        template += ':: 🚩 Obs 🚩 ::\n';
+        template += `${formData.observation}\n\n`;
+      }
+    } else if (activityType === 'automation') {
+      // Template para automação de testes
+      template += ':: 🤖 Automação 🤖 ::\n';
+      template += `${formatLabel(selectedStatusOption.label)}\n\n`;
+
+      if (environment) {
+        template += ':: 📍 Ambiente 📍 ::\n';
+        template += `${formatLabel(selectedEnvironmentOption.label)}\n\n`;
+      }
+
+      if (formData.pullRequest) {
+        template += ':: 🔗 PR 🔗 ::\n';
+        template += `${formData.pullRequest}\n\n`;
+      }
+
+      if (testStatus === 'waiting' && formData.waiting) {
+        template += ':: ⏳ Aguardando ⏳ ::\n';
+        template += `${formData.waiting}\n\n`;
+      }
+
+      if (testStatus === 'blocked' && formData.blockReason) {
+        template += ':: 🚫 Motivo do bloqueio 🚫 ::\n';
+        template += `${formData.blockReason}\n\n`;
+      }
+
+      if (formData.observation) {
+        template += ':: 🚩 Obs 🚩 ::\n';
+        template += `${formData.observation}\n\n`;
       }
     }
-    navigator.clipboard.writeText(template.trim());
+
+    return template.trim();
+  };
+
+  const handleCopy = () => {
+    // Validação específica por tipo de atividade (removida obrigatoriedade do evidenceLink)
+    const template = generateTemplate();
+    navigator.clipboard.writeText(template);
     toast.success('Comentário copiado!');
   };
 
   const renderEnvironmentField = () => {
-    if (!['passed', 'failed', 'blocked', 'returned'].includes(testStatus))
-      return null;
+    if (activityType === 'manual') {
+      if (!['passed', 'failed', 'blocked', 'returned'].includes(testStatus))
+        return null;
+    }
+    // Para execução e automação, sempre mostrar ambiente quando houver status
+    if (!testStatus) return null;
+
     return (
       <div className='campo-item'>
         <label htmlFor='environment'>Ambiente</label>
@@ -222,7 +448,7 @@ const TestStatusCard = () => {
   };
 
   const renderCamposDinamicos = campos =>
-    campos.map(({ id, label, type }) => (
+    campos.map(({ id, label, type, placeholder }) => (
       <CampoDinamico
         key={id}
         id={id}
@@ -231,12 +457,13 @@ const TestStatusCard = () => {
         onChange={handleInputChange(id)}
         onClear={() => handleClearField(id)}
         type={type === 'input' ? 'text' : 'textarea'}
-        placeholder={id === 'evidenceLink' ? 'https://jam.dev/' : undefined}
+        placeholder={placeholder}
       />
     ));
 
   const renderEvidenceSection = () => {
-    if (!testStatus) return null;
+    // Seção de evidências apenas para teste manual
+    if (activityType !== 'manual' || !testStatus) return null;
     return (
       <>
         <div className='section-divider'>
@@ -257,11 +484,23 @@ const TestStatusCard = () => {
     );
   };
 
+  const shouldDisableCopy = () => {
+    // Removida validação obrigatória do evidenceLink
+    return false; // Sempre permitir copiar se houver status selecionado
+  };
+
+  const getCopyTooltip = () => {
+    return 'Copiar';
+  };
+
   const handleClearWithResize = () => {
     handleClear();
     // Limpar tamanhos dos textareas do localStorage
     clearCardTextareaSizes('test-status');
   };
+
+  const statusOptions = getStatusOptions();
+  const camposPorStatus = getCamposPorStatus();
 
   return (
     <section className='card' id='test-status'>
@@ -272,7 +511,29 @@ const TestStatusCard = () => {
       </div>
       <div className='card-content'>
         <div className='campo-item'>
-          <label htmlFor='testStatus'>Status do teste</label>
+          <label htmlFor='activityType'>Tipo de atividade</label>
+          <div className='campo-valor'>
+            <select
+              id='activityType'
+              value={activityType}
+              onChange={handleActivityTypeChange}
+              className='copyable'
+            >
+              {activityTypeOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className='campo-item'>
+          <label htmlFor='testStatus'>
+            {activityType === 'manual'
+              ? 'Status do teste'
+              : 'Status da execução'}
+          </label>
           <div className='campo-valor'>
             <select
               id='testStatus'
@@ -281,7 +542,7 @@ const TestStatusCard = () => {
               className='copyable'
             >
               <option value=''>Selecione um status</option>
-              {testStatusOptions.map(option => (
+              {statusOptions.map(option => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -289,20 +550,18 @@ const TestStatusCard = () => {
             </select>
           </div>
         </div>
+
         {renderEnvironmentField()}
         {testStatus && renderCamposDinamicos(camposPorStatus[testStatus] || [])}
         {renderEvidenceSection()}
+
         {testStatus && (
           <div className='card-actions'>
             <button
               className='generate-all-btn'
               onClick={handleCopy}
-              disabled={!formData.evidenceLink}
-              title={
-                !formData.evidenceLink
-                  ? "Preencha o link da evidência ou informe 'N/A' para habilitar."
-                  : 'Copiar'
-              }
+              disabled={shouldDisableCopy()}
+              title={getCopyTooltip()}
             >
               <FaCopy /> Copiar
             </button>
