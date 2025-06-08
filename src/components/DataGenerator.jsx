@@ -1,6 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useDataGenerator } from "../hooks/useDataGenerator";
 import useTextareaResize from "../hooks/useTextareaResize";
+import { useDocumentMasks } from "../hooks/useDocumentMasks";
+import { useDocuments } from "../hooks/useDocuments";
+import { usePersonalData } from "../hooks/usePersonalData";
+import { useCreditCard } from "../hooks/useCreditCard";
+import { useProduct } from "../hooks/useProduct";
+import { useRandomChars } from "../hooks/useRandomChars";
+import { useTextCounter } from "../hooks/useTextCounter";
 import { toast } from "react-toastify";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import {
@@ -19,8 +26,8 @@ import {
 } from "react-icons/fa";
 import DataField from "./DataField";
 import ComplementaryDataCard from "./ComplementaryData/ComplementaryDataCard";
-import FileGeneratorCard from "./FileGenerator/FileGeneratorCard"; // Import FileGeneratorCard
-import * as companyGenerators from "../generators/companyData"; // Import all company data generators
+import FileGeneratorCard from "./FileGenerator/FileGeneratorCard";
+import * as companyGenerators from "../generators/companyData";
 
 const CategoryTag = ({ category }) => {
 	const handleCopy = () => {
@@ -52,248 +59,34 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 		generateProduct,
 		gerarCEPValido,
 		generateRandomChars,
-		getEredeTestCardStatuses, // For populating Erede status dropdown
+		getEredeTestCardStatuses,
 	} = useDataGenerator();
 
-	const eredeStatuses = getEredeTestCardStatuses
-		? getEredeTestCardStatuses()
-		: [];
+	const { masks, toggleMask } = useDocumentMasks();
+	const { documents, regenerateCPF, regenerateCNPJ, regenerateRG } =
+		useDocuments();
+	const { person, regenerateField, regenerateAllPersonData } =
+		usePersonalData();
+	const {
+		card,
+		cardConfig,
+		eredeStatuses,
+		handleCardConfigChange,
+		regenerateCard,
+	} = useCreditCard();
+	const { product, regenerateProductField, regenerateAllProduct } =
+		useProduct();
+	const { randomChars, handleRandomCharsChange, handleClearLength } =
+		useRandomChars();
+	const { textCounter, handleTextChange, handleClearText } = useTextCounter();
 
-	// Consolidate generator functions to pass to FileGeneratorCard
 	const allGeneratorFunctions = {
 		generatePerson,
 		generateCPF,
-		generateCNPJ, // Included for completeness if FileGeneratorCard ever needs it
+		generateCNPJ,
 		generateRG,
-		...companyGenerators, // Spread all exports from companyData.js
+		...companyGenerators,
 	};
-
-	const [documents, setDocuments] = useState({
-		cpf: generateCPF(),
-		cnpj: generateCNPJ(),
-		rg: generateRG(),
-	});
-
-	const [masks, setMasks] = useState(() => {
-		const savedMasks = localStorage.getItem("document-masks");
-		return savedMasks
-			? JSON.parse(savedMasks)
-			: {
-					cpf: true,
-					cnpj: true,
-					rg: true,
-			  };
-	});
-
-	const [person, setPerson] = useState(generatePerson());
-	const [card, setCard] = useState(generateCreditCard("visa", "credito")); // Initial card
-	const [product, setProduct] = useState(generateProduct());
-
-	const [cardConfig, setCardConfig] = useState({
-		bandeira: "visa",
-		tipo: "credito",
-		eredeStatus: "APROVADA", // Definir "APROVADA" (Autorizado) como padrão
-	});
-
-	// Update card state when eredeStatus changes and Erede is the selected brand
-	useEffect(() => {
-		if (cardConfig.bandeira.toLowerCase() === "erede") {
-			const newCard = generateCreditCard(
-				cardConfig.bandeira,
-				"",
-				cardConfig.eredeStatus
-			);
-			setCard(newCard);
-		}
-	}, [cardConfig.eredeStatus]); // Removido cardConfig.bandeira da dependência
-
-	const [randomChars, setRandomChars] = useState({
-		length: "",
-		value: "",
-	});
-
-	const [textCounter, setTextCounter] = useState({
-		text: "",
-		count: 0,
-	});
-
-	const toggleMask = (field) => {
-		setMasks((prev) => {
-			const newMasks = {
-				...prev,
-				[field]: !prev[field],
-			};
-			localStorage.setItem("document-masks", JSON.stringify(newMasks));
-			return newMasks;
-		});
-	};
-
-	const regenerateField = (field) => {
-		const newPerson = { ...person };
-
-		switch (field) {
-			case "nome":
-				const { nome, email } = generatePerson();
-				newPerson.nome = nome;
-				newPerson.email = email; // Atualiza email junto com nome pois são relacionados
-				break;
-			case "telefone":
-				newPerson.telefone = generatePerson().telefone;
-				break;
-			case "endereco":
-				newPerson.endereco = {
-					...newPerson.endereco,
-					rua: generatePerson().endereco.rua,
-				};
-				break;
-			case "numero":
-				newPerson.endereco = {
-					...newPerson.endereco,
-					numero: generatePerson().endereco.numero,
-				};
-				break;
-			case "complemento":
-				newPerson.endereco = {
-					...newPerson.endereco,
-					complemento: generatePerson().endereco.complemento,
-				};
-				break;
-			case "bairro":
-				newPerson.endereco = {
-					...newPerson.endereco,
-					bairro: generatePerson().endereco.bairro,
-				};
-				break;
-			case "cidade":
-				newPerson.endereco = {
-					...newPerson.endereco,
-					cidade: generatePerson().endereco.cidade,
-				};
-				break;
-			case "estado":
-				const novaPessoa = generatePerson();
-				newPerson.endereco = {
-					...newPerson.endereco,
-					estado: novaPessoa.endereco.estado,
-					cep: novaPessoa.endereco.cep, // Atualiza CEP junto com estado pois são relacionados
-				};
-				break;
-			case "cep":
-				// Gera um novo CEP baseado no estado atual
-				newPerson.endereco = {
-					...newPerson.endereco,
-					cep: gerarCEPValido(newPerson.endereco.estado),
-				};
-				break;
-			default:
-				return;
-		}
-
-		setPerson(newPerson);
-	};
-
-	const regenerateProductField = (field) => {
-		const newProduct = { ...product };
-		const tempProduct = generateProduct();
-
-		switch (field) {
-			case "nome":
-				newProduct.nome = tempProduct.nome;
-				break;
-			case "descricao":
-				newProduct.descricao = tempProduct.descricao;
-				break;
-			case "categorias":
-				newProduct.categorias = tempProduct.categorias;
-				break;
-			default:
-				return;
-		}
-
-		setProduct(newProduct);
-	};
-
-	const handleCardConfigChange = (e) => {
-		const { name, value } = e.target;
-		setCardConfig((prev) => {
-			const newConfig = { ...prev, [name]: value };
-
-			// Se mudou para Erede, definir status padrão como "APROVADA"
-			if (name === "bandeira" && value.toLowerCase() === "erede") {
-				newConfig.eredeStatus = "APROVADA";
-				setCard(generateCreditCard(value, "", "APROVADA"));
-			} else if (newConfig.bandeira.toLowerCase() === "erede") {
-				// Se já é Erede e mudou o status
-				setCard(
-					generateCreditCard(
-						newConfig.bandeira,
-						"",
-						newConfig.eredeStatus
-					)
-				);
-			} else {
-				// Para outras bandeiras
-				setCard(generateCreditCard(newConfig.bandeira, newConfig.tipo));
-			}
-			return newConfig;
-		});
-	};
-
-	const handleRandomCharsChange = (e) => {
-		const value = e.target.value;
-		// Permite campo vazio ou números positivos
-		if (value === "" || (parseInt(value) > 0 && parseInt(value) <= 99999)) {
-			setRandomChars((prev) => ({
-				...prev,
-				length: value,
-			}));
-		}
-	};
-
-	const handleClearLength = () => {
-		setRandomChars((prev) => ({
-			...prev,
-			length: "",
-		}));
-	};
-
-	const generateNewRandomChars = () => {
-		// Só gera se houver um número válido
-		if (randomChars.length && parseInt(randomChars.length) > 0) {
-			setRandomChars((prev) => ({
-				...prev,
-				value: generateRandomChars(parseInt(prev.length)),
-			}));
-		}
-	};
-
-	const handleTextChange = (e) => {
-		const newText = e.target.value;
-		setTextCounter({
-			text: newText,
-			count: newText.length,
-		});
-	};
-
-	const handleClearText = () => {
-		setTextCounter({
-			text: "",
-			count: 0,
-		});
-	};
-
-	useEffect(() => {
-		// Só gera automaticamente se houver um número válido
-		if (randomChars.length && parseInt(randomChars.length) > 0) {
-			generateNewRandomChars();
-		} else {
-			// Limpa o valor gerado se o comprimento não for válido
-			setRandomChars((prev) => ({
-				...prev,
-				value: "",
-			}));
-		}
-	}, [randomChars.length]);
 
 	if (isLoading) {
 		return <div>Carregando gerador de dados...</div>;
@@ -316,12 +109,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 					value={documents.cpf.formatted}
 					raw={documents.cpf.raw}
 					showMask={masks.cpf}
-					onRegenerate={() =>
-						setDocuments((prev) => ({
-							...prev,
-							cpf: generateCPF(),
-						}))
-					}
+					onRegenerate={regenerateCPF}
 					onToggleMask={() => toggleMask("cpf")}
 				/>
 				<DataField
@@ -329,12 +117,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 					value={documents.cnpj.formatted}
 					raw={documents.cnpj.raw}
 					showMask={masks.cnpj}
-					onRegenerate={() =>
-						setDocuments((prev) => ({
-							...prev,
-							cnpj: generateCNPJ(),
-						}))
-					}
+					onRegenerate={regenerateCNPJ}
 					onToggleMask={() => toggleMask("cnpj")}
 				/>
 				<DataField
@@ -342,9 +125,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 					value={documents.rg.formatted}
 					raw={documents.rg.raw}
 					showMask={masks.rg}
-					onRegenerate={() =>
-						setDocuments((prev) => ({ ...prev, rg: generateRG() }))
-					}
+					onRegenerate={regenerateRG}
 					onToggleMask={() => toggleMask("rg")}
 				/>
 			</div>
@@ -359,7 +140,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 				</h2>
 				<button
 					className="generate-all-btn"
-					onClick={() => setPerson(generatePerson())}
+					onClick={regenerateAllPersonData}
 					title="Gerar todos os dados pessoais novamente"
 				>
 					<FaRedo className="generate-icon" /> Gerar tudo
@@ -428,7 +209,7 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 				</h2>
 				<button
 					className="generate-all-btn"
-					onClick={() => setProduct(generateProduct())}
+					onClick={regenerateAllProduct}
 					title="Gerar todos os dados do produto novamente"
 				>
 					<FaRedo className="generate-icon" /> Gerar tudo
@@ -512,30 +293,13 @@ const DataGenerator = ({ onGenerate = () => {} }) => {
 						</select>
 					)}
 					<button
-						onClick={() => {
-							if (cardConfig.bandeira.toLowerCase() === "erede") {
-								setCard(
-									generateCreditCard(
-										cardConfig.bandeira,
-										"",
-										cardConfig.eredeStatus
-									)
-								);
-							} else {
-								setCard(
-									generateCreditCard(
-										cardConfig.bandeira,
-										cardConfig.tipo
-									)
-								);
-							}
-						}}
+						onClick={regenerateCard}
 						className="generate-all-btn"
 					>
 						<FaRedo className="generate-icon" />{" "}
 						{cardConfig.bandeira.toLowerCase() === "erede"
 							? "Gerar"
-							: "Gerar novo"}
+							: "Novo"}
 					</button>
 				</div>
 			</div>
