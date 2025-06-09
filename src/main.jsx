@@ -45,14 +45,28 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
 // Limpeza de dados de segurança na inicialização
 cleanupSecurityData();
 
-const root = document.getElementById('root');
-if (root) {
+// Verificar se React está disponível antes de tentar renderizar
+function initializeApp() {
+  // Verificar se React e ReactDOM estão carregados
+  if (typeof React === 'undefined' || typeof createRoot === 'undefined') {
+    console.warn('[KQA] React not loaded yet, retrying...');
+    setTimeout(initializeApp, 100);
+    return;
+  }
+
+  const root = document.getElementById('root');
+  if (!root) {
+    console.error('[KQA] Root element not found');
+    return;
+  }
+
   try {
     createRoot(root).render(
       <React.StrictMode>
         <App />
       </React.StrictMode>
     );
+    console.log('[KQA] App rendered successfully');
   } catch (error) {
     console.error('[KQA] Failed to render app:', error);
     // Fallback simples se React falhar
@@ -69,17 +83,35 @@ if (root) {
       ">
         <div>
           <h1>KQA - Gerador de Dados</h1>
-          <p>Carregando aplicação...</p>
+          <p>Erro ao carregar aplicação</p>
           <p style="color: #888; font-size: 0.9em;">
-            Se este erro persistir, tente recarregar a página.
+            Recarregando automaticamente...
           </p>
+          <button onclick="window.location.reload()" style="
+            background: #785DC8; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            cursor: pointer;
+            margin-top: 20px;
+          ">
+            Recarregar Agora
+          </button>
         </div>
       </div>
     `;
 
-    // Tentar recarregar após 3 segundos
+    // Tentar recarregar após 5 segundos
     setTimeout(() => {
       window.location.reload();
-    }, 3000);
+    }, 5000);
   }
+}
+
+// Inicializar quando o DOM estiver pronto
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+  initializeApp();
 }
