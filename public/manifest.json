@@ -67,7 +67,7 @@
   },
   "protocol_handlers": [
     {
-      "protocol": "kqa",
+      "protocol": "web+kqa",
       "url": "/?data=%s"
     }
   ],
