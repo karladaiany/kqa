@@ -28,9 +28,10 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    sourcemap: true,
+    sourcemap: false,
     minify: 'terser',
     chunkSizeWarningLimit: 3000,
+    target: 'es2015',
     rollupOptions: {
       input: {
         main: './index.html',
@@ -140,18 +141,13 @@ export default defineConfig({
     },
     terserOptions: {
       compress: {
-        drop_console: true,
+        drop_console: false,
         drop_debugger: true,
-        pure_funcs: [
-          'console.log',
-          'console.info',
-          'console.debug',
-          'console.warn',
-        ],
+        pure_funcs: ['console.debug'],
         passes: 2,
-        unsafe: true,
-        unsafe_comps: true,
-        unsafe_math: true,
+        unsafe: false,
+        unsafe_comps: false,
+        unsafe_math: false,
       },
       mangle: {
         safari10: true,

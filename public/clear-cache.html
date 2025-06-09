@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Limpar Cache - KQA</title>
+    <style>
+      body {
+        font-family: system-ui;
+        text-align: center;
+        background: #1a1a1a;
+        color: #fff;
+        margin: 0;
+        padding: 50px;
+      }
+      button {
+        background: #785dc8;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 10px;
+      }
+      button:hover {
+        background: #6b4db3;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Debug - Limpar Cache</h1>
+    <p>
+      Esta página ajuda a limpar o cache para resolver problemas de
+      carregamento.
+    </p>
+
+    <button onclick="clearAllCache()">Limpar Todo Cache</button>
+    <button onclick="location.href='/'">Voltar para App</button>
+
+    <div id="status"></div>
+
+    <script>
+      async function clearAllCache() {
+        const status = document.getElementById('status');
+        status.innerHTML = '<p>Limpando cache...</p>';
+
+        try {
+          // Limpar Service Worker caches
+          if ('caches' in window) {
+            const cacheNames = await caches.keys();
+            await Promise.all(
+              cacheNames.map(cacheName => caches.delete(cacheName))
+            );
+          }
+
+          // Desregistrar Service Workers
+          if ('serviceWorker' in navigator) {
+            const registrations =
+              await navigator.serviceWorker.getRegistrations();
+            await Promise.all(
+              registrations.map(registration => registration.unregister())
+            );
+          }
+
+          // Limpar localStorage e sessionStorage
+          localStorage.clear();
+          sessionStorage.clear();
+
+          status.innerHTML =
+            '<p style="color: #4CAF50;">Cache limpo! Redirecionando...</p>';
+
+          setTimeout(() => {
+            window.location.href = '/?nocache=' + Date.now();
+          }, 2000);
+        } catch (error) {
+          console.error('Erro ao limpar cache:', error);
+          status.innerHTML =
+            '<p style="color: #f44336;">Erro: ' + error.message + '</p>';
+        }
+      }
+    </script>
+  </body>
+</html>
