@@ -12,16 +12,12 @@ const STATIC_ASSETS = [
   '/index.html',
   '/manifest.json',
   '/vite.svg',
-  '/src/main.jsx',
-  '/src/App.jsx',
-  '/src/styles.css',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap',
 ];
 
 // Recursos que podem ser cachados dinamicamente
 const CACHEABLE_ROUTES = [
-  /^\/src\/.*\.(js|jsx|css)$/,
-  /^\/assets\/.*\.(png|jpg|jpeg|svg|woff2?)$/,
+  /^\/assets\/.*\.(js|css|png|jpg|jpeg|svg|woff2?)$/,
   /^https:\/\/fonts\.(googleapis|gstatic)\.com/,
 ];
 

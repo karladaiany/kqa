@@ -24,15 +24,15 @@ window.addEventListener('error', event => {
   }
 });
 
-// Registrar Service Worker para cache e performance
+// Desabilitar Service Worker temporariamente para debug
+// TODO: Reabilitar após resolver problemas de CSP
+/*
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('/sw.js')
       .then(registration => {
         console.log('[Main] SW registered successfully:', registration.scope);
-
-        // Limpa dados de segurança expirados
         cleanupSecurityData();
       })
       .catch(error => {
@@ -40,6 +40,7 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
       });
   });
 }
+*/
 
 // Limpeza de dados de segurança na inicialização
 cleanupSecurityData();
