@@ -92,7 +92,7 @@ export const generateBusinessSector = () => {
 };
 
 export const generateNumEmployees = () => {
-  return faker.datatype.number({ min: 0, max: 9999 }).toString();
+  return faker.number.int({ min: 0, max: 9999 }).toString();
 };
 
 const CHARSETS = {
