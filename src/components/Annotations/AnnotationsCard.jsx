@@ -23,7 +23,9 @@ import {
   FaEdit,
 } from 'react-icons/fa';
 import { useAnnotations } from '../../hooks/useAnnotations';
+import { useBugRegistration } from '../../hooks/useBugRegistration';
 import { MiniCard } from './MiniCard';
+import QuickNotesBadge from './QuickNotesBadge';
 
 // Contexto para gerenciar o editor ativo
 const ActiveEditorContext = createContext();
@@ -96,6 +98,10 @@ const EXTENDED_COLORS = {
 const AnnotationsCard = () => {
   const { notes, addNote, updateNote, deleteNote, clearAllNotes } =
     useAnnotations();
+  const { bugData } = useBugRegistration();
+
+  // Debug: monitorar mudanças no envId
+  console.log('AnnotationsCard render - bugData.envId:', bugData?.envId);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [activeEditor, setActiveEditor] = useState(null);
@@ -378,8 +384,56 @@ const AnnotationsCard = () => {
             </h3>
           </div>
           <div className='subsection-content'>
-            <div className='quick-notes-placeholder'>
-              <p>Funcionalidade em desenvolvimento...</p>
+            <div className='quick-notes-container'>
+              <QuickNotesBadge
+                type='feature-flag'
+                text='Organization'
+                onFeatureFlagClick={async () => {
+                  // Obter envId do hook primeiro, depois do localStorage como fallback
+                  let envId = bugData?.envId || '';
+
+                  // Se não tem no hook, buscar diretamente no localStorage
+                  if (!envId || envId.toString().trim() === '') {
+                    try {
+                      const savedData = localStorage.getItem('bugRegistration');
+                      if (savedData) {
+                        const parsedData = JSON.parse(savedData);
+                        envId = parsedData?.envId || '';
+                      }
+                    } catch (err) {
+                      console.warn('Erro ao ler localStorage:', err);
+                    }
+                  }
+
+                  const hasValidEnvId = envId && envId.toString().trim() !== '';
+                  const featureFlagText = hasValidEnvId
+                    ? `Organization;${envId}`
+                    : 'Organization;';
+
+                  console.log('Feature Flag Badge clicada!');
+                  console.log('bugData.envId (hook):', bugData?.envId);
+                  console.log('envId (final):', envId);
+                  console.log('hasValidEnvId:', hasValidEnvId);
+                  console.log('Texto copiado:', featureFlagText);
+
+                  try {
+                    await navigator.clipboard.writeText(featureFlagText);
+                    console.log('Texto copiado com sucesso!');
+                  } catch (err) {
+                    console.error('Erro ao copiar:', err);
+                  }
+                }}
+              />
+              <QuickNotesBadge type='api-v1' text='API v1' />
+              <QuickNotesBadge type='api-v2' text='API v2' />
+              <QuickNotesBadge type='storage-produto' text='[TEC] Produto' />
+              <QuickNotesBadge type='discoverys' text='[TEC] Discoverys' />
+              <QuickNotesBadge
+                type='documentacoes'
+                text='[TEC] Documentações por funcionalidade'
+              />
+              <QuickNotesBadge type='style-guide' text='[TEC] Style Guide' />
+              <QuickNotesBadge type='testlink' text='Testlink' />
             </div>
           </div>
         </div>
@@ -390,310 +444,315 @@ const AnnotationsCard = () => {
               <FaEdit className='subsection-icon' /> Anotações personalizadas
             </h3>
           </div>
-
-          {/* Barra de formatação global */}
-          <div className='global-formatting-toolbar'>
-            <div
-              className={`toolbar-formatting ${!activeEditor ? 'disabled' : ''}`}
-            >
-              <div className='toolbar-section'>
-                <ToolbarButton
-                  action='bold'
-                  active={activeEditor?.isActive('bold')}
-                  title='Negrito'
-                  disabled={!activeEditor}
-                >
-                  <FaBold />
-                </ToolbarButton>
-                <ToolbarButton
-                  action='italic'
-                  active={activeEditor?.isActive('italic')}
-                  title='Itálico'
-                  disabled={!activeEditor}
-                >
-                  <FaItalic />
-                </ToolbarButton>
-                <ToolbarButton
-                  action='underline'
-                  active={activeEditor?.isActive('underline')}
-                  title='Sublinhado'
-                  disabled={!activeEditor}
-                >
-                  <FaUnderline />
-                </ToolbarButton>
-                <ToolbarButton
-                  action='strike'
-                  active={activeEditor?.isActive('strike')}
-                  title='Riscado'
-                  disabled={!activeEditor}
-                >
-                  <FaStrikethrough />
-                </ToolbarButton>
-              </div>
-
-              <div className='toolbar-divider'></div>
-
-              <div className='toolbar-section'>
-                <ToolbarButton
-                  action='bulletList'
-                  active={activeEditor?.isActive('bulletList')}
-                  title='Lista'
-                  disabled={!activeEditor}
-                >
-                  <FaListUl />
-                </ToolbarButton>
-                <ToolbarButton
-                  action='orderedList'
-                  active={activeEditor?.isActive('orderedList')}
-                  title='Lista numerada'
-                  disabled={!activeEditor}
-                >
-                  <FaListOl />
-                </ToolbarButton>
-                <ToolbarButton
-                  action='taskList'
-                  active={activeEditor?.isActive('taskList')}
-                  title='Lista de tarefas'
-                  disabled={!activeEditor}
-                >
-                  <FaCheck />
-                </ToolbarButton>
-              </div>
-
-              <div className='toolbar-divider'></div>
-
-              <div className='toolbar-section'>
-                <ToolbarButton
-                  action='image'
-                  title='Inserir imagem'
-                  disabled={!activeEditor}
-                >
-                  <FaImage />
-                </ToolbarButton>
-              </div>
-
-              <div className='toolbar-divider'></div>
-
-              {/* Nova seção de cores */}
-              <div className='toolbar-section'>
-                <ToolbarButton
-                  action='textColor'
-                  active={showColorLine && colorLineMode === 'text'}
-                  title='Cor do texto selecionado'
-                  disabled={!activeEditor}
-                  onClick={handleTextColorClick}
-                >
-                  <FaFont />
-                </ToolbarButton>
-                <ToolbarButton
-                  action='cardColors'
-                  active={showColorLine && colorLineMode === 'card'}
-                  title='Cores do card (fundo e texto)'
-                  disabled={!activeEditor}
-                  onClick={handleCardColorsClick}
-                >
-                  <FaPalette />
-                </ToolbarButton>
-              </div>
-            </div>
-
-            {/* Spacer para empurrar os botões de ação para a direita */}
-            <div className='toolbar-spacer'></div>
-
-            {/* Botões de ação - sempre ativos */}
-            <div className='toolbar-section toolbar-actions'>
-              {notes.length > 0 && (
-                <button
-                  className='global-toolbar-button action-clear'
-                  onClick={handleClearAll}
-                  title='Limpar todas as anotações'
-                >
-                  <FaTrashAlt />
-                </button>
-              )}
-              <button
-                className='global-toolbar-button action-add'
-                onClick={handleAddNote}
-                title='Adicionar nova anotação'
+          <div className='subsection-content'>
+            {/* Barra de formatação global */}
+            <div className='global-formatting-toolbar'>
+              <div
+                className={`toolbar-formatting ${!activeEditor ? 'disabled' : ''}`}
               >
-                <FaPlus />
-              </button>
+                <div className='toolbar-section'>
+                  <ToolbarButton
+                    action='bold'
+                    active={activeEditor?.isActive('bold')}
+                    title='Negrito'
+                    disabled={!activeEditor}
+                  >
+                    <FaBold />
+                  </ToolbarButton>
+                  <ToolbarButton
+                    action='italic'
+                    active={activeEditor?.isActive('italic')}
+                    title='Itálico'
+                    disabled={!activeEditor}
+                  >
+                    <FaItalic />
+                  </ToolbarButton>
+                  <ToolbarButton
+                    action='underline'
+                    active={activeEditor?.isActive('underline')}
+                    title='Sublinhado'
+                    disabled={!activeEditor}
+                  >
+                    <FaUnderline />
+                  </ToolbarButton>
+                  <ToolbarButton
+                    action='strike'
+                    active={activeEditor?.isActive('strike')}
+                    title='Riscado'
+                    disabled={!activeEditor}
+                  >
+                    <FaStrikethrough />
+                  </ToolbarButton>
+                </div>
+
+                <div className='toolbar-divider'></div>
+
+                <div className='toolbar-section'>
+                  <ToolbarButton
+                    action='bulletList'
+                    active={activeEditor?.isActive('bulletList')}
+                    title='Lista'
+                    disabled={!activeEditor}
+                  >
+                    <FaListUl />
+                  </ToolbarButton>
+                  <ToolbarButton
+                    action='orderedList'
+                    active={activeEditor?.isActive('orderedList')}
+                    title='Lista numerada'
+                    disabled={!activeEditor}
+                  >
+                    <FaListOl />
+                  </ToolbarButton>
+                  <ToolbarButton
+                    action='taskList'
+                    active={activeEditor?.isActive('taskList')}
+                    title='Lista de tarefas'
+                    disabled={!activeEditor}
+                  >
+                    <FaCheck />
+                  </ToolbarButton>
+                </div>
+
+                <div className='toolbar-divider'></div>
+
+                <div className='toolbar-section'>
+                  <ToolbarButton
+                    action='image'
+                    title='Inserir imagem'
+                    disabled={!activeEditor}
+                  >
+                    <FaImage />
+                  </ToolbarButton>
+                </div>
+
+                <div className='toolbar-divider'></div>
+
+                {/* Nova seção de cores */}
+                <div className='toolbar-section'>
+                  <ToolbarButton
+                    action='textColor'
+                    active={showColorLine && colorLineMode === 'text'}
+                    title='Cor do texto selecionado'
+                    disabled={!activeEditor}
+                    onClick={handleTextColorClick}
+                  >
+                    <FaFont />
+                  </ToolbarButton>
+                  <ToolbarButton
+                    action='cardColors'
+                    active={showColorLine && colorLineMode === 'card'}
+                    title='Cores do card (fundo e texto)'
+                    disabled={!activeEditor}
+                    onClick={handleCardColorsClick}
+                  >
+                    <FaPalette />
+                  </ToolbarButton>
+                </div>
+              </div>
+
+              {/* Spacer para empurrar os botões de ação para a direita */}
+              <div className='toolbar-spacer'></div>
+
+              {/* Botões de ação - sempre ativos */}
+              <div className='toolbar-section toolbar-actions'>
+                {notes.length > 0 && (
+                  <button
+                    className='global-toolbar-button action-clear'
+                    onClick={handleClearAll}
+                    title='Limpar todas as anotações'
+                  >
+                    <FaTrashAlt />
+                  </button>
+                )}
+                <button
+                  className='global-toolbar-button action-add'
+                  onClick={handleAddNote}
+                  title='Adicionar nova anotação'
+                >
+                  <FaPlus />
+                </button>
+              </div>
             </div>
-          </div>
 
-          {/* Linha secundária de cores (expansível) */}
-          {showColorLine && (
-            <div className='color-line-toolbar'>
-              {colorLineMode === 'text' && (
-                <div className='color-line-content'>
-                  <div className='color-line-section'>
-                    <span className='color-line-label'>Cor do texto:</span>
-                    <div className='color-options-row'>
-                      <ColorPicker
-                        type='general'
-                        onChange={handleTextColorChange}
-                        title='Cor personalizada'
-                      />
-                      {customGeneralColor && (
-                        <ColorOption
-                          color={customGeneralColor}
-                          onClick={() =>
-                            handleTextColorChange(customGeneralColor)
-                          }
+            {/* Linha secundária de cores (expansível) */}
+            {showColorLine && (
+              <div className='color-line-toolbar'>
+                {colorLineMode === 'text' && (
+                  <div className='color-line-content'>
+                    <div className='color-line-section'>
+                      <span className='color-line-label'>Cor do texto:</span>
+                      <div className='color-options-row'>
+                        <ColorPicker
+                          type='general'
+                          onChange={handleTextColorChange}
                           title='Cor personalizada'
                         />
-                      )}
-                      {EXTENDED_COLORS.general.map(color => (
-                        <ColorOption
-                          key={color.value}
-                          color={color.value}
-                          onClick={() => handleTextColorChange(color.value)}
-                          title={color.name}
-                        />
-                      ))}
+                        {customGeneralColor && (
+                          <ColorOption
+                            color={customGeneralColor}
+                            onClick={() =>
+                              handleTextColorChange(customGeneralColor)
+                            }
+                            title='Cor personalizada'
+                          />
+                        )}
+                        {EXTENDED_COLORS.general.map(color => (
+                          <ColorOption
+                            key={color.value}
+                            color={color.value}
+                            onClick={() => handleTextColorChange(color.value)}
+                            title={color.name}
+                          />
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {colorLineMode === 'card' && (
-                <div className='color-line-content' data-mode='card'>
-                  <div className='color-line-section'>
-                    <span className='color-line-label'>🎨 Fundo:</span>
-                    <div className='color-options-row'>
-                      <ColorPicker
-                        type='background'
-                        onChange={color => handleCardColorChange(color, true)}
-                        title='Cor de fundo personalizada'
-                      />
-                      {customBackgroundColor && (
-                        <ColorOption
-                          color={customBackgroundColor}
-                          isSelected={
-                            activeNote?.backgroundColor ===
-                            customBackgroundColor
-                          }
-                          onClick={() =>
-                            handleCardColorChange(customBackgroundColor, true)
-                          }
-                          title='Cor personalizada'
+                {colorLineMode === 'card' && (
+                  <div className='color-line-content' data-mode='card'>
+                    <div className='color-line-section'>
+                      <span className='color-line-label'>🎨 Fundo:</span>
+                      <div className='color-options-row'>
+                        <ColorPicker
+                          type='background'
+                          onChange={color => handleCardColorChange(color, true)}
+                          title='Cor de fundo personalizada'
                         />
-                      )}
-                      {EXTENDED_COLORS.backgrounds.map(color => (
-                        <ColorOption
-                          key={color.value}
-                          color={color.value}
-                          isSelected={
-                            activeNote?.backgroundColor === color.value
+                        {customBackgroundColor && (
+                          <ColorOption
+                            color={customBackgroundColor}
+                            isSelected={
+                              activeNote?.backgroundColor ===
+                              customBackgroundColor
+                            }
+                            onClick={() =>
+                              handleCardColorChange(customBackgroundColor, true)
+                            }
+                            title='Cor personalizada'
+                          />
+                        )}
+                        {EXTENDED_COLORS.backgrounds.map(color => (
+                          <ColorOption
+                            key={color.value}
+                            color={color.value}
+                            isSelected={
+                              activeNote?.backgroundColor === color.value
+                            }
+                            onClick={() =>
+                              handleCardColorChange(color.value, true)
+                            }
+                            title={color.name}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className='color-line-section'>
+                      <span className='color-line-label'>📝 Texto:</span>
+                      <div className='color-options-row'>
+                        <ColorPicker
+                          type='text'
+                          onChange={color =>
+                            handleCardColorChange(color, false)
                           }
-                          onClick={() =>
-                            handleCardColorChange(color.value, true)
-                          }
-                          title={color.name}
+                          title='Cor de texto personalizada'
                         />
-                      ))}
+                        {customTextColor && (
+                          <ColorOption
+                            color={customTextColor}
+                            isSelected={
+                              activeNote?.textColor === customTextColor
+                            }
+                            onClick={() =>
+                              handleCardColorChange(customTextColor, false)
+                            }
+                            title='Cor personalizada'
+                          />
+                        )}
+                        {EXTENDED_COLORS.texts.map(color => (
+                          <ColorOption
+                            key={color.value}
+                            color={color.value}
+                            isSelected={activeNote?.textColor === color.value}
+                            onClick={() =>
+                              handleCardColorChange(color.value, false)
+                            }
+                            title={color.name}
+                          />
+                        ))}
+                      </div>
                     </div>
                   </div>
-
-                  <div className='color-line-section'>
-                    <span className='color-line-label'>📝 Texto:</span>
-                    <div className='color-options-row'>
-                      <ColorPicker
-                        type='text'
-                        onChange={color => handleCardColorChange(color, false)}
-                        title='Cor de texto personalizada'
-                      />
-                      {customTextColor && (
-                        <ColorOption
-                          color={customTextColor}
-                          isSelected={activeNote?.textColor === customTextColor}
-                          onClick={() =>
-                            handleCardColorChange(customTextColor, false)
-                          }
-                          title='Cor personalizada'
-                        />
-                      )}
-                      {EXTENDED_COLORS.texts.map(color => (
-                        <ColorOption
-                          key={color.value}
-                          color={color.value}
-                          isSelected={activeNote?.textColor === color.value}
-                          onClick={() =>
-                            handleCardColorChange(color.value, false)
-                          }
-                          title={color.name}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>{' '}
-        {/* Fim da seção de anotações personalizadas */}
-        <div className='card-content'>
-          <div ref={containerRef} className='annotations-workspace'>
-            {notes.map(note => (
-              <MiniCard
-                key={note.id}
-                note={note}
-                onUpdate={updates => updateNote(note.id, updates)}
-                onDelete={() => handleDeleteNote(note.id)}
-              />
-            ))}
-
-            {notes.length === 0 && (
-              <div className='empty-workspace'>
-                <div className='empty-content'>
-                  <FaStickyNote className='empty-icon' />
-                  <p>Nenhuma anotação ainda</p>
-                  <p className='empty-subtitle'>
-                    Clique no botão &ldquo;Nova&rdquo; para criar sua primeira
-                    anotação
-                  </p>
-                </div>
+                )}
               </div>
             )}
-          </div>
 
-          {/* Input hidden para upload de imagem */}
-          <input
-            ref={fileInputRef}
-            type='file'
-            accept='image/*'
-            style={{ display: 'none' }}
-            onChange={handleImageUpload}
-          />
+            {/* Área de trabalho das anotações dentro da seção */}
+            <div ref={containerRef} className='annotations-workspace'>
+              {notes.map(note => (
+                <MiniCard
+                  key={note.id}
+                  note={note}
+                  onUpdate={updates => updateNote(note.id, updates)}
+                  onDelete={() => handleDeleteNote(note.id)}
+                />
+              ))}
 
-          {/* Modal de confirmação de exclusão */}
-          {showDeleteConfirm && (
-            <div className='delete-modal-overlay' onClick={cancelDelete}>
-              <div className='delete-modal' onClick={e => e.stopPropagation()}>
-                <div className='delete-modal-content'>
-                  <FaTrashAlt className='delete-modal-icon' />
-                  <h3>Confirmar exclusão</h3>
-                  <p>Tem certeza de que deseja excluir esta anotação?</p>
-                  <p className='delete-warning'>
-                    Esta ação não pode ser desfeita.
-                  </p>
-                  <div className='delete-modal-actions'>
-                    <button className='action-button' onClick={cancelDelete}>
-                      Cancelar
-                    </button>
-                    <button
-                      className='action-button delete'
-                      onClick={confirmDelete}
-                    >
-                      <FaTrashAlt />
-                      Excluir
-                    </button>
+              {notes.length === 0 && (
+                <div className='empty-workspace'>
+                  <div className='empty-content'>
+                    <FaStickyNote className='empty-icon' />
+                    <p>Nenhuma anotação ainda</p>
+                    <p className='empty-subtitle'>
+                      Clique no botão &ldquo;Nova&rdquo; para criar sua primeira
+                      anotação
+                    </p>
                   </div>
+                </div>
+              )}
+            </div>
+
+            {/* Input hidden para upload de imagem */}
+            <input
+              ref={fileInputRef}
+              type='file'
+              accept='image/*'
+              style={{ display: 'none' }}
+              onChange={handleImageUpload}
+            />
+          </div>{' '}
+          {/* Fim do subsection-content */}
+        </div>{' '}
+        {/* Fim da seção de anotações personalizadas */}
+        {/* Modal de confirmação de exclusão */}
+        {showDeleteConfirm && (
+          <div className='delete-modal-overlay' onClick={cancelDelete}>
+            <div className='delete-modal' onClick={e => e.stopPropagation()}>
+              <div className='delete-modal-content'>
+                <FaTrashAlt className='delete-modal-icon' />
+                <h3>Confirmar exclusão</h3>
+                <p>Tem certeza de que deseja excluir esta anotação?</p>
+                <p className='delete-warning'>
+                  Esta ação não pode ser desfeita.
+                </p>
+                <div className='delete-modal-actions'>
+                  <button className='action-button' onClick={cancelDelete}>
+                    Cancelar
+                  </button>
+                  <button
+                    className='action-button delete'
+                    onClick={confirmDelete}
+                  >
+                    <FaTrashAlt />
+                    Excluir
+                  </button>
                 </div>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </section>
     </ActiveEditorContext.Provider>
   );

@@ -21,6 +21,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './styles/theme.css';
 import './styles/components.css';
 import './styles/annotations.css';
+import './styles/quick-notes-badges.css';
 import './styles.css';
 import './App.css';
 import SidebarMenu from './components/SidebarMenu';
