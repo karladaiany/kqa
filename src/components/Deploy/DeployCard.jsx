@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { FaRocket, FaTimes, FaCopy, FaBroom } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
@@ -12,6 +12,23 @@ const DeployCard = () => {
     const savedValues = localStorage.getItem('deployFieldValues');
     return savedValues ? JSON.parse(savedValues) : {};
   });
+
+  // Estado para controlar expansão dos campos
+  const [expanded, setExpanded] = useState(false);
+
+  // Função para verificar se há dados preenchidos
+  const hasAnyData = () => {
+    return (
+      fields.length > 0 ||
+      Object.values(fieldValues).some(value => value && value.trim() !== '')
+    );
+  };
+
+  // Exibe campos se houver dados ou se estiver expandido
+  const showFields = useMemo(
+    () => expanded || hasAnyData(),
+    [expanded, fields, fieldValues]
+  );
 
   useEffect(() => {
     localStorage.setItem('deployFields', JSON.stringify(fields));
@@ -197,6 +214,7 @@ const DeployCard = () => {
   const handleClearAll = () => {
     setFields([]);
     setFieldValues({});
+    setExpanded(false);
     localStorage.removeItem('deployFields');
     localStorage.removeItem('deployFieldValues');
     toast.success('Todos os campos foram limpos!');
@@ -208,54 +226,67 @@ const DeployCard = () => {
         <h2>
           <FaRocket className='header-icon' /> Deploy
         </h2>
-        <div className='card-filters'>
-          <button className='generate-all-btn' onClick={addBranchAndPRFields}>
-            + Branch e PR
+        {!showFields && (
+          <button
+            className='generate-all-btn'
+            onClick={() => setExpanded(true)}
+            title='Novo deploy'
+          >
+            +
           </button>
-          <button className='generate-all-btn' onClick={addFeatureFlagField}>
-            + Feature flag
-          </button>
-          <button className='generate-all-btn' onClick={addRunnerField}>
-            + Runner
-          </button>
-          <button className='generate-all-btn' onClick={addTitleLinkPRFields}>
-            + Título, Link e PR
-          </button>
-        </div>
-      </div>
-      <div className='card-content'>
-        {fields.map(field => (
-          <div key={field.id} className='campo-item'>
-            <div className='campo-valor'>
-              <input
-                value={fieldValues[field.id] || ''}
-                onChange={e => handleInputChange(field.id, e.target.value)}
-                className='copyable'
-                placeholder=' '
-              />
-              <label>{field.label}</label>
-              {fieldValues[field.id] && (
-                <FaTimes
-                  className='clear-icon'
-                  onClick={() => removeField(field.id)}
-                />
-              )}
-            </div>
+        )}
+        {showFields && (
+          <div className='card-filters'>
+            <button className='generate-all-btn' onClick={addBranchAndPRFields}>
+              + Branch e PR
+            </button>
+            <button className='generate-all-btn' onClick={addFeatureFlagField}>
+              + Feature flag
+            </button>
+            <button className='generate-all-btn' onClick={addRunnerField}>
+              + Runner
+            </button>
+            <button className='generate-all-btn' onClick={addTitleLinkPRFields}>
+              + Título, Link e PR
+            </button>
           </div>
-        ))}
-        <div className='card-actions'>
-          {fields.length > 0 && (
-            <>
-              <button className='generate-all-btn' onClick={handleCopy}>
-                <FaCopy /> Copiar
-              </button>
-              <button className='generate-all-btn' onClick={handleClearAll}>
-                <FaBroom /> Limpar tudo
-              </button>
-            </>
-          )}
-        </div>
+        )}
       </div>
+      {showFields && (
+        <div className='card-content'>
+          {fields.map(field => (
+            <div key={field.id} className='campo-item'>
+              <div className='campo-valor'>
+                <input
+                  value={fieldValues[field.id] || ''}
+                  onChange={e => handleInputChange(field.id, e.target.value)}
+                  className='copyable'
+                  placeholder=' '
+                />
+                <label>{field.label}</label>
+                {fieldValues[field.id] && (
+                  <FaTimes
+                    className='clear-icon'
+                    onClick={() => removeField(field.id)}
+                  />
+                )}
+              </div>
+            </div>
+          ))}
+          <div className='card-actions'>
+            {fields.length > 0 && (
+              <>
+                <button className='generate-all-btn' onClick={handleCopy}>
+                  <FaCopy /> Copiar
+                </button>
+                <button className='generate-all-btn' onClick={handleClearAll}>
+                  <FaBroom /> Limpar tudo
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 };

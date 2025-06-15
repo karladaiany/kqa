@@ -61,7 +61,7 @@ const BugRegistrationCard = () => {
             onClick={() => setExpanded(true)}
             title='Novo registro de BUG'
           >
-            + Novo
+            +
           </button>
         )}
       </div>

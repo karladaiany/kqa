@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import {
   FaComment,
@@ -77,6 +77,24 @@ const TestStatusCard = () => {
   } = useTestStatus();
 
   const { clearCardTextareaSizes } = useTextareaResizeActions();
+
+  // Estado para controlar expansão dos campos
+  const [expanded, setExpanded] = useState(false);
+
+  // Função para verificar se há dados preenchidos
+  const hasAnyData = () => {
+    return (
+      testStatus ||
+      environment ||
+      Object.values(formData).some(value => value && value !== '')
+    );
+  };
+
+  // Exibe campos se houver dados ou se estiver expandido
+  const showFields = useMemo(
+    () => expanded || hasAnyData(),
+    [expanded, activityType, testStatus, environment, formData]
+  );
 
   // Opções de tipo de atividade
   const activityTypeOptions = [
@@ -495,6 +513,7 @@ const TestStatusCard = () => {
 
   const handleClearWithResize = () => {
     handleClear();
+    setExpanded(false);
     // Limpar tamanhos dos textareas do localStorage
     clearCardTextareaSizes('test-status');
   };
@@ -508,72 +527,84 @@ const TestStatusCard = () => {
         <h2>
           <FaComment className='header-icon' /> Comentário QA
         </h2>
-      </div>
-      <div className='card-content'>
-        <div className='campo-item'>
-          <label htmlFor='activityType'>Tipo de atividade</label>
-          <div className='campo-valor'>
-            <select
-              id='activityType'
-              value={activityType}
-              onChange={handleActivityTypeChange}
-              className='copyable'
-            >
-              {activityTypeOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className='campo-item'>
-          <label htmlFor='testStatus'>
-            {activityType === 'manual'
-              ? 'Status do teste'
-              : 'Status da execução'}
-          </label>
-          <div className='campo-valor'>
-            <select
-              id='testStatus'
-              value={testStatus}
-              onChange={handleStatusChange}
-              className='copyable'
-            >
-              <option value=''>Selecione um status</option>
-              {statusOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {renderEnvironmentField()}
-        {testStatus && renderCamposDinamicos(camposPorStatus[testStatus] || [])}
-        {renderEvidenceSection()}
-
-        {testStatus && (
-          <div className='card-actions'>
-            <button
-              className='generate-all-btn'
-              onClick={handleCopy}
-              disabled={shouldDisableCopy()}
-              title={getCopyTooltip()}
-            >
-              <FaCopy /> Copiar
-            </button>
-            <button
-              className='generate-all-btn'
-              onClick={handleClearWithResize}
-            >
-              <FaBroom /> Limpar tudo
-            </button>
-          </div>
+        {!showFields && (
+          <button
+            className='generate-all-btn'
+            onClick={() => setExpanded(true)}
+            title='Novo comentário QA'
+          >
+            +
+          </button>
         )}
       </div>
+      {showFields && (
+        <div className='card-content'>
+          <div className='campo-item'>
+            <label htmlFor='activityType'>Tipo de atividade</label>
+            <div className='campo-valor'>
+              <select
+                id='activityType'
+                value={activityType}
+                onChange={handleActivityTypeChange}
+                className='copyable'
+              >
+                {activityTypeOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className='campo-item'>
+            <label htmlFor='testStatus'>
+              {activityType === 'manual'
+                ? 'Status do teste'
+                : 'Status da execução'}
+            </label>
+            <div className='campo-valor'>
+              <select
+                id='testStatus'
+                value={testStatus}
+                onChange={handleStatusChange}
+                className='copyable'
+              >
+                <option value=''>Selecione um status</option>
+                {statusOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {renderEnvironmentField()}
+          {testStatus &&
+            renderCamposDinamicos(camposPorStatus[testStatus] || [])}
+          {renderEvidenceSection()}
+
+          {testStatus && (
+            <div className='card-actions'>
+              <button
+                className='generate-all-btn'
+                onClick={handleCopy}
+                disabled={shouldDisableCopy()}
+                title={getCopyTooltip()}
+              >
+                <FaCopy /> Copiar
+              </button>
+              <button
+                className='generate-all-btn'
+                onClick={handleClearWithResize}
+              >
+                <FaBroom /> Limpar tudo
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </section>
   );
 };
