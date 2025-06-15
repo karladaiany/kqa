@@ -8,16 +8,20 @@ import {
   FaDatabase,
   FaClipboardList,
   FaDice,
+  FaStickyNote,
 } from 'react-icons/fa';
 import ScrollButtons from './components/ScrollButtons';
 import MobileHeader from './components/MobileHeader';
 import TestStatusCard from './components/TestStatus/TestStatusCard';
 import BugRegistrationCard from './components/BugRegistration/BugRegistrationCard';
 import DeployCard from './components/Deploy/DeployCard';
+import AnnotationsCard from './components/Annotations/AnnotationsCard';
 import Footer from './components/Footer';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles/theme.css';
 import './styles/components.css';
+import './styles/annotations.css';
+import './styles/quick-notes-badges.css';
 import './styles.css';
 import './App.css';
 import SidebarMenu from './components/SidebarMenu';
@@ -136,6 +140,13 @@ const App = () => {
             </div>
           </div>
           <DeployCard />
+        </main>
+
+        <h2 className='section-title'>
+          <FaStickyNote className='section-icon' /> Anotações
+        </h2>
+        <main>
+          <AnnotationsCard />
         </main>
       </div>
 

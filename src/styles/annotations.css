@@ -1,0 +1,1506 @@
+/* =================================================================
+   ANOTAÇÕES - ESTILOS PRINCIPAIS
+   ================================================================= */
+
+/* Container principal da área de trabalho das anotações */
+.annotations-workspace {
+  position: relative;
+  width: 100%;
+  min-height: 500px;
+  background: var(--background-color);
+  border: 2px dashed var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.annotations-workspace:hover {
+  border-color: var(--accent-color);
+}
+
+/* Estado vazio da área de trabalho */
+.empty-workspace {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 400px;
+  padding: 2rem;
+}
+
+.empty-content {
+  text-align: center;
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.4;
+}
+
+.empty-subtitle {
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  opacity: 0.8;
+}
+
+/* =================================================================
+   MINI CARDS - COMPONENTES INDIVIDUAIS
+   ================================================================= */
+
+.mini-card {
+  position: relative;
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: all 0.2s ease;
+  overflow: visible; /* Permitir que a toolbar apareça fora do card */
+  cursor: move;
+  user-select: none;
+  /* Área de hover expandida */
+  padding: 2px;
+  margin: -2px;
+  width: 100%;
+  height: 100%;
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+}
+
+.mini-card:hover {
+  box-shadow: 0 4px 16px var(--shadow-color);
+  border-color: var(--accent-color);
+  transform: translateY(-1px);
+  /* Manter hover por mais tempo */
+  transition-delay: 0.1s;
+}
+
+/* Header do mini card */
+.mini-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  background: rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid var(--border-color);
+  min-height: 36px;
+}
+
+.mini-card-drag-handle {
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  cursor: move;
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
+  border-radius: 4px;
+}
+
+.mini-card-drag-handle:hover {
+  color: var(--accent-color);
+  background: rgba(120, 93, 200, 0.1);
+}
+
+.mini-card-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.mini-card-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.mini-card-action:hover {
+  background: var(--accent-color);
+  color: white;
+  transform: scale(1.1);
+}
+
+.mini-card-action.delete:hover {
+  background: #dc2626;
+}
+
+/* Toolbar de formatação - hover melhorado */
+.mini-card-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  background: rgba(0, 0, 0, 0.03);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  min-height: 44px;
+  align-items: center;
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateY(-5px);
+  animation: slideInToolbar 0.2s ease forwards;
+}
+
+@keyframes slideInToolbar {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mini-card:hover .mini-card-toolbar {
+  background: rgba(0, 0, 0, 0.05);
+  border-bottom-color: var(--accent-color);
+}
+
+.toolbar-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.2s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  backdrop-filter: blur(4px);
+}
+
+.toolbar-button:hover {
+  background: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+  transform: translateY(-1px);
+}
+
+.toolbar-button.active {
+  background: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+/* Seletor de cores - posicionamento melhorado */
+.color-picker {
+  position: absolute;
+  top: 90px; /* Posicionado abaixo da toolbar */
+  right: 8px;
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.8rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+  width: 180px;
+  backdrop-filter: blur(12px);
+  max-height: 250px;
+  overflow-y: auto;
+  animation: slideInColorPicker 0.2s ease forwards;
+}
+
+/* Posicionamento à direita (padrão) */
+.color-picker.right {
+  right: 8px;
+}
+
+/* Posicionamento à esquerda */
+.color-picker.left {
+  left: 8px;
+  right: auto;
+}
+
+/* Posicionamento quando próximo ao fundo */
+.color-picker.bottom {
+  top: auto;
+  bottom: 90px;
+}
+
+@keyframes slideInColorPicker {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.color-section {
+  margin-bottom: 0.8rem;
+  padding: 0.5rem;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.color-section:last-child {
+  margin-bottom: 0;
+}
+
+.color-section-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.color-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.color-label::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-color);
+}
+
+.custom-color-btn {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  color: var(--text-primary);
+  backdrop-filter: blur(4px);
+}
+
+.custom-color-btn:hover {
+  background: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+  transform: scale(1.05);
+}
+
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  justify-items: center;
+  align-items: center;
+  padding: 0.2rem;
+}
+
+.color-option {
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  display: inline-block;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.color-option:hover {
+  transform: scale(1.15);
+  border-color: var(--accent-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.color-option.selected {
+  border-color: var(--accent-color);
+  border-width: 3px;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.color-option.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--accent-color);
+  font-size: 12px;
+  font-weight: bold;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.9);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+/* Área de conteúdo editável */
+.mini-card-content {
+  padding: 0.75rem;
+  height: calc(100% - 130px); /* Ajustado para altura mínima 200px */
+  overflow-y: auto;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  cursor: text;
+}
+
+.mini-card-editor {
+  height: 100%;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: transparent;
+  cursor: text;
+}
+
+.mini-card-editor .ProseMirror {
+  cursor: text;
+  outline: none;
+}
+
+.mini-card-editor .ProseMirror:focus {
+  outline: none;
+}
+
+.mini-card-editor p {
+  margin: 0 0 0.5rem 0;
+}
+
+.mini-card-editor p:last-child {
+  margin-bottom: 0;
+}
+
+.mini-card-editor ul,
+.mini-card-editor ol {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.mini-card-editor li {
+  margin-bottom: 0.25rem;
+}
+
+.mini-card-editor img.note-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 0.5rem 0;
+  display: block;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.mini-card-editor img.note-image:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Garantir que imagens base64 sejam exibidas corretamente */
+.mini-card-editor img[src^='data:image/'] {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 0.5rem 0;
+  display: block;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mini-card-editor blockquote {
+  border-left: 4px solid var(--accent-color);
+  padding-left: 1rem;
+  margin: 0.5rem 0;
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+/* Lista de tarefas - Estilos específicos para melhor posicionamento */
+.mini-card-editor ul[data-type='taskList'] {
+  list-style: none;
+  padding-left: 0;
+  margin: 0.5rem 0;
+}
+
+.mini-card-editor ul[data-type='taskList'] li[data-type='taskItem'] {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+  line-height: 1.4;
+}
+
+.mini-card-editor ul[data-type='taskList'] li[data-type='taskItem'] > label {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  min-width: auto;
+  flex-shrink: 0;
+  height: auto;
+}
+
+.mini-card-editor
+  ul[data-type='taskList']
+  li[data-type='taskItem']
+  > label
+  > input[type='checkbox'] {
+  margin: 0;
+  margin-right: 0.5rem;
+  transform: scale(1.1);
+  cursor: pointer;
+  position: relative;
+  top: 0;
+  vertical-align: top;
+}
+
+.mini-card-editor ul[data-type='taskList'] li[data-type='taskItem'] > div {
+  flex: 1;
+  margin: 0;
+  padding: 0;
+}
+
+.mini-card-editor ul[data-type='taskList'] li[data-type='taskItem'] > div > p {
+  margin: 0;
+  line-height: inherit;
+}
+
+/* Task Item Custom Class - Para garantir funcionamento */
+.mini-card-editor .task-item-custom {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 0.5rem !important;
+  margin-bottom: 0.25rem !important;
+}
+
+.mini-card-editor .task-item-custom > label {
+  display: flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-width: auto !important;
+  flex-shrink: 0 !important;
+  height: auto !important;
+}
+
+.mini-card-editor .task-item-custom > label > input[type='checkbox'] {
+  margin: 0 0.5rem 0 0 !important;
+  transform: scale(1.1) !important;
+  cursor: pointer !important;
+  position: relative !important;
+  top: 0 !important;
+  vertical-align: top !important;
+}
+
+.mini-card-editor .task-item-custom > div {
+  flex: 1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.mini-card-editor .task-item-custom > div > p {
+  margin: 0 !important;
+  line-height: 1.4 !important;
+}
+
+/* Correção adicional para nested task lists */
+.mini-card-editor ul[data-type='taskList'] ul[data-type='taskList'] {
+  margin-left: 1rem;
+  margin-top: 0.25rem;
+}
+
+/* Estilos específicos para checkboxes em geral */
+.mini-card-editor input[type='checkbox'] {
+  appearance: auto;
+  -webkit-appearance: checkbox;
+  -moz-appearance: checkbox;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  background: var(--background-color);
+  cursor: pointer;
+}
+
+.mini-card-editor input[type='checkbox']:checked {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+/* Hover effects adicionais para botões de formatação */
+
+/* Prevenção de eventos duplos */
+.toolbar-button,
+.color-option,
+.mini-card-action {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Timestamp */
+.mini-card-timestamp {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.25rem 0.5rem;
+  background: rgba(0, 0, 0, 0.05);
+  border-top: 1px solid var(--border-color);
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  text-align: center;
+  user-select: none;
+}
+
+/* =================================================================
+   MODAL DE CONFIRMAÇÃO DE EXCLUSÃO
+   ================================================================= */
+
+.delete-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+}
+
+.delete-modal {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 16px 32px var(--shadow-color);
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.delete-modal-content {
+  text-align: center;
+}
+
+.delete-modal-icon {
+  font-size: 3rem;
+  color: #dc2626;
+  margin-bottom: 1rem;
+}
+
+.delete-modal h3 {
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.delete-modal p {
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.delete-warning {
+  color: #dc2626;
+  font-weight: 600;
+  margin-bottom: 2rem !important;
+}
+
+.delete-modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.action-button.delete {
+  background: #dc2626;
+  color: white;
+  border-color: #dc2626;
+}
+
+.action-button.delete:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+}
+
+/* =================================================================
+   RESPONSIVIDADE
+   ================================================================= */
+
+@media (max-width: 768px) {
+  .annotations-workspace {
+    min-height: 400px;
+  }
+
+  .mini-card-toolbar {
+    gap: 0.15rem;
+    padding: 0.4rem;
+  }
+
+  .toolbar-button {
+    width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
+  }
+
+  .color-picker {
+    right: auto;
+    left: 0;
+    width: 160px;
+    padding: 0.6rem;
+    max-height: 200px;
+  }
+
+  .color-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.3rem;
+  }
+
+  .color-option {
+    width: 24px;
+    height: 24px;
+  }
+
+  .mini-card-content {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .annotations-workspace {
+    min-height: 350px;
+  }
+
+  .mini-card-header {
+    padding: 0.4rem;
+    min-height: 32px;
+  }
+
+  .mini-card-action {
+    width: 24px;
+    height: 24px;
+    font-size: 0.8rem;
+  }
+
+  .delete-modal {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .delete-modal-actions {
+    flex-direction: column;
+  }
+}
+
+/* =================================================================
+   MODO ESCURO - AJUSTES ESPECÍFICOS
+   ================================================================= */
+
+body.dark-theme .mini-card-header {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-theme .mini-card-toolbar {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+body.dark-theme .mini-card-timestamp {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-theme .toolbar-button {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+body.dark-theme .color-picker {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+/* =================================================================
+   SCROLL CUSTOMIZADO PARA ÁREA DE CONTEÚDO
+   ================================================================= */
+
+.mini-card-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.mini-card-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mini-card-content::-webkit-scrollbar-thumb {
+  background: var(--text-secondary);
+  border-radius: 2px;
+  opacity: 0.3;
+}
+
+.mini-card-content::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
+  opacity: 0.7;
+}
+
+/* =================================================================
+   BARRA DE FORMATAÇÃO GLOBAL
+   ================================================================= */
+
+.global-formatting-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.toolbar-formatting {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.toolbar-formatting.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.toolbar-section {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+.toolbar-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border-color);
+  margin: 0 0.5rem;
+}
+
+.global-toolbar-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--background-color);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  padding: 0;
+}
+
+.global-toolbar-button:hover:not(.disabled) {
+  background: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.global-toolbar-button.active {
+  background: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.global-toolbar-button.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.global-toolbar-button.action-add {
+  background: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+}
+
+.global-toolbar-button.action-add:hover {
+  background: #7c3aed;
+  border-color: #7c3aed;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.global-toolbar-button.action-clear {
+  background: #dc2626;
+  color: white;
+  border-color: #dc2626;
+}
+
+.global-toolbar-button.action-clear:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.global-color-picker {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 80px; /* Posiciona abaixo dos botões de cor */
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.8rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+  width: 200px;
+  backdrop-filter: blur(12px);
+  animation: slideInColorPicker 0.2s ease forwards;
+}
+
+/* Ajuste para botões de cor específicos */
+.global-toolbar-button:has-text('🎨'),
+.global-toolbar-button:has-text('📝'),
+.global-toolbar-button:has-text('✏️') {
+  font-size: 1rem;
+}
+
+/* =================================================================
+   RESPONSIVIDADE PARA BARRA GLOBAL
+   ================================================================= */
+
+@media (max-width: 768px) {
+  .global-formatting-toolbar {
+    padding: 0.5rem;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+  }
+
+  .global-toolbar-button {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+
+  .toolbar-divider {
+    height: 20px;
+    margin: 0 0.25rem;
+  }
+
+  .global-color-picker {
+    right: 0;
+    width: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .global-formatting-toolbar {
+    padding: 0.4rem;
+    gap: 0.2rem;
+  }
+
+  .global-toolbar-button {
+    width: 24px;
+    height: 24px;
+    font-size: 0.7rem;
+  }
+
+  .toolbar-section {
+    gap: 0.15rem;
+  }
+}
+
+/* =================================================================
+   MODO ESCURO PARA BARRA GLOBAL
+   ================================================================= */
+
+body.dark-theme .global-formatting-toolbar {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+body.dark-theme .global-toolbar-button {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+body.dark-theme .global-color-picker {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+/* =================================================================
+   NOVA INTERFACE DE CORES - MELHORIAS DE UX/UI
+   ================================================================= */
+
+/* Container dos botões de cor */
+.color-tools-container {
+  position: relative;
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+/* Overlay semi-transparente para destacar o dropdown */
+.color-picker-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 9998;
+  backdrop-filter: blur(1px);
+}
+
+/* Dropdown do seletor de cores posicionado próximo aos botões */
+.color-picker-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 9999;
+  padding: 1rem;
+  min-width: 280px;
+  animation: slideInColorPicker 0.2s ease-out;
+  backdrop-filter: blur(2px);
+}
+
+/* Opções de cores do card (fundo + texto) */
+.card-color-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Opções de cores para texto selecionado */
+.selection-color-options {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Seção de cores melhorada */
+.color-picker-dropdown .color-section {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.color-picker-dropdown .color-section:not(:last-child) {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Header da seção de cores */
+.color-picker-dropdown .color-section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding: 0;
+  background: none;
+  border: none;
+}
+
+.color-picker-dropdown .color-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Grid de cores melhorado */
+.color-picker-dropdown .color-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin: 0;
+}
+
+/* Opções de cores melhoradas */
+.color-picker-dropdown .color-option {
+  width: 40px;
+  height: 40px;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.color-picker-dropdown .color-option:hover {
+  transform: scale(1.1);
+  border-color: var(--accent-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.color-picker-dropdown .color-option.selected {
+  border-color: var(--accent-color);
+  transform: scale(1.05);
+  box-shadow: 0 0 0 3px rgba(120, 93, 200, 0.2);
+}
+
+.color-picker-dropdown .color-option.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--accent-color);
+  font-weight: bold;
+  font-size: 0.9rem;
+  text-shadow: 0 0 3px white;
+}
+
+/* Temas escuros */
+body.dark-theme .color-picker-dropdown {
+  background: var(--background-secondary);
+  border-color: var(--border-color);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+}
+
+body.dark-theme .color-picker-overlay {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+}
+
+body.dark-theme .color-picker-dropdown .color-label {
+  color: var(--text-primary);
+}
+
+body.dark-theme .color-picker-dropdown .color-section:not(:last-child) {
+  border-bottom-color: var(--border-color);
+}
+
+body.dark-theme .color-picker-dropdown .color-option.selected::after {
+  text-shadow: 0 0 3px black;
+}
+
+/* Responsividade para o novo seletor */
+@media (max-width: 768px) {
+  .color-picker-dropdown {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    right: auto;
+    min-width: 260px;
+    max-width: 90vw;
+  }
+
+  .color-picker-dropdown .color-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .color-picker-dropdown .color-option {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+@media (max-width: 480px) {
+  .color-picker-dropdown {
+    min-width: 240px;
+    padding: 0.75rem;
+  }
+
+  .color-picker-dropdown .color-grid {
+    gap: 0.375rem;
+  }
+
+  .color-picker-dropdown .color-option {
+    width: 32px;
+    height: 32px;
+  }
+
+  .card-color-options {
+    gap: 0.75rem;
+  }
+}
+
+/* =================================================================
+   BARRA DE FORMATAÇÃO GLOBAL - LINHA SECUNDÁRIA DE CORES
+   ================================================================= */
+
+/* Linha secundária expansível */
+.color-line-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  margin: -1px 0 12px 0;
+  animation: slideDownColorLine 0.2s ease-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+@keyframes slideDownColorLine {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 200px;
+  }
+}
+
+.color-line-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.color-line-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.color-line-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.color-options-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Color picker personalizado */
+.color-picker-container {
+  position: relative;
+}
+
+.color-picker-input {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: linear-gradient(
+    45deg,
+    #ff0000 0%,
+    #ff8000 12.5%,
+    #ffff00 25%,
+    #80ff00 37.5%,
+    #00ff00 50%,
+    #00ff80 62.5%,
+    #00ffff 75%,
+    #0080ff 87.5%,
+    #0000ff 100%
+  );
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+  position: relative;
+}
+
+.color-picker-input:hover {
+  border-color: var(--accent-color);
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.color-picker-input::-webkit-color-swatch-wrapper {
+  padding: 2px;
+  border-radius: 4px;
+}
+
+.color-picker-input::-webkit-color-swatch {
+  border: none;
+  border-radius: 2px;
+}
+
+.color-picker-input::-moz-color-swatch {
+  border: none;
+  border-radius: 2px;
+}
+
+/* Opções de cores */
+.color-option {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  outline: none;
+  background: none;
+}
+
+.color-option:hover {
+  border-color: var(--accent-color);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.color-option.selected {
+  border-color: var(--accent-color);
+  border-width: 2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.color-option.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--text-primary);
+  font-weight: bold;
+  font-size: 0.75rem;
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+}
+
+/* Modo card - manter layout horizontal */
+.color-line-content[data-mode='card'] {
+  gap: 2rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .color-line-toolbar {
+    margin: -1px 0 12px 0;
+    padding: 0.5rem;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+  }
+
+  .color-line-content {
+    gap: 0.5rem;
+  }
+
+  .color-picker-input,
+  .color-option {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .color-line-toolbar {
+    margin: -1px 0 12px 0;
+    padding: 0.4rem;
+    gap: 0.2rem;
+  }
+
+  .color-line-content {
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .color-picker-input,
+  .color-option {
+    width: 24px;
+    height: 24px;
+  }
+
+  .color-line-label {
+    font-size: 0.8rem;
+  }
+}
+
+/* Tema escuro */
+body.dark-theme .color-line-toolbar {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+body.dark-theme .color-line-label {
+  color: var(--text-primary);
+}
+
+body.dark-theme .color-picker-input {
+  border-color: var(--border-color);
+}
+
+body.dark-theme .color-option {
+  border-color: var(--border-color);
+}
+
+body.dark-theme .color-option.selected::after {
+  color: var(--text-primary);
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Remover estilos antigos que não funcionaram */
+.color-tools-container,
+.color-picker-overlay,
+.color-picker-dropdown,
+.card-color-options,
+.selection-color-options {
+  display: none !important;
+}
+
+/* =================================================================
+   SUB-SEÇÕES DE ANOTAÇÕES
+   ================================================================= */
+
+.annotations-subsection {
+  margin-bottom: 1rem;
+}
+
+.subsection-header {
+  padding: 0.75rem 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px 8px 0 0;
+  border-bottom: none;
+}
+
+.subsection-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.subsection-icon {
+  font-size: 0.9rem;
+  color: var(--accent-color);
+}
+
+.subsection-content {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 1rem;
+}
+
+.quick-notes-placeholder {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.quick-notes-placeholder p {
+  margin: 0;
+}
+
+/* Tema escuro para sub-seções */
+body.dark-theme .subsection-header {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+body.dark-theme .subsection-content {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+body.dark-theme .subsection-icon {
+  color: var(--accent-color);
+}
+
+body.dark-theme .quick-notes-placeholder {
+  color: var(--text-secondary);
+}
+
+/* Responsividade para sub-seções */
+@media (max-width: 768px) {
+  .subsection-header {
+    padding: 0.5rem;
+  }
+
+  .subsection-header h3 {
+    font-size: 0.9rem;
+  }
+
+  .subsection-content {
+    padding: 0.75rem;
+  }
+
+  .quick-notes-placeholder {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .subsection-header {
+    padding: 0.4rem;
+  }
+
+  .subsection-header h3 {
+    font-size: 0.85rem;
+  }
+
+  .subsection-content {
+    padding: 0.5rem;
+  }
+
+  .quick-notes-placeholder {
+    padding: 1rem;
+  }
+}
