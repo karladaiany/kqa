@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { FaRocket, FaTimes, FaCopy, FaBroom } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import ArtiaActivityModal from '../ArtiaActivityModal/ArtiaActivityModal';
 
 const DeployCard = () => {
   const [fields, setFields] = useState(() => {
@@ -15,6 +16,9 @@ const DeployCard = () => {
 
   // Estado para controlar expansão dos campos
   const [expanded, setExpanded] = useState(false);
+
+  // Estado para controlar o modal do Artia
+  const [showArtiaModal, setShowArtiaModal] = useState(false);
 
   // Função para verificar se há dados preenchidos
   const hasAnyData = () => {
@@ -220,6 +224,28 @@ const DeployCard = () => {
     toast.success('Todos os campos foram limpos!');
   };
 
+  const getDeployTitle = () => {
+    const hoje = new Date();
+    const dataFormatada = hoje.toLocaleDateString('pt-BR');
+
+    const branchPrincipal = fields.find(f => f.label === 'Branch principal');
+    const titulos = fields.filter(f => f.label === 'Título');
+
+    let funcionalidade = '';
+
+    if (branchPrincipal && fieldValues[branchPrincipal.id]) {
+      funcionalidade = fieldValues[branchPrincipal.id];
+    } else if (titulos.length > 0 && fieldValues[titulos[0].id]) {
+      funcionalidade = fieldValues[titulos[0].id];
+    }
+
+    if (funcionalidade) {
+      return `[${funcionalidade}] Gerar versão para deploy (${dataFormatada})`;
+    }
+
+    return `Gerar versão para deploy (${dataFormatada})`;
+  };
+
   return (
     <section className='card' id='deploy'>
       <div className='card-header'>
@@ -279,6 +305,13 @@ const DeployCard = () => {
                 <button className='generate-all-btn' onClick={handleCopy}>
                   <FaCopy /> Copiar
                 </button>
+                <button
+                  className='generate-all-btn'
+                  onClick={() => setShowArtiaModal(true)}
+                  title='Criar atividade no Artia'
+                >
+                  <FaRocket /> Criar atividade
+                </button>
                 <button className='generate-all-btn' onClick={handleClearAll}>
                   <FaBroom /> Limpar tudo
                 </button>
@@ -287,6 +320,15 @@ const DeployCard = () => {
           </div>
         </div>
       )}
+
+      <ArtiaActivityModal
+        isOpen={showArtiaModal}
+        onClose={() => setShowArtiaModal(false)}
+        activityType='deploy'
+        initialData={{
+          titulo: getDeployTitle(),
+        }}
+      />
     </section>
   );
 };
