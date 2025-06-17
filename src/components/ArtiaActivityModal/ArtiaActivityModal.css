@@ -326,8 +326,6 @@
 /* Área para campos específicos */
 .modal-specific-fields {
   display: grid;
-  gap: var(--spacing-lg);
-  margin-top: var(--spacing-md);
 }
 
 /* ========================================
@@ -577,8 +575,8 @@
 
 .modal-container .specific-fields {
   display: grid;
-  gap: var(--spacing-lg);
-  margin-top: var(--spacing-md);
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 .modal-container .required {
