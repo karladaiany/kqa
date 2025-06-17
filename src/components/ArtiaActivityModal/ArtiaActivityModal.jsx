@@ -162,8 +162,8 @@ const ArtiaActivityModal = ({
         }
 
         return (
-          <div key={field.name} className='field-group'>
-            <div className='input-container'>
+          <div key={field.name} className='modal-field-group'>
+            <div className='modal-input-container'>
               <select
                 id={field.name}
                 value={value}
@@ -182,7 +182,7 @@ const ArtiaActivityModal = ({
               </select>
               <label htmlFor={field.name}>
                 {field.label}
-                {field.required && <span className='required'>*</span>}
+                {field.required && <span className='modal-required'>*</span>}
               </label>
             </div>
           </div>
@@ -191,8 +191,8 @@ const ArtiaActivityModal = ({
 
       case 'number':
         return (
-          <div key={field.name} className='field-group'>
-            <div className='input-container'>
+          <div key={field.name} className='modal-field-group'>
+            <div className='modal-input-container'>
               <input
                 type='number'
                 id={field.name}
@@ -202,7 +202,7 @@ const ArtiaActivityModal = ({
               />
               <label htmlFor={field.name}>
                 {field.label}
-                {field.required && <span className='required'>*</span>}
+                {field.required && <span className='modal-required'>*</span>}
               </label>
             </div>
           </div>
@@ -210,8 +210,8 @@ const ArtiaActivityModal = ({
 
       case 'email':
         return (
-          <div key={field.name} className='field-group'>
-            <div className='input-container'>
+          <div key={field.name} className='modal-field-group'>
+            <div className='modal-input-container'>
               <input
                 type='email'
                 id={field.name}
@@ -221,7 +221,7 @@ const ArtiaActivityModal = ({
               />
               <label htmlFor={field.name}>
                 {field.label}
-                {field.required && <span className='required'>*</span>}
+                {field.required && <span className='modal-required'>*</span>}
               </label>
             </div>
           </div>
@@ -229,8 +229,8 @@ const ArtiaActivityModal = ({
 
       default:
         return (
-          <div key={field.name} className='field-group'>
-            <div className='input-container'>
+          <div key={field.name} className='modal-field-group'>
+            <div className='modal-input-container'>
               <input
                 type='text'
                 id={field.name}
@@ -240,7 +240,7 @@ const ArtiaActivityModal = ({
               />
               <label htmlFor={field.name}>
                 {field.label}
-                {field.required && <span className='required'>*</span>}
+                {field.required && <span className='modal-required'>*</span>}
               </label>
             </div>
           </div>
@@ -260,7 +260,7 @@ const ArtiaActivityModal = ({
           </h2>
           <button
             type='button'
-            className='close-button'
+            className='modal-close-button'
             onClick={handleClose}
             disabled={loading}
           >
@@ -275,8 +275,8 @@ const ArtiaActivityModal = ({
               <FaLock /> Autenticação
             </div>
 
-            <div className='field-group'>
-              <div className='input-container'>
+            <div className='modal-field-group'>
+              <div className='modal-input-container'>
                 <input
                   type='text'
                   id='login'
@@ -288,13 +288,13 @@ const ArtiaActivityModal = ({
                 />
                 <label htmlFor='login'>
                   Login
-                  <span className='required'>*</span>
+                  <span className='modal-required'>*</span>
                 </label>
               </div>
             </div>
 
-            <div className='field-group'>
-              <div className='password-field'>
+            <div className='modal-field-group'>
+              <div className='modal-password-field'>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   id='senha'
@@ -306,11 +306,11 @@ const ArtiaActivityModal = ({
                 />
                 <label htmlFor='senha'>
                   Senha
-                  <span className='required'>*</span>
+                  <span className='modal-required'>*</span>
                 </label>
                 <button
                   type='button'
-                  className='toggle-password'
+                  className='modal-toggle-password'
                   onClick={() => setShowPassword(!showPassword)}
                   disabled={loading}
                 >
@@ -323,8 +323,8 @@ const ArtiaActivityModal = ({
               <FaClipboardList /> Dados da atividade
             </div>
 
-            <div className='field-group'>
-              <div className='input-container'>
+            <div className='modal-field-group'>
+              <div className='modal-input-container'>
                 <input
                   type='text'
                   id='titulo'
@@ -336,13 +336,13 @@ const ArtiaActivityModal = ({
                 />
                 <label htmlFor='titulo'>
                   Título
-                  <span className='required'>*</span>
+                  <span className='modal-required'>*</span>
                 </label>
               </div>
             </div>
 
-            <div className='field-group'>
-              <div className='input-container'>
+            <div className='modal-field-group'>
+              <div className='modal-input-container'>
                 <select
                   id='tipo'
                   value={formData.tipo}
@@ -359,14 +359,14 @@ const ArtiaActivityModal = ({
                 </select>
                 <label htmlFor='tipo'>
                   Tipo
-                  <span className='required'>*</span>
+                  <span className='modal-required'>*</span>
                 </label>
               </div>
             </div>
 
             {/* Campos específicos do tipo de atividade */}
             {formData.tipo && getFieldsForType(formData.tipo).length > 0 && (
-              <div className='specific-fields'>
+              <div className='modal-specific-fields'>
                 {getFieldsForType(formData.tipo).map(renderField)}
               </div>
             )}
@@ -375,7 +375,7 @@ const ArtiaActivityModal = ({
           <div className='modal-footer'>
             <button
               type='button'
-              className='btn btn-secondary'
+              className='modal-action-button secondary'
               onClick={handleClose}
               disabled={loading}
             >
@@ -383,12 +383,12 @@ const ArtiaActivityModal = ({
             </button>
             <button
               type='submit'
-              className='btn btn-primary'
+              className='modal-action-button primary'
               disabled={loading}
             >
               {loading ? (
                 <>
-                  <FaSpinner className='spinner' />
+                  <FaSpinner className='modal-spinner' />
                   Criando...
                 </>
               ) : (

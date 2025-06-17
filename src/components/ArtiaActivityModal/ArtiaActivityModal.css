@@ -49,7 +49,7 @@
   color: var(--primary-color);
 }
 
-.close-button {
+.modal-close-button {
   background: none;
   border: none;
   font-size: var(--font-size-lg);
@@ -63,12 +63,12 @@
   transition: all var(--transition-speed);
 }
 
-.close-button:hover:not(:disabled) {
+.modal-close-button:hover:not(:disabled) {
   background-color: var(--hover-color);
   color: var(--text-color);
 }
 
-.close-button:disabled {
+.modal-close-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -106,8 +106,6 @@
   opacity: 1;
 }
 
-/* Remover seção personalizada - usar .section-divider do components.css */
-
 /* Estilos específicos para section-divider dentro do modal */
 .modal-body .section-divider {
   display: flex;
@@ -130,12 +128,23 @@
   font-size: 1rem;
 }
 
-/* Estilos padronizados para inputs e selects do modal */
-.field-group {
+/* ========================================
+   SISTEMA GLOBAL DE INPUT-CONTAINER
+   Baseado no padrão do modal, compatível com campo-valor
+   ======================================== */
+
+/* Campo item unificado - compatível com campo-item */
+.modal-field-group {
   margin-bottom: 1rem;
+  position: relative;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
-.field-group label {
+/* Labels flutuantes unificadas */
+.modal-field-group label {
   position: absolute;
   left: 8px;
   top: -0.6em;
@@ -152,13 +161,13 @@
   background-color: #2d2e31;
 }
 
-.required {
+.modal-required {
   color: var(--error-color);
   margin-left: 0.25rem;
 }
 
-/* Container para inputs e selects - similar ao .campo-valor */
-.field-group .input-container {
+/* Input container global - compatível com campo-valor */
+.modal-input-container {
   position: relative;
   display: flex;
   align-items: center;
@@ -172,18 +181,18 @@
   padding: 4px 8px;
 }
 
-.field-group .input-container:hover {
+.modal-input-container:hover {
   border-color: var(--accent-color);
 }
 
-.field-group .input-container:focus-within {
+.modal-input-container:focus-within {
   border-color: var(--accent-color);
   box-shadow: 0 0 0 2px rgba(120, 93, 200, 0.1);
 }
 
-/* Estilos para inputs dentro do modal - similar ao .copyable */
-.field-group input,
-.field-group select {
+/* Inputs e selects dentro do container - compatível com copyable */
+.modal-input-container input,
+.modal-input-container select {
   flex: 1;
   width: 100%;
   min-height: 32px;
@@ -201,21 +210,21 @@
   font-size: 0.9rem;
 }
 
-.field-group input::placeholder {
+.modal-input-container input::placeholder {
   font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
   font-size: 12px;
   color: var(--text-secondary);
   opacity: 0.7;
 }
 
-.field-group input:focus,
-.field-group select:focus {
+.modal-input-container input:focus,
+.modal-input-container select:focus {
   outline: none;
   background: transparent;
 }
 
-.field-group input:disabled,
-.field-group select:disabled {
+.modal-input-container input:disabled,
+.modal-input-container select:disabled {
   background-color: var(--background-color);
   color: var(--text-secondary);
   cursor: not-allowed;
@@ -223,7 +232,7 @@
 }
 
 /* Estilos específicos para selects */
-.field-group select {
+.modal-input-container select {
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
@@ -235,13 +244,14 @@
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
 }
 
-.field-group select option {
+.modal-input-container select option {
   padding: 8px;
   background-color: #2d2e31;
   color: var(--text-primary);
 }
 
-.password-field {
+/* Campo de senha especializado */
+.modal-password-field {
   position: relative;
   display: flex;
   align-items: center;
@@ -255,22 +265,22 @@
   padding: 4px 8px;
 }
 
-.password-field:hover {
+.modal-password-field:hover {
   border-color: var(--accent-color);
 }
 
-.password-field:focus-within {
+.modal-password-field:focus-within {
   border-color: var(--accent-color);
   box-shadow: 0 0 0 2px rgba(120, 93, 200, 0.1);
 }
 
-.password-field input {
+.modal-password-field input {
   border: none !important;
   background: transparent !important;
   padding: 8px 32px 8px 12px !important;
 }
 
-.password-field label {
+.modal-password-field label {
   position: absolute;
   left: 8px;
   top: -0.6em;
@@ -287,7 +297,7 @@
   background-color: #2d2e31;
 }
 
-.toggle-password {
+.modal-toggle-password {
   position: absolute;
   right: 8px;
   background: none;
@@ -303,21 +313,27 @@
   font-size: 1rem;
 }
 
-.toggle-password:hover:not(:disabled) {
+.modal-toggle-password:hover:not(:disabled) {
   color: var(--accent-color);
   transform: scale(1.1);
 }
 
-.toggle-password:disabled {
+.modal-toggle-password:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.specific-fields {
+/* Área para campos específicos */
+.modal-specific-fields {
   display: grid;
   gap: var(--spacing-lg);
   margin-top: var(--spacing-md);
 }
+
+/* ========================================
+   FOOTER E BOTÕES DO MODAL
+   Usando padrão action-button do components.css
+   ======================================== */
 
 .modal-footer {
   padding: var(--spacing-lg);
@@ -328,7 +344,8 @@
   justify-content: flex-end;
 }
 
-.btn {
+/* Botões do modal usando padrão action-button */
+.modal-action-button {
   padding: var(--input-padding);
   border-radius: var(--border-radius);
   font-size: 13px;
@@ -345,32 +362,43 @@
   font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
 }
 
-.btn:disabled {
+.modal-action-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.btn-secondary {
+/* Variante secundária - compatível com action-button.clear */
+.modal-action-button.secondary {
   background-color: var(--background-color);
   color: var(--text-primary);
   border: var(--border-width) solid var(--border-color);
 }
 
-.btn-secondary:hover:not(:disabled) {
+.modal-action-button.secondary:hover:not(:disabled) {
   background-color: var(--hover-color);
   border-color: var(--accent-color);
+  color: var(--accent-color);
 }
 
-.btn-primary {
+/* Variante primária - compatível com action-button padrão */
+.modal-action-button.primary {
   background-color: var(--primary-color);
   color: var(--text-button, white);
+  border: 1px solid var(--primary-color);
 }
 
-.btn-primary:hover:not(:disabled) {
+.modal-action-button.primary:hover:not(:disabled) {
   background-color: var(--primary-color-dark);
+  filter: brightness(110%);
 }
 
-.spinner {
+.modal-action-button.primary:active {
+  box-shadow: 0 0 15px rgba(120, 93, 200, 0.5);
+  filter: brightness(95%);
+}
+
+/* Spinner para loading */
+.modal-spinner {
   animation: spin 1s linear infinite;
 }
 
@@ -383,7 +411,48 @@
   }
 }
 
-/* Responsividade */
+/* ========================================
+   INPUTS NUMÉRICOS UNIFICADOS
+   ======================================== */
+
+/* Estilo para campos de número - compatível com number-input */
+.modal-input-container input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+.modal-input-container input[type='number']::-webkit-outer-spin-button,
+.modal-input-container input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ========================================
+   SCROLL CUSTOMIZADO
+   ======================================== */
+
+/* Scroll customizado para o modal body */
+.modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: var(--card-bg);
+  border-radius: 3px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* ========================================
+   RESPONSIVIDADE
+   ======================================== */
+
 @media (max-width: 640px) {
   .modal-overlay {
     padding: var(--spacing-sm);
@@ -410,39 +479,284 @@
     flex-direction: column;
   }
 
+  .modal-action-button {
+    width: 100%;
+  }
+
   .btn {
     width: 100%;
   }
 }
 
-/* Estilos já definidos acima - removendo duplicatas para evitar conflitos */
+/* ========================================
+   CLASSES ISOLADAS PARA O MODAL
+   Escopo: APENAS dentro do modal, sem afetar o sistema principal
+   ======================================== */
 
-/* Estilo para campos de número */
-.field-group input[type='number'] {
+/* APENAS PARA MODAL: Classes que o JSX está usando */
+.modal-container .field-group {
+  margin-bottom: 1rem;
+  position: relative;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.modal-container .field-group .input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  min-height: 32px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+  background: #2d2e31;
+  padding: 4px 8px;
+}
+
+.modal-container .field-group .input-container:hover {
+  border-color: var(--accent-color);
+}
+
+.modal-container .field-group .input-container:focus-within {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(120, 93, 200, 0.1);
+}
+
+.modal-container .password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  min-height: 32px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+  background: #2d2e31;
+  padding: 4px 8px;
+}
+
+.modal-container .password-field:hover {
+  border-color: var(--accent-color);
+}
+
+.modal-container .password-field:focus-within {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(120, 93, 200, 0.1);
+}
+
+.modal-container .toggle-password {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+  font-size: 1rem;
+}
+
+.modal-container .toggle-password:hover:not(:disabled) {
+  color: var(--accent-color);
+  transform: scale(1.1);
+}
+
+.modal-container .toggle-password:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-container .specific-fields {
+  display: grid;
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-md);
+}
+
+.modal-container .required {
+  color: var(--error-color);
+  margin-left: 0.25rem;
+}
+
+.modal-container .close-button {
+  background: none;
+  border: none;
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  border-radius: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-speed);
+}
+
+.modal-container .close-button:hover:not(:disabled) {
+  background-color: var(--hover-color);
+  color: var(--text-color);
+}
+
+.modal-container .close-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* APENAS PARA MODAL: Inputs e selects */
+.modal-container .field-group input,
+.modal-container .field-group select,
+.modal-container .password-field input {
+  flex: 1;
+  width: 100%;
+  min-height: 32px;
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 8px 12px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  transition:
+    background 0.2s,
+    color 0.2s;
+  font-size: 0.9rem;
+}
+
+.modal-container .field-group input::placeholder {
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.modal-container .field-group input:focus,
+.modal-container .field-group select:focus,
+.modal-container .password-field input:focus {
+  outline: none;
+  background: transparent;
+}
+
+.modal-container .field-group input:disabled,
+.modal-container .field-group select:disabled,
+.modal-container .password-field input:disabled {
+  background-color: var(--background-color);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.modal-container .field-group select {
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 12px;
+  padding-right: 32px;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+.modal-container .field-group select option {
+  padding: 8px;
+  background-color: #2d2e31;
+  color: var(--text-primary);
+}
+
+.modal-container .field-group label,
+.modal-container .password-field label {
+  position: absolute;
+  left: 8px;
+  top: -0.6em;
+  color: var(--text-secondary);
+  font-size: 14px;
+  padding: 0 4px;
+  z-index: 1;
+  display: inline-block;
+  height: 1.2em;
+  white-space: nowrap;
+  backdrop-filter: blur(4px);
+  font-weight: 500;
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+  background-color: #2d2e31;
+}
+
+.modal-container .password-field input {
+  border: none !important;
+  background: transparent !important;
+  padding: 8px 32px 8px 12px !important;
+}
+
+.modal-container .field-group input[type='number'] {
   -moz-appearance: textfield;
 }
 
-.field-group input[type='number']::-webkit-outer-spin-button,
-.field-group input[type='number']::-webkit-inner-spin-button {
+.modal-container .field-group input[type='number']::-webkit-outer-spin-button,
+.modal-container .field-group input[type='number']::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-/* Scroll customizado para o modal body */
-.modal-body::-webkit-scrollbar {
-  width: 6px;
+/* APENAS PARA MODAL: Botões com classes antigas */
+.modal-container .btn {
+  padding: var(--input-padding);
+  border-radius: var(--border-radius);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 120px;
+  justify-content: center;
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
 }
 
-.modal-body::-webkit-scrollbar-track {
-  background: var(--card-bg);
-  border-radius: 3px;
+.modal-container .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-.modal-body::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 3px;
+.modal-container .btn-secondary {
+  background-color: var(--background-color);
+  color: var(--text-primary);
+  border: var(--border-width) solid var(--border-color);
 }
 
-.modal-body::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
+.modal-container .btn-secondary:hover:not(:disabled) {
+  background-color: var(--hover-color);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.modal-container .btn-primary {
+  background-color: var(--primary-color);
+  color: var(--text-button, white);
+  border: 1px solid var(--primary-color);
+}
+
+.modal-container .btn-primary:hover:not(:disabled) {
+  background-color: var(--primary-color-dark);
+  filter: brightness(110%);
+}
+
+.modal-container .btn-primary:active {
+  box-shadow: 0 0 15px rgba(120, 93, 200, 0.5);
+  filter: brightness(95%);
+}
+
+.modal-container .spinner {
+  animation: spin 1s linear infinite;
 }
