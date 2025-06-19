@@ -1,0 +1,12 @@
+/* 
+ * KQA - Estilos Centralizados
+ * Importação organizada de todos os estilos da aplicação
+ */
+
+/* Base Styles */
+@import './base/theme.css';
+@import './base/main.css';
+
+/* Component Styles */
+@import './components/main.css';
+@import './components/annotations.css';

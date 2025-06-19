@@ -1,14 +1,14 @@
 import React, { Suspense } from 'react';
 import PropTypes from 'prop-types';
-import { useDataGenerator } from '../hooks/useDataGenerator';
-import useTextareaResize from '../hooks/useTextareaResize';
-import { useDocumentMasks } from '../hooks/useDocumentMasks';
-import { useDocuments } from '../hooks/useDocuments';
-import { usePersonalData } from '../hooks/usePersonalData';
-import { useCreditCard } from '../hooks/useCreditCard';
-import { useProduct } from '../hooks/useProduct';
-import { useRandomChars } from '../hooks/useRandomChars';
-import { useTextCounter } from '../hooks/useTextCounter';
+import { useDataGenerator } from '../../hooks/useDataGenerator';
+import useTextareaResize from '../../hooks/useTextareaResize';
+import { useDocumentMasks } from '../../hooks/useDocumentMasks';
+import { useDocuments } from '../../hooks/useDocuments';
+import { usePersonalData } from '../../hooks/usePersonalData';
+import { useCreditCard } from '../../hooks/useCreditCard';
+import { useProduct } from '../../hooks/useProduct';
+import { useRandomChars } from '../../hooks/useRandomChars';
+import { useTextCounter } from '../../hooks/useTextCounter';
 import { toast } from 'react-toastify';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import {
@@ -28,13 +28,13 @@ import DataField from './DataField';
 
 // Lazy loading dos componentes pesados
 const ComplementaryDataCard = React.lazy(
-  () => import('./ComplementaryData/ComplementaryDataCard')
+  () => import('../cards/ComplementaryData/ComplementaryDataCard')
 );
 const FileGeneratorCard = React.lazy(
-  () => import('./FileGenerator/FileGeneratorCard')
+  () => import('../cards/FileGenerator/FileGeneratorCard')
 );
 
-import * as companyGenerators from '../generators/companyData';
+import * as companyGenerators from '../../generators/companyData';
 
 // Loading component para lazy loading
 const LoadingSpinner = () => (

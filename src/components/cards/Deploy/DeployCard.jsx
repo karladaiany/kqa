@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { FaRocket, FaTimes, FaCopy, FaBroom } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-import ArtiaActivityModal from '../ArtiaActivityModal/ArtiaActivityModal';
+import ArtiaActivityModal from '../../modals/ArtiaActivityModal/ArtiaActivityModal';
 
 const DeployCard = () => {
   const [fields, setFields] = useState(() => {

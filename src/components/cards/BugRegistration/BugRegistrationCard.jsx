@@ -10,9 +10,9 @@ import {
   FaEye,
   FaRocket,
 } from 'react-icons/fa';
-import { useBugRegistration } from '../../hooks/useBugRegistration';
-import useTextareaResizeActions from '../../hooks/useTextareaResizeActions';
-import ArtiaActivityModal from '../ArtiaActivityModal/ArtiaActivityModal';
+import { useBugRegistration } from '../../../hooks/useBugRegistration';
+import useTextareaResizeActions from '../../../hooks/useTextareaResizeActions';
+import ArtiaActivityModal from '../../modals/ArtiaActivityModal/ArtiaActivityModal';
 
 const hasAnyData = bugData => {
   return Object.keys(bugData).some(key => {

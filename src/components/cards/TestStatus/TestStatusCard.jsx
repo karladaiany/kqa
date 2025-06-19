@@ -12,8 +12,8 @@ import {
   FaEllipsisH,
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-import { useTestStatus } from '../../hooks/useTestStatus';
-import useTextareaResizeActions from '../../hooks/useTextareaResizeActions';
+import { useTestStatus } from '../../../hooks/useTestStatus';
+import useTextareaResizeActions from '../../../hooks/useTextareaResizeActions';
 
 // Componente dinâmico para campo (textarea ou input)
 const CampoDinamico = ({

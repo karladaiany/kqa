@@ -13,8 +13,8 @@ import {
   ACTIVITY_TYPES,
   ACTIVITY_FIELDS,
   FUNCIONALIDADE_OPTIONS,
-} from '../../constants/artiaOptions';
-import { ArtiaService } from '../../services/artiaService';
+} from '../../../constants/artiaOptions';
+import { ArtiaService } from '../../../services/artiaService';
 import './ArtiaActivityModal.css';
 
 const ArtiaActivityModal = ({
@@ -189,13 +189,13 @@ const ArtiaActivityModal = ({
       if (activityType === 'bug') {
         // Importar o hook e executar a função de copiar
         const { useBugRegistration } = await import(
-          '../../hooks/useBugRegistration'
+          '../../../hooks/useBugRegistration'
         );
         // Como estamos fora do componente React, vamos usar os dados do localStorage diretamente
         const savedData = localStorage.getItem('bugRegistration');
         if (savedData) {
           const parsedData = JSON.parse(savedData);
-          const { decrypt } = await import('../../utils/crypto');
+          const { decrypt } = await import('../../../utils/crypto');
 
           const bugData = {
             ...parsedData,
