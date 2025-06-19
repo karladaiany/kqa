@@ -19,14 +19,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      exclude: [
-        'node_modules/',
-        'src/test/',
-        '**/*.d.ts',
-        'cypress/',
-        'dist/',
-        'public/',
-      ],
+      exclude: ['node_modules/', 'src/test/', '**/*.d.ts', 'dist/', 'public/'],
     },
   },
   build: {
@@ -55,6 +48,25 @@ export default defineConfig({
     port: 3000,
     open: true,
     cors: true,
+    proxy: {
+      '/api/artia': {
+        target: 'https://app.artia.com',
+        changeOrigin: true,
+        secure: true,
+        rewrite: path => path.replace(/^\/api\/artia/, ''),
+        configure: (proxy, options) => {
+          proxy.on('error', (err, req, res) => {
+            console.log('🚨 Proxy error:', err);
+          });
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log('🔄 Proxying request to:', proxyReq.path);
+          });
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            console.log('✅ Proxy response status:', proxyRes.statusCode);
+          });
+        },
+      },
+    },
   },
   optimizeDeps: {
     include: [

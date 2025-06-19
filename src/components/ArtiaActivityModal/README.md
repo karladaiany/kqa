@@ -118,3 +118,88 @@ await new Promise(resolve => setTimeout(resolve, 2000));
 - `graphql`: Biblioteca GraphQL
 - `react-icons`: Ícones utilizados no modal
 - `react-toastify`: Notificações toast
+
+# Modal de Atividades do Artia
+
+Este modal permite criar atividades no Artia através da API GraphQL.
+
+## 🔧 **Fase 1: Teste de Autenticação**
+
+### Como testar a integração:
+
+#### **1. Através do Modal (Recomendado)**
+
+1. Abra qualquer modal do Artia (Bug ou Deploy)
+2. Preencha login e senha do Artia
+3. Clique no botão **"🔍 Testar Autenticação"**
+4. Verifique o console do navegador para logs detalhados
+
+#### **2. Através do Console do Navegador**
+
+```javascript
+// No console do navegador (F12):
+testArtiaIntegration('seu@email.com', 'suasenha');
+```
+
+### **O que os testes verificam:**
+
+✅ **Conectividade** - Se consegue acessar a API do Artia  
+✅ **Autenticação** - Se login/senha são válidos  
+✅ **Token** - Se o token é retornado e salvo  
+✅ **Estado** - Se o sistema mantém o token
+
+### **Logs esperados em caso de sucesso:**
+
+```
+🔍 === TESTE DE AUTENTICAÇÃO ARTIA ===
+📧 Email: seu@email.com
+🔗 URL: https://app.artia.com/graphql
+🚀 Enviando requisição...
+✅ Resposta recebida:
+📊 Status da requisição: SUCCESS
+🔑 Token recebido: eyJ0eXAiOiJKV1QiLCJhbG...
+💾 Token salvo no localStorage
+```
+
+### **Logs esperados em caso de erro:**
+
+```
+🚨 === ERRO NA AUTENTICAÇÃO ===
+❌ Tipo do erro: Error
+📝 Mensagem: GraphQL error: Invalid credentials
+🌐 Network Error: (detalhes...)
+📋 GraphQL Errors: (detalhes...)
+```
+
+### **Debug adicional:**
+
+```javascript
+// Limpar token para teste limpo
+localStorage.removeItem('artia_token');
+
+// Verificar se tem token
+localStorage.getItem('artia_token');
+
+// Ver utilitários disponíveis
+console.log(window.testArtiaIntegration);
+```
+
+## 🚀 **Próximas Fases**
+
+- **Fase 2**: Criação de atividades (após autenticação funcionar)
+- **Fase 3**: Refinamentos e validações
+
+## 📝 **Configuração Atual**
+
+- **URL**: https://app.artia.com/graphql
+- **Mutation**: AuthenticationByEmail
+- **Token**: Salvo em localStorage como 'artia_token'
+
+## 🐛 **Problemas Conhecidos**
+
+Se você encontrar erros, verifique:
+
+1. **CORS**: A API do Artia permite requisições do localhost?
+2. **Credenciais**: Login/senha estão corretos?
+3. **Rede**: Conexão com a internet funciona?
+4. **Console**: Há erros JavaScript na página?

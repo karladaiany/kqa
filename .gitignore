@@ -24,6 +24,4 @@ dist-ssr
 *.sln
 *.sw?
 
-# Cypress
-cypress/screenshots
-cypress/videos
+# Arquivos temporários removidos

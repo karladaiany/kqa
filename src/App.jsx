@@ -35,6 +35,8 @@ import {
   alternarTema,
 } from './config/theme';
 
+// Utilitários de debug removidos - código limpo para produção
+
 const App = () => {
   const [darkMode, setDarkMode] = useState(() => inicializarTema());
   const [sidebarOpen, setSidebarOpen] = useState(false);

@@ -25,7 +25,7 @@ export const DIFICULDADE_LOCALIZACAO_OPTIONS = ['Alto', 'Médio', 'Baixo'];
 export const CAUSA_DEMANDA_OPTIONS = [
   'Ambiente',
   'Atividade duplicada',
-  'Diferente do especificado na regra de negócio',
+  'Diferente do especificado na regra de negocio',
   'Erro de deploy',
   'Erro de documentação',
   'Erro legado',
@@ -312,7 +312,7 @@ export const ACTIVITY_FIELDS = {
     {
       name: 'ticketMovidesk',
       label: 'Nº ticket movidesk',
-      type: 'number',
+      type: 'text',
       required: true,
     },
     {
@@ -348,10 +348,10 @@ export const ACTIVITY_FIELDS = {
     {
       name: 'idOrganizacao',
       label: 'ID organização',
-      type: 'number',
+      type: 'text',
       required: true,
     },
-    { name: 'email', label: 'E-mail', type: 'email', required: true },
+    { name: 'email', label: 'E-mail', type: 'text', required: true },
     {
       name: 'tipoCliente',
       label: 'Tipo de cliente',
