@@ -50,7 +50,7 @@ class AnalyticsManager {
       this.saveToStorage(event);
 
       if (process.env.NODE_ENV === 'development') {
-        console.log('Analytics event tracked:', event);
+        // Event tracked successfully
       }
     } catch (error) {
       if (process.env.NODE_ENV === 'development') {
@@ -263,7 +263,7 @@ export const trackPerformance = (component, loadTime) => {
     analytics.saveToStorage(performanceEvent);
 
     if (process.env.NODE_ENV === 'development') {
-      console.log('Performance metric tracked:', performanceEvent);
+      // Performance metric tracked
     }
   } catch (error) {
     if (process.env.NODE_ENV === 'development') {

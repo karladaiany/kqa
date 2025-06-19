@@ -55,25 +55,19 @@ export const useAnnotations = () => {
       window.debugKQAAnnotations = {
         checkStorage: () => {
           const data = localStorage.getItem(STORAGE_KEY);
-          console.log('📦 Dados no localStorage:', data);
           if (data) {
             const decrypted = decryptData(data);
-            console.log('🔓 Dados descriptografados:', decrypted);
+            return { raw: data, decrypted };
           }
+          return null;
         },
         clearStorage: () => {
           localStorage.removeItem(STORAGE_KEY);
-          console.log('🗑️ localStorage limpo!');
+          return 'Storage limpo';
         },
         checkQuota: () => {
           const used = JSON.stringify(localStorage).length;
           const limit = 5 * 1024 * 1024; // 5MB aproximado
-          console.log(
-            `📊 Uso do localStorage: ${(used / 1024).toFixed(2)}KB de ~${(limit / 1024 / 1024).toFixed(0)}MB`
-          );
-          console.log(
-            `📈 Percentual usado: ${((used / limit) * 100).toFixed(2)}%`
-          );
           return { used, limit, percentage: (used / limit) * 100 };
         },
         cleanOldData: () => {
@@ -85,7 +79,7 @@ export const useAnnotations = () => {
               cleaned++;
             }
           });
-          console.log(`🧹 ${cleaned} chaves antigas removidas`);
+          return `${cleaned} chaves antigas removidas`;
         },
         saveTestData: () => {
           const testData = [
@@ -103,7 +97,7 @@ export const useAnnotations = () => {
           ];
           const encrypted = encryptData(testData);
           localStorage.setItem(STORAGE_KEY, encrypted);
-          console.log('✅ Dados de teste salvos! Recarregue a página.');
+          return 'Dados de teste salvos! Recarregue a página.';
         },
         saveTestDataNoEncryption: () => {
           const testData = [
@@ -125,32 +119,38 @@ export const useAnnotations = () => {
           );
         },
         getCurrentNotes: () => {
-          console.log('📋 Anotações atuais:', notes);
+          // Debug: anotações carregadas
           return notes;
         },
         checkImages: () => {
-          console.log('🖼️ Verificando imagens nas anotações...');
+          const results = [];
           notes.forEach((note, index) => {
             const imageMatches = note.content.match(
               /<img[^>]*src="data:image\/[^"]*"/g
             );
             if (imageMatches) {
-              console.log(`📝 Anotação ${index + 1} (ID: ${note.id}):`);
-              console.log(
-                `  🖼️ ${imageMatches.length} imagem(ns) encontrada(s)`
-              );
-              imageMatches.forEach((img, imgIndex) => {
-                const srcMatch = img.match(/src="(data:image\/[^"]*)"/);
-                if (srcMatch) {
-                  const src = srcMatch[1];
-                  const sizeKB = Math.round((src.length * 0.75) / 1024);
-                  console.log(
-                    `    Imagem ${imgIndex + 1}: ${src.substring(0, 50)}... (≈${sizeKB}KB)`
-                  );
-                }
+              const images = imageMatches
+                .map((img, imgIndex) => {
+                  const srcMatch = img.match(/src="(data:image\/[^"]*)"/);
+                  if (srcMatch) {
+                    const src = srcMatch[1];
+                    const sizeKB = Math.round((src.length * 0.75) / 1024);
+                    return {
+                      index: imgIndex + 1,
+                      preview: src.substring(0, 50) + '...',
+                      sizeKB,
+                    };
+                  }
+                  return null;
+                })
+                .filter(Boolean);
+
+              results.push({
+                noteId: note.id,
+                noteIndex: index + 1,
+                imageCount: imageMatches.length,
+                images,
               });
-            } else {
-              console.log(`📝 Anotação ${index + 1}: Sem imagens`);
             }
           });
 
@@ -161,11 +161,9 @@ export const useAnnotations = () => {
             return acc + (matches ? matches.length : 0);
           }, 0);
 
-          console.log(`📊 Total de imagens: ${totalImages}`);
-          return { totalImages, notes: notes.length };
+          return { totalImages, notesCount: notes.length, results };
         },
         testImageSave: () => {
-          console.log('🧪 Testando salvamento de imagem...');
           const testImageData =
             'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
           const testNote = {
@@ -184,10 +182,9 @@ export const useAnnotations = () => {
           const encrypted = encryptData(currentNotes);
           if (encrypted) {
             localStorage.setItem(STORAGE_KEY, encrypted);
-            console.log(
-              '✅ Anotação de teste com imagem salva! Recarregue a página.'
-            );
+            return 'Anotação de teste com imagem salva! Recarregue a página.';
           }
+          return 'Erro ao salvar teste';
         },
       };
     }

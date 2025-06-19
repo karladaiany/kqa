@@ -138,42 +138,6 @@ const CREATE_ACTIVITY = gql`
   }
 `;
 
-// Mutation alternativa caso a primeira não funcione
-const CREATE_ACTIVITY_ALT = gql`
-  mutation createActivity(
-    $title: String!
-    $folderId: Int!
-    $accountId: Int!
-    $folderTypeId: Int!
-    $description: String
-    $createdBy: String!
-    $priority: Int
-    $estimatedEffort: Float
-    $customField: [CustomField!]
-  ) {
-    createActivity(
-      title: $title
-      folderId: $folderId
-      accountId: $accountId
-      folderTypeId: $folderTypeId
-      description: $description
-      createdBy: $createdBy
-      priority: $priority
-      estimatedEffort: $estimatedEffort
-      customField: $customField
-    ) {
-      id
-      uid
-      title
-      description
-      status
-      priority
-      estimatedEffort
-      createdAt
-    }
-  }
-`;
-
 /**
  * Serviço para integração com a API do Artia
  */
@@ -185,113 +149,38 @@ export class ArtiaService {
    * @returns {Promise<Object>} Dados de autenticação e logs
    */
   static async testAuthentication(email, password) {
-    console.log('🔍 === TESTE DE AUTENTICAÇÃO ARTIA ===');
-    console.log('📧 Email:', email);
-    console.log(
-      '🔗 URL:',
-      process.env.NODE_ENV === 'development'
-        ? '/api/artia/graphql (via proxy)'
-        : 'https://app.artia.com/graphql (direto)'
-    );
-    console.log('⏰ Timestamp:', new Date().toISOString());
-
     try {
-      console.log('🚀 Enviando requisição...');
-
       const result = await client.mutate({
         mutation: AUTHENTICATION_BY_EMAIL,
         variables: {
           email,
           password,
         },
-        // Forçar não usar cache para teste
         fetchPolicy: 'no-cache',
       });
 
-      console.log('✅ Resposta recebida:');
-      console.log('📊 Status da requisição: SUCCESS');
-      console.log('📄 Response completo:', result);
-      console.log('🎯 Data:', result.data);
-      console.log('📝 Extensions:', result.extensions);
-
-      if (result.data?.authenticationByEmail?.token) {
-        const token = result.data.authenticationByEmail.token;
-        console.log('🔑 Token recebido:', token);
-        console.log('📏 Tamanho do token:', token.length);
-        console.log(
-          '🔤 Primeiros 20 caracteres:',
-          token.substring(0, 20) + '...'
-        );
-
-        // Salvar token para testes futuros
+      // Verificar se o token está presente
+      const token = result.data?.authenticationByEmail?.token;
+      if (token) {
+        // Salvar token no localStorage
         localStorage.setItem('artia_token', token);
-        console.log('💾 Token salvo no localStorage');
 
         return {
           success: true,
           token,
-          message: 'Autenticação realizada com sucesso!',
-          fullResponse: result,
+          message: 'Autenticação realizada com sucesso',
+          timestamp: new Date().toISOString(),
         };
       } else {
-        console.log('❌ Token não encontrado na resposta');
-        return {
-          success: false,
-          message: 'Token não retornado pela API',
-          fullResponse: result,
-        };
+        throw new Error('Token não encontrado na resposta da API');
       }
     } catch (error) {
-      console.log('🚨 === ERRO NA AUTENTICAÇÃO ===');
-      console.log('❌ Tipo do erro:', error.constructor.name);
-      console.log('📝 Mensagem:', error.message);
-      console.log('🔍 Error completo:', error);
-
-      if (error.networkError) {
-        console.log('🌐 Network Error:', error.networkError);
-        console.log('📊 Status Code:', error.networkError.statusCode);
-        console.log('📄 Response Body:', error.networkError.result);
-
-        // Log detalhado do response body se for erro 500
-        if (
-          error.networkError.statusCode === 500 &&
-          error.networkError.result
-        ) {
-          console.log('🔍 DETALHES DO ERRO 500:');
-          console.log(
-            '📄 Error completo:',
-            JSON.stringify(error.networkError.result, null, 2)
-          );
-
-          if (error.networkError.result.error) {
-            console.log(
-              '❌ Error message:',
-              error.networkError.result.error.message
-            );
-            console.log('💬 Error details:', error.networkError.result.error);
-          }
-
-          if (error.networkError.result.data) {
-            console.log('📦 Data received:', error.networkError.result.data);
-          }
-        }
+      // Log apenas erros críticos
+      if (error.networkError?.statusCode === 500) {
+        console.error('[Artia] Erro interno do servidor:', error.message);
       }
 
-      if (error.graphQLErrors) {
-        console.log('📋 GraphQL Errors:', error.graphQLErrors);
-        error.graphQLErrors.forEach((gqlError, index) => {
-          console.log(`📌 GraphQL Error ${index + 1}:`, gqlError.message);
-          console.log('📍 Path:', gqlError.path);
-          console.log('📦 Extensions:', gqlError.extensions);
-        });
-      }
-
-      return {
-        success: false,
-        message: `Erro na autenticação: ${error.message}`,
-        error,
-        errorType: error.constructor.name,
-      };
+      throw new Error(`Falha na autenticação: ${error.message}`);
     }
   }
 
@@ -335,11 +224,7 @@ export class ArtiaService {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const currentTime = Math.floor(Date.now() / 1000);
 
-      console.log('🔍 Verificando token:', {
-        exp: payload.exp,
-        current: currentTime,
-        valid: payload.exp > currentTime,
-      });
+      // Token válido verificado
 
       return payload.exp > currentTime;
     } catch (error) {
@@ -352,32 +237,22 @@ export class ArtiaService {
    * Garante que temos um token válido, renovando se necessário
    */
   static async ensureValidToken(email, password) {
-    console.log('🔐 Verificando token...');
-
     // Verificar se há token e se é válido
     const currentToken = localStorage.getItem('artia_token');
     if (currentToken && this.hasValidToken()) {
-      console.log('✅ Token válido encontrado');
       return currentToken;
     }
-
-    console.log(
-      '🔄 Token expirado ou inexistente, renovando automaticamente...'
-    );
 
     // Limpar token inválido
     if (currentToken) {
       localStorage.removeItem('artia_token');
-      console.log('🗑️ Token inválido removido');
     }
 
     try {
-      console.log('🚀 Iniciando autenticação automática...');
       const result = await this.authenticate(email, password);
-      console.log('✅ Token renovado automaticamente com sucesso');
       return result.token;
     } catch (error) {
-      console.error('❌ Erro ao renovar token automaticamente:', error);
+      console.error('[Artia] Erro ao renovar token:', error.message);
       throw new Error('Falha na autenticação automática: ' + error.message);
     }
   }
@@ -397,12 +272,8 @@ export class ArtiaService {
    * @returns {Promise<Object>} Atividade criada
    */
   static async createSimpleActivity(activityData, generatedDescription = '') {
-    console.log('🚀 === CRIANDO ATIVIDADE SIMPLES NO ARTIA ===');
-    console.log('📋 Dados recebidos:', activityData);
-
     try {
       // Garantir token válido automaticamente
-      console.log('🔐 Verificando autenticação...');
       await this.ensureValidToken(activityData.login, activityData.senha);
 
       // Prepara os dados básicos para envio
@@ -428,38 +299,22 @@ export class ArtiaService {
           DEFAULT_ARTIA_VALUES.ESTIMATED_EFFORT,
       };
 
-      console.log('📦 Variáveis simples preparadas:', variables);
-
       const response = await client.mutate({
         mutation: CREATE_ACTIVITY_SIMPLE,
         variables,
       });
 
-      console.log('📦 Resposta da API (simples):', response);
-
-      // Verificar se há erros GraphQL (API retorna 200 mesmo com erro)
+      // Verificar se há erros GraphQL
       if (response.errors && response.errors.length > 0) {
-        console.error(
-          '❌ Erros GraphQL encontrados (simples):',
-          response.errors
-        );
         const errorMessages = response.errors
           .map(err => err.message)
           .join(', ');
-        throw new Error(`Erro GraphQL (simples): ${errorMessages}`);
+        throw new Error(`Erro GraphQL: ${errorMessages}`);
       }
 
       if (response.data && response.data.createActivity) {
-        console.log(
-          '✅ Atividade simples criada:',
-          response.data.createActivity
-        );
         return response.data.createActivity;
       } else if (response.data) {
-        console.log(
-          '✅ Resposta recebida (formato alternativo):',
-          response.data
-        );
         return {
           id: response.data.id || 'ID_NAO_ENCONTRADO',
           title: variables.title,
@@ -485,13 +340,8 @@ export class ArtiaService {
    * @returns {Promise<Object>} Atividade criada
    */
   static async createActivity(activityData, generatedDescription = '') {
-    console.log('🚀 === CRIANDO ATIVIDADE NO ARTIA ===');
-    console.log('📋 Dados recebidos:', activityData);
-    console.log('📄 Descrição gerada:', generatedDescription);
-
     try {
       // Garantir token válido automaticamente
-      console.log('🔐 Verificando autenticação...');
       await this.ensureValidToken(activityData.login, activityData.senha);
 
       // Prepara os dados para envio
@@ -499,29 +349,14 @@ export class ArtiaService {
         activityData,
         generatedDescription
       );
-      console.log('📦 Variáveis preparadas:', variables);
 
       const response = await client.mutate({
         mutation: CREATE_ACTIVITY,
         variables,
       });
 
-      console.log('📦 Resposta completa da API:', response);
-
-      // Verificar se há erros GraphQL (API retorna 200 mesmo com erro)
+      // Verificar se há erros GraphQL
       if (response.errors && response.errors.length > 0) {
-        console.error('❌ Erros GraphQL encontrados:', response.errors);
-
-        // LOG DETALHADO DO ERRO PARA DEBUGGING
-        response.errors.forEach((error, index) => {
-          console.log(`🚨 ERRO ${index + 1} DETALHADO:`);
-          console.log('   📝 Mensagem:', error.message);
-          console.log('   📍 Path:', error.path);
-          console.log('   🔍 Extensions:', error.extensions);
-          console.log('   📋 Locations:', error.locations);
-          console.log('   🔧 Erro completo:', JSON.stringify(error, null, 2));
-        });
-
         const errorMessages = response.errors
           .map(err => err.message)
           .join(', ');
@@ -530,17 +365,8 @@ export class ArtiaService {
 
       // Verificar diferentes formatos de resposta
       if (response.data && response.data.createActivity) {
-        console.log(
-          '✅ Atividade criada com sucesso:',
-          response.data.createActivity
-        );
         return response.data.createActivity;
       } else if (response.data) {
-        console.log(
-          '✅ Resposta recebida (formato alternativo):',
-          response.data
-        );
-        // Tentar extrair ID de outros campos possíveis
         const activityData = response.data;
         return {
           id: activityData.id || 'ID_NAO_ENCONTRADO',
@@ -548,7 +374,6 @@ export class ArtiaService {
           ...activityData,
         };
       } else {
-        console.log('⚠️ Resposta sem data, mas sem erro - assumindo sucesso');
         return {
           id: 'CRIADO_SEM_ID',
           title: variables.title,
@@ -556,23 +381,6 @@ export class ArtiaService {
         };
       }
     } catch (error) {
-      console.error('❌ Erro ao criar atividade:', error);
-
-      // Log detalhado do erro
-      if (error.networkError) {
-        console.log('🌐 Network Error:', error.networkError);
-        if (error.networkError.result) {
-          console.log(
-            '📄 Error response:',
-            JSON.stringify(error.networkError.result, null, 2)
-          );
-        }
-      }
-
-      if (error.graphQLErrors) {
-        console.log('📋 GraphQL Errors:', error.graphQLErrors);
-      }
-
       // Se for erro de token expirado, tentar renovar uma vez
       if (
         error.message.includes('expirou') ||
@@ -580,7 +388,6 @@ export class ArtiaService {
         error.message.includes('401') ||
         error.message.includes('500')
       ) {
-        console.log('🔄 Token pode ter expirado, tentando renovar...');
         localStorage.removeItem('artia_token');
 
         try {
@@ -597,20 +404,10 @@ export class ArtiaService {
             variables,
           });
 
-          console.log('📦 Resposta completa após renovação:', retryResponse);
-
           // Verificar diferentes formatos de resposta no retry
           if (retryResponse.data && retryResponse.data.createActivity) {
-            console.log(
-              '✅ Atividade criada com sucesso após renovação:',
-              retryResponse.data.createActivity
-            );
             return retryResponse.data.createActivity;
           } else if (retryResponse.data) {
-            console.log(
-              '✅ Resposta recebida após renovação (formato alternativo):',
-              retryResponse.data
-            );
             const activityData = retryResponse.data;
             return {
               id: activityData.id || 'ID_NAO_ENCONTRADO_RETRY',
@@ -618,7 +415,6 @@ export class ArtiaService {
               ...activityData,
             };
           } else {
-            console.log('⚠️ Resposta sem data após retry - assumindo sucesso');
             return {
               id: 'CRIADO_SEM_ID_RETRY',
               title: variables.title,
@@ -626,13 +422,14 @@ export class ArtiaService {
             };
           }
         } catch (retryError) {
-          console.error('❌ Erro mesmo após renovação:', retryError);
+          console.error('[Artia] Erro após renovação:', retryError.message);
           throw new Error(
             `Falha ao criar atividade após renovação: ${retryError.message}`
           );
         }
       }
 
+      console.error('[Artia] Erro ao criar atividade:', error.message);
       throw new Error(`Falha ao criar atividade: ${error.message}`);
     }
   }
@@ -670,9 +467,7 @@ export class ArtiaService {
       customField: [],
     };
 
-    // Log dos campos customizados
-    console.log('🔍 === PREPARANDO CAMPOS CUSTOMIZADOS ===');
-    console.log('📊 Dados da atividade:', activityData);
+    // Preparando campos customizados
 
     // Montar campos customizados - garantir que apenas campos com valor sejam enviados
     const customFields = [];
@@ -705,56 +500,15 @@ export class ArtiaService {
         value && String(value).trim() !== '' && String(value).trim() !== '.';
 
       if (hasValidHash && hasValidValue) {
-        console.log(
-          `📝 Adicionando campo customizado: ${fieldName} = "${value}" (hash: ${hashField.substring(0, 10)}...)`
-        );
-
         customFields.push({
           hashField,
-          value: String(value).trim(), // Garantir que seja string e sem espaços extras
+          value: String(value).trim(),
         });
-      } else {
-        // Log para campos não adicionados (para debugging)
-        if (value && !hasValidHash) {
-          console.log(
-            `⚠️ Campo ${fieldName} tem valor "${value}" mas não tem hash mapeado`
-          );
-        } else if (hasValidHash && !hasValidValue) {
-          console.log(
-            `⚠️ Campo ${fieldName} tem hash mas valor inválido: "${value}" (será excluído da requisição)`
-          );
-        }
       }
     });
 
     // Definir campos customizados finais
     variables.customField = customFields;
-
-    // Log detalhado para debug
-    console.log('📋 === VARIÁVEIS FINAIS PREPARADAS ===');
-    console.log('🏷️  Título:', variables.title);
-    console.log('📁 Folder ID:', variables.folderId);
-    console.log('🏢 Account ID:', variables.accountId);
-    console.log('🔢 Folder Type ID:', variables.folderTypeId);
-    console.log('👤 Criado por:', variables.createdBy);
-    console.log(
-      '📄 Descrição:',
-      variables.description.substring(0, 100) + '...'
-    );
-    console.log('⭐ Prioridade:', variables.priority);
-    console.log('⏱️ Esforço:', variables.estimatedEffort);
-    console.log(`🔧 Total de campos customizados: ${customFields.length}`);
-
-    if (customFields.length > 0) {
-      console.log('📝 Campos customizados:');
-      customFields.forEach((field, index) => {
-        console.log(
-          `   ${index + 1}. Hash: ${field.hashField.substring(0, 20)}... | Valor: "${field.value}"`
-        );
-      });
-    } else {
-      console.log('⚠️ Nenhum campo customizado foi adicionado');
-    }
 
     return variables;
   }
@@ -765,8 +519,7 @@ export class ArtiaService {
    * @todo Implementar após definir query correta
    */
   static async getActivityTypes() {
-    // Implementar na Fase 2 após autenticação funcionar
-    console.log('⚠️ getActivityTypes não implementado ainda');
+    // TODO: Implementar busca de tipos de atividade
     return [];
   }
 

@@ -25,7 +25,7 @@ const QuickNotesBadge = ({
       // Feedback visual
       setShowCopyFeedback(true);
       setTimeout(() => setShowCopyFeedback(false), 300);
-      console.log('Texto copiado:', text);
+      // Texto copiado para clipboard
     } catch (err) {
       console.error('Erro ao copiar texto:', err);
     }

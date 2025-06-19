@@ -160,10 +160,9 @@ const ArtiaActivityModal = ({
     setTestingAuth(true);
 
     try {
-      console.log('🧪 Iniciando teste de autenticação...');
+      // Iniciando teste de autenticação
 
       // Limpar token existente para teste limpo
-      console.log('🧹 Limpando token existente para teste limpo...');
       ArtiaService.logout();
 
       const result = await ArtiaService.testAuthentication(
@@ -173,14 +172,12 @@ const ArtiaActivityModal = ({
 
       if (result.success) {
         toast.success(`✅ ${result.message}`);
-        console.log('🎉 Teste de autenticação bem-sucedido!', result);
       } else {
         toast.error(`❌ ${result.message}`);
-        console.log('😞 Teste de autenticação falhou:', result);
       }
     } catch (error) {
       toast.error('Erro inesperado no teste de autenticação');
-      console.error('🚨 Erro no teste:', error);
+      console.error('[Artia] Erro no teste:', error.message);
     } finally {
       setTestingAuth(false);
     }
@@ -256,34 +253,24 @@ ${bugData.others}`;
     setLoading(true);
 
     try {
-      console.log('🚀 Iniciando criação de atividade...');
+      // Iniciando criação de atividade
 
       // Gerar descrição baseada na função de copiar
       const generatedDescription = await getGeneratedDescription();
-      console.log('📄 Descrição gerada:', generatedDescription);
 
       // Tentar criar atividade completa primeiro, se falhar, criar simples
       let result;
       try {
-        console.log('🎯 Tentando criar atividade completa...');
         result = await ArtiaService.createActivity(
           formData,
           generatedDescription
         );
       } catch (error) {
-        console.log(
-          '⚠️ Erro na atividade completa, tentando versão simples...'
-        );
-        console.log('📄 Erro completo:', error);
-
         // Se o erro for relacionado a CustomField, tentar versão simples
         if (
           error.message.includes('CustomField') ||
           error.message.includes('input type')
         ) {
-          console.log(
-            '🔄 Criando atividade simples sem campos customizados...'
-          );
           result = await ArtiaService.createSimpleActivity(
             formData,
             generatedDescription
@@ -312,7 +299,7 @@ ${bugData.others}`;
       );
 
       toast.success(`✅ Atividade criada com sucesso! ID: ${result.id}`);
-      console.log('🎉 Atividade criada:', result);
+      // Atividade criada com sucesso
 
       // Não fechar o modal para mostrar o resultado
       // onClose();

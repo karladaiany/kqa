@@ -275,7 +275,7 @@ export const PerformanceMonitor = {
     const start = this.measures.get(name);
     if (start) {
       const duration = performance.now() - start;
-      console.log(`⏱️ ${name}: ${duration.toFixed(2)}ms`);
+      // Performance: ${name} ${duration.toFixed(2)}ms
       this.measures.delete(name);
       return duration;
     }

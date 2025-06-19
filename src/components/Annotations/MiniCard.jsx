@@ -137,7 +137,7 @@ export const MiniCard = ({ note, onUpdate, onDelete }) => {
   const handleImageUpload = useCallback(
     event => {
       const file = event.target.files?.[0];
-      console.log('🖼️ Upload de imagem iniciado:', file?.name, file?.size);
+      // Upload de imagem iniciado
 
       if (file && editor) {
         // Verificar tamanho do arquivo (limite de 2MB para evitar problemas de quota)
@@ -176,7 +176,7 @@ export const MiniCard = ({ note, onUpdate, onDelete }) => {
               })
               .run();
 
-            console.log('✅ Imagem inserida no editor');
+            // Imagem inserida no editor
 
             // Forçar atualização do conteúdo
             setTimeout(() => {
@@ -188,7 +188,7 @@ export const MiniCard = ({ note, onUpdate, onDelete }) => {
 
               // Verificar se a imagem foi realmente inserida
               const hasImage = currentContent.includes('data:image/');
-              console.log('🔍 Imagem detectada no HTML:', hasImage);
+              // Verificando se há imagem no conteúdo
 
               if (hasImage) {
                 // Forçar salvamento imediato
