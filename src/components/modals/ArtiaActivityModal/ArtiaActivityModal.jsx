@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
   FaTimes,
   FaEye,
@@ -188,9 +189,7 @@ const ArtiaActivityModal = ({
       // Simular execução da função de copiar correspondente ao tipo de atividade
       if (activityType === 'bug') {
         // Importar o hook e executar a função de copiar
-        const { useBugRegistration } = await import(
-          '../../../hooks/useBugRegistration'
-        );
+        await import('../../../hooks/useBugRegistration');
         // Como estamos fora do componente React, vamos usar os dados do localStorage diretamente
         const savedData = localStorage.getItem('bugRegistration');
         if (savedData) {
@@ -653,7 +652,7 @@ ${bugData.others}`;
                 🎉 Atividades Criadas ({createdActivities.length})
               </div>
               <div className='activities-list'>
-                {createdActivities.map((activity, index) => (
+                {createdActivities.map(activity => (
                   <div key={activity.id} className='activity-item'>
                     <div className='activity-info'>
                       <strong>#{activity.id}</strong> - {activity.title}
@@ -716,6 +715,13 @@ ${bugData.others}`;
       </div>
     </div>
   );
+};
+
+ArtiaActivityModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  activityType: PropTypes.oneOf(['bug', 'deploy']).isRequired,
+  initialData: PropTypes.object,
 };
 
 export default ArtiaActivityModal;

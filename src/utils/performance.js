@@ -178,12 +178,7 @@ export const prefersReducedMotion = () => {
  * @returns {Object} Propriedades otimizadas para imagem
  */
 export const optimizeImageProps = (src, options = {}) => {
-  const {
-    lazy = true,
-    webpFallback = true,
-    sizes = '100vw',
-    quality = 75,
-  } = options;
+  const { lazy = true, webpFallback = true, sizes = '100vw' } = options;
 
   const capabilities = getBrowserCapabilities();
   const props = {

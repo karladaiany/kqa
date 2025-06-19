@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import {
   FaComment,
@@ -82,18 +82,18 @@ const TestStatusCard = () => {
   const [expanded, setExpanded] = useState(false);
 
   // Função para verificar se há dados preenchidos
-  const hasAnyData = () => {
+  const hasAnyData = useCallback(() => {
     return (
       testStatus ||
       environment ||
       Object.values(formData).some(value => value && value !== '')
     );
-  };
+  }, [testStatus, environment, formData]);
 
   // Exibe campos se houver dados ou se estiver expandido
   const showFields = useMemo(
     () => expanded || hasAnyData(),
-    [expanded, activityType, testStatus, environment, formData]
+    [expanded, hasAnyData]
   );
 
   // Opções de tipo de atividade

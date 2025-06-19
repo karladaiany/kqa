@@ -5,6 +5,7 @@ import React, {
   createContext,
   useContext,
 } from 'react';
+import PropTypes from 'prop-types';
 import {
   FaStickyNote,
   FaPlus,
@@ -36,30 +37,6 @@ export const useActiveEditor = () => {
     throw new Error('useActiveEditor must be used within ActiveEditorProvider');
   }
   return context;
-};
-
-// Cores predefinidas
-const PRESET_COLORS = {
-  backgrounds: [
-    { name: 'Amarelo claro', value: '#fef9e7' },
-    { name: 'Rosa claro', value: '#fdf2f8' },
-    { name: 'Azul claro', value: '#eff6ff' },
-    { name: 'Verde claro', value: '#f0fdf4' },
-    { name: 'Roxo claro', value: '#f3e8ff' },
-    { name: 'Laranja claro', value: '#fff7ed' },
-    { name: 'Cinza claro', value: '#f9fafb' },
-    { name: 'Branco', value: '#ffffff' },
-  ],
-  texts: [
-    { name: 'Preto', value: '#000000' },
-    { name: 'Cinza escuro', value: '#374151' },
-    { name: 'Azul escuro', value: '#1e40af' },
-    { name: 'Verde escuro', value: '#166534' },
-    { name: 'Vermelho', value: '#dc2626' },
-    { name: 'Roxo', value: '#7c3aed' },
-    { name: 'Laranja', value: '#ea580c' },
-    { name: 'Rosa escuro', value: '#be185d' },
-  ],
 };
 
 // Cores específicas para os novos seletores
@@ -334,6 +311,15 @@ const AnnotationsCard = () => {
     </button>
   );
 
+  ToolbarButton.propTypes = {
+    action: PropTypes.string,
+    active: PropTypes.bool,
+    children: PropTypes.node.isRequired,
+    title: PropTypes.string.isRequired,
+    disabled: PropTypes.bool,
+    onClick: PropTypes.func,
+  };
+
   // Componente para o seletor de cores
   const ColorPicker = ({ type, onChange, value, title }) => (
     <div className='color-picker-container'>
@@ -350,6 +336,13 @@ const AnnotationsCard = () => {
     </div>
   );
 
+  ColorPicker.propTypes = {
+    type: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired,
+    value: PropTypes.string,
+    title: PropTypes.string.isRequired,
+  };
+
   // Componente para opções de cores
   const ColorOption = ({ color, isSelected, onClick, title }) => (
     <button
@@ -360,6 +353,13 @@ const AnnotationsCard = () => {
       title={title}
     />
   );
+
+  ColorOption.propTypes = {
+    color: PropTypes.string.isRequired,
+    isSelected: PropTypes.bool,
+    onClick: PropTypes.func.isRequired,
+    title: PropTypes.string.isRequired,
+  };
 
   const contextValue = {
     activeEditor,

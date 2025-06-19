@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { Rnd } from 'react-rnd';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -269,6 +270,13 @@ export const MiniCard = ({ note, onUpdate, onDelete }) => {
     </button>
   );
 
+  MenuButton.propTypes = {
+    action: PropTypes.string.isRequired,
+    active: PropTypes.bool,
+    children: PropTypes.node.isRequired,
+    title: PropTypes.string.isRequired,
+  };
+
   if (!editor) {
     return null;
   }
@@ -351,4 +359,21 @@ export const MiniCard = ({ note, onUpdate, onDelete }) => {
       </div>
     </Rnd>
   );
+};
+
+MiniCard.propTypes = {
+  note: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    x: PropTypes.number.isRequired,
+    y: PropTypes.number.isRequired,
+    width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    height: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+      .isRequired,
+    content: PropTypes.string.isRequired,
+    backgroundColor: PropTypes.string.isRequired,
+    textColor: PropTypes.string.isRequired,
+    lastModified: PropTypes.string.isRequired,
+  }).isRequired,
+  onUpdate: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
 };
