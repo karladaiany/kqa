@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import {
   FaTimes,
@@ -16,7 +16,41 @@ import {
   FUNCIONALIDADE_OPTIONS,
 } from '../../../constants/artiaOptions';
 import { ArtiaService } from '../../../services/artiaService';
+import ActivityHistoryCard from './ActivityHistoryCard';
 import './ArtiaActivityModal.css';
+
+// Hook para debounce
+const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
+
+// Função para gerar template do título baseado no tipo
+const generateTitleTemplate = type => {
+  if (type === ACTIVITY_TYPES.DEPLOY) {
+    const today = new Date();
+    const day = today.getDate().toString().padStart(2, '0');
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+    return `[] Gerar versão para deploy (${day}/${month})`;
+  } else if (
+    type === ACTIVITY_TYPES.BUG_PRODUCAO ||
+    type === ACTIVITY_TYPES.BUG_RETRABALHO
+  ) {
+    return '[] ';
+  }
+  return '';
+};
 
 const ArtiaActivityModal = ({
   isOpen,
@@ -34,6 +68,8 @@ const ArtiaActivityModal = ({
       tipo: '',
       accountId: '',
       folderId: '',
+      funcionalidade: '',
+      subFuncionalidade: '',
       ...initialData,
     };
 
@@ -52,7 +88,6 @@ const ArtiaActivityModal = ({
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [testingAuth, setTestingAuth] = useState(false);
   const [subFuncionalidadeOptions, setSubFuncionalidadeOptions] = useState([]);
 
   // Estado para histórico de atividades criadas
@@ -61,23 +96,60 @@ const ArtiaActivityModal = ({
     return saved ? JSON.parse(saved) : [];
   });
 
+  // Debounce para salvar dados no localStorage (exceto credenciais)
+  const debouncedFormData = useDebounce(formData, 800);
+
   // Definir tipos disponíveis baseado na origem
   const availableTypes =
     activityType === 'bug'
       ? [ACTIVITY_TYPES.BUG_PRODUCAO, ACTIVITY_TYPES.BUG_RETRABALHO]
       : [ACTIVITY_TYPES.DEPLOY];
 
+  // Bloquear scroll da página quando modal está aberto
   useEffect(() => {
     if (isOpen) {
+      document.body.classList.add('modal-open');
+
       // Se for deploy, já seleciona automaticamente
       if (activityType === 'deploy') {
         setFormData(prev => ({
           ...prev,
           tipo: ACTIVITY_TYPES.DEPLOY,
+          // Aplicar template do título apenas se não houver título salvo
+          titulo: prev.titulo || generateTitleTemplate(ACTIVITY_TYPES.DEPLOY),
         }));
+      } else if (activityType === 'bug') {
+        // Para bug, aplicar template apenas se não houver título e tipo definidos
+        setFormData(prev => {
+          const needsTemplate =
+            !prev.titulo &&
+            (prev.tipo === ACTIVITY_TYPES.BUG_PRODUCAO ||
+              prev.tipo === ACTIVITY_TYPES.BUG_RETRABALHO);
+          return {
+            ...prev,
+            titulo: needsTemplate
+              ? generateTitleTemplate(prev.tipo)
+              : prev.titulo,
+          };
+        });
       }
+    } else {
+      document.body.classList.remove('modal-open');
     }
+
+    // Cleanup ao desmontar
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
   }, [isOpen, activityType]);
+
+  // Salvar dados com debounce (exceto credenciais)
+  useEffect(() => {
+    if (debouncedFormData && Object.keys(debouncedFormData).length > 0) {
+      const { login, senha, ...dataToSave } = debouncedFormData;
+      localStorage.setItem('artiaModalData', JSON.stringify(dataToSave));
+    }
+  }, [debouncedFormData]);
 
   // Atualizar sub-funcionalidades quando funcionalidade mudar
   useEffect(() => {
@@ -88,34 +160,78 @@ const ArtiaActivityModal = ({
       setSubFuncionalidadeOptions(
         FUNCIONALIDADE_OPTIONS[formData.funcionalidade]
       );
-      // Limpar sub-funcionalidade selecionada
-      setFormData(prev => ({
-        ...prev,
-        subFuncionalidade: '',
-      }));
+      // Limpar sub-funcionalidade selecionada se não for compatível
+      if (
+        !FUNCIONALIDADE_OPTIONS[formData.funcionalidade].includes(
+          formData.subFuncionalidade
+        )
+      ) {
+        setFormData(prev => ({
+          ...prev,
+          subFuncionalidade: '',
+        }));
+      }
     } else {
       setSubFuncionalidadeOptions([]);
     }
   }, [formData.funcionalidade]);
 
+  // Aplicar template do título quando tipo de atividade mudar (especialmente para bugs)
+  useEffect(() => {
+    if (formData.tipo && !formData.titulo) {
+      const template = generateTitleTemplate(formData.tipo);
+      if (template) {
+        setFormData(prev => ({
+          ...prev,
+          titulo: template,
+        }));
+      }
+    }
+  }, [formData.tipo]);
+
   const handleInputChange = (name, value) => {
-    setFormData(prev => {
-      const newData = {
-        ...prev,
-        [name]: value,
-      };
-
-      // Salvar no localStorage (exceto credenciais)
-      const { login, senha, ...dataToSave } = newData;
-      localStorage.setItem('artiaModalData', JSON.stringify(dataToSave));
-
-      return newData;
-    });
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const getFieldsForType = type => {
     return ACTIVITY_FIELDS[type] || [];
   };
+
+  // Validação melhorada para todos os campos obrigatórios
+  const isFormValid = useCallback(() => {
+    // Campos básicos obrigatórios
+    if (
+      !formData.login?.trim() ||
+      !formData.senha?.trim() ||
+      !formData.titulo?.trim() ||
+      !formData.tipo?.trim() ||
+      !formData.accountId?.toString().trim() ||
+      !formData.folderId?.toString().trim()
+    ) {
+      return false;
+    }
+
+    // Validar se os IDs são números válidos
+    if (
+      isNaN(parseInt(formData.accountId)) ||
+      isNaN(parseInt(formData.folderId))
+    ) {
+      return false;
+    }
+
+    // Campos específicos do tipo de atividade
+    const fields = getFieldsForType(formData.tipo);
+    for (const field of fields) {
+      if (field.required && !formData[field.name]?.toString().trim()) {
+        return false;
+      }
+    }
+
+    return true;
+  }, [formData]);
 
   const validateForm = () => {
     // Campos básicos obrigatórios
@@ -150,38 +266,6 @@ const ArtiaActivityModal = ({
     }
 
     return true;
-  };
-
-  const handleTestAuthentication = async () => {
-    if (!formData.login || !formData.senha) {
-      toast.error('Preencha login e senha para testar a autenticação');
-      return;
-    }
-
-    setTestingAuth(true);
-
-    try {
-      // Iniciando teste de autenticação
-
-      // Limpar token existente para teste limpo
-      ArtiaService.logout();
-
-      const result = await ArtiaService.testAuthentication(
-        formData.login,
-        formData.senha
-      );
-
-      if (result.success) {
-        toast.success(`✅ ${result.message}`);
-      } else {
-        toast.error(`❌ ${result.message}`);
-      }
-    } catch (error) {
-      toast.error('Erro inesperado no teste de autenticação');
-      console.error('[Artia] Erro no teste:', error.message);
-    } finally {
-      setTestingAuth(false);
-    }
   };
 
   const getGeneratedDescription = async () => {
@@ -252,8 +336,6 @@ ${bugData.others}`;
     setLoading(true);
 
     try {
-      // Iniciando criação de atividade
-
       // Gerar descrição baseada na função de copiar
       const generatedDescription = await getGeneratedDescription();
 
@@ -298,11 +380,6 @@ ${bugData.others}`;
       );
 
       toast.success(`✅ Atividade criada com sucesso! ID: ${result.id}`);
-      // Atividade criada com sucesso
-
-      // Não fechar o modal para mostrar o resultado
-      // onClose();
-      // resetForm();
     } catch (error) {
       console.error('❌ Erro ao criar atividade:', error);
       toast.error(`❌ Erro ao criar atividade: ${error.message}`);
@@ -312,32 +389,72 @@ ${bugData.others}`;
   };
 
   const resetForm = () => {
+    const tipo = activityType === 'deploy' ? ACTIVITY_TYPES.DEPLOY : '';
+    const titulo = tipo ? generateTitleTemplate(tipo) : '';
+
     setFormData({
       login: '',
       senha: '',
-      titulo: '',
-      tipo: activityType === 'deploy' ? ACTIVITY_TYPES.DEPLOY : '',
+      titulo,
+      tipo,
       accountId: '',
       folderId: '',
+      funcionalidade: '',
+      subFuncionalidade: '',
       ...initialData,
     });
     setSubFuncionalidadeOptions([]);
   };
 
+  const handleClearHistory = () => {
+    if (
+      window.confirm(
+        'Tem certeza que deseja limpar o histórico de atividades criadas?'
+      )
+    ) {
+      localStorage.removeItem('artiaActivitiesHistory');
+      setCreatedActivities([]);
+      toast.info('📄 Histórico de atividades limpo');
+    }
+  };
+
   const handleClearAllData = () => {
-    // Limpar localStorage (dados do modal e histórico)
-    localStorage.removeItem('artiaModalData');
-    localStorage.removeItem('artiaActivitiesHistory');
+    if (
+      window.confirm(
+        'Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.'
+      )
+    ) {
+      // Limpar localStorage (dados do modal e histórico)
+      localStorage.removeItem('artiaModalData');
+      localStorage.removeItem('artiaActivitiesHistory');
 
-    // Resetar estados
-    setCreatedActivities([]);
-    resetForm();
+      // Resetar estados
+      setCreatedActivities([]);
+      resetForm();
 
-    toast.info('📄 Todos os dados foram limpos');
+      toast.info('📄 Todos os dados foram limpos');
+    }
   };
 
   const handleClose = () => {
-    resetForm();
+    // Confirmação simples para prevenir fechamento acidental
+    // Não limpar dados, apenas confirmar intenção
+    const hasData =
+      formData.login ||
+      formData.senha ||
+      formData.titulo ||
+      formData.accountId ||
+      formData.folderId;
+
+    if (hasData) {
+      const confirmClose = window.confirm(
+        'Deseja realmente fechar? Os dados digitados permanecerão salvos.'
+      );
+      if (!confirmClose) {
+        return;
+      }
+    }
+
     onClose();
   };
 
@@ -486,7 +603,7 @@ ${bugData.others}`;
             </div>
 
             <div className='modal-field-group'>
-              <div className='modal-password-field'>
+              <div className='modal-input-container'>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   id='senha'
@@ -511,44 +628,6 @@ ${bugData.others}`;
               </div>
             </div>
 
-            {/* Botão de teste de autenticação */}
-            <div className='modal-field-group'>
-              <button
-                type='button'
-                className='modal-test-auth-button'
-                onClick={handleTestAuthentication}
-                disabled={
-                  loading || testingAuth || !formData.login || !formData.senha
-                }
-              >
-                {testingAuth ? (
-                  <>
-                    <FaSpinner className='modal-spinner' />
-                    Testando autenticação...
-                  </>
-                ) : (
-                  <>🔍 Testar Autenticação</>
-                )}
-              </button>
-              {ArtiaService.hasValidToken() && (
-                <div className='modal-auth-status'>
-                  ✅ Token válido armazenado
-                  <button
-                    type='button'
-                    className='modal-clear-token-button'
-                    onClick={() => {
-                      ArtiaService.logout();
-                      toast.info('Token removido');
-                      setFormData(prev => ({ ...prev })); // Force re-render
-                    }}
-                    title='Limpar token para novo teste'
-                  >
-                    🗑️
-                  </button>
-                </div>
-              )}
-            </div>
-
             <div className='section-divider'>
               <FaClipboardList /> Dados da atividade
             </div>
@@ -569,13 +648,6 @@ ${bugData.others}`;
                   <span className='modal-required'>*</span>
                 </label>
               </div>
-            </div>
-
-            <div className='modal-config-notice'>
-              ⚠️ <strong>Configuração necessária:</strong> Os valores de Folder
-              ID, Account ID e Organization ID estão configurados como padrão.
-              Para produção, configure em{' '}
-              <code>constants/artiaFieldHashes.js</code>
             </div>
 
             <div className='modal-field-group'>
@@ -645,38 +717,11 @@ ${bugData.others}`;
             )}
           </div>
 
-          {/* Histórico de atividades criadas */}
-          {createdActivities.length > 0 && (
-            <div className='modal-activities-history'>
-              <div className='section-divider'>
-                🎉 Atividades Criadas ({createdActivities.length})
-              </div>
-              <div className='activities-list'>
-                {createdActivities.map(activity => (
-                  <div key={activity.id} className='activity-item'>
-                    <div className='activity-info'>
-                      <strong>#{activity.id}</strong> - {activity.title}
-                      <span className='activity-type'>{activity.type}</span>
-                    </div>
-                    <div className='activity-link'>
-                      <a
-                        href={activity.link}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        className='activity-link-button'
-                        title='Abrir atividade no Artia'
-                      >
-                        🔗 Abrir no Artia
-                      </a>
-                    </div>
-                    <div className='activity-date'>
-                      {new Date(activity.createdAt).toLocaleString('pt-BR')}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* Histórico de atividades usando o novo componente */}
+          <ActivityHistoryCard
+            activities={createdActivities}
+            onClearHistory={handleClearHistory}
+          />
 
           <div className='modal-footer'>
             <button
@@ -699,7 +744,7 @@ ${bugData.others}`;
             <button
               type='submit'
               className='modal-action-button primary'
-              disabled={loading || !formData.accountId || !formData.folderId}
+              disabled={loading || !isFormValid()}
             >
               {loading ? (
                 <>

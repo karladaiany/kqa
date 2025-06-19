@@ -91,6 +91,18 @@
   position: relative;
 }
 
+/* Quando não há atividades ou estão colapsadas, expandir a área do modal-body */
+.modal-container:has(.activity-history-card:not(:empty)) .modal-body {
+  max-height: calc(80vh - 240px); /* Reduz altura quando há histórico */
+}
+
+.modal-container:has(.activity-history-card .activity-history-list)
+  .modal-body {
+  max-height: calc(
+    80vh - 300px
+  ); /* Reduz mais quando histórico está expandido */
+}
+
 /* Indicador sutil de scroll quando há mais conteúdo */
 .modal-body::after {
   content: '';
@@ -185,12 +197,12 @@
 }
 
 .modal-input-container:hover {
-  border-color: var(--accent-color);
+  border-color: var(--primary-color);
 }
 
 .modal-input-container:focus-within {
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px rgba(120, 93, 200, 0.1);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(255, 121, 198, 0.1);
 }
 
 /* Inputs e selects dentro do container - compatível com copyable */
@@ -253,52 +265,7 @@
   color: var(--text-primary);
 }
 
-/* Campo de senha especializado */
-.modal-password-field {
-  position: relative;
-  display: flex;
-  align-items: center;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  min-height: 32px;
-  width: 100%;
-  box-sizing: border-box;
-  transition: border-color 0.2s ease;
-  background: #2d2e31;
-  padding: 4px 8px;
-}
-
-.modal-password-field:hover {
-  border-color: var(--accent-color);
-}
-
-.modal-password-field:focus-within {
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px rgba(120, 93, 200, 0.1);
-}
-
-.modal-password-field input {
-  border: none !important;
-  background: transparent !important;
-  padding: 8px 32px 8px 12px !important;
-}
-
-.modal-password-field label {
-  position: absolute;
-  left: 8px;
-  top: -0.6em;
-  color: var(--text-secondary);
-  font-size: 14px;
-  padding: 0 4px;
-  z-index: 1;
-  display: inline-block;
-  height: 1.2em;
-  white-space: nowrap;
-  backdrop-filter: blur(4px);
-  font-weight: 500;
-  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
-  background-color: #2d2e31;
-}
+/* Campo de senha usando input-container padrão */
 
 .modal-toggle-password {
   position: absolute;
@@ -314,16 +281,24 @@
   justify-content: center;
   transition: color 0.2s ease;
   font-size: 1rem;
+  z-index: 2;
 }
 
 .modal-toggle-password:hover:not(:disabled) {
-  color: var(--accent-color);
+  color: var(--primary-color);
   transform: scale(1.1);
 }
 
 .modal-toggle-password:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Ajuste para o input de senha ter espaço para o botão */
+.modal-input-container input[type='password'],
+.modal-input-container
+  input[type='text']:has(+ label + .modal-toggle-password) {
+  padding-right: 32px !important;
 }
 
 /* Área para campos específicos */
@@ -374,37 +349,51 @@
   cursor: not-allowed;
 }
 
-/* Variante secundária - compatível com action-button.clear */
+/* Variante secundária - Fechar e Limpar Dados */
 .modal-action-button.secondary {
-  background-color: #1a1b1e;
-  color: #ffffff;
-  border: 2px solid #444;
+  background: var(--card-background);
+  color: var(--border-color);
+  border: 2px solid var(--border-color);
 }
 
 .modal-action-button.secondary:hover:not(:disabled) {
-  background-color: #2d2e31;
-  border-color: #785dc8;
-  color: #785dc8;
+  background: var(--card-background);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Variante primária - compatível com action-button padrão */
+.modal-action-button.warning {
+  background: var(--card-background);
+  color: var(--border-color);
+  border: 2px solid var(--border-color);
+}
+
+.modal-action-button.warning:hover:not(:disabled) {
+  background: var(--card-background);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Variante primária - Criar Atividade */
 .modal-action-button.primary {
-  background-color: #785dc8;
-  color: #ffffff;
-  border: 2px solid #785dc8;
+  background-color: var(--primary-color-dark);
+  color: var(--text-button);
+  border: 2px solid var(--primary-color-dark);
 }
 
 .modal-action-button.primary:hover:not(:disabled) {
-  background-color: #6b4fb8;
-  border-color: #6b4fb8;
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(120, 93, 200, 0.4);
+  box-shadow: 0 4px 12px rgba(255, 121, 198, 0.4);
 }
 
 .modal-action-button.primary:active {
-  box-shadow: 0 0 15px rgba(120, 93, 200, 0.5);
+  box-shadow: 0 0 15px rgba(255, 121, 198, 0.5);
   filter: brightness(95%);
 }
 
@@ -413,88 +402,9 @@
   animation: spin 1s linear infinite;
 }
 
-/* Botão de teste de autenticação */
-.modal-test-auth-button {
-  background: var(--secondary-color);
-  color: var(--text-primary);
-  border: 1px solid var(--accent-color);
-  border-radius: var(--border-radius);
-  padding: 8px 12px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition-speed);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-height: 36px;
-  width: 100%;
-  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
-}
+/* Estilos removidos - botão de teste de autenticação foi removido */
 
-.modal-test-auth-button:hover:not(:disabled) {
-  background: var(--accent-color);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(120, 93, 200, 0.3);
-}
-
-.modal-test-auth-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.modal-auth-status {
-  margin-top: 6px;
-  padding: 4px 8px;
-  font-size: 12px;
-  color: var(--success-color);
-  background: rgba(34, 197, 94, 0.1);
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  border-radius: 4px;
-  text-align: center;
-  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.modal-clear-token-button {
-  background: none;
-  border: none;
-  font-size: 14px;
-  cursor: pointer;
-  padding: 2px;
-  border-radius: 2px;
-  transition: all var(--transition-speed);
-  opacity: 0.7;
-}
-
-.modal-clear-token-button:hover {
-  opacity: 1;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.modal-config-notice {
-  margin: 16px 0;
-  padding: 12px;
-  background: rgba(255, 193, 7, 0.1);
-  border: 1px solid rgba(255, 193, 7, 0.3);
-  border-radius: 4px;
-  font-size: 12px;
-  color: var(--warning-color);
-  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
-  line-height: 1.4;
-}
-
-.modal-config-notice code {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 2px 4px;
-  border-radius: 2px;
-  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
-}
+/* Estilos de configuração removidos - não mais necessários */
 
 /* Histórico de atividades */
 .modal-activities-history {
@@ -511,7 +421,7 @@
   border-radius: 4px;
   background: rgba(0, 0, 0, 0.1);
   scrollbar-width: thin;
-  scrollbar-color: var(--accent-color) rgba(0, 0, 0, 0.1);
+  scrollbar-color: var(--primary-color) rgba(0, 0, 0, 0.1);
 }
 
 .activities-list::-webkit-scrollbar {
@@ -524,12 +434,16 @@
 }
 
 .activities-list::-webkit-scrollbar-thumb {
-  background: var(--accent-color);
+  background: var(--primary-color);
   border-radius: 3px;
 }
 
 .activities-list::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-color);
+  background: var(--primary-color-dark);
+}
+
+.activities-list::-webkit-scrollbar-button {
+  display: none;
 }
 
 .activity-item {
@@ -547,7 +461,7 @@
 }
 
 .activity-item:hover {
-  background: rgba(120, 93, 200, 0.1);
+  background: rgba(255, 121, 198, 0.1);
 }
 
 .activity-info {
@@ -560,7 +474,7 @@
 }
 
 .activity-type {
-  background: var(--accent-color);
+  background: var(--primary-color);
   color: white;
   padding: 2px 6px;
   border-radius: 12px;
@@ -601,21 +515,7 @@
   font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
 }
 
-/* Botão de aviso */
-.modal-action-button.warning {
-  background: #ff6b35;
-  color: white;
-  border: 2px solid #ff6b35;
-  font-weight: 600;
-  box-shadow: 0 2px 4px rgba(255, 107, 53, 0.2);
-}
-
-.modal-action-button.warning:hover:not(:disabled) {
-  background: var(--primary-color);
-  border-color: var(--primary-color);
-  box-shadow: 0 4px 12px rgba(120, 93, 200, 0.3);
-  transform: translateY(-2px);
-}
+/* Classe warning duplicada removida - usando definição anterior */
 
 @keyframes spin {
   from {
@@ -656,12 +556,16 @@
 }
 
 .modal-body::-webkit-scrollbar-thumb {
-  background: var(--border-color);
+  background: var(--primary-color);
   border-radius: 3px;
 }
 
 .modal-body::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
+  background: var(--primary-color-dark);
+}
+
+.modal-body::-webkit-scrollbar-button {
+  display: none;
 }
 
 /* ========================================
@@ -733,12 +637,12 @@
 }
 
 .modal-container .field-group .input-container:hover {
-  border-color: var(--accent-color);
+  border-color: var(--primary-color);
 }
 
 .modal-container .field-group .input-container:focus-within {
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px rgba(120, 93, 200, 0.1);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(255, 121, 198, 0.1);
 }
 
 .modal-container .password-field {
@@ -756,12 +660,12 @@
 }
 
 .modal-container .password-field:hover {
-  border-color: var(--accent-color);
+  border-color: var(--primary-color);
 }
 
 .modal-container .password-field:focus-within {
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px rgba(120, 93, 200, 0.1);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(255, 121, 198, 0.1);
 }
 
 .modal-container .toggle-password {
@@ -781,7 +685,7 @@
 }
 
 .modal-container .toggle-password:hover:not(:disabled) {
-  color: var(--accent-color);
+  color: var(--primary-color);
   transform: scale(1.1);
 }
 
@@ -974,4 +878,172 @@
 
 .modal-container .spinner {
   animation: spin 1s linear infinite;
+}
+
+/* ========================================
+   MODAL OVERLAY E SCROLL BLOCKING
+   ======================================== */
+
+/* Bloquear scroll da página quando modal está aberto */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* ========================================
+   COMPONENTE ACTIVITY HISTORY CARD
+   ======================================== */
+
+.activity-history-card {
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  margin-top: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.activity-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+  background: var(--card-bg);
+}
+
+.activity-history-toggle {
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: color var(--transition-speed);
+  padding: 0;
+}
+
+.activity-history-toggle:hover {
+  color: var(--primary-color);
+}
+
+.activity-history-toggle h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: inherit;
+}
+
+.clear-history-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: var(--spacing-xs);
+  border-radius: var(--spacing-xs);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-speed);
+  font-size: var(--font-size-sm);
+}
+
+.clear-history-btn:hover {
+  background: var(--error-color);
+  color: white;
+  border-color: var(--error-color);
+}
+
+.activity-history-list {
+  max-height: 200px;
+  overflow-y: auto;
+  /* Aplicando o mesmo estilo de scroll do modal-body */
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) var(--card-bg);
+}
+
+.activity-history-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.activity-history-list::-webkit-scrollbar-track {
+  background: var(--card-bg);
+  border-radius: 3px;
+}
+
+.activity-history-list::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 3px;
+}
+
+.activity-history-list::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color-dark);
+}
+
+.activity-history-list::-webkit-scrollbar-button {
+  display: none;
+}
+
+.activity-history-item {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  transition: background-color var(--transition-speed);
+}
+
+.activity-history-item:last-child {
+  border-bottom: none;
+}
+
+.activity-history-item:hover {
+  background: var(--hover-color);
+}
+
+.activity-item-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.activity-id-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.activity-id {
+  font-weight: 600;
+  color: var(--primary-color);
+  font-size: var(--font-size-sm);
+}
+
+.activity-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  padding: 2px;
+  border-radius: var(--spacing-xs);
+  transition: all var(--transition-speed);
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+}
+
+.activity-link:hover {
+  background: var(--hover-color);
+  color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+.activity-date {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.activity-title {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  font-weight: 500;
+  line-height: 1.4;
+  margin-top: 2px;
 }
