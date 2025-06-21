@@ -108,6 +108,7 @@ const CREATE_ACTIVITY = gql`
     $priority: Int
     $estimatedEffort: Float
     $customField: [OrganizationCustomFieldsInput!]
+    $responsibleId: Int
   ) {
     createActivity(
       title: $title
@@ -119,6 +120,7 @@ const CREATE_ACTIVITY = gql`
       priority: $priority
       estimatedEffort: $estimatedEffort
       customField: $customField
+      responsibleId: $responsibleId
     ) {
       id
       uid
@@ -466,6 +468,11 @@ export class ArtiaService {
         DEFAULT_ARTIA_VALUES.ESTIMATED_EFFORT,
       customField: [],
     };
+
+    // Adicionar responsibleId se estiver presente
+    if (activityData.responsibleId && activityData.responsibleId !== '') {
+      variables.responsibleId = parseInt(activityData.responsibleId);
+    }
 
     // Preparando campos customizados
 

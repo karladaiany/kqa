@@ -70,6 +70,7 @@ const ArtiaActivityModal = ({
       folderId: '',
       funcionalidade: '',
       subFuncionalidade: '',
+      responsibleId: '',
       ...initialData,
     };
 
@@ -401,6 +402,7 @@ ${bugData.others}`;
       folderId: '',
       funcionalidade: '',
       subFuncionalidade: '',
+      responsibleId: '',
       ...initialData,
     });
     setSubFuncionalidadeOptions([]);
@@ -483,11 +485,22 @@ ${bugData.others}`;
                 }
               >
                 <option value=''>Selecione...</option>
-                {options.map(option => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
+                {options.map(option => {
+                  // Verificar se a opção é um objeto com id e name (para responsáveis)
+                  if (typeof option === 'object' && option.id && option.name) {
+                    return (
+                      <option key={option.id} value={option.id}>
+                        {option.name}
+                      </option>
+                    );
+                  }
+                  // Caso contrário, é uma string simples
+                  return (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  );
+                })}
               </select>
               <label htmlFor={field.name}>
                 {field.label}

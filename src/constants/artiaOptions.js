@@ -42,6 +42,13 @@ export const CAUSA_DEMANDA_OPTIONS = [
 
 export const GARANTIA_OPTIONS = ['Sim', 'Não'];
 
+export const RESPONSAVEL_OPTIONS = [
+  { name: 'Alexandre', id: 263356 },
+  { name: 'Fred', id: 174652 },
+  { name: 'Mazepa', id: 212376 },
+  { name: 'Milles', id: 186004 },
+];
+
 export const FUNCIONALIDADE_OPTIONS = {
   'Agente de documentação de processos': [
     'Repositórios',
@@ -433,5 +440,13 @@ export const ACTIVITY_FIELDS = {
       required: true,
     },
   ],
-  [ACTIVITY_TYPES.DEPLOY]: [],
+  [ACTIVITY_TYPES.DEPLOY]: [
+    {
+      name: 'responsibleId',
+      label: 'Responsável',
+      type: 'select',
+      options: RESPONSAVEL_OPTIONS,
+      required: false,
+    },
+  ],
 };
