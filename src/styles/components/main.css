@@ -2614,3 +2614,8 @@ body.dark-theme .quick-notes-badge:hover {
     font-size: 0.85rem;
   }
 }
+
+/* ===================================
+   VERSION COMPONENT STYLES
+   =================================== */
+@import url('./version.css');

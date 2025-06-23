@@ -1,0 +1,47 @@
+{
+  "packageFiles": ["package.json"],
+  "bumpFiles": ["package.json"],
+  "commitAll": true,
+  "scripts": {
+    "prebump": "npm run test:unit:run && npm run lint",
+    "postbump": "npm run deploy:check"
+  },
+  "types": {
+    "feat": {
+      "description": "Nova funcionalidade",
+      "title": "✨ Funcionalidades"
+    },
+    "fix": {
+      "description": "Correção de bug",
+      "title": "🐛 Correções"
+    },
+    "docs": {
+      "description": "Documentação",
+      "title": "📚 Documentação"
+    },
+    "style": {
+      "description": "Estilo (formatação, etc)",
+      "title": "🎨 Estilo"
+    },
+    "refactor": {
+      "description": "Refatoração",
+      "title": "♻️ Refatoração"
+    },
+    "perf": {
+      "description": "Melhoria de performance",
+      "title": "⚡ Performance"
+    },
+    "test": {
+      "description": "Testes",
+      "title": "🧪 Testes"
+    },
+    "chore": {
+      "description": "Manutenção",
+      "title": "🔧 Manutenção"
+    },
+    "ci": {
+      "description": "CI/CD",
+      "title": "�� CI/CD"
+    }
+  }
+}
