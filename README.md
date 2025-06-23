@@ -130,6 +130,33 @@ docs: atualizar documentação            # No version change
 
 📖 **Documentação completa**: [docs/VERSIONING.md](docs/VERSIONING.md)
 
+## 🤝 Contribuição
+
+Este projeto segue workflows específicos de desenvolvimento e versionamento:
+
+### 📋 Para Contribuidores
+
+- **Guia completo**: [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md)
+- **Conventional Commits** obrigatório
+- **Testes** e **lint** obrigatórios
+- **Review** via Pull Request
+
+### 🚀 Workflow Rápido
+
+```bash
+# 1. Criar branch de feature
+git checkout -b feat/minha-feature
+
+# 2. Desenvolver + commit seguindo convenção
+git commit -m "feat: adicionar nova funcionalidade"
+
+# 3. Push + PR
+git push origin feat/minha-feature
+
+# 4. Após merge → Release na main
+npm run release:minor
+```
+
 ## 📄 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
