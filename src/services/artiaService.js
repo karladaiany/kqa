@@ -10,8 +10,39 @@ import {
   DEFAULT_ARTIA_VALUES,
   ACTIVITY_TYPE_TO_FOLDER_TYPE_ID,
 } from '../constants/artiaFieldHashes';
-// Utilitários de debug removidos - usando validação simples inline
-// Importações de utilitários removidas - problemas resolvidos
+
+// Constantes para formatação HTML das atividades do Artia
+const FORMATTING_CONSTANTS = {
+  // Cores
+  PURPLE_COLOR: '#8e44ad',
+
+  // Fontes
+  VERDANA_FONT: 'Verdana,Geneva,sans-serif',
+
+  // Espaçamentos
+  TAB_SPACING: '&nbsp;&nbsp;&nbsp;&nbsp;',
+
+  // Seções BUG (na ordem correta)
+  BUG_SECTIONS: [
+    'Incidente identificado',
+    'Passo a passo para reprodução',
+    'Comportamento esperado',
+    'Informações',
+    'Evidência',
+  ],
+
+  // Labels Deploy (na ordem de aparição)
+  DEPLOY_LABELS: [
+    'Repositório',
+    'Branch principal',
+    'PR principal',
+    'Feature flag',
+    'Runner',
+    'Título',
+    'Link',
+    'PR',
+  ],
+};
 
 // Configuração do Apollo Client para o Artia
 const httpLink = createHttpLink({
@@ -38,7 +69,6 @@ const authLink = setContext((_, { headers }) => {
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
-  // Adicionar configurações para debugging
   defaultOptions: {
     watchQuery: {
       errorPolicy: 'all',
@@ -141,6 +171,107 @@ const CREATE_ACTIVITY = gql`
 `;
 
 /**
+ * Funções auxiliares para formatação de texto
+ */
+
+/**
+ * Aplica formatação HTML para seções de BUG identificadas por ::
+ * @param {string} text - Texto com seções delimitadas por ::
+ * @returns {string} HTML formatado com seções coloridas
+ */
+function parseBugSections(text) {
+  const { PURPLE_COLOR, VERDANA_FONT, TAB_SPACING } = FORMATTING_CONSTANTS;
+
+  // Substituir seções :: Nome da Seção :: por versão formatada
+  let formattedText = text.replace(
+    /::\s*([^:]+)\s*::/g,
+    `<br><span style="color:${PURPLE_COLOR}"><strong>${TAB_SPACING}:: $1 ::</strong></span><br>`
+  );
+
+  // Converter quebras de linha restantes
+  formattedText = formattedText.replace(/\n/g, '<br>');
+
+  // Reduzir múltiplas quebras de linha para uma única
+  formattedText = formattedText.replace(/<br>\s*<br>/g, '<br>');
+
+  // Remover <br> do início (para não ter linha vazia inicial)
+  formattedText = formattedText.replace(/^<br>/, '');
+
+  // Envolver tudo com fonte Verdana
+  return `<p><span style="font-family:${VERDANA_FONT}">${formattedText}</span></p>`;
+}
+
+/**
+ * Aplica formatação HTML para atividades de Deploy
+ * @param {string} text - Texto com labels seguidos de ':'
+ * @param {string} title - Título da atividade
+ * @returns {string} HTML formatado para Deploy
+ */
+function parseDeployContent(text, title = 'Gerar versão para deploy') {
+  const { PURPLE_COLOR, VERDANA_FONT, DEPLOY_LABELS } = FORMATTING_CONSTANTS;
+
+  // Título centralizado e colorido com fonte explícita
+  let html = `<div style="font-family:${VERDANA_FONT}">`;
+  html += `<h3 style="text-align:center; color:${PURPLE_COLOR}; font-family:${VERDANA_FONT};"><strong>${title}</strong></h3>`;
+
+  // Se o texto não contém dados reais do deploy, usar template básico
+  if (text.includes('Atividade criada via KQA') || text.trim() === '') {
+    html += `<p style="font-family:${VERDANA_FONT};"><strong>Deploy preparado via KQA</strong></p>`;
+    html += '</div>';
+    return html;
+  }
+
+  // Processar linha por linha para aplicar espaçamento correto
+  const lines = text.split('\n').filter(line => line.trim() !== '');
+  const formattedLines = [];
+
+  lines.forEach((line, index) => {
+    // Aplicar formatação de negrito nos labels
+    let formattedLine = line;
+    DEPLOY_LABELS.forEach(label => {
+      const regex = new RegExp(`(${label})\\s*:\\s*`, 'gi');
+      formattedLine = formattedLine.replace(regex, `<strong>$1:</strong> `);
+    });
+
+    formattedLines.push(formattedLine);
+
+    // Adicionar espaçamento entre grupos relacionados
+    const currentLine = line.toLowerCase();
+    const nextLine = lines[index + 1]?.toLowerCase() || '';
+
+    // Adicionar linha em branco após PR principal (se não for seguido de Feature flag)
+    if (
+      currentLine.includes('pr principal') &&
+      !nextLine.includes('feature flag')
+    ) {
+      formattedLines.push('');
+    }
+    // Adicionar linha em branco após Feature flag
+    else if (currentLine.includes('feature flag')) {
+      formattedLines.push('');
+    }
+    // Adicionar linha em branco após Runner
+    else if (currentLine.includes('runner')) {
+      formattedLines.push('');
+    }
+    // Adicionar linha em branco após PR (último do grupo Título/Link/PR)
+    else if (
+      currentLine.includes('pr:') &&
+      !currentLine.includes('pr principal')
+    ) {
+      formattedLines.push('');
+    }
+  });
+
+  // Converter para HTML com fonte explícita
+  const finalContent = formattedLines.join('<br>');
+  html += `<p style="font-family:${VERDANA_FONT};">${finalContent}</p>`;
+  html += '</div>';
+
+  return html;
+}
+
+/**
  * Serviço para integração com a API do Artia
  */
 export class ArtiaService {
@@ -177,11 +308,6 @@ export class ArtiaService {
         throw new Error('Token não encontrado na resposta da API');
       }
     } catch (error) {
-      // Log apenas erros críticos
-      if (error.networkError?.statusCode === 500) {
-        console.error('[Artia] Erro interno do servidor:', error.message);
-      }
-
       throw new Error(`Falha na autenticação: ${error.message}`);
     }
   }
@@ -208,7 +334,6 @@ export class ArtiaService {
 
       return data.authenticationByEmail;
     } catch (error) {
-      console.error('Erro na autenticação:', error);
       throw new Error('Falha na autenticação. Verifique suas credenciais.');
     }
   }
@@ -226,11 +351,8 @@ export class ArtiaService {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const currentTime = Math.floor(Date.now() / 1000);
 
-      // Token válido verificado
-
       return payload.exp > currentTime;
     } catch (error) {
-      console.error('❌ Erro ao verificar token:', error);
       return false;
     }
   }
@@ -254,7 +376,6 @@ export class ArtiaService {
       const result = await this.authenticate(email, password);
       return result.token;
     } catch (error) {
-      console.error('[Artia] Erro ao renovar token:', error.message);
       throw new Error('Falha na autenticação automática: ' + error.message);
     }
   }
@@ -291,9 +412,10 @@ export class ArtiaService {
           ACTIVITY_TYPE_TO_FOLDER_TYPE_ID[activityData.tipo] ||
           DEFAULT_ARTIA_VALUES.FOLDER_TYPE_ID_DEPLOY,
         createdBy: activityData.login,
-        description:
-          generatedDescription ||
-          `Atividade criada via KQA - ${activityData.tipo}`,
+        description: this.getFormattedDescription(
+          activityData,
+          generatedDescription
+        ),
         priority:
           parseInt(activityData.prioridade) || DEFAULT_ARTIA_VALUES.PRIORITY,
         estimatedEffort:
@@ -330,7 +452,6 @@ export class ArtiaService {
         };
       }
     } catch (error) {
-      console.error('❌ Erro ao criar atividade simples:', error);
       throw new Error(`Falha ao criar atividade simples: ${error.message}`);
     }
   }
@@ -424,16 +545,160 @@ export class ArtiaService {
             };
           }
         } catch (retryError) {
-          console.error('[Artia] Erro após renovação:', retryError.message);
           throw new Error(
             `Falha ao criar atividade após renovação: ${retryError.message}`
           );
         }
       }
 
-      console.error('[Artia] Erro ao criar atividade:', error.message);
       throw new Error(`Falha ao criar atividade: ${error.message}`);
     }
+  }
+
+  /**
+   * Formata a descrição para atividades do tipo BUG com HTML
+   * @param {Object} activityData - Dados da atividade do formulário
+   * @param {string} generatedDescription - Descrição gerada pela função de copiar
+   * @returns {string} Descrição formatada em HTML
+   */
+  static formatBugDescription(activityData, generatedDescription = '') {
+    const { PURPLE_COLOR, VERDANA_FONT, TAB_SPACING } = FORMATTING_CONSTANTS;
+
+    // Se há uma descrição gerada, aplicar parsing das seções
+    if (generatedDescription && generatedDescription.trim() !== '') {
+      // Verificar se já contém HTML completo formatado
+      if (
+        generatedDescription.includes('<') &&
+        generatedDescription.includes('>') &&
+        generatedDescription.includes('color:#8e44ad')
+      ) {
+        return generatedDescription;
+      }
+
+      // Aplicar parsing das seções identificadas por ::
+      return parseBugSections(generatedDescription);
+    }
+
+    // Template padrão para BUG (quando não há descrição gerada)
+    const bugTemplate = `<p><span style="font-family:${VERDANA_FONT}">
+<span style="color:${PURPLE_COLOR}"><strong>${TAB_SPACING}:: Incidente identificado ::</strong></span><br>
+${activityData.titulo || 'Incidente reportado via KQA'}<br>
+<br>
+<span style="color:${PURPLE_COLOR}"><strong>${TAB_SPACING}:: Passo a passo para reprodução ::</strong></span><br>
+» Acessar a aplicação<br>
+» Reproduzir o comportamento descrito<br>
+» Verificar o incidente<br>
+<br>
+<span style="color:${PURPLE_COLOR}"><strong>${TAB_SPACING}:: Comportamento esperado ::</strong></span><br>
+Funcionamento correto da funcionalidade<br>
+<br>
+<span style="color:${PURPLE_COLOR}"><strong>${TAB_SPACING}:: Informações ::</strong></span><br>
+Atividade criada via KQA<br>
+<br>
+<span style="color:${PURPLE_COLOR}"><strong>${TAB_SPACING}:: Evidência ::</strong></span><br>
+Evidência pendente de anexo
+</span></p>`;
+
+    return bugTemplate;
+  }
+
+  /**
+   * Formata a descrição para atividades do tipo Deploy com HTML
+   * @param {Object} activityData - Dados da atividade do formulário
+   * @param {string} generatedDescription - Descrição gerada pela função de copiar
+   * @returns {string} Descrição formatada em HTML
+   */
+  static formatDeployDescription(activityData, generatedDescription = '') {
+    // Se há uma descrição gerada, aplicar parsing dos labels
+    if (generatedDescription && generatedDescription.trim() !== '') {
+      // Verificar se já contém HTML completo formatado
+      if (
+        generatedDescription.includes('<h3') &&
+        generatedDescription.includes('text-align:center')
+      ) {
+        return generatedDescription;
+      }
+
+      // Aplicar parsing dos labels identificados por ':'
+      return parseDeployContent(generatedDescription);
+    }
+
+    // Template padrão para Deploy (quando não há descrição gerada)
+    const { PURPLE_COLOR, VERDANA_FONT } = FORMATTING_CONSTANTS;
+
+    const deployTemplate = `<div style="font-family:${VERDANA_FONT}">
+<h3 style="text-align:center; color:${PURPLE_COLOR}; font-family:${VERDANA_FONT};"><strong>Gerar versão para deploy</strong></h3>
+
+<p style="font-family:${VERDANA_FONT};"><strong>Título:</strong> ${activityData.titulo || 'Deploy preparado via KQA'}<br>
+<strong>Criado via KQA</strong></p>
+</div>`;
+
+    return deployTemplate;
+  }
+
+  /**
+   * Converte texto simples para formato HTML de BUG
+   * @param {string} text - Texto simples
+   * @returns {string} Texto formatado em HTML para BUG
+   */
+  static convertTextToBugHTML(text) {
+    // Aplicar formatação básica HTML
+    const formattedText = text
+      .replace(/\n/g, '<br>\n')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // **texto** -> <strong>texto</strong>
+
+    return `<p><span style="font-family:Verdana,Geneva,sans-serif">${formattedText}</span></p>`;
+  }
+
+  /**
+   * Converte texto simples para formato HTML de Deploy
+   * @param {string} text - Texto simples
+   * @returns {string} Texto formatado em HTML para Deploy
+   */
+  static convertTextToDeployHTML(text) {
+    // Aplicar formatação básica HTML
+    const formattedText = text
+      .replace(/\n/g, '<br>\n')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // **texto** -> <strong>texto</strong>
+
+    return `<p>${formattedText}</p>`;
+  }
+
+  /**
+   * Obtém a descrição formatada baseada no tipo de atividade
+   * @param {Object} activityData - Dados da atividade
+   * @param {string} generatedDescription - Descrição gerada
+   * @returns {string} Descrição formatada em HTML
+   */
+  static getFormattedDescription(activityData, generatedDescription = '') {
+    const activityType = activityData.tipo?.toLowerCase();
+
+    // Determinar se é BUG ou Deploy baseado nos valores reais do ACTIVITY_TYPES
+    if (
+      activityType === 'bug produção' ||
+      activityType === 'bug retrabalho' ||
+      activityType.includes('bug')
+    ) {
+      return this.formatBugDescription(activityData, generatedDescription);
+    } else if (activityType === 'deploy' || activityType.includes('deploy')) {
+      return this.formatDeployDescription(activityData, generatedDescription);
+    }
+
+    // Fallback para outros tipos - aplicar formatação básica
+    if (generatedDescription && generatedDescription.trim() !== '') {
+      if (
+        generatedDescription.includes('<') &&
+        generatedDescription.includes('>')
+      ) {
+        return generatedDescription;
+      }
+
+      // Converter para HTML básico
+      return `<p>${generatedDescription.replace(/\n/g, '<br>\n')}</p>`;
+    }
+
+    // Fallback padrão
+    return `<p><strong>Atividade criada via KQA - ${activityData.tipo}</strong></p>`;
   }
 
   /**
@@ -458,9 +723,10 @@ export class ArtiaService {
         ACTIVITY_TYPE_TO_FOLDER_TYPE_ID[activityData.tipo] ||
         DEFAULT_ARTIA_VALUES.FOLDER_TYPE_ID_DEPLOY,
       createdBy: formData.login,
-      description:
-        generatedDescription ||
-        `Atividade criada via KQA - ${activityData.tipo}`,
+      description: this.getFormattedDescription(
+        activityData,
+        generatedDescription
+      ),
       priority:
         parseInt(activityData.prioridade) || DEFAULT_ARTIA_VALUES.PRIORITY,
       estimatedEffort:

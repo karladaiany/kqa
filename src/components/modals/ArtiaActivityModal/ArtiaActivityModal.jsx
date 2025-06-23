@@ -79,7 +79,6 @@ const ArtiaActivityModal = ({
         const parsed = JSON.parse(savedData);
         return { ...defaultData, ...parsed };
       } catch (error) {
-        console.error('Erro ao carregar dados salvos:', error);
         return defaultData;
       }
     }
@@ -293,6 +292,29 @@ const ArtiaActivityModal = ({
             .map(step => `» ${step}`)
             .join('\n');
 
+          // Preparar seção de evidências (igual ao hook useBugRegistration)
+          let evidenceSection = '';
+          const evidences = [];
+
+          if (bugData.evidenceDescription) {
+            evidences.push(bugData.evidenceDescription);
+          }
+
+          if (bugData.evidenceLink) {
+            evidences.push(`Link da evidência: ${bugData.evidenceLink}`);
+          }
+
+          if (bugData.hasAttachment) {
+            evidences.push('Evidência em anexo na atividade');
+          }
+
+          if (evidences.length > 0) {
+            evidenceSection = `
+
+    :: Evidência(s) ::
+${evidences.join('\n')}`;
+          }
+
           const plainText = `    :: Incidente identificado ::
 ${bugData.incident}
 
@@ -307,22 +329,40 @@ url: ${bugData.url}
 login: ${bugData.login}
 senha: ${bugData.password}
 org_id: ${bugData.envId}
-${bugData.others}`;
+${bugData.others}${evidenceSection}`;
 
           return plainText.trim();
         }
       } else if (activityType === 'deploy') {
         // Para deploy, usar os dados do card de deploy
-        const savedData = localStorage.getItem('deployData');
-        if (savedData) {
-          const deployData = JSON.parse(savedData);
-          return `Deploy realizado: ${deployData.description || 'Deploy via KQA'}`;
+        // Buscar dados do Deploy nas chaves corretas
+        const deployFieldValues = localStorage.getItem('deployFieldValues');
+        const deployFields = localStorage.getItem('deployFields');
+
+        if (deployFieldValues && deployFields) {
+          const fieldValues = JSON.parse(deployFieldValues);
+          const fieldsConfig = JSON.parse(deployFields);
+
+          // Gerar descrição formatada baseada nos campos preenchidos
+          let deployDescription = '';
+
+          // Usar o mapeamento correto dos deployFields
+          fieldsConfig.forEach(field => {
+            const fieldId = field.id;
+            const fieldLabel = field.label;
+            const fieldValue = fieldValues[fieldId];
+
+            if (fieldValue && fieldValue.trim() !== '') {
+              deployDescription += `${fieldLabel}: ${fieldValue}\n`;
+            }
+          });
+
+          return deployDescription.trim() || 'Deploy preparado via KQA';
         }
       }
 
       return `Atividade criada via KQA - ${formData.tipo}`;
     } catch (error) {
-      console.error('Erro ao gerar descrição:', error);
       return `Atividade criada via KQA - ${formData.tipo}`;
     }
   };
@@ -382,7 +422,6 @@ ${bugData.others}`;
 
       toast.success(`✅ Atividade criada com sucesso! ID: ${result.id}`);
     } catch (error) {
-      console.error('❌ Erro ao criar atividade:', error);
       toast.error(`❌ Erro ao criar atividade: ${error.message}`);
     } finally {
       setLoading(false);
@@ -439,24 +478,6 @@ ${bugData.others}`;
   };
 
   const handleClose = () => {
-    // Confirmação simples para prevenir fechamento acidental
-    // Não limpar dados, apenas confirmar intenção
-    const hasData =
-      formData.login ||
-      formData.senha ||
-      formData.titulo ||
-      formData.accountId ||
-      formData.folderId;
-
-    if (hasData) {
-      const confirmClose = window.confirm(
-        'Deseja realmente fechar? Os dados digitados permanecerão salvos.'
-      );
-      if (!confirmClose) {
-        return;
-      }
-    }
-
     onClose();
   };
 
@@ -734,6 +755,7 @@ ${bugData.others}`;
           <ActivityHistoryCard
             activities={createdActivities}
             onClearHistory={handleClearHistory}
+            filterContext={activityType}
           />
 
           <div className='modal-footer'>
