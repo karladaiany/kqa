@@ -2097,26 +2097,6 @@ input-clearable .number-input {
   box-shadow: 0 4px 12px rgba(120, 93, 200, 0.3);
 }
 
-.project-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  text-align: right;
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  opacity: 0.7;
-  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
-}
-
-.version {
-  font-weight: 500;
-  color: var(--accent-color);
-}
-
-.build-date {
-  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
-}
-
 /* Responsividade melhorada do Footer */
 @media (max-width: 992px) {
   .footer-content {
@@ -2132,10 +2112,6 @@ input-clearable .number-input {
 
   .creation-info {
     order: -1;
-  }
-
-  .project-info {
-    text-align: center;
   }
 }
 
