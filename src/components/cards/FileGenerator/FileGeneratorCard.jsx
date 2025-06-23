@@ -41,6 +41,177 @@ const FileGeneratorCard = ({ generatorFunctions }) => {
   const [csvSeparator, setCsvSeparator] = useState(',');
   const [isGenerating, setIsGenerating] = useState(false);
 
+  // Função auxiliar para expandir a base de nomes brasileiros
+  const getExpandedBrazilianName = () => {
+    const firstNames = [
+      'Ana',
+      'Carlos',
+      'Maria',
+      'João',
+      'Fernanda',
+      'Paulo',
+      'Juliana',
+      'Rafael',
+      'Camila',
+      'Lucas',
+      'Beatriz',
+      'Diego',
+      'Letícia',
+      'Guilherme',
+      'Mariana',
+      'André',
+      'Gabriela',
+      'Thiago',
+      'Isabella',
+      'Felipe',
+      'Larissa',
+      'Bruno',
+      'Natália',
+      'Vinicius',
+      'Carolina',
+      'Rodrigo',
+      'Stephanie',
+      'Leonardo',
+      'Bianca',
+      'Gustavo',
+      'Amanda',
+      'Matheus',
+      'Renata',
+      'Eduardo',
+      'Priscila',
+      'Henrique',
+      'Vanessa',
+      'Daniel',
+      'Patricia',
+      'Ricardo',
+      'Adriana',
+      'Pedro',
+      'Cristina',
+      'Fernando',
+      'Tatiana',
+      'Marcelo',
+      'Sandra',
+      'Alexandre',
+      'Monica',
+      'Roberto',
+      'Claudia',
+      'Antonio',
+      'Silvia',
+      'Francisco',
+      'Regina',
+      'José',
+      'Luciana',
+      'Luiz',
+      'Andréa',
+      'Marcos',
+      'Vera',
+      'Sérgio',
+      'Eliane',
+      'Leandro',
+      'Denise',
+      'Fabio',
+      'Carla',
+      'Flavio',
+      'Simone',
+      'Márcio',
+      'Cláudia',
+      'César',
+      'Roberta',
+      'Edson',
+      'Kelly',
+      'Wagner',
+      'Aline',
+      'Júlio',
+      'Débora',
+      'Renan',
+      'Viviane',
+      'Caio',
+      'Raquel',
+      'Douglas',
+      'Jéssica',
+      'Vinícius',
+      'Patrícia',
+      'Murilo',
+      'Sabrina',
+      'Igor',
+      'Mônica',
+    ];
+
+    const lastNames = [
+      'Silva',
+      'Santos',
+      'Oliveira',
+      'Souza',
+      'Rodrigues',
+      'Ferreira',
+      'Alves',
+      'Pereira',
+      'Lima',
+      'Gomes',
+      'Costa',
+      'Ribeiro',
+      'Martins',
+      'Carvalho',
+      'Almeida',
+      'Lopes',
+      'Soares',
+      'Fernandes',
+      'Vieira',
+      'Barbosa',
+      'Rocha',
+      'Dias',
+      'Monteiro',
+      'Mendes',
+      'Ramos',
+      'Moreira',
+      'Araújo',
+      'Cardoso',
+      'Nunes',
+      'Teixeira',
+      'Reis',
+      'Andrade',
+      'Morais',
+      'Machado',
+      'Freitas',
+      'Garcia',
+      'Castro',
+      'Correia',
+      'Pinto',
+      'Farias',
+      'Campos',
+      'Moura',
+      'Cavalcanti',
+      'Miranda',
+      'Melo',
+      'Azevedo',
+      'Cunha',
+      'Nascimento',
+      'Barros',
+      'Duarte',
+      'Fonseca',
+      'Magalhães',
+      'Guimarães',
+      'Nogueira',
+      'Gonçalves',
+      'Medeiros',
+      'Tavares',
+      'Batista',
+      'Coelho',
+      'Santana',
+      'Porto',
+      'Borges',
+      'Marques',
+      'Xavier',
+      'Vasconcelos',
+      'Aguiar',
+    ];
+
+    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+
+    return { firstName, lastName };
+  };
+
   // Validation check after hooks
   if (!generatorFunctions) {
     toast.error('Funções de geração não foram fornecidas!');
@@ -80,14 +251,84 @@ const FileGeneratorCard = ({ generatorFunctions }) => {
 
   const generateSingleRecord = () => {
     const record = {};
+
+    // Gerar pessoa base
     const person = generatorFunctions.generatePerson();
-    const { firstName, lastName } = splitName(person.nome);
+
+    // Usar nomes expandidos com maior variabilidade
+    const useExpandedNames = Math.random() < 0.7; // 70% de chance de usar nomes expandidos
+    let firstName, lastName;
+
+    if (useExpandedNames) {
+      const expandedName = getExpandedBrazilianName();
+      firstName = expandedName.firstName;
+      lastName = expandedName.lastName;
+    } else {
+      // Usar o gerador original como fallback
+      firstName = person.nome.split(' ')[0];
+      lastName =
+        person.nome.split(' ').slice(1).join(' ') ||
+        generatorFunctions.generatePerson().nome.split(' ')[0];
+    }
+
+    // Adicionar variações para evitar repetições
+    const randomSuffix = Math.floor(Math.random() * 999) + 1;
+    const useVariation = Math.random() < 0.4; // 40% de chance de usar variação
+
+    if (useVariation) {
+      // Adicionar sufixos como números ou variações no nome
+      const variations = [
+        () => firstName + randomSuffix,
+        () => firstName + Math.floor(Math.random() * 99) + 1,
+        () =>
+          firstName +
+          ['Jr', 'Neto', 'Filho', 'Silva', 'Santos'][
+            Math.floor(Math.random() * 5)
+          ],
+      ];
+      firstName = variations[Math.floor(Math.random() * variations.length)]();
+    }
+
+    // Gerar nome completo
+    const fullName = `${firstName} ${lastName}`;
+    const { firstName: processedFirstName, lastName: processedLastName } =
+      splitName(fullName);
 
     if (selectedFields.nome) {
-      record.first_name = firstName;
-      record.last_name = lastName;
+      record.first_name = processedFirstName;
+      record.last_name = processedLastName;
     }
-    if (selectedFields.email) record.email = person.email;
+
+    // Gerar e-mail no formato nome.sobrenome@teste.com
+    if (selectedFields.email) {
+      const emailFirstName = processedFirstName
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]/g, '');
+
+      const emailLastName = processedLastName
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]/g, '');
+
+      // Adicionar variação numérica para garantir unicidade de e-mail
+      const emailVariations = [
+        '',
+        Math.floor(Math.random() * 9999) + 1,
+        new Date().getTime().toString().slice(-4),
+        Math.floor(Math.random() * 999) +
+          1 +
+          Math.floor(Math.random() * 99) +
+          1,
+      ];
+
+      const emailVariation =
+        emailVariations[Math.floor(Math.random() * emailVariations.length)];
+
+      record.email = `${emailFirstName}.${emailLastName}${emailVariation}@teste.com`;
+    }
 
     if (selectedFields.telefone) {
       record.cell_phone = person.telefone; // First phone number from the initial person object
