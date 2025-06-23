@@ -1,0 +1,123 @@
+# Cursor Rules para Projeto KQA
+
+## Regras de Finalização de Implementações
+
+### OBRIGATÓRIO: Após toda implementação, correção de bug ou nova feature, fornecer:
+
+1. **Nome da Branch sugerido**
+
+   - Formato: `tipo/descrição-resumida`
+   - Tipos: `feature/`, `bugfix/`, `hotfix/`, `refactor/`, `docs/`, `test/`, `chore/`
+   - Usar kebab-case e ser descritivo mas conciso
+
+2. **Mensagem de Commit sugerida**
+
+   - Formato: Conventional Commits
+   - Estrutura: `tipo(escopo): descrição`
+   - Tipos: feat, fix, docs, style, refactor, test, chore
+   - Descrição em português, presente do indicativo
+   - Máximo 72 caracteres no título
+
+3. **Informações para Pull Request**
+   - Quando a implementação for significativa ou complexa
+   - Seguir template padrão definido abaixo
+
+## Template Padrão para Pull Requests
+
+```markdown
+## 📋 Descrição
+
+Breve descrição do que foi implementado/corrigido.
+
+## 🎯 Tipo de Mudança
+
+- [ ] 🆕 Nova funcionalidade (feature)
+- [ ] 🐛 Correção de bug (bugfix)
+- [ ] ⚡ Melhoria de performance
+- [ ] 🔧 Refatoração
+- [ ] 📚 Documentação
+- [ ] 🧪 Testes
+- [ ] 🔥 Hotfix crítico
+
+## 🧪 Como Testar
+
+1. Passos para reproduzir/testar a funcionalidade
+2. Cenários de teste importantes
+3. Comportamentos esperados
+
+## 📸 Screenshots/Evidências
+
+<!-- Se aplicável, adicionar prints ou gifs demonstrando a funcionalidade -->
+
+## ✅ Checklist
+
+- [ ] Código testado localmente
+- [ ] Sem erros de console
+- [ ] Funcionalidade testada em diferentes navegadores (se aplicável)
+- [ ] Código revisado e otimizado
+- [ ] Documentação atualizada (se necessário)
+
+## 🔗 Issues Relacionadas
+
+<!-- Mencionar issues que este PR resolve -->
+
+Closes #[número_da_issue]
+
+## 💬 Observações Adicionais
+
+<!-- Qualquer informação adicional relevante para o revisor -->
+```
+
+## Configurações Específicas do Projeto
+
+### Contexto do Projeto KQA:
+
+- Aplicação React para geração de dados de teste
+- Foco em usabilidade e performance
+- Arquitetura baseada em componentes funcionais
+- Testes com Jest e React Testing Library
+
+### Padrões de Nomenclatura:
+
+- Componentes: PascalCase
+- Arquivos: kebab-case ou PascalCase (seguindo padrão existente)
+- Funções: camelCase
+- Constantes: UPPER_SNAKE_CASE
+
+### Diretrizes de Commit:
+
+- Sempre em português
+- Ser específico sobre o que foi alterado
+- Mencionar componentes/arquivos principais afetados
+- Incluir contexto de UX quando relevante
+
+## Exemplo de Finalização Padrão:
+
+### 🌟 Resumo da Implementação
+
+**Problema resolvido:** [Descrição breve]
+**Solução aplicada:** [Como foi resolvido]
+
+### 📝 Recomendações Git:
+
+**Branch sugerida:**
+
+```
+bugfix/corrige-regeneracao-senha-complementary-data
+```
+
+**Mensagem de commit:**
+
+```
+fix(ComplementaryDataCard): corrige regeneração desnecessária de campos ao alterar configurações de senha
+
+- Separa lógica de geração de campos da empresa da geração de senha
+- Remove dependências desnecessárias dos useCallback
+- Melhora UX mantendo dados estáveis durante configuração de senha
+```
+
+**Informações para PR:**
+
+- Incluir template completo quando mudanças forem significativas
+- Para bugs simples, focar na seção de "Como Testar"
+- Sempre mencionar impacto na UX/performance se aplicável
