@@ -129,16 +129,18 @@ export const MiniCard = ({ note, onUpdate, onDelete }) => {
 
           // Criar feedback visual temporário
           const button = event.currentTarget;
-          const originalTitle = button.title;
-          button.title = 'Copiado!';
-          button.style.background = '#10b981';
-          button.style.color = 'white';
+          if (button) {
+            const originalTitle = button.title;
+            button.title = 'Copiado!';
+            button.style.background = '#10b981';
+            button.style.color = 'white';
 
-          setTimeout(() => {
-            button.title = originalTitle;
-            button.style.background = '';
-            button.style.color = '';
-          }, 1000);
+            setTimeout(() => {
+              button.title = originalTitle;
+              button.style.background = '';
+              button.style.color = '';
+            }, 1000);
+          }
         }
       } catch (error) {
         console.error('❌ Erro ao copiar conteúdo:', error);
