@@ -51,36 +51,29 @@ const ComplementaryDataCard = () => {
     includeSpecialChars,
   ]);
 
-  const generateAllFields = useCallback(() => {
+  // Separated function for generating company-related fields only
+  const generateCompanyFields = useCallback(() => {
     setCompany(generateCompanyName());
     setDepartment(generateDepartment());
     setRole(generateJobTitle());
     setBusinessLine(generateBusinessSector());
     setNumEmployees(generateNumEmployees());
-    const newPassword = generatePasswordUtil(passwordLength, {
-      includeUppercase,
-      includeLowercase,
-      includeNumbers,
-      includeSpecialChars,
-    });
-    setPassword(newPassword);
-  }, [
-    passwordLength,
-    includeUppercase,
-    includeLowercase,
-    includeNumbers,
-    includeSpecialChars,
-  ]);
+  }, []); // No dependencies since these are random generators
 
-  useEffect(() => {
-    generateAllFields();
-  }, [generateAllFields]);
+  const generateAllFields = useCallback(() => {
+    generateCompanyFields();
+    regeneratePassword();
+  }, [generateCompanyFields, regeneratePassword]);
 
+  // Initial generation when component mounts
   useEffect(() => {
-    if (!password) {
-      regeneratePassword();
-    }
-  }, [password, regeneratePassword]);
+    generateCompanyFields();
+  }, [generateCompanyFields]);
+
+  // Regenerate password when its configurations change
+  useEffect(() => {
+    regeneratePassword();
+  }, [regeneratePassword]);
 
   const handleLengthChange = e => {
     const val = e.target.value;
