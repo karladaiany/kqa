@@ -103,6 +103,33 @@ npm run test:unit:run
 npm run test:unit:coverage
 ```
 
+## 📋 Versionamento
+
+O projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/) e [Conventional Commits](https://www.conventionalcommits.org/pt-br/):
+
+### Scripts de Versionamento
+
+```bash
+# Verificar versão atual
+npm run version:check
+
+# Releases automáticos (com testes + lint + push)
+npm run release:patch    # Correções (1.0.0 → 1.0.1)
+npm run release:minor    # Funcionalidades (1.0.0 → 1.1.0)
+npm run release:major    # Breaking changes (1.0.0 → 2.0.0)
+```
+
+### Conventional Commits
+
+```bash
+feat: adicionar nova funcionalidade      # MINOR version
+fix: corrigir bug específico            # PATCH version
+feat!: mudança incompatível             # MAJOR version
+docs: atualizar documentação            # No version change
+```
+
+📖 **Documentação completa**: [docs/VERSIONING.md](docs/VERSIONING.md)
+
 ## 📄 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.

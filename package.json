@@ -14,7 +14,17 @@
     "lint": "eslint src/ --ext .js,.jsx",
     "lint:fix": "eslint src/ --ext .js,.jsx --fix",
     "format": "prettier --write src/",
-    "format:check": "prettier --check src/"
+    "format:check": "prettier --check src/",
+    "version:patch": "npm version patch && npm run changelog:update",
+    "version:minor": "npm version minor && npm run changelog:update",
+    "version:major": "npm version major && npm run changelog:update",
+    "version:check": "node scripts/version-check.js",
+    "changelog:generate": "conventional-changelog -p angular -i CHANGELOG.md -s",
+    "changelog:update": "npm run changelog:generate && git add CHANGELOG.md",
+    "release:patch": "npm run test:unit:run && npm run lint && npm run version:patch && git push --follow-tags",
+    "release:minor": "npm run test:unit:run && npm run lint && npm run version:minor && git push --follow-tags",
+    "release:major": "npm run test:unit:run && npm run lint && npm run version:major && git push --follow-tags",
+    "deploy:check": "node scripts/deploy-version.js"
   },
   "dependencies": {
     "@apollo/client": "^3.13.8",
@@ -43,12 +53,14 @@
     "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "^14.5.1",
     "@vitejs/plugin-react": "^4.2.1",
+    "conventional-changelog-cli": "^4.1.0",
     "eslint": "^8.0.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "jsdom": "^23.0.1",
     "prettier": "^3.1.0",
     "rollup-plugin-analyzer": "^4.0.0",
+    "semver": "^7.5.4",
     "vite": "^4.0.0",
     "vitest": "^1.0.4"
   },

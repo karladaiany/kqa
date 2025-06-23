@@ -1,0 +1,11 @@
+{
+  "version": "1.0.0",
+  "timestamp": "2025-06-23T14:26:30.895Z",
+  "git": {
+    "branch": "feat/criar_atividade",
+    "commit": "d806a5e048ac259fab7fbe5cba21dc688f62b79b",
+    "shortCommit": "d806a5e"
+  },
+  "environment": "development",
+  "buildNumber": "local"
+}
