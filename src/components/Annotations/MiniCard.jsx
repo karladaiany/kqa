@@ -10,7 +10,7 @@ import Highlight from '@tiptap/extension-highlight';
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
 import Image from '@tiptap/extension-image';
-import { FaGripVertical, FaTrashAlt } from 'react-icons/fa';
+import { FaGripVertical, FaTrashAlt, FaCopy } from 'react-icons/fa';
 import { useAnnotations } from '../../hooks/useAnnotations';
 import { useActiveEditor } from './AnnotationsCard';
 
@@ -108,6 +108,61 @@ export const MiniCard = ({ note, onUpdate, onDelete }) => {
       onUpdate(updates);
     },
     [onUpdate]
+  );
+
+  const handleCopy = useCallback(
+    async event => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (!editor) return;
+
+      try {
+        // Obter texto puro do editor, removendo HTML
+        const textContent = editor.getText();
+
+        if (textContent.trim()) {
+          await navigator.clipboard.writeText(textContent);
+
+          // Feedback visual opcional - pode ser implementado como toast depois
+          console.log('📋 Conteúdo copiado para área de transferência');
+
+          // Criar feedback visual temporário
+          const button = event.currentTarget;
+          if (button) {
+            const originalTitle = button.title;
+            button.title = 'Copiado!';
+            button.style.background = '#10b981';
+            button.style.color = 'white';
+
+            setTimeout(() => {
+              button.title = originalTitle;
+              button.style.background = '';
+              button.style.color = '';
+            }, 1000);
+          }
+        }
+      } catch (error) {
+        console.error('❌ Erro ao copiar conteúdo:', error);
+
+        // Fallback para navegadores mais antigos
+        try {
+          const textArea = document.createElement('textarea');
+          textArea.value = editor.getText();
+          textArea.style.position = 'fixed';
+          textArea.style.left = '-9999px';
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
+
+          console.log('📋 Conteúdo copiado usando fallback');
+        } catch (fallbackError) {
+          console.error('❌ Erro no fallback de cópia:', fallbackError);
+        }
+      }
+    },
+    [editor]
   );
 
   const handleFocus = useCallback(() => {
@@ -316,6 +371,14 @@ export const MiniCard = ({ note, onUpdate, onDelete }) => {
             <FaGripVertical />
           </div>
           <div className='mini-card-actions'>
+            <button
+              type='button'
+              className='mini-card-action copy'
+              onClick={handleCopy}
+              title='Copiar conteúdo'
+            >
+              <FaCopy />
+            </button>
             <button
               type='button'
               className='mini-card-action delete'
