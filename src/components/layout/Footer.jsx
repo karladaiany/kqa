@@ -63,13 +63,6 @@ const Footer = () => {
             </a>
           </div>
         </div>
-
-        <div className='project-info'>
-          <span className='version'>v1.0.0</span>
-          <span className='build-date'>
-            Build: {new Date().toLocaleDateString('pt-BR')}
-          </span>
-        </div>
       </div>
     </footer>
   );
