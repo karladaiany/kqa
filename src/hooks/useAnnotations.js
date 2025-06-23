@@ -3,7 +3,7 @@ import CryptoJS from 'crypto-js';
 
 const STORAGE_KEY = 'kqa-annotations';
 const ENCRYPTION_KEY = 'kqa-annotations-key';
-const DEBUG_MODE = false; // Mude para true para testar sem criptografia
+const DEBUG_MODE = import.meta.env.DEV; // Ativo apenas em desenvolvimento
 
 // Funções de criptografia para proteger os dados das anotações
 const encryptData = data => {
@@ -51,7 +51,7 @@ export const useAnnotations = () => {
 
   // Função de debug global (apenas para desenvolvimento)
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && DEBUG_MODE) {
       window.debugKQAAnnotations = {
         checkStorage: () => {
           const data = localStorage.getItem(STORAGE_KEY);
@@ -84,7 +84,7 @@ export const useAnnotations = () => {
         saveTestData: () => {
           const testData = [
             {
-              id: Date.now(),
+              id: String(Date.now()),
               x: 100,
               y: 100,
               width: 300,
@@ -102,7 +102,7 @@ export const useAnnotations = () => {
         saveTestDataNoEncryption: () => {
           const testData = [
             {
-              id: Date.now(),
+              id: String(Date.now()),
               x: 150,
               y: 150,
               width: 300,
@@ -167,7 +167,7 @@ export const useAnnotations = () => {
           const testImageData =
             'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
           const testNote = {
-            id: Date.now(),
+            id: String(Date.now()),
             x: 100,
             y: 100,
             width: 300,
@@ -262,7 +262,7 @@ export const useAnnotations = () => {
   // Adicionar nova anotação
   const addNote = useCallback(noteData => {
     const newNote = {
-      id: Date.now() + Math.random(), // ID mais único
+      id: String(Date.now() + Math.random()), // ID mais único convertido para string
       x: 50,
       y: 50,
       width: 300,
@@ -318,7 +318,7 @@ export const useAnnotations = () => {
       if (noteToClone) {
         const duplicatedNote = {
           ...noteToClone,
-          id: Date.now() + Math.random(),
+          id: String(Date.now() + Math.random()),
           x: noteToClone.x + 20, // Offset para não sobrepor
           y: noteToClone.y + 20,
           lastModified: new Date().toISOString(),
@@ -370,7 +370,7 @@ export const useAnnotations = () => {
         // Gerar novos IDs para evitar conflitos
         const importedNotes = importData.notes.map(note => ({
           ...note,
-          id: Date.now() + Math.random(),
+          id: String(Date.now() + Math.random()),
           lastModified: new Date().toISOString(),
         }));
         setNotes(prevNotes => [...prevNotes, ...importedNotes]);
