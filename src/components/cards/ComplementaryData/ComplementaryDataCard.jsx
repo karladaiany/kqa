@@ -11,7 +11,7 @@ import {
   FaSitemap,
   FaIndustry,
 } from 'react-icons/fa';
-import DataField from '../DataField';
+import DataField from '../../ui/DataField';
 import {
   generateCompanyName,
   generateDepartment,
@@ -19,7 +19,7 @@ import {
   generateBusinessSector,
   generateNumEmployees,
   generatePassword as generatePasswordUtil, // Renamed to avoid conflict
-} from '../../generators/companyData'; // Adjust path as needed
+} from '../../../generators/companyData';
 
 const ComplementaryDataCard = () => {
   const [company, setCompany] = useState('');

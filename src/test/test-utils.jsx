@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { render } from '@testing-library/react';
 import { ToastContainer } from 'react-toastify';
 import { vi } from 'vitest';
@@ -28,12 +29,20 @@ const TestProvider = ({ children }) => {
   );
 };
 
+TestProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
 // Função customizada de render que inclui providers
 const customRender = (ui, options = {}) => {
   const { wrapper: Wrapper = TestProvider, ...renderOptions } = options;
 
   const AllTheProviders = ({ children }) => {
     return <Wrapper>{children}</Wrapper>;
+  };
+
+  AllTheProviders.propTypes = {
+    children: PropTypes.node.isRequired,
   };
 
   return render(ui, { wrapper: AllTheProviders, ...renderOptions });

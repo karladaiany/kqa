@@ -209,10 +209,9 @@ export const getEredeTestCardByOption = option => {
 
 /**
  * Busca cartão por status (mantido para compatibilidade)
- * @param {string} _status - Status do cartão (não utilizado, mantido para compatibilidade)
  * @returns {Object} Dados do cartão (sem nome - deve ser gerado externamente)
  */
-export const getEredeTestCardByStatus = _status => {
+export const getEredeTestCardByStatus = () => {
   // Para compatibilidade, retorna o primeiro cartão Mastercard Crédito
   return { ...eredeTestCards[1] }; // Mastercard Crédito
 };

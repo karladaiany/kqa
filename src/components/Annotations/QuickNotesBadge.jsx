@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
-import {
-  FaToggleOn,
-  FaFolderOpen,
-  FaFigma,
-  FaFlask,
-  FaVial,
-} from 'react-icons/fa';
+import PropTypes from 'prop-types';
+import { FaToggleOn, FaFolderOpen, FaFigma, FaVial } from 'react-icons/fa';
 import { SiPostman } from 'react-icons/si';
 
 const QuickNotesBadge = ({
@@ -16,20 +11,7 @@ const QuickNotesBadge = ({
   onFeatureFlagClick,
   className = '',
 }) => {
-  const [showCopyFeedback, setShowCopyFeedback] = useState(false);
-
-  // Função para copiar texto para a área de transferência
-  const copyToClipboard = async text => {
-    try {
-      await navigator.clipboard.writeText(text);
-      // Feedback visual
-      setShowCopyFeedback(true);
-      setTimeout(() => setShowCopyFeedback(false), 300);
-      console.log('Texto copiado:', text);
-    } catch (err) {
-      console.error('Erro ao copiar texto:', err);
-    }
-  };
+  const [showCopyFeedback] = useState(false);
 
   // Função para abrir link em nova aba
   const openInNewTab = url => {
@@ -128,6 +110,15 @@ const QuickNotesBadge = ({
       <span className='badge-text'>{text}</span>
     </div>
   );
+};
+
+QuickNotesBadge.propTypes = {
+  type: PropTypes.string.isRequired,
+  text: PropTypes.string.isRequired,
+  icon: PropTypes.elementType,
+  onClick: PropTypes.func,
+  onFeatureFlagClick: PropTypes.func,
+  className: PropTypes.string,
 };
 
 export default QuickNotesBadge;

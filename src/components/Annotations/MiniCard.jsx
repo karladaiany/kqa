@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { Rnd } from 'react-rnd';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -137,7 +138,7 @@ export const MiniCard = ({ note, onUpdate, onDelete }) => {
   const handleImageUpload = useCallback(
     event => {
       const file = event.target.files?.[0];
-      console.log('🖼️ Upload de imagem iniciado:', file?.name, file?.size);
+      // Upload de imagem iniciado
 
       if (file && editor) {
         // Verificar tamanho do arquivo (limite de 2MB para evitar problemas de quota)
@@ -176,7 +177,7 @@ export const MiniCard = ({ note, onUpdate, onDelete }) => {
               })
               .run();
 
-            console.log('✅ Imagem inserida no editor');
+            // Imagem inserida no editor
 
             // Forçar atualização do conteúdo
             setTimeout(() => {
@@ -188,7 +189,7 @@ export const MiniCard = ({ note, onUpdate, onDelete }) => {
 
               // Verificar se a imagem foi realmente inserida
               const hasImage = currentContent.includes('data:image/');
-              console.log('🔍 Imagem detectada no HTML:', hasImage);
+              // Verificando se há imagem no conteúdo
 
               if (hasImage) {
                 // Forçar salvamento imediato
@@ -268,6 +269,13 @@ export const MiniCard = ({ note, onUpdate, onDelete }) => {
       {children}
     </button>
   );
+
+  MenuButton.propTypes = {
+    action: PropTypes.string.isRequired,
+    active: PropTypes.bool,
+    children: PropTypes.node.isRequired,
+    title: PropTypes.string.isRequired,
+  };
 
   if (!editor) {
     return null;
@@ -351,4 +359,21 @@ export const MiniCard = ({ note, onUpdate, onDelete }) => {
       </div>
     </Rnd>
   );
+};
+
+MiniCard.propTypes = {
+  note: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    x: PropTypes.number.isRequired,
+    y: PropTypes.number.isRequired,
+    width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    height: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+      .isRequired,
+    content: PropTypes.string.isRequired,
+    backgroundColor: PropTypes.string.isRequired,
+    textColor: PropTypes.string.isRequired,
+    lastModified: PropTypes.string.isRequired,
+  }).isRequired,
+  onUpdate: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
 };

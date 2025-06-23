@@ -6,34 +6,34 @@ Sistema completo para geração de dados de teste e automação de QA, desenvolv
 
 ### 📋 Geração de Dados
 
--   **Documentos**: CPF, CNPJ, RG com formatação automática
--   **Dados Pessoais**: Nome, email, telefone, endereço completo
--   **Produtos**: Nome, descrição e categorias aleatórias
--   **Cartões**: Visa, Mastercard, Amex, Elo e Erede com validação
--   **Utilitários**: Gerador de caracteres e contador de texto
+- **Documentos**: CPF, CNPJ, RG com formatação automática
+- **Dados Pessoais**: Nome, email, telefone, endereço completo
+- **Produtos**: Nome, descrição e categorias aleatórias
+- **Cartões**: Visa, Mastercard, Amex, Elo e Erede com validação
+- **Utilitários**: Gerador de caracteres e contador de texto
 
 ### 📁 Geração de Arquivos
 
--   Exportação em JSON e CSV
--   Configuração de separadores CSV
--   Seleção de campos personalizados
--   Controle de quantidade de registros
+- Exportação em JSON e CSV
+- Configuração de separadores CSV
+- Seleção de campos personalizados
+- Controle de quantidade de registros
 
 ### 🔧 Ferramentas Complementares
 
--   Geração de senhas seguras
--   Registro de bugs e comentários QA
--   Controle de deploy e evidências
--   Interface responsiva com tema claro/escuro
+- Geração de senhas seguras
+- Registro de bugs e comentários QA
+- Controle de deploy e evidências
+- Interface responsiva com tema claro/escuro
 
 ## 🛠️ Tecnologias Utilizadas
 
--   **Frontend**: React.js, JavaScript ES6+
--   **Estilização**: CSS3 com variáveis customizadas
--   **Ícones**: React Icons (Font Awesome)
--   **Notificações**: React Toastify
--   **Build**: Vite
--   **Testes**: Cypress (configurado para automação)
+- **Frontend**: React.js, JavaScript ES6+
+- **Estilização**: CSS3 com variáveis customizadas
+- **Ícones**: React Icons (Font Awesome)
+- **Notificações**: React Toastify
+- **Build**: Vite
+- **Testes**: Vitest (unitários) configurado
 
 ## 📦 Instalação e Uso
 
@@ -79,28 +79,28 @@ Edite o arquivo `src/components/Footer.jsx` para atualizar seus links:
 
 O sistema é totalmente responsivo e funciona perfeitamente em:
 
--   💻 Desktop (1200px+)
--   📱 Tablet (768px - 1199px)
--   📱 Mobile (até 767px)
+- 💻 Desktop (1200px+)
+- 📱 Tablet (768px - 1199px)
+- 📱 Mobile (até 767px)
 
 ## 🔒 Boas Práticas Implementadas
 
--   **DRY (Don't Repeat Yourself)**: Componentes reutilizáveis
--   **Performance**: Lazy loading e otimizações de renderização
--   **Acessibilidade**: ARIA labels e navegação por teclado
--   **SEO**: Meta tags e estrutura semântica
--   **Segurança**: Validação de dados e sanitização
+- **DRY (Don't Repeat Yourself)**: Componentes reutilizáveis
+- **Performance**: Lazy loading e otimizações de renderização
+- **Acessibilidade**: ARIA labels e navegação por teclado
+- **SEO**: Meta tags e estrutura semântica
+- **Segurança**: Validação de dados e sanitização
 
-## 🧪 Testes Automatizados
+## 🧪 Testes Unitários
 
-O projeto está configurado para testes com Cypress:
+O projeto está configurado para testes unitários com Vitest:
 
 ```bash
-# Executar testes em modo interativo
-npm run cypress:open
+# Executar testes unitários
+npm run test:unit:run
 
-# Executar testes em modo headless
-npm run cypress:run
+# Executar testes com cobertura
+npm run test:unit:coverage
 ```
 
 ## 📄 Licença

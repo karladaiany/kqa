@@ -1,0 +1,1074 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-container {
+  background: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  max-width: 600px;
+  width: 100%;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+  position: relative;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-lg);
+  border-bottom: var(--border-width) solid var(--border-color);
+  background: var(--card-bg);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  letter-spacing: -0.5px;
+}
+
+.modal-icon {
+  color: var(--primary-color);
+}
+
+.modal-close-button {
+  background: none;
+  border: none;
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  border-radius: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-speed);
+}
+
+.modal-close-button:hover:not(:disabled) {
+  background-color: var(--hover-color);
+  color: var(--text-color);
+}
+
+.modal-close-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.modal-body {
+  flex: 1;
+  padding: var(--spacing-lg);
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  max-height: calc(80vh - 140px); /* Garante espaço para header e footer */
+  position: relative;
+}
+
+/* Quando não há atividades ou estão colapsadas, expandir a área do modal-body */
+.modal-container:has(.activity-history-card:not(:empty)) .modal-body {
+  max-height: calc(80vh - 240px); /* Reduz altura quando há histórico */
+}
+
+.modal-container:has(.activity-history-card .activity-history-list)
+  .modal-body {
+  max-height: calc(
+    80vh - 300px
+  ); /* Reduz mais quando histórico está expandido */
+}
+
+/* Indicador sutil de scroll quando há mais conteúdo */
+.modal-body::after {
+  content: '';
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: linear-gradient(transparent, var(--card-background));
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--transition-speed);
+}
+
+.modal-body:not(:hover)::after {
+  opacity: 1;
+}
+
+/* Estilos específicos para section-divider dentro do modal */
+.modal-body .section-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+  margin-top: 2rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-color);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.modal-body .section-divider:first-child {
+  margin-top: 0;
+}
+
+.modal-body .section-divider svg {
+  color: var(--accent-color);
+  font-size: 1rem;
+}
+
+/* ========================================
+   SISTEMA GLOBAL DE INPUT-CONTAINER
+   Baseado no padrão do modal, compatível com campo-valor
+   ======================================== */
+
+/* Campo item unificado - compatível com campo-item */
+.modal-field-group {
+  margin-bottom: 1rem;
+  position: relative;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* Labels flutuantes unificadas */
+.modal-field-group label {
+  position: absolute;
+  left: 8px;
+  top: -0.6em;
+  color: var(--text-secondary);
+  font-size: 14px;
+  padding: 0 4px;
+  z-index: 1;
+  display: inline-block;
+  height: 1.2em;
+  white-space: nowrap;
+  backdrop-filter: blur(4px);
+  font-weight: 500;
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+  background-color: #2d2e31;
+}
+
+.modal-required {
+  color: var(--error-color);
+  margin-left: 0.25rem;
+}
+
+/* Input container global - compatível com campo-valor */
+.modal-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  min-height: 32px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+  background: #2d2e31;
+  padding: 4px 8px;
+}
+
+.modal-input-container:hover {
+  border-color: var(--primary-color);
+}
+
+.modal-input-container:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(255, 121, 198, 0.1);
+}
+
+/* Inputs e selects dentro do container - compatível com copyable */
+.modal-input-container input,
+.modal-input-container select {
+  flex: 1;
+  width: 100%;
+  min-height: 32px;
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 8px 12px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  transition:
+    background 0.2s,
+    color 0.2s;
+  font-size: 0.9rem;
+}
+
+.modal-input-container input::placeholder {
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.modal-input-container input:focus,
+.modal-input-container select:focus {
+  outline: none;
+  background: transparent;
+}
+
+.modal-input-container input:disabled,
+.modal-input-container select:disabled {
+  background-color: var(--background-color);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Estilos específicos para selects */
+.modal-input-container select {
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 12px;
+  padding-right: 32px;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+.modal-input-container select option {
+  padding: 8px;
+  background-color: #2d2e31;
+  color: var(--text-primary);
+}
+
+/* Campo de senha usando input-container padrão */
+
+.modal-toggle-password {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+  font-size: 1rem;
+  z-index: 2;
+}
+
+.modal-toggle-password:hover:not(:disabled) {
+  color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+.modal-toggle-password:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Ajuste para o input de senha ter espaço para o botão */
+.modal-input-container input[type='password'],
+.modal-input-container
+  input[type='text']:has(+ label + .modal-toggle-password) {
+  padding-right: 32px !important;
+}
+
+/* Área para campos específicos */
+.modal-specific-fields {
+  display: grid;
+}
+
+/* ========================================
+   FOOTER E BOTÕES DO MODAL
+   Usando padrão action-button do components.css
+   ======================================== */
+
+.modal-footer {
+  padding: var(--spacing-lg);
+  border-top: var(--border-width) solid var(--border-color);
+  background: var(--card-bg);
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: flex-end;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+  min-height: 70px; /* Altura mínima garantida */
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); /* Sombra para destacar */
+}
+
+/* Botões do modal usando padrão action-button */
+.modal-action-button {
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+  justify-content: center;
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modal-action-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Variante secundária - Fechar e Limpar Dados */
+.modal-action-button.secondary {
+  background: var(--card-background);
+  color: var(--text-secondary);
+  border: 2px solid var(--text-secondary);
+}
+
+.modal-action-button.secondary:hover:not(:disabled) {
+  background: var(--card-background);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-action-button.warning {
+  background: var(--card-background);
+  color: var(--text-secondary);
+  border: 2px solid var(--text-secondary);
+}
+
+.modal-action-button.warning:hover:not(:disabled) {
+  background: var(--card-background);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Variante primária - Criar Atividade */
+.modal-action-button.primary {
+  background-color: var(--primary-color-dark);
+  color: var(--text-button);
+  border: 2px solid var(--primary-color-dark);
+}
+
+.modal-action-button.primary:hover:not(:disabled) {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 121, 198, 0.4);
+}
+
+.modal-action-button.primary:active {
+  box-shadow: 0 0 15px rgba(255, 121, 198, 0.5);
+  filter: brightness(95%);
+}
+
+/* Spinner para loading */
+.modal-spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* Estilos removidos - botão de teste de autenticação foi removido */
+
+/* Estilos de configuração removidos - não mais necessários */
+
+/* Histórico de atividades */
+.modal-activities-history {
+  margin-top: 20px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
+}
+
+.activities-list {
+  max-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.1);
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) rgba(0, 0, 0, 0.1);
+}
+
+.activities-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.activities-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.activities-list::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 3px;
+}
+
+.activities-list::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color-dark);
+}
+
+.activities-list::-webkit-scrollbar-button {
+  display: none;
+}
+
+.activity-item {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: 1fr auto;
+  gap: 8px;
+  transition: background-color var(--transition-speed);
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-item:hover {
+  background: rgba(255, 121, 198, 0.1);
+}
+
+.activity-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-primary);
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+}
+
+.activity-type {
+  background: var(--primary-color);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.activity-link {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.activity-link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all var(--transition-speed);
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+}
+
+.activity-link-button:hover {
+  background: var(--accent-color);
+  transform: translateY(-1px);
+}
+
+.activity-date {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+}
+
+/* Classe warning duplicada removida - usando definição anterior */
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ========================================
+   INPUTS NUMÉRICOS UNIFICADOS
+   ======================================== */
+
+/* Estilo para campos de número - compatível com number-input */
+.modal-input-container input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+.modal-input-container input[type='number']::-webkit-outer-spin-button,
+.modal-input-container input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ========================================
+   SCROLL CUSTOMIZADO
+   ======================================== */
+
+/* Scroll customizado para o modal body */
+.modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: var(--card-bg);
+  border-radius: 3px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 3px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color-dark);
+}
+
+.modal-body::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* ========================================
+   RESPONSIVIDADE
+   ======================================== */
+
+@media (max-width: 640px) {
+  .modal-overlay {
+    padding: var(--spacing-sm);
+  }
+
+  .modal-container {
+    max-width: none;
+    width: 100%;
+    max-height: 90vh;
+    margin: 0;
+  }
+
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: var(--spacing-md);
+  }
+
+  .modal-body {
+    max-height: calc(90vh - 120px); /* Ajuste para mobile */
+  }
+
+  .modal-footer {
+    flex-direction: column;
+  }
+
+  .modal-action-button {
+    width: 100%;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
+
+/* ========================================
+   CLASSES ISOLADAS PARA O MODAL
+   Escopo: APENAS dentro do modal, sem afetar o sistema principal
+   ======================================== */
+
+/* APENAS PARA MODAL: Classes que o JSX está usando */
+.modal-container .field-group {
+  margin-bottom: 1rem;
+  position: relative;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.modal-container .field-group .input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  min-height: 32px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+  background: #2d2e31;
+  padding: 4px 8px;
+}
+
+.modal-container .field-group .input-container:hover {
+  border-color: var(--primary-color);
+}
+
+.modal-container .field-group .input-container:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(255, 121, 198, 0.1);
+}
+
+.modal-container .password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  min-height: 32px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+  background: #2d2e31;
+  padding: 4px 8px;
+}
+
+.modal-container .password-field:hover {
+  border-color: var(--primary-color);
+}
+
+.modal-container .password-field:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(255, 121, 198, 0.1);
+}
+
+.modal-container .toggle-password {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+  font-size: 1rem;
+}
+
+.modal-container .toggle-password:hover:not(:disabled) {
+  color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+.modal-container .toggle-password:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-container .specific-fields {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.modal-container .required {
+  color: var(--error-color);
+  margin-left: 0.25rem;
+}
+
+.modal-container .close-button {
+  background: none;
+  border: none;
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  border-radius: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-speed);
+}
+
+.modal-container .close-button:hover:not(:disabled) {
+  background-color: var(--hover-color);
+  color: var(--text-color);
+}
+
+.modal-container .close-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* APENAS PARA MODAL: Inputs e selects */
+.modal-container .field-group input,
+.modal-container .field-group select,
+.modal-container .password-field input {
+  flex: 1;
+  width: 100%;
+  min-height: 32px;
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 8px 12px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  transition:
+    background 0.2s,
+    color 0.2s;
+  font-size: 0.9rem;
+}
+
+.modal-container .field-group input::placeholder {
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.modal-container .field-group input:focus,
+.modal-container .field-group select:focus,
+.modal-container .password-field input:focus {
+  outline: none;
+  background: transparent;
+}
+
+.modal-container .field-group input:disabled,
+.modal-container .field-group select:disabled,
+.modal-container .password-field input:disabled {
+  background-color: var(--background-color);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.modal-container .field-group select {
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 12px;
+  padding-right: 32px;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+.modal-container .field-group select option {
+  padding: 8px;
+  background-color: #2d2e31;
+  color: var(--text-primary);
+}
+
+.modal-container .field-group label,
+.modal-container .password-field label {
+  position: absolute;
+  left: 8px;
+  top: -0.6em;
+  color: var(--text-secondary);
+  font-size: 14px;
+  padding: 0 4px;
+  z-index: 1;
+  display: inline-block;
+  height: 1.2em;
+  white-space: nowrap;
+  backdrop-filter: blur(4px);
+  font-weight: 500;
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+  background-color: #2d2e31;
+}
+
+.modal-container .password-field input {
+  border: none !important;
+  background: transparent !important;
+  padding: 8px 32px 8px 12px !important;
+}
+
+.modal-container .field-group input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+.modal-container .field-group input[type='number']::-webkit-outer-spin-button,
+.modal-container .field-group input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* APENAS PARA MODAL: Botões com classes antigas */
+.modal-container .btn {
+  padding: var(--input-padding);
+  border-radius: var(--border-radius);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 120px;
+  justify-content: center;
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+}
+
+.modal-container .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.modal-container .btn-secondary {
+  background-color: var(--background-color);
+  color: var(--text-primary);
+  border: var(--border-width) solid var(--border-color);
+}
+
+.modal-container .btn-secondary:hover:not(:disabled) {
+  background-color: var(--hover-color);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.modal-container .btn-primary {
+  background-color: var(--primary-color);
+  color: var(--text-button, white);
+  border: 1px solid var(--primary-color);
+}
+
+.modal-container .btn-primary:hover:not(:disabled) {
+  background-color: var(--primary-color-dark);
+  filter: brightness(110%);
+}
+
+.modal-container .btn-primary:active {
+  box-shadow: 0 0 15px rgba(120, 93, 200, 0.5);
+  filter: brightness(95%);
+}
+
+.modal-container .spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* ========================================
+   MODAL OVERLAY E SCROLL BLOCKING
+   ======================================== */
+
+/* Bloquear scroll da página quando modal está aberto */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* ========================================
+   COMPONENTE ACTIVITY HISTORY CARD
+   ======================================== */
+
+.activity-history-card {
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  margin-top: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.activity-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+  background: var(--card-bg);
+}
+
+.activity-history-toggle {
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: color var(--transition-speed);
+  padding: 0;
+}
+
+.activity-history-toggle:hover {
+  color: var(--primary-color);
+}
+
+.activity-history-toggle h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: inherit;
+}
+
+.clear-history-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: var(--spacing-xs);
+  border-radius: var(--spacing-xs);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-speed);
+  font-size: var(--font-size-sm);
+}
+
+.clear-history-btn:hover {
+  background: none;
+  color: var(--error-color);
+  border: none;
+}
+
+.activity-history-list {
+  max-height: 200px;
+  overflow-y: auto;
+  /* Aplicando o mesmo estilo de scroll do modal-body */
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) var(--card-bg);
+}
+
+.activity-history-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.activity-history-list::-webkit-scrollbar-track {
+  background: var(--card-bg);
+  border-radius: 3px;
+}
+
+.activity-history-list::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 3px;
+}
+
+.activity-history-list::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color-dark);
+}
+
+.activity-history-list::-webkit-scrollbar-button {
+  display: none;
+}
+
+.activity-history-item {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  transition: background-color var(--transition-speed);
+}
+
+.activity-history-item:last-child {
+  border-bottom: none;
+}
+
+.activity-history-item:hover {
+  background: var(--hover-color);
+}
+
+.activity-item-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.activity-id-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.activity-id {
+  font-weight: 600;
+  color: var(--primary-color);
+  font-size: var(--font-size-sm);
+}
+
+.activity-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  padding: 2px;
+  border-radius: var(--spacing-xs);
+  transition: all var(--transition-speed);
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+}
+
+.activity-link:hover {
+  background: var(--hover-color);
+  color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+.activity-date {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.activity-title {
+  font-size: 13px;
+  color: var(--text-color);
+  line-height: 1.3;
+  word-break: break-word;
+  margin: 0;
+  flex: 1;
+}
+
+/* Nova estrutura para linha do título com badge */
+.activity-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  width: 100%;
+  margin-top: 4px;
+}
+
+/* Estilo da badge do tipo de atividade */
+.activity-type-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-transform: capitalize;
+  letter-spacing: 0.3px;
+}

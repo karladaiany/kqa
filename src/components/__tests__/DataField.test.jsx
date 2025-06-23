@@ -4,7 +4,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '../../test/test-utils';
-import DataField from '../DataField';
+import DataField from '../ui/DataField';
 
 describe('DataField', () => {
   const defaultProps = {

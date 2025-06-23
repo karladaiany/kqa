@@ -8,9 +8,11 @@ import {
   FaCopy,
   FaBroom,
   FaEye,
+  FaRocket,
 } from 'react-icons/fa';
-import { useBugRegistration } from '../../hooks/useBugRegistration';
-import useTextareaResizeActions from '../../hooks/useTextareaResizeActions';
+import { useBugRegistration } from '../../../hooks/useBugRegistration';
+import useTextareaResizeActions from '../../../hooks/useTextareaResizeActions';
+import ArtiaActivityModal from '../../modals/ArtiaActivityModal/ArtiaActivityModal';
 
 const hasAnyData = bugData => {
   return Object.keys(bugData).some(key => {
@@ -34,6 +36,9 @@ const BugRegistrationCard = () => {
 
   // Estado para controlar expansão dos campos
   const [expanded, setExpanded] = useState(false);
+
+  // Estado para controlar o modal do Artia
+  const [showArtiaModal, setShowArtiaModal] = useState(false);
 
   // Sempre que limpar tudo, fecha os campos e limpa os tamanhos dos textareas
   const handleClearAll = () => {
@@ -289,12 +294,30 @@ const BugRegistrationCard = () => {
             >
               <FaCopy /> Copiar
             </button>
+            <button
+              className='generate-all-btn'
+              onClick={() => setShowArtiaModal(true)}
+              title='Criar atividade no Artia'
+            >
+              <FaRocket /> Criar atividade
+            </button>
             <button className='generate-all-btn' onClick={handleClearAll}>
               <FaBroom /> Limpar tudo
             </button>
           </div>
         </div>
       )}
+
+      <ArtiaActivityModal
+        isOpen={showArtiaModal}
+        onClose={() => setShowArtiaModal(false)}
+        activityType='bug'
+        initialData={{
+          titulo: bugData.incident
+            ? `BUG: ${bugData.incident.substring(0, 50)}${bugData.incident.length > 50 ? '...' : ''}`
+            : '',
+        }}
+      />
     </section>
   );
 };

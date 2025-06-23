@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
-import { DataGenerator } from './components/DataGenerator';
 import {
   FaSun,
   FaMoon,
@@ -10,21 +9,26 @@ import {
   FaDice,
   FaStickyNote,
 } from 'react-icons/fa';
-import ScrollButtons from './components/ScrollButtons';
-import MobileHeader from './components/MobileHeader';
-import TestStatusCard from './components/TestStatus/TestStatusCard';
-import BugRegistrationCard from './components/BugRegistration/BugRegistrationCard';
-import DeployCard from './components/Deploy/DeployCard';
+
+// Importações organizadas por categoria
+import { DataGenerator } from './components/ui';
+import {
+  Footer,
+  MobileHeader,
+  SidebarMenu,
+  ScrollButtons,
+} from './components/layout';
+import {
+  BugRegistrationCard,
+  DeployCard,
+  TestStatusCard,
+} from './components/cards';
 import AnnotationsCard from './components/Annotations/AnnotationsCard';
-import Footer from './components/Footer';
+
+// Estilos
 import 'react-toastify/dist/ReactToastify.css';
-import './styles/theme.css';
-import './styles/components.css';
-import './styles/annotations.css';
-import './styles/quick-notes-badges.css';
-import './styles.css';
+import './styles/index.css';
 import './App.css';
-import SidebarMenu from './components/SidebarMenu';
 
 // Importações das constantes centralizadas
 import { CONFIG_TOAST } from './constants';
@@ -34,6 +38,8 @@ import {
   inicializarTema,
   alternarTema,
 } from './config/theme';
+
+// Utilitários de debug removidos - código limpo para produção
 
 const App = () => {
   const [darkMode, setDarkMode] = useState(() => inicializarTema());

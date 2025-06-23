@@ -4,8 +4,8 @@ import { FaCopy, FaSync, FaMask, FaTimes } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
 // Importações das constantes centralizadas
-import { MENSAGENS } from '../constants';
-import { CONFIG_ACESSIBILIDADE } from '../config/theme';
+import { MENSAGENS } from '../../constants';
+import { CONFIG_ACESSIBILIDADE } from '../../config/theme';
 
 const DataField = ({
   label,
