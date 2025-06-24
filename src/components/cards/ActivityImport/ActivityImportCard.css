@@ -777,3 +777,88 @@
     flex-direction: column;
   }
 }
+
+/* Template info section */
+.template-info {
+  margin-bottom: 1.5rem;
+}
+
+.info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--info-bg, #e7f3ff);
+  border: 1px solid var(--info-border, #b3d9ff);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.info-icon {
+  color: var(--info-color, #0066cc);
+  font-size: 1.25rem;
+  margin-top: 0.25rem;
+  flex-shrink: 0;
+}
+
+.info-content {
+  flex: 1;
+}
+
+.info-content h5 {
+  margin: 0 0 0.75rem 0;
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
+.field-indicators {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.indicator.required strong {
+  color: var(--error-color, #dc3545);
+}
+
+.indicator.conditional strong {
+  color: var(--warning-color, #fd7e14);
+}
+
+.indicator.optional strong {
+  color: var(--text-muted);
+}
+
+.info-content small {
+  display: block;
+  color: var(--text-muted);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* Dark mode para info card */
+[data-theme='dark'] .info-card {
+  --info-bg: #1a2332;
+  --info-border: #2d3748;
+  --info-color: #63b3ed;
+}
+
+/* Responsive para info card */
+@media (max-width: 768px) {
+  .info-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .field-indicators {
+    align-items: center;
+  }
+}

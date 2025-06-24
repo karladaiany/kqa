@@ -261,8 +261,63 @@ const isValidDate = dateString => {
 export const generateCSVTemplate = (
   selectedTypes = Object.values(ACTIVITY_TYPES)
 ) => {
-  // Header do CSV
-  const header = CSV_HEADERS.join(',');
+  // Importar REQUIRED_FIELDS_BY_TYPE aqui para evitar circular dependency
+  const { REQUIRED_FIELDS_BY_TYPE } = require('../constants/artiaFieldHashes');
+
+  // Header do CSV com indicadores de campos obrigatórios
+  const headerWithRequiredIndicators = CSV_HEADERS.map(field => {
+    // Mapear header para field interno
+    const fieldMapping = {
+      tipo: 'TIPO',
+      titulo: 'TITULO',
+      ticketMovidesk: 'TICKET_MOVIDESK',
+      urgencia: 'URGENCIA',
+      plataforma: 'PLATAFORMA',
+      funcionalidade: 'FUNCIONALIDADE',
+      subFuncionalidade: 'SUB_FUNCIONALIDADE',
+      cliente: 'CLIENTE',
+      idOrganizacao: 'ID_ORGANIZACAO',
+      email: 'EMAIL',
+      tipoCliente: 'TIPO_CLIENTE',
+      criticidade: 'CRITICIDADE',
+      dificuldadeLocalizacao: 'DIFICULDADE_LOCALIZACAO',
+      causaDemanda: 'CAUSA_DEMANDA',
+      garantia: 'GARANTIA',
+    };
+
+    const fieldKey = fieldMapping[CSV_TO_JS_MAPPING[field]];
+
+    // Verificar se é obrigatório para algum dos tipos selecionados
+    const isRequiredForAnyType = selectedTypes.some(type => {
+      const requiredFields = REQUIRED_FIELDS_BY_TYPE[type] || [];
+      return requiredFields.includes(fieldKey);
+    });
+
+    // Campos sempre obrigatórios
+    const alwaysRequired = ['tipo', 'titulo'];
+    const isAlwaysRequired = alwaysRequired.includes(CSV_TO_JS_MAPPING[field]);
+
+    if (isAlwaysRequired) {
+      return `${field} (*)`;
+    } else if (isRequiredForAnyType) {
+      return `${field} (**)`;
+    } else {
+      return field;
+    }
+  });
+
+  const header = headerWithRequiredIndicators.join(',');
+
+  // Linha de explicação dos indicadores
+  const legend =
+    '"LEGENDA: (*) = SEMPRE OBRIGATÓRIO | (**) = OBRIGATÓRIO PARA ALGUNS TIPOS | sem indicador = OPCIONAL"' +
+    ',' +
+    Array(CSV_HEADERS.length - 1)
+      .fill('')
+      .join(',');
+
+  // Linha em branco para separação
+  const separator = Array(CSV_HEADERS.length).fill('').join(',');
 
   // Exemplos para cada tipo selecionado
   const examples = selectedTypes.map((type, index) => {
@@ -277,7 +332,47 @@ export const generateCSVTemplate = (
     }).join(',');
   });
 
-  return [header, ...examples].join('\n');
+  // Adicionar comentário explicativo sobre cada tipo
+  const typeComments = selectedTypes.map(type => {
+    const requiredFields = REQUIRED_FIELDS_BY_TYPE[type] || [];
+    const fieldMapping = {
+      TICKET_MOVIDESK: 'ticketMovidesk',
+      URGENCIA: 'urgencia',
+      PLATAFORMA: 'plataforma',
+      FUNCIONALIDADE: 'funcionalidade',
+      SUB_FUNCIONALIDADE: 'subFuncionalidade',
+      CLIENTE: 'cliente',
+      ID_ORGANIZACAO: 'idOrganizacao',
+      EMAIL: 'email',
+      TIPO_CLIENTE: 'tipoCliente',
+      CRITICIDADE: 'criticidade',
+      DIFICULDADE_LOCALIZACAO: 'dificuldadeLocalizacao',
+      CAUSA_DEMANDA: 'causaDemanda',
+      GARANTIA: 'garantia',
+    };
+
+    const requiredFieldNames = requiredFields
+      .map(field => fieldMapping[field])
+      .filter(Boolean);
+    const allRequired = ['tipo', 'titulo', ...requiredFieldNames];
+
+    return (
+      `"TIPO: ${type} | CAMPOS OBRIGATÓRIOS: ${allRequired.join(', ')}"` +
+      ',' +
+      Array(CSV_HEADERS.length - 1)
+        .fill('')
+        .join(',')
+    );
+  });
+
+  return [
+    header,
+    legend,
+    separator,
+    ...typeComments,
+    separator,
+    ...examples,
+  ].join('\n');
 };
 
 /**
