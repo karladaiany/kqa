@@ -46,10 +46,7 @@ const FORMATTING_CONSTANTS = {
 
 // Configuração do Apollo Client para o Artia
 const httpLink = createHttpLink({
-  uri:
-    process.env.NODE_ENV === 'development'
-      ? '/api/artia/graphql' // URL do proxy em desenvolvimento
-      : 'https://app.artia.com/graphql', // URL real da API GraphQL do Artia em produção
+  uri: '/api/artia/graphql', // URL do proxy tanto em desenvolvimento quanto em produção
 });
 
 // Link de autenticação
