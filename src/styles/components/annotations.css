@@ -1410,6 +1410,11 @@ body.dark-theme .color-option.selected::after {
   margin-bottom: 1rem;
 }
 
+/* Adicionar espaçamento no topo da primeira sub-seção */
+.annotations-subsection:first-child {
+  margin-top: 1rem;
+}
+
 .subsection-header {
   padding: 0.75rem 1rem;
   background: var(--card-bg);

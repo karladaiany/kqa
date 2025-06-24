@@ -2516,7 +2516,69 @@ input-clearable .number-input {
   transform: translateY(-2px);
 }
 
-/* Tema escuro para badges */
+/* Tema escuro para badges - mantendo cores específicas */
+body.dark-theme .quick-notes-badge[data-type='feature-flag'] {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: #667eea;
+}
+
+body.dark-theme .quick-notes-badge[data-type='feature-flag']:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  transform: translateY(-2px);
+}
+
+body.dark-theme .quick-notes-badge[data-type='api-v1'],
+body.dark-theme .quick-notes-badge[data-type='api-v2'] {
+  background: linear-gradient(135deg, #ff9500 0%, #ff6b00 100%);
+  color: white;
+  border-color: #ff9500;
+}
+
+body.dark-theme .quick-notes-badge[data-type='api-v1']:hover,
+body.dark-theme .quick-notes-badge[data-type='api-v2']:hover {
+  background: linear-gradient(135deg, #e68500 0%, #e65f00 100%);
+  transform: translateY(-2px);
+}
+
+body.dark-theme .quick-notes-badge[data-type='storage-produto'],
+body.dark-theme .quick-notes-badge[data-type='discoverys'],
+body.dark-theme .quick-notes-badge[data-type='documentacoes'] {
+  background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%);
+  color: white;
+  border-color: #0078d4;
+}
+
+body.dark-theme .quick-notes-badge[data-type='storage-produto']:hover,
+body.dark-theme .quick-notes-badge[data-type='discoverys']:hover,
+body.dark-theme .quick-notes-badge[data-type='documentacoes']:hover {
+  background: linear-gradient(135deg, #106ebe 0%, #005a9e 100%);
+  transform: translateY(-2px);
+}
+
+body.dark-theme .quick-notes-badge[data-type='style-guide'] {
+  background: linear-gradient(135deg, #1abcfe 0%, #0d8bf2 100%);
+  color: white;
+  border-color: #1abcfe;
+}
+
+body.dark-theme .quick-notes-badge[data-type='style-guide']:hover {
+  background: linear-gradient(135deg, #0d8bf2 0%, #0973d4 100%);
+  transform: translateY(-2px);
+}
+
+body.dark-theme .quick-notes-badge[data-type='testlink'] {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  border-color: #28a745;
+}
+
+body.dark-theme .quick-notes-badge[data-type='testlink']:hover {
+  background: linear-gradient(135deg, #218838 0%, #1c9b7d 100%);
+  transform: translateY(-2px);
+}
+
+/* Fallback para badges sem tipo específico no tema escuro */
 body.dark-theme .quick-notes-badge {
   background: var(--card-bg);
   border-color: var(--border-color);
