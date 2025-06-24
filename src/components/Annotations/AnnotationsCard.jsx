@@ -5,6 +5,7 @@ import React, {
   createContext,
   useContext,
 } from 'react';
+import logger from '../../utils/logger.js';
 import PropTypes from 'prop-types';
 import {
   FaStickyNote,
@@ -78,7 +79,7 @@ const AnnotationsCard = () => {
   const { bugData } = useBugRegistration();
 
   // Debug: monitorar mudanças no envId
-  console.log('AnnotationsCard render - bugData.envId:', bugData?.envId);
+  logger.debug('AnnotationsCard render - bugData.envId:', bugData?.envId);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [activeEditor, setActiveEditor] = useState(null);
@@ -410,15 +411,15 @@ const AnnotationsCard = () => {
                     ? `Organization;${envId}`
                     : 'Organization;';
 
-                  console.log('Feature Flag Badge clicada!');
-                  console.log('bugData.envId (hook):', bugData?.envId);
-                  console.log('envId (final):', envId);
-                  console.log('hasValidEnvId:', hasValidEnvId);
-                  console.log('Texto copiado:', featureFlagText);
+                  logger.debug('Feature Flag Badge clicada!');
+                  logger.debug('bugData.envId (hook):', bugData?.envId);
+                  logger.debug('envId (final):', envId);
+                  logger.debug('hasValidEnvId:', hasValidEnvId);
+                  logger.debug('Texto copiado:', featureFlagText);
 
                   try {
                     await navigator.clipboard.writeText(featureFlagText);
-                    console.log('Texto copiado com sucesso!');
+                    logger.debug('Texto copiado com sucesso!');
                   } catch (err) {
                     console.error('Erro ao copiar:', err);
                   }

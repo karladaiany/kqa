@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import logger from '../../utils/logger.js';
 import { Rnd } from 'react-rnd';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -73,7 +74,7 @@ export const MiniCard = ({ note, onUpdate, onDelete }) => {
       const { from, to } = editorInstance.state.selection;
       const hasSelection = from !== to;
 
-      console.log('🎯 Selection change:', { hasSelection, isEditing });
+      logger.debug('🎯 Selection change:', { hasSelection, isEditing });
     },
     [isEditing, editor]
   );
@@ -125,7 +126,7 @@ export const MiniCard = ({ note, onUpdate, onDelete }) => {
           await navigator.clipboard.writeText(textContent);
 
           // Feedback visual opcional - pode ser implementado como toast depois
-          console.log('📋 Conteúdo copiado para área de transferência');
+          logger.debug('📋 Conteúdo copiado para área de transferência');
 
           // Criar feedback visual temporário
           const button = event.currentTarget;
@@ -156,7 +157,7 @@ export const MiniCard = ({ note, onUpdate, onDelete }) => {
           document.execCommand('copy');
           document.body.removeChild(textArea);
 
-          console.log('📋 Conteúdo copiado usando fallback');
+          logger.debug('📋 Conteúdo copiado usando fallback');
         } catch (fallbackError) {
           console.error('❌ Erro no fallback de cópia:', fallbackError);
         }
@@ -176,13 +177,13 @@ export const MiniCard = ({ note, onUpdate, onDelete }) => {
       // Verificar se o clique foi na toolbar flutuante
       const clickedElement = event.relatedTarget;
       if (clickedElement && clickedElement.closest('.floating-toolbar')) {
-        console.log('🎯 Clique na toolbar detectado, mantendo foco');
+        logger.debug('🎯 Clique na toolbar detectado, mantendo foco');
         return; // Não fazer blur se clicou na toolbar
       }
 
       // Delay para permitir cliques na toolbar
       setTimeout(() => {
-        console.log('🎯 Blur timeout executado');
+        logger.debug('🎯 Blur timeout executado');
         setIsEditing(false);
         saveImmediately();
       }, 200);
@@ -214,7 +215,7 @@ export const MiniCard = ({ note, onUpdate, onDelete }) => {
         const reader = new FileReader();
         reader.onload = e => {
           const url = e.target?.result;
-          console.log(
+          logger.debug(
             '📸 Imagem convertida para base64:',
             typeof url,
             url?.toString().substring(0, 100) + '...'
@@ -237,7 +238,7 @@ export const MiniCard = ({ note, onUpdate, onDelete }) => {
             // Forçar atualização do conteúdo
             setTimeout(() => {
               const currentContent = editor.getHTML();
-              console.log(
+              logger.debug(
                 '📝 Conteúdo atual do editor:',
                 currentContent.substring(0, 200) + '...'
               );
@@ -253,7 +254,7 @@ export const MiniCard = ({ note, onUpdate, onDelete }) => {
                   lastModified: new Date().toISOString(),
                 };
                 onUpdate(updates);
-                console.log('💾 Salvamento forçado após inserção de imagem');
+                logger.debug('💾 Salvamento forçado após inserção de imagem');
               }
             }, 100);
           }

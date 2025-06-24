@@ -2,6 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App'; // Importa o App.jsx
 import { cleanupSecurityData } from './utils/security';
+import logger from './utils/logger.js';
 
 // Tratamento global de erros
 window.addEventListener('error', event => {
@@ -32,7 +33,7 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
     navigator.serviceWorker
       .register('/sw.js')
       .then(registration => {
-        console.log('[Main] SW registered successfully:', registration.scope);
+        logger.log('[Main] SW registered successfully:', registration.scope);
         cleanupSecurityData();
       })
       .catch(error => {
@@ -66,7 +67,7 @@ function initializeApp() {
         <App />
       </React.StrictMode>
     );
-    console.log('[KQA] App rendered successfully');
+    logger.log('[KQA] App rendered successfully');
   } catch (error) {
     console.error('[KQA] Failed to render app:', error);
     // Fallback simples se React falhar
