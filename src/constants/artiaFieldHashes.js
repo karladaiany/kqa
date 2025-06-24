@@ -26,6 +26,13 @@ export const ARTIA_FIELD_HASHES = {
  * Campos obrigatórios por tipo de atividade
  */
 export const REQUIRED_FIELDS_BY_TYPE = {
+  Desenvolvimento: ['FUNCIONALIDADE', 'SUB_FUNCIONALIDADE'],
+  'Execução de testes': ['FUNCIONALIDADE', 'SUB_FUNCIONALIDADE'],
+  'Teste de mesa': [
+    // Nenhum campo customizado obrigatório
+  ],
+  'Automação de testes': ['FUNCIONALIDADE', 'SUB_FUNCIONALIDADE'],
+  'Análise de testes': ['FUNCIONALIDADE', 'SUB_FUNCIONALIDADE'],
   'Bug produção': [
     'TICKET_MOVIDESK',
     'URGENCIA',
@@ -46,11 +53,13 @@ export const REQUIRED_FIELDS_BY_TYPE = {
     'FUNCIONALIDADE',
     'SUB_FUNCIONALIDADE',
     'CRITICIDADE',
-    'DIFICULDADE_LOCALIZACAO',
     'CAUSA_DEMANDA',
   ],
   Deploy: [
     // Deploy não tem campos customizados obrigatórios
+  ],
+  Documentação: [
+    // Documentação não tem campos customizados obrigatórios
   ],
 };
 
@@ -80,10 +89,17 @@ export const FORM_FIELD_TO_HASH = {
  * Valores padrão para campos obrigatórios da API
  */
 export const DEFAULT_ARTIA_VALUES = {
-  // IDs configurados para o ambiente atual
+  // IDs configurados para o ambiente atual - TODOS OS TIPOS
+  FOLDER_TYPE_ID_DESENVOLVIMENTO: 546649, // Desenvolvimento
+  FOLDER_TYPE_ID_EXECUCAO_TESTES: 546650, // Execução de testes
+  FOLDER_TYPE_ID_TESTE_MESA: 578464, // Teste de mesa
+  FOLDER_TYPE_ID_AUTOMACAO_TESTES: 546652, // Automação de testes
+  FOLDER_TYPE_ID_ANALISE_TESTES: 546651, // Análise de testes
   FOLDER_TYPE_ID_BUG_PRODUCAO: 546654, // Bug Produção
   FOLDER_TYPE_ID_BUG_RETRABALHO: 546653, // Bug Retrabalho
   FOLDER_TYPE_ID_DEPLOY: 546658, // Deploy
+  FOLDER_TYPE_ID_DOCUMENTACAO: 546655, // Documentação
+
   PRIORITY: 1,
   ESTIMATED_EFFORT: 1,
   ORGANIZATION_ID: 136701, // OrganizationId fixo
@@ -97,7 +113,13 @@ export const DEFAULT_ARTIA_VALUES = {
  * Mapeia tipos de atividade para folder type IDs
  */
 export const ACTIVITY_TYPE_TO_FOLDER_TYPE_ID = {
+  Desenvolvimento: DEFAULT_ARTIA_VALUES.FOLDER_TYPE_ID_DESENVOLVIMENTO,
+  'Execução de testes': DEFAULT_ARTIA_VALUES.FOLDER_TYPE_ID_EXECUCAO_TESTES,
+  'Teste de mesa': DEFAULT_ARTIA_VALUES.FOLDER_TYPE_ID_TESTE_MESA,
+  'Automação de testes': DEFAULT_ARTIA_VALUES.FOLDER_TYPE_ID_AUTOMACAO_TESTES,
+  'Análise de testes': DEFAULT_ARTIA_VALUES.FOLDER_TYPE_ID_ANALISE_TESTES,
   'Bug produção': DEFAULT_ARTIA_VALUES.FOLDER_TYPE_ID_BUG_PRODUCAO,
   'Bug retrabalho': DEFAULT_ARTIA_VALUES.FOLDER_TYPE_ID_BUG_RETRABALHO,
   Deploy: DEFAULT_ARTIA_VALUES.FOLDER_TYPE_ID_DEPLOY,
+  Documentação: DEFAULT_ARTIA_VALUES.FOLDER_TYPE_ID_DOCUMENTACAO,
 };

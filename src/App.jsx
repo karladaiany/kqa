@@ -22,6 +22,7 @@ import {
   BugRegistrationCard,
   DeployCard,
   TestStatusCard,
+  ActivityImportCard,
 } from './components/cards';
 import AnnotationsCard from './components/Annotations/AnnotationsCard';
 
@@ -135,6 +136,9 @@ const App = () => {
           <FaClipboardList className='section-icon' /> Registros de dados
         </h2>
         <main>
+          {/* Card de Importação de Atividades */}
+          <ActivityImportCard />
+
           {/* Dividir os cards de BUG e Comentário QA em duas colunas para melhor visualização
               BugRegistrationCard à esquerda e TestStatusCard à direita */}
           <div className='row'>

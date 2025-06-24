@@ -4,3 +4,4 @@ export { default as DeployCard } from './Deploy/DeployCard';
 export { default as FileGeneratorCard } from './FileGenerator/FileGeneratorCard';
 export { default as ComplementaryDataCard } from './ComplementaryData/ComplementaryDataCard';
 export { default as TestStatusCard } from './TestStatus/TestStatusCard';
+export { default as ActivityImportCard } from './ActivityImport/ActivityImportCard';
