@@ -114,9 +114,11 @@ export const useAnnotations = () => {
             },
           ];
           localStorage.setItem(STORAGE_KEY, JSON.stringify(testData));
-          console.log(
-            '✅ Dados de teste salvos SEM criptografia! Recarregue a página.'
-          );
+          if (DEBUG_MODE) {
+            console.log(
+              '✅ Dados de teste salvos SEM criptografia! Recarregue a página.'
+            );
+          }
         },
         getCurrentNotes: () => {
           // Debug: anotações carregadas
