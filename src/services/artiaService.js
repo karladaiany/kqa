@@ -9,6 +9,8 @@ import {
   FORM_FIELD_TO_HASH,
   DEFAULT_ARTIA_VALUES,
   ACTIVITY_TYPE_TO_FOLDER_TYPE_ID,
+  REQUIRED_FIELDS_BY_TYPE,
+  ARTIA_FIELD_HASHES,
 } from '../constants/artiaFieldHashes';
 
 // Constantes para formatação HTML das atividades do Artia
@@ -700,6 +702,9 @@ Evidência pendente de anexo
 
   /**
    * Prepara as variáveis da atividade para o formato esperado pela API GraphQL
+   * Implementa validação inteligente de campos obrigatórios vs opcionais:
+   * - Campos obrigatórios: sempre enviados, valor padrão "." se vazio
+   * - Campos opcionais: apenas enviados se têm valor real
    * @param {Object} formData - Dados do formulário
    * @param {string} generatedDescription - Descrição gerada pela função de copiar
    * @returns {Object} Variáveis formatadas para a mutation
@@ -759,26 +764,81 @@ Evidência pendente de anexo
       'tipoCliente',
     ];
 
+    // Verificar tipo da atividade para campos obrigatórios
+    const activityType = activityData.tipo;
+    const requiredFields = REQUIRED_FIELDS_BY_TYPE[activityType] || [];
+
     // Iterar sobre os campos customizados definidos
     customFieldNames.forEach(fieldName => {
       const value = activityData[fieldName];
       const hashField = FORM_FIELD_TO_HASH[fieldName];
 
-      // Validação simples inline
+      // Validação com consideração de campos obrigatórios
       const hasValidHash = hashField && hashField !== '';
-      const hasValidValue =
-        value && String(value).trim() !== '' && String(value).trim() !== '.';
 
-      if (hasValidHash && hasValidValue) {
+      if (!hasValidHash) return; // Pular se não tem hash válido
+
+      // Determinar se o campo é obrigatório para este tipo de atividade
+      const fieldConstantName = Object.keys(ARTIA_FIELD_HASHES).find(
+        key => ARTIA_FIELD_HASHES[key] === hashField
+      );
+      const isRequired = requiredFields.includes(fieldConstantName);
+
+      // Lógica de validação baseada em obrigatoriedade
+      let shouldInclude = false;
+      let finalValue = '';
+
+      if (isRequired) {
+        // Campo obrigatório: sempre incluir, usar valor padrão se vazio
+        finalValue =
+          value && String(value).trim() !== '' ? String(value).trim() : '.'; // Valor padrão para campos obrigatórios
+        shouldInclude = true;
+      } else {
+        // Campo opcional: incluir apenas se tem valor real
+        if (
+          value &&
+          String(value).trim() !== '' &&
+          String(value).trim() !== '.'
+        ) {
+          finalValue = String(value).trim();
+          shouldInclude = true;
+        }
+      }
+
+      if (shouldInclude) {
         customFields.push({
           hashField,
-          value: String(value).trim(),
+          value: finalValue,
         });
       }
     });
 
     // Definir campos customizados finais
     variables.customField = customFields;
+
+    // Log para debug apenas em desenvolvimento local
+    if (
+      typeof window !== 'undefined' &&
+      window.location.hostname === 'localhost'
+    ) {
+      console.log('🔍 Artia Debug - Campos sendo enviados:');
+      console.log('📋 Tipo de atividade:', activityType);
+      console.log('✅ Campos obrigatórios:', requiredFields);
+      console.log(
+        '📤 Custom fields preparados:',
+        customFields.map(f => ({
+          field: Object.keys(ARTIA_FIELD_HASHES).find(
+            k => ARTIA_FIELD_HASHES[k] === f.hashField
+          ),
+          value: f.value,
+          isRequired: requiredFields.includes(
+            Object.keys(ARTIA_FIELD_HASHES).find(
+              k => ARTIA_FIELD_HASHES[k] === f.hashField
+            )
+          ),
+        }))
+      );
+    }
 
     return variables;
   }
