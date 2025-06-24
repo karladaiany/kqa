@@ -67,6 +67,7 @@ const ActivityImportCard = () => {
   // Estados locais do componente
   const [showHistory, setShowHistory] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [showInfoModal, setShowInfoModal] = useState(false);
   const [credentials, setCredentials] = useState({
     email: '',
     password: '',
@@ -78,6 +79,33 @@ const ActivityImportCard = () => {
   );
 
   const fileInputRef = useRef(null);
+
+  /**
+   * Toggle de tipo de atividade
+   */
+  const toggleActivityType = useCallback(type => {
+    setSelectedTypes(prev => {
+      if (prev.includes(type)) {
+        return prev.filter(t => t !== type);
+      } else {
+        return [...prev, type];
+      }
+    });
+  }, []);
+
+  /**
+   * Fechar modal com ESC
+   */
+  React.useEffect(() => {
+    const handleKeyDown = event => {
+      if (event.key === 'Escape' && showInfoModal) {
+        setShowInfoModal(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [showInfoModal]);
 
   /**
    * Manipular drop de arquivo
@@ -664,6 +692,176 @@ const ActivityImportCard = () => {
     </div>
   );
 
+  /**
+   * Renderizar modal informativo
+   */
+  const renderInfoModal = () => {
+    if (!showInfoModal) return null;
+
+    return (
+      <div
+        className='info-modal-overlay'
+        onClick={() => setShowInfoModal(false)}
+      >
+        <div className='info-modal' onClick={e => e.stopPropagation()}>
+          <div className='info-modal-header'>
+            <h3>📋 Guia Completo de Importação</h3>
+            <button
+              className='close-modal-btn'
+              onClick={() => setShowInfoModal(false)}
+            >
+              <FaTimes />
+            </button>
+          </div>
+
+          <div className='info-modal-content'>
+            {/* Seção 1: Campos Obrigatórios */}
+            <div className='info-section'>
+              <h4>🎯 Como identificar campos obrigatórios</h4>
+              <div className='field-indicators'>
+                <div className='indicator required'>
+                  <strong>(*)</strong> = Sempre obrigatório
+                </div>
+                <div className='indicator conditional'>
+                  <strong>(**)</strong> = Obrigatório para alguns tipos
+                </div>
+                <div className='indicator optional'>
+                  <strong>sem indicador</strong> = Opcional
+                </div>
+              </div>
+            </div>
+
+            {/* Seção 2: Tutorial Excel */}
+            <div className='info-section'>
+              <h4>📊 Como usar no Excel (RECOMENDADO)</h4>
+              <div className='excel-steps'>
+                <div className='step'>
+                  <div className='step-number'>1</div>
+                  <div className='step-content'>
+                    <strong>Abra o Excel</strong>
+                    <p>Crie uma nova planilha em branco</p>
+                  </div>
+                </div>
+
+                <div className='step'>
+                  <div className='step-number'>2</div>
+                  <div className='step-content'>
+                    <strong>Importe o CSV</strong>
+                    <p>
+                      <code>
+                        Dados → Obter Dados → De Arquivo → Do Texto/CSV
+                      </code>
+                    </p>
+                  </div>
+                </div>
+
+                <div className='step'>
+                  <div className='step-number'>3</div>
+                  <div className='step-content'>
+                    <strong>Configure a importação</strong>
+                    <div className='config-list'>
+                      <p>
+                        • <strong>Delimiter:</strong> Vírgula
+                      </p>
+                      <p>
+                        • <strong>Codificação:</strong> UTF-8
+                      </p>
+                      <p>
+                        • Clique em <strong>"Carregar"</strong>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className='step'>
+                  <div className='step-number'>4</div>
+                  <div className='step-content'>
+                    <strong>Limpe o arquivo</strong>
+                    <p>
+                      <span className='warning'>
+                        ⚠️ DELETE as linhas explicativas
+                      </span>{' '}
+                      (linhas com "LEGENDA" e "TIPO:")
+                    </p>
+                  </div>
+                </div>
+
+                <div className='step'>
+                  <div className='step-number'>5</div>
+                  <div className='step-content'>
+                    <strong>Preencha seus dados</strong>
+                    <p>
+                      Use os exemplos como base e preencha os campos{' '}
+                      <strong>obrigatórios</strong>
+                    </p>
+                  </div>
+                </div>
+
+                <div className='step'>
+                  <div className='step-number'>6</div>
+                  <div className='step-content'>
+                    <strong>Salve como CSV</strong>
+                    <p>
+                      <code>
+                        Arquivo → Salvar Como → CSV (delimitado por vírgula)
+                      </code>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Seção 3: Tipos de Atividade */}
+            <div className='info-section'>
+              <h4>📑 Campos obrigatórios por tipo</h4>
+              <div className='activity-types-info'>
+                <div className='type-info'>
+                  <strong>Bug Produção</strong>{' '}
+                  <span className='field-count'>15 campos</span>
+                  <p>Todos os campos + ticket, cliente, organização...</p>
+                </div>
+                <div className='type-info'>
+                  <strong>Bug Retrabalho</strong>{' '}
+                  <span className='field-count'>7 campos</span>
+                  <p>Tipo, título, plataforma, funcionalidade...</p>
+                </div>
+                <div className='type-info'>
+                  <strong>Desenvolvimento/Testes</strong>{' '}
+                  <span className='field-count'>4 campos</span>
+                  <p>Tipo, título, funcionalidade, sub-funcionalidade</p>
+                </div>
+                <div className='type-info'>
+                  <strong>Deploy/Documentação</strong>{' '}
+                  <span className='field-count'>2 campos</span>
+                  <p>Apenas tipo e título</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Seção 4: Dicas */}
+            <div className='info-section'>
+              <h4>💡 Dicas importantes</h4>
+              <div className='tips-list'>
+                <div className='tip'>
+                  <strong>✅ Use valores exatos</strong>
+                  <p>Urgência: "Baixo", "Médio", "Alto", "Crítico"</p>
+                </div>
+                <div className='tip'>
+                  <strong>⚠️ Delete comentários</strong>
+                  <p>Remova linhas explicativas antes de importar</p>
+                </div>
+                <div className='tip'>
+                  <strong>🔍 Valide na preview</strong>
+                  <p>Sistema mostra erros antes da importação</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className='card activity-import-card'>
       <div className='card-header'>
@@ -702,62 +900,73 @@ const ActivityImportCard = () => {
       <div className='card-content'>
         {/* Template Download Section */}
         <div className='template-section'>
-          <h4>📋 Modelo de Importação</h4>
-          <p>Baixe o template CSV com exemplos dos tipos de atividade:</p>
-
-          <div className='template-info'>
-            <div className='info-card'>
-              <FaInfoCircle className='info-icon' />
-              <div className='info-content'>
-                <h5>🎯 Como identificar campos obrigatórios</h5>
-                <div className='field-indicators'>
-                  <span className='indicator required'>
-                    <strong>(*)</strong> = Sempre obrigatório
-                  </span>
-                  <span className='indicator conditional'>
-                    <strong>(**)</strong> = Obrigatório para alguns tipos
-                  </span>
-                  <span className='indicator optional'>
-                    <strong>sem indicador</strong> = Opcional
-                  </span>
-                </div>
-                <small>
-                  💡 O template incluirá comentários explicativos sobre campos
-                  obrigatórios para cada tipo
-                </small>
-              </div>
+          <div className='template-header'>
+            <div className='template-title'>
+              <h4>📋 Modelo de Importação</h4>
+              <p>
+                Baixe o template CSV com exemplos dos tipos de atividade
+                <button
+                  className='info-trigger-btn'
+                  onClick={() => setShowInfoModal(true)}
+                  title='Como usar e identificar campos obrigatórios'
+                >
+                  <FaInfoCircle />
+                </button>
+              </p>
             </div>
           </div>
 
-          <div className='type-selector'>
-            <label>Tipos a incluir no template:</label>
-            <div className='type-checkboxes'>
+          <div className='activity-types-selector'>
+            <label className='selector-label'>
+              Tipos a incluir no template:
+            </label>
+            <div className='toggle-buttons-grid'>
               {Object.values(ACTIVITY_TYPES).map(type => (
-                <label key={type} className='type-checkbox'>
-                  <input
-                    type='checkbox'
-                    checked={selectedTypes.includes(type)}
-                    onChange={e => {
-                      if (e.target.checked) {
-                        setSelectedTypes(prev => [...prev, type]);
-                      } else {
-                        setSelectedTypes(prev => prev.filter(t => t !== type));
-                      }
-                    }}
-                  />
-                  <span>{type}</span>
-                </label>
+                <button
+                  key={type}
+                  className={`toggle-button ${selectedTypes.includes(type) ? 'active' : ''}`}
+                  onClick={() => toggleActivityType(type)}
+                >
+                  <div className='toggle-content'>
+                    <span className='toggle-icon'>
+                      {selectedTypes.includes(type) ? '✓' : '+'}
+                    </span>
+                    <span className='toggle-text'>{type}</span>
+                  </div>
+                </button>
               ))}
             </div>
+
+            <div className='quick-actions'>
+              <button
+                className='quick-action-btn'
+                onClick={() => setSelectedTypes(Object.values(ACTIVITY_TYPES))}
+              >
+                Selecionar Todos
+              </button>
+              <button
+                className='quick-action-btn'
+                onClick={() => setSelectedTypes([])}
+              >
+                Limpar Seleção
+              </button>
+            </div>
           </div>
 
-          <button
-            className='btn-primary'
-            onClick={() => downloadTemplate(selectedTypes)}
-            disabled={selectedTypes.length === 0}
-          >
-            <FaDownload /> Baixar Template ({selectedTypes.length} tipos)
-          </button>
+          <div className='download-action'>
+            <button
+              className={`btn-download ${selectedTypes.length === 0 ? 'disabled' : ''}`}
+              onClick={() => downloadTemplate(selectedTypes)}
+              disabled={selectedTypes.length === 0}
+            >
+              <FaDownload />
+              <span>
+                {selectedTypes.length === 0
+                  ? 'Selecione pelo menos um tipo'
+                  : `Baixar Template (${selectedTypes.length} tipos)`}
+              </span>
+            </button>
+          </div>
         </div>
 
         {/* Main Import Section */}
@@ -804,6 +1013,9 @@ const ActivityImportCard = () => {
           </div>
         )}
       </div>
+
+      {/* Modal informativo */}
+      {renderInfoModal()}
     </div>
   );
 };
