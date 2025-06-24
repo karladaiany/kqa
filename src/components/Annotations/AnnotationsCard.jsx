@@ -78,9 +78,6 @@ const AnnotationsCard = () => {
     useAnnotations();
   const { bugData } = useBugRegistration();
 
-  // Debug: monitorar mudanças no envId
-  logger.debug('AnnotationsCard render - bugData.envId:', bugData?.envId);
-
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [activeEditor, setActiveEditor] = useState(null);
   const [activeNote, setActiveNote] = useState(null);
@@ -390,38 +387,28 @@ const AnnotationsCard = () => {
                 type='feature-flag'
                 text='Organization'
                 onFeatureFlagClick={async () => {
-                  // Obter envId do hook primeiro, depois do localStorage como fallback
-                  let envId = bugData?.envId || '';
+                  // Buscar diretamente o valor atual do campo "ID do ambiente" no DOM
+                  const envIdInput = document.querySelector(
+                    '#bug input[type="number"]'
+                  );
+                  const currentEnvId = envIdInput
+                    ? String(envIdInput.value).trim()
+                    : '';
 
-                  // Se não tem no hook, buscar diretamente no localStorage
-                  if (!envId || envId.toString().trim() === '') {
-                    try {
-                      const savedData = localStorage.getItem('bugRegistration');
-                      if (savedData) {
-                        const parsedData = JSON.parse(savedData);
-                        envId = parsedData?.envId || '';
-                      }
-                    } catch (err) {
-                      console.warn('Erro ao ler localStorage:', err);
-                    }
-                  }
+                  // Gerar texto Organization com o ID atual
+                  const featureFlagText =
+                    currentEnvId !== ''
+                      ? `Organization;${currentEnvId}`
+                      : 'Organization;';
 
-                  const hasValidEnvId = envId && envId.toString().trim() !== '';
-                  const featureFlagText = hasValidEnvId
-                    ? `Organization;${envId}`
-                    : 'Organization;';
-
-                  logger.debug('Feature Flag Badge clicada!');
-                  logger.debug('bugData.envId (hook):', bugData?.envId);
-                  logger.debug('envId (final):', envId);
-                  logger.debug('hasValidEnvId:', hasValidEnvId);
-                  logger.debug('Texto copiado:', featureFlagText);
-
+                  // Copiar para clipboard
                   try {
                     await navigator.clipboard.writeText(featureFlagText);
-                    logger.debug('Texto copiado com sucesso!');
+                    console.log(
+                      `✅ Organization flag copiado: "${featureFlagText}"`
+                    );
                   } catch (err) {
-                    console.error('Erro ao copiar:', err);
+                    console.error('❌ Erro ao copiar Organization flag:', err);
                   }
                 }}
               />
