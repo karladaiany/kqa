@@ -20,6 +20,7 @@ import {
   FaInfoCircle,
   FaCog,
   FaEdit,
+  FaClipboardList,
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
@@ -705,7 +706,10 @@ const ActivityImportCard = () => {
       >
         <div className='info-modal' onClick={e => e.stopPropagation()}>
           <div className='info-modal-header'>
-            <h3>📋 Guia Completo de Importação</h3>
+            <h3>
+              <FaClipboardList className='modal-icon' /> Guia Completo de
+              Importação
+            </h3>
             <button
               className='close-modal-btn'
               onClick={() => setShowInfoModal(false)}
@@ -902,7 +906,10 @@ const ActivityImportCard = () => {
         <div className='template-section'>
           <div className='template-header'>
             <div className='template-title'>
-              <h4>📋 Modelo de Importação</h4>
+              <h4>
+                <FaClipboardList className='section-icon' /> Modelo de
+                Importação
+              </h4>
               <p>
                 Baixe o template CSV com exemplos dos tipos de atividade
                 <button
