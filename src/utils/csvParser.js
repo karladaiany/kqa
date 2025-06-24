@@ -3,6 +3,7 @@
  */
 
 import { ACTIVITY_TYPES, RESPONSAVEL_OPTIONS } from '../constants/artiaOptions';
+import { REQUIRED_FIELDS_BY_TYPE } from '../constants/artiaFieldHashes';
 
 /**
  * Headers esperados no CSV para importação
@@ -261,9 +262,6 @@ const isValidDate = dateString => {
 export const generateCSVTemplate = (
   selectedTypes = Object.values(ACTIVITY_TYPES)
 ) => {
-  // Importar REQUIRED_FIELDS_BY_TYPE aqui para evitar circular dependency
-  const { REQUIRED_FIELDS_BY_TYPE } = require('../constants/artiaFieldHashes');
-
   // Header do CSV com indicadores de campos obrigatórios
   const headerWithRequiredIndicators = CSV_HEADERS.map(field => {
     // Mapear header para field interno
