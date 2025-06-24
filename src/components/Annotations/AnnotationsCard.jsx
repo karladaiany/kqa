@@ -369,11 +369,6 @@ const AnnotationsCard = () => {
   return (
     <ActiveEditorContext.Provider value={contextValue}>
       <section className='card' id='annotations'>
-        <div className='card-header'>
-          <h2>
-            <FaStickyNote className='header-icon' /> Anotações
-          </h2>
-        </div>
         {/* Anotações Rápidas */}
         <div className='annotations-subsection'>
           <div className='subsection-header'>
