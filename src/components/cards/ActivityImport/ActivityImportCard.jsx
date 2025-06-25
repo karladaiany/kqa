@@ -77,7 +77,7 @@ const ActivityImportCard = () => {
   // Estados locais do componente
   const [showHistory, setShowHistory] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const [showInfoModal, setShowInfoModal] = useState(false);
+  const [showInfoPanel, setShowInfoPanel] = useState(false);
   const [credentials, setCredentials] = useState({
     email: '',
     password: '',
@@ -104,18 +104,18 @@ const ActivityImportCard = () => {
   }, []);
 
   /**
-   * Fechar modal com ESC
+   * Fechar painel com ESC
    */
   React.useEffect(() => {
     const handleKeyDown = event => {
-      if (event.key === 'Escape' && showInfoModal) {
-        setShowInfoModal(false);
+      if (event.key === 'Escape' && showInfoPanel) {
+        setShowInfoPanel(false);
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [showInfoModal]);
+  }, [showInfoPanel]);
 
   /**
    * Manipular drop de arquivo
@@ -702,179 +702,6 @@ const ActivityImportCard = () => {
     </div>
   );
 
-  /**
-   * Renderizar modal informativo
-   */
-  const renderInfoModal = () => {
-    if (!showInfoModal) return null;
-
-    return (
-      <div
-        className='info-modal-overlay'
-        onClick={() => setShowInfoModal(false)}
-      >
-        <div className='info-modal' onClick={e => e.stopPropagation()}>
-          <div className='info-modal-header'>
-            <h3>
-              <FaClipboardList className='modal-icon' /> Guia Completo de
-              Importação
-            </h3>
-            <button
-              className='close-modal-btn'
-              onClick={() => setShowInfoModal(false)}
-            >
-              <FaTimes />
-            </button>
-          </div>
-
-          <div className='info-modal-content'>
-            {/* Seção 1: Campos Obrigatórios */}
-            <div className='info-section'>
-              <h4>🎯 Como identificar campos obrigatórios</h4>
-              <div className='field-indicators'>
-                <div className='indicator required'>
-                  <strong>(*)</strong> = Sempre obrigatório
-                </div>
-                <div className='indicator conditional'>
-                  <strong>(**)</strong> = Obrigatório para alguns tipos
-                </div>
-                <div className='indicator optional'>
-                  <strong>sem indicador</strong> = Opcional
-                </div>
-              </div>
-            </div>
-
-            {/* Seção 2: Tutorial Excel */}
-            <div className='info-section'>
-              <h4>📊 Como usar no Excel (RECOMENDADO)</h4>
-              <div className='excel-steps'>
-                <div className='step'>
-                  <div className='step-number'>1</div>
-                  <div className='step-content'>
-                    <strong>Abra o Excel</strong>
-                    <p>Crie uma nova planilha em branco</p>
-                  </div>
-                </div>
-
-                <div className='step'>
-                  <div className='step-number'>2</div>
-                  <div className='step-content'>
-                    <strong>Importe o CSV</strong>
-                    <p>
-                      <code>
-                        Dados → Obter Dados → De Arquivo → Do Texto/CSV
-                      </code>
-                    </p>
-                  </div>
-                </div>
-
-                <div className='step'>
-                  <div className='step-number'>3</div>
-                  <div className='step-content'>
-                    <strong>Configure a importação</strong>
-                    <div className='config-list'>
-                      <p>
-                        • <strong>Delimiter:</strong> Vírgula
-                      </p>
-                      <p>
-                        • <strong>Codificação:</strong> UTF-8
-                      </p>
-                      <p>
-                        • Clique em <strong>"Carregar"</strong>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className='step'>
-                  <div className='step-number'>4</div>
-                  <div className='step-content'>
-                    <strong>Limpe o arquivo</strong>
-                    <p>
-                      <span className='warning'>
-                        ⚠️ DELETE as linhas explicativas
-                      </span>{' '}
-                      (linhas com "LEGENDA" e "TIPO:")
-                    </p>
-                  </div>
-                </div>
-
-                <div className='step'>
-                  <div className='step-number'>5</div>
-                  <div className='step-content'>
-                    <strong>Preencha seus dados</strong>
-                    <p>
-                      Use os exemplos como base e preencha os campos{' '}
-                      <strong>obrigatórios</strong>
-                    </p>
-                  </div>
-                </div>
-
-                <div className='step'>
-                  <div className='step-number'>6</div>
-                  <div className='step-content'>
-                    <strong>Salve como CSV</strong>
-                    <p>
-                      <code>
-                        Arquivo → Salvar Como → CSV (delimitado por vírgula)
-                      </code>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Seção 3: Tipos de Atividade */}
-            <div className='info-section'>
-              <h4>📑 Campos obrigatórios por tipo</h4>
-              <div className='activity-types-info'>
-                <div className='type-info'>
-                  <strong>Bug Produção</strong>{' '}
-                  <span className='field-count'>15 campos</span>
-                  <p>Todos os campos + ticket, cliente, organização...</p>
-                </div>
-                <div className='type-info'>
-                  <strong>Bug Retrabalho</strong>{' '}
-                  <span className='field-count'>7 campos</span>
-                  <p>Tipo, título, plataforma, funcionalidade...</p>
-                </div>
-                <div className='type-info'>
-                  <strong>Desenvolvimento/Testes</strong>{' '}
-                  <span className='field-count'>4 campos</span>
-                  <p>Tipo, título, funcionalidade, sub-funcionalidade</p>
-                </div>
-                <div className='type-info'>
-                  <strong>Deploy/Documentação</strong>{' '}
-                  <span className='field-count'>2 campos</span>
-                  <p>Apenas tipo e título</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Seção 4: Dicas */}
-            <div className='info-section'>
-              <h4>💡 Dicas importantes</h4>
-              <div className='tips-list'>
-                <div className='tip'>
-                  <strong>✅ Use valores exatos</strong>
-                  <p>Urgência: "Baixo", "Médio", "Alto", "Crítico"</p>
-                </div>
-                <div className='tip'>
-                  <strong>⚠️ Delete comentários</strong>
-                  <p>Remova linhas explicativas antes de importar</p>
-                </div>
-                <div className='tip'>
-                  <strong>🔍 Valide na preview</strong>
-                  <p>Sistema mostra erros antes da importação</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className='card activity-import-card'>
       <div className='card-header'>
@@ -923,7 +750,7 @@ const ActivityImportCard = () => {
                 Baixe o template CSV com exemplos dos tipos de atividade
                 <button
                   className='info-trigger-btn'
-                  onClick={() => setShowInfoModal(true)}
+                  onClick={() => setShowInfoPanel(!showInfoPanel)}
                   title='Como usar e identificar campos obrigatórios'
                 >
                   <FaInfoCircle />
@@ -986,6 +813,157 @@ const ActivityImportCard = () => {
               </span>
             </button>
           </div>
+
+          {/* Painel informativo */}
+          {showInfoPanel && (
+            <div className='info-panel'>
+              <div className='info-panel-header'>
+                <h4>
+                  <FaClipboardList className='panel-icon' /> Guia Completo de
+                  Importação
+                </h4>
+                <button
+                  className='close-panel-btn'
+                  onClick={() => setShowInfoPanel(false)}
+                >
+                  <FaTimes />
+                </button>
+              </div>
+              <div className='info-panel-content'>
+                {/* Seção 1: Campos Obrigatórios */}
+                <div className='info-section'>
+                  <h4>🎯 Como identificar campos obrigatórios</h4>
+                  <div className='field-indicators'>
+                    <div className='indicator required'>
+                      <strong>(*)</strong> = Sempre obrigatório
+                    </div>
+                    <div className='indicator conditional'>
+                      <strong>(**)</strong> = Obrigatório para alguns tipos
+                    </div>
+                    <div className='indicator optional'>
+                      <strong>sem indicador</strong> = Opcional
+                    </div>
+                  </div>
+                </div>
+
+                {/* Seção 2: Tutorial Excel */}
+                <div className='info-section info-section-spaced'>
+                  <h4>📊 Como usar no Excel (RECOMENDADO)</h4>
+                  <div className='excel-steps'>
+                    <div className='step'>
+                      <strong>1. Abra o Excel</strong>
+                      <p>Crie uma nova planilha em branco</p>
+                    </div>
+
+                    <div className='step'>
+                      <strong>2. Importe o CSV</strong>
+                      <p>Dados → Obter Dados → De Arquivo → Do Texto/CSV</p>
+                    </div>
+
+                    <div className='step'>
+                      <strong>3. Configure a importação</strong>
+                      <p>
+                        Delimiter: Vírgula, Codificação: UTF-8, clique em
+                        &quot;Carregar&quot;
+                      </p>
+                    </div>
+
+                    <div className='step'>
+                      <strong>4. Limpe o arquivo</strong>
+                      <p>
+                        ⚠️ DELETE as linhas explicativas (linhas com
+                        &quot;LEGENDA&quot; e &quot;TIPO:&quot;)
+                      </p>
+                    </div>
+
+                    <div className='step'>
+                      <strong>5. Preencha seus dados</strong>
+                      <p>
+                        Use os exemplos como base e preencha os campos{' '}
+                        <strong>obrigatórios</strong>
+                      </p>
+                    </div>
+
+                    <div className='step'>
+                      <strong>6. Salve como CSV</strong>
+                      <p>
+                        Arquivo → Salvar Como → CSV (delimitado por vírgula)
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Seção 3: Tipos de Atividade */}
+                <div className='info-section info-section-spaced'>
+                  <h4>📑 Campos obrigatórios por tipo</h4>
+                  <div className='activity-types-info'>
+                    <div
+                      className='type-info'
+                      style={{ borderLeft: '4px solid #08ECCC' }}
+                    >
+                      <strong>Desenvolvimento</strong>{' '}
+                      <span className='field-count'>4 campos</span>
+                      <p>Tipo, título, funcionalidade, sub-funcionalidade</p>
+                    </div>
+                    <div
+                      className='type-info'
+                      style={{ borderLeft: '4px solid #F90EF4' }}
+                    >
+                      <strong>Execução de testes</strong>{' '}
+                      <span className='field-count'>4 campos</span>
+                      <p>Tipo, título, funcionalidade, sub-funcionalidade</p>
+                    </div>
+                    <div
+                      className='type-info'
+                      style={{ borderLeft: '4px solid #89B0EB' }}
+                    >
+                      <strong>Teste de mesa</strong>{' '}
+                      <span className='field-count'>4 campos</span>
+                      <p>Tipo, título, funcionalidade, sub-funcionalidade</p>
+                    </div>
+                    <div
+                      className='type-info'
+                      style={{ borderLeft: '4px solid #90F485' }}
+                    >
+                      <strong>Análise de testes</strong>{' '}
+                      <span className='field-count'>4 campos</span>
+                      <p>Tipo, título, funcionalidade, sub-funcionalidade</p>
+                    </div>
+                    <div
+                      className='type-info'
+                      style={{ borderLeft: '4px solid #F1D8D8' }}
+                    >
+                      <strong>Documentação</strong>{' '}
+                      <span className='field-count'>2 campos</span>
+                      <p>Apenas tipo e título</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Seção 4: Dicas */}
+                <div className='info-section info-section-spaced'>
+                  <h4>💡 Dicas importantes</h4>
+                  <div className='tips-list'>
+                    <div className='tip'>
+                      <div className='tip-row'>
+                        <div className='tip-item'>
+                          <strong>✅ Use valores exatos</strong>
+                          <p>
+                            Urgência: &quot;Baixo&quot;, &quot;Médio&quot;,
+                            &quot;Alto&quot;, &quot;Crítico&quot;
+                          </p>
+                        </div>
+                        <div className='tip-item'>
+                          <strong>⚠️ Delete comentários</strong>
+                          <p>Remova linhas explicativas antes de importar</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Main Import Section */}
@@ -1032,9 +1010,6 @@ const ActivityImportCard = () => {
           </div>
         )}
       </div>
-
-      {/* Modal informativo */}
-      {renderInfoModal()}
     </div>
   );
 };

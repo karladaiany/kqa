@@ -1071,180 +1071,93 @@
   transition: all 0.2s ease;
 }
 
-/* ===== MODAL INFORMATIVO ===== */
+/* ===== PAINEL INFORMATIVO SIMPLES ===== */
 
-.info-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.85);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 1rem;
-  backdrop-filter: blur(8px);
-  overflow: auto;
-}
-
-.info-modal {
-  background: var(--bg-primary);
+.info-panel {
+  background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 16px;
-  max-width: 800px;
-  width: 100%;
-  max-height: calc(100vh - 2rem);
-  overflow: hidden;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-  animation: modalEnter 0.3s ease;
-  margin: auto;
-  position: relative;
+  border-radius: 12px;
+  margin: 1rem 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation: panelSlideDown 0.3s ease;
 }
 
-@keyframes modalEnter {
+@keyframes panelSlideDown {
   from {
     opacity: 0;
-    transform: scale(0.9) translateY(20px);
+    transform: translateY(-10px);
   }
   to {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: translateY(0);
   }
 }
 
-.info-modal-header {
+.info-panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 2rem;
+  padding: 1rem 1.5rem;
   border-bottom: 1px solid var(--border-color);
-  background: var(--bg-secondary);
+  background: var(--bg-primary);
+  border-radius: 12px 12px 0 0;
 }
 
-.info-modal-header h3 {
+.info-panel-header h4 {
   margin: 0;
   color: var(--text-primary);
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   font-weight: 600;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.modal-icon {
+.panel-icon {
   color: var(--accent-color);
-  font-size: 1.3rem;
+  font-size: 1.1rem;
 }
 
-.close-modal-btn {
+.close-panel-btn {
   background: none;
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
   padding: 0.5rem;
-  border-radius: 8px;
+  border-radius: 6px;
   transition: all 0.2s ease;
-  font-size: 1.25rem;
+  font-size: 1rem;
 }
 
-.close-modal-btn:hover {
+.close-panel-btn:hover {
   background: var(--bg-tertiary);
   color: var(--text-primary);
 }
 
-.info-modal-content {
-  padding: 2rem;
-  max-height: calc(90vh - 100px);
-  overflow-y: auto;
-  scroll-behavior: smooth;
+.info-panel-content {
+  padding: 1.5rem;
 }
 
-/* Seções do Modal */
-.info-section {
-  margin-bottom: 2.5rem;
+/* Espaçamento entre seções */
+.info-section-spaced {
+  margin-top: 24px;
 }
 
-.info-section:last-child {
-  margin-bottom: 0;
-}
-
-.info-section h4 {
+.info-panel-content p {
   margin: 0 0 1rem 0;
   color: var(--text-primary);
-  font-size: 1.25rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* Field Indicators no Modal */
-.info-section .field-indicators {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.info-section .indicator {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  background: var(--bg-secondary);
-  border-radius: 8px;
-  border-left: 4px solid;
-}
-
-.info-section .indicator.required {
-  border-left-color: #ef4444;
-}
-
-.info-section .indicator.conditional {
-  border-left-color: #f59e0b;
-}
-
-.info-section .indicator.optional {
-  border-left-color: var(--text-disabled);
-}
-
-/* Excel Steps */
-.excel-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.step {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-start;
-}
-
-.step-number {
-  background: var(--accent-color);
-  color: white;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 0.875rem;
-  flex-shrink: 0;
-}
-
-.step-content {
-  flex: 1;
-}
-
-.step-content strong {
-  display: block;
-  color: var(--text-primary);
-  margin-bottom: 0.5rem;
   font-size: 1rem;
+}
+
+.info-panel-content ul {
+  margin: 0;
+  padding: 0 0 0 1.5rem;
+  color: var(--text-secondary);
+}
+
+.info-panel-content li {
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
 }
 
 .step-content p {
@@ -1297,7 +1210,7 @@
 
 .field-count {
   background: var(--accent-color);
-  color: white;
+  color: var(--text-button);
   padding: 0.25rem 0.5rem;
   border-radius: 12px;
   font-size: 0.75rem;
@@ -1318,12 +1231,38 @@
 }
 
 .tip {
+  padding: 0;
+  background: none;
+  border-radius: 0;
+  border-left: none;
+}
+
+.tip-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.tip-item {
   padding: 1rem;
   background: var(--bg-secondary);
   border-radius: 8px;
   border-left: 4px solid #22c55e;
 }
 
+.tip-item strong {
+  display: block;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.tip-item p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Fallback para dicas individuais (caso ainda existam) */
 .tip strong {
   display: block;
   color: var(--text-primary);
@@ -1338,18 +1277,12 @@
 
 /* Responsive Modal */
 @media (max-width: 768px) {
-  .info-modal {
-    margin: 1rem;
-    max-height: calc(100vh - 2rem);
-    max-width: calc(100vw - 2rem);
+  .info-panel-header {
+    padding: 1rem;
   }
 
-  .info-modal-header {
-    padding: 1rem 1.5rem;
-  }
-
-  .info-modal-content {
-    padding: 1.5rem;
+  .info-panel-content {
+    padding: 1rem;
   }
 
   .selector-header {
@@ -1374,5 +1307,10 @@
   .step {
     flex-direction: column;
     text-align: center;
+  }
+
+  .tip-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 }
