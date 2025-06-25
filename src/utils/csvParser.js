@@ -2,7 +2,11 @@
  * Utilitário para parsing de arquivos CSV para importação de atividades
  */
 
-import { ACTIVITY_TYPES, RESPONSAVEL_OPTIONS } from '../constants/artiaOptions';
+import {
+  ACTIVITY_TYPES,
+  RESPONSAVEL_OPTIONS,
+  getEnabledActivityTypes,
+} from '../constants/artiaOptions';
 import { REQUIRED_FIELDS_BY_TYPE } from '../constants/artiaFieldHashes';
 
 /**
@@ -183,9 +187,11 @@ const validateActivityLine = (activity, lineNumber) => {
   // Tipo obrigatório e válido
   if (!activity.tipo) {
     errors.push(`Linha ${lineNumber}: Campo 'tipo' é obrigatório`);
-  } else if (!Object.values(ACTIVITY_TYPES).includes(activity.tipo)) {
+  } else if (
+    !Object.values(getEnabledActivityTypes()).includes(activity.tipo)
+  ) {
     errors.push(
-      `Linha ${lineNumber}: Tipo '${activity.tipo}' inválido. Tipos válidos: ${Object.values(ACTIVITY_TYPES).join(', ')}`
+      `Linha ${lineNumber}: Tipo '${activity.tipo}' inválido. Tipos válidos: ${Object.values(getEnabledActivityTypes()).join(', ')}`
     );
   }
 
@@ -260,7 +266,7 @@ const isValidDate = dateString => {
  * @returns {string} Conteúdo do CSV template
  */
 export const generateCSVTemplate = (
-  selectedTypes = Object.values(ACTIVITY_TYPES)
+  selectedTypes = Object.values(getEnabledActivityTypes())
 ) => {
   // Header do CSV com indicadores de campos obrigatórios
   const headerWithRequiredIndicators = CSV_HEADERS.map(field => {

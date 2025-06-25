@@ -325,6 +325,29 @@ export const ACTIVITY_TYPES = {
   DOCUMENTACAO: 'Documentação',
 };
 
+// Configuração de visibilidade dos tipos de atividade
+export const ACTIVITY_TYPES_CONFIG = {
+  [ACTIVITY_TYPES.DESENVOLVIMENTO]: { enabled: true },
+  [ACTIVITY_TYPES.EXECUCAO_TESTES]: { enabled: true },
+  [ACTIVITY_TYPES.TESTE_MESA]: { enabled: true },
+  [ACTIVITY_TYPES.AUTOMACAO_TESTES]: { enabled: false }, // ❌ Oculto
+  [ACTIVITY_TYPES.ANALISE_TESTES]: { enabled: true },
+  [ACTIVITY_TYPES.BUG_PRODUCAO]: { enabled: false }, // ❌ Oculto
+  [ACTIVITY_TYPES.BUG_RETRABALHO]: { enabled: false }, // ❌ Oculto
+  [ACTIVITY_TYPES.DEPLOY]: { enabled: false }, // ❌ Oculto
+  [ACTIVITY_TYPES.DOCUMENTACAO]: { enabled: true },
+};
+
+// Função helper para obter apenas os tipos habilitados
+export const getEnabledActivityTypes = () => {
+  return Object.entries(ACTIVITY_TYPES)
+    .filter(([key]) => ACTIVITY_TYPES_CONFIG[ACTIVITY_TYPES[key]]?.enabled)
+    .reduce((acc, [key, value]) => {
+      acc[key] = value;
+      return acc;
+    }, {});
+};
+
 export const ACTIVITY_FIELDS = {
   // Campos básicos que todos os tipos possuem
   COMMON_FIELDS: [

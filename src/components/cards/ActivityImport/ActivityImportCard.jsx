@@ -28,10 +28,17 @@ import {
   useActivityImport,
   IMPORT_STATES,
 } from '../../../hooks/useActivityImport';
-import { ACTIVITY_TYPES } from '../../../constants/artiaOptions';
+import {
+  ACTIVITY_TYPES,
+  getEnabledActivityTypes,
+} from '../../../constants/artiaOptions';
 import './ActivityImportCard.css';
 
 const ActivityImportCard = () => {
+  // Obter apenas os tipos de atividade habilitados
+  const enabledActivityTypes = getEnabledActivityTypes();
+  const enabledActivityTypesValues = Object.values(enabledActivityTypes);
+
   const {
     // Estados
     currentState,
@@ -76,7 +83,7 @@ const ActivityImportCard = () => {
     folderId: '',
   });
   const [selectedTypes, setSelectedTypes] = useState(
-    Object.values(ACTIVITY_TYPES)
+    enabledActivityTypesValues
   );
 
   const fileInputRef = useRef(null);
@@ -928,7 +935,7 @@ const ActivityImportCard = () => {
               Tipos a incluir no template:
             </label>
             <div className='toggle-buttons-grid'>
-              {Object.values(ACTIVITY_TYPES).map(type => (
+              {enabledActivityTypesValues.map(type => (
                 <button
                   key={type}
                   className={`toggle-button ${selectedTypes.includes(type) ? 'active' : ''}`}
@@ -947,7 +954,7 @@ const ActivityImportCard = () => {
             <div className='quick-actions'>
               <button
                 className='quick-action-btn'
-                onClick={() => setSelectedTypes(Object.values(ACTIVITY_TYPES))}
+                onClick={() => setSelectedTypes(enabledActivityTypesValues)}
               >
                 Selecionar Todos
               </button>

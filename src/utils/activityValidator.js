@@ -13,6 +13,7 @@ import {
   GARANTIA_OPTIONS,
   FUNCIONALIDADE_OPTIONS,
   RESPONSAVEL_OPTIONS,
+  getEnabledActivityTypes,
 } from '../constants/artiaOptions';
 
 import { REQUIRED_FIELDS_BY_TYPE } from '../constants/artiaFieldHashes';
@@ -73,7 +74,9 @@ const validateBasicFields = (activity, lineNumber) => {
   // Tipo obrigatório
   if (!activity.tipo) {
     errors.push(`Linha ${lineNumber}: Campo 'tipo' é obrigatório`);
-  } else if (!Object.values(ACTIVITY_TYPES).includes(activity.tipo)) {
+  } else if (
+    !Object.values(getEnabledActivityTypes()).includes(activity.tipo)
+  ) {
     errors.push(`Linha ${lineNumber}: Tipo '${activity.tipo}' inválido`);
   }
 
