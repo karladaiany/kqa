@@ -21,6 +21,8 @@ import {
   FaCog,
   FaEdit,
   FaClipboardList,
+  FaCheckDouble,
+  FaEraser,
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
@@ -931,9 +933,27 @@ const ActivityImportCard = () => {
           </div>
 
           <div className='activity-types-selector'>
-            <label className='selector-label'>
-              Tipos a incluir no template:
-            </label>
+            <div className='selector-header'>
+              <label className='selector-label'>
+                Tipos a incluir no template:
+              </label>
+              <div className='selection-actions'>
+                <button
+                  className='btn-icon selection-btn'
+                  onClick={() => setSelectedTypes(enabledActivityTypesValues)}
+                  title='Selecionar todos os tipos'
+                >
+                  <FaCheckDouble />
+                </button>
+                <button
+                  className='btn-icon selection-btn'
+                  onClick={() => setSelectedTypes([])}
+                  title='Limpar seleção'
+                >
+                  <FaEraser />
+                </button>
+              </div>
+            </div>
             <div className='toggle-buttons-grid'>
               {enabledActivityTypesValues.map(type => (
                 <button
@@ -949,21 +969,6 @@ const ActivityImportCard = () => {
                   </div>
                 </button>
               ))}
-            </div>
-
-            <div className='quick-actions'>
-              <button
-                className='quick-action-btn'
-                onClick={() => setSelectedTypes(enabledActivityTypesValues)}
-              >
-                Selecionar Todos
-              </button>
-              <button
-                className='quick-action-btn'
-                onClick={() => setSelectedTypes([])}
-              >
-                Limpar Seleção
-              </button>
             </div>
           </div>
 
