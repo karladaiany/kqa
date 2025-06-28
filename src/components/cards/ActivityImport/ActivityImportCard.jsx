@@ -1019,10 +1019,16 @@ const ActivityImportCard = () => {
           {showHistory && (
             <div className='history-section'>
               <div className='history-header'>
-                <h4>
-                  <FaHistory className='section-icon' /> Histórico de
-                  Importações
-                </h4>
+                <div className='history-title-section'>
+                  <h4>
+                    <FaHistory className='section-icon' /> Histórico de
+                    Importações
+                  </h4>
+                  <p className='history-subtitle'>
+                    Serão exibidas as últimas 10 importações realizadas. Se
+                    necessário, salve os arquivos localmente para uso futuro.
+                  </p>
+                </div>
                 {importHistory.length > 0 && (
                   <button
                     className='btn-icon-only'
@@ -1045,87 +1051,145 @@ const ActivityImportCard = () => {
                         <th>Data</th>
                         <th>Hora</th>
                         <th>Status</th>
-                        <th>Erro(s)</th>
+                        <th>Situação</th>
                         <th>Ações</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {importHistory.map(item => (
-                        <tr key={item.id}>
-                          <td title={item.importName}>{item.importName}</td>
-                          <td>
-                            {new Date(item.timestamp).toLocaleDateString(
-                              'pt-BR'
-                            )}
-                          </td>
-                          <td>
-                            {new Date(item.timestamp).toLocaleTimeString(
-                              'pt-BR',
-                              { hour: '2-digit', minute: '2-digit' }
-                            )}
-                          </td>
-                          <td>
-                            {item.status === 'error' ||
-                            item.status === 'parse_error' ||
-                            item.status === 'read_error' ? (
-                              <span className='status-error'>
-                                ❌{' '}
-                                {item.status === 'parse_error'
-                                  ? 'Formatação'
-                                  : item.status === 'read_error'
-                                    ? 'Leitura'
-                                    : 'Importação'}
-                              </span>
-                            ) : (
-                              <span className='status-success'>
-                                ✅ Concluído
-                              </span>
-                            )}
-                          </td>
-                          <td>
-                            {item.status === 'error' ||
-                            item.status === 'parse_error' ||
-                            item.status === 'read_error' ? (
-                              <div className='error-details'>
-                                {item.results?.errors?.map((error, index) => (
-                                  <div key={index} className='error-line'>
-                                    <strong>Linha {error.line}:</strong>{' '}
-                                    {error.error}
+                      {importHistory.map(item => {
+                        const hasErrors =
+                          item.status === 'error' ||
+                          item.status === 'parse_error' ||
+                          item.status === 'read_error';
+
+                        const statusText = hasErrors ? 'Erro' : 'Concluído';
+
+                        return (
+                          <tr key={item.id}>
+                            <td title={item.importName} className='td-name'>
+                              {item.importName}
+                            </td>
+                            <td className='td-date'>
+                              {new Date(item.timestamp).toLocaleDateString(
+                                'pt-BR'
+                              )}
+                            </td>
+                            <td className='td-time'>
+                              {new Date(item.timestamp).toLocaleTimeString(
+                                'pt-BR',
+                                {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                }
+                              )}
+                            </td>
+                            <td className='td-status'>{statusText}</td>
+                            <td className='td-situation'>
+                              {hasErrors ? (
+                                <div className='situation-error'>
+                                  <span className='situation-label error'>
+                                    Erro
+                                  </span>
+                                  <div className='error-details-improved'>
+                                    {item.results?.errors?.length > 0 ? (
+                                      item.results.errors.length <= 3 ? (
+                                        // Mostrar até 3 erros diretamente
+                                        item.results.errors.map(
+                                          (error, index) => (
+                                            <div
+                                              key={index}
+                                              className='error-item-compact'
+                                            >
+                                              {error.line !== 'Geral' &&
+                                                error.line !== 'Arquivo' && (
+                                                  <span className='error-line-ref'>
+                                                    L{error.line}:
+                                                  </span>
+                                                )}
+                                              <span className='error-message'>
+                                                {error.error}
+                                              </span>
+                                            </div>
+                                          )
+                                        )
+                                      ) : (
+                                        // Mostrar resumo para muitos erros
+                                        <div className='error-summary-compact'>
+                                          <div className='error-count'>
+                                            {item.results.errors.length} erros
+                                            encontrados
+                                          </div>
+                                          <details className='error-details-toggle'>
+                                            <summary>Ver detalhes</summary>
+                                            <div className='error-list-expanded'>
+                                              {item.results.errors.map(
+                                                (error, index) => (
+                                                  <div
+                                                    key={index}
+                                                    className='error-item-expanded'
+                                                  >
+                                                    {error.line !== 'Geral' &&
+                                                      error.line !==
+                                                        'Arquivo' && (
+                                                        <span className='error-line-ref'>
+                                                          Linha {error.line}:
+                                                        </span>
+                                                      )}
+                                                    <span className='error-message'>
+                                                      {error.error}
+                                                    </span>
+                                                  </div>
+                                                )
+                                              )}
+                                            </div>
+                                          </details>
+                                        </div>
+                                      )
+                                    ) : (
+                                      <div className='error-item-compact'>
+                                        <span className='error-message'>
+                                          {item.errorMessage}
+                                        </span>
+                                      </div>
+                                    )}
                                   </div>
-                                )) || (
-                                  <div className='error-line'>
-                                    <strong>Erro geral:</strong>{' '}
-                                    {item.errorMessage}
-                                  </div>
-                                )}
+                                </div>
+                              ) : (
+                                <div className='situation-success'>
+                                  <span className='situation-label success'>
+                                    Sucesso
+                                  </span>
+                                  <span className='success-details'>
+                                    {item.successCount} atividades criadas
+                                    {item.errorCount > 0 &&
+                                      `, ${item.errorCount} com erro`}
+                                  </span>
+                                </div>
+                              )}
+                            </td>
+                            <td className='td-actions'>
+                              <div className='action-buttons'>
+                                <button
+                                  className='btn-icon-small'
+                                  onClick={() => handleRedownload(item)}
+                                  title='Baixar relatório'
+                                >
+                                  <FaDownload />
+                                </button>
+                                <button
+                                  className='btn-icon-small btn-danger'
+                                  onClick={() =>
+                                    handleRemoveHistoryItem(item.id)
+                                  }
+                                  title='Remover do histórico'
+                                >
+                                  <FaTimes />
+                                </button>
                               </div>
-                            ) : (
-                              <span className='success-summary'>
-                                {item.successCount} sucessos, {item.errorCount}{' '}
-                                erros
-                              </span>
-                            )}
-                          </td>
-                          <td>
-                            <div className='action-buttons'>
-                              <button
-                                className='btn-icon-small'
-                                onClick={() => handleRedownload(item)}
-                                title='Baixar relatório'
-                              >
-                                <FaDownload />
-                              </button>
-                              <button
-                                className='btn-icon-small btn-danger'
-                                onClick={() => handleRemoveHistoryItem(item.id)}
-                                title='Remover do histórico'
-                              >
-                                <FaTimes />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
