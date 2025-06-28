@@ -1048,9 +1048,7 @@ const ActivityImportCard = () => {
                     <thead>
                       <tr>
                         <th>Nome</th>
-                        <th>Data</th>
-                        <th>Hora</th>
-                        <th>Status</th>
+                        <th>Data / Hora</th>
                         <th>Situação</th>
                         <th>Ações</th>
                       </tr>
@@ -1069,56 +1067,44 @@ const ActivityImportCard = () => {
                             <td title={item.importName} className='td-name'>
                               {item.importName}
                             </td>
-                            <td className='td-date'>
-                              {new Date(item.timestamp).toLocaleDateString(
-                                'pt-BR'
-                              )}
+                            <td className='td-datetime'>
+                              <div className='date-time-group'>
+                                <div className='date'>
+                                  {new Date(item.timestamp).toLocaleDateString(
+                                    'pt-BR'
+                                  )}
+                                </div>
+                                <div className='time'>
+                                  {new Date(item.timestamp).toLocaleTimeString(
+                                    'pt-BR',
+                                    {
+                                      hour: '2-digit',
+                                      minute: '2-digit',
+                                    }
+                                  )}
+                                </div>
+                              </div>
                             </td>
-                            <td className='td-time'>
-                              {new Date(item.timestamp).toLocaleTimeString(
-                                'pt-BR',
-                                {
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                                }
-                              )}
-                            </td>
-                            <td className='td-status'>{statusText}</td>
                             <td className='td-situation'>
                               {hasErrors ? (
                                 <div className='situation-error'>
                                   <span className='situation-label error'>
-                                    Erro
+                                    {item.results?.errors?.length > 1
+                                      ? `${item.results.errors.length} erros`
+                                      : 'Erro'}
                                   </span>
                                   <div className='error-details-improved'>
                                     {item.results?.errors?.length > 0 ? (
-                                      item.results.errors.length <= 3 ? (
-                                        // Mostrar até 3 erros diretamente
-                                        item.results.errors.map(
-                                          (error, index) => (
-                                            <div
-                                              key={index}
-                                              className='error-item-compact'
-                                            >
-                                              {error.line !== 'Geral' &&
-                                                error.line !== 'Arquivo' && (
-                                                  <span className='error-line-ref'>
-                                                    L{error.line}:
-                                                  </span>
-                                                )}
-                                              <span className='error-message'>
-                                                {error.error}
-                                              </span>
-                                            </div>
-                                          )
-                                        )
+                                      item.results.errors.length === 1 ? (
+                                        // Mostrar erro único diretamente
+                                        <div className='error-item-compact'>
+                                          <span className='error-message'>
+                                            {item.results.errors[0].error}
+                                          </span>
+                                        </div>
                                       ) : (
-                                        // Mostrar resumo para muitos erros
+                                        // Mostrar resumo para múltiplos erros
                                         <div className='error-summary-compact'>
-                                          <div className='error-count'>
-                                            {item.results.errors.length} erros
-                                            encontrados
-                                          </div>
                                           <details className='error-details-toggle'>
                                             <summary>Ver detalhes</summary>
                                             <div className='error-list-expanded'>
@@ -1128,13 +1114,16 @@ const ActivityImportCard = () => {
                                                     key={index}
                                                     className='error-item-expanded'
                                                   >
-                                                    {error.line !== 'Geral' &&
-                                                      error.line !==
-                                                        'Arquivo' && (
-                                                        <span className='error-line-ref'>
-                                                          Linha {error.line}:
-                                                        </span>
-                                                      )}
+                                                    <div className='error-line-header'>
+                                                      {error.line !== 'Geral' &&
+                                                        error.line !==
+                                                          'Arquivo' && (
+                                                          <span className='error-line-ref'>
+                                                            Na linha{' '}
+                                                            {error.line}
+                                                          </span>
+                                                        )}
+                                                    </div>
                                                     <span className='error-message'>
                                                       {error.error}
                                                     </span>
@@ -1169,22 +1158,18 @@ const ActivityImportCard = () => {
                             </td>
                             <td className='td-actions'>
                               <div className='action-buttons'>
-                                <button
-                                  className='btn-icon-small'
+                                <FaDownload
                                   onClick={() => handleRedownload(item)}
                                   title='Baixar relatório'
-                                >
-                                  <FaDownload />
-                                </button>
-                                <button
-                                  className='btn-icon-small btn-danger'
+                                  className='action-icon'
+                                />
+                                <FaTimes
                                   onClick={() =>
                                     handleRemoveHistoryItem(item.id)
                                   }
                                   title='Remover do histórico'
-                                >
-                                  <FaTimes />
-                                </button>
+                                  className='action-icon danger'
+                                />
                               </div>
                             </td>
                           </tr>
