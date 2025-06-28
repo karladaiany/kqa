@@ -319,7 +319,7 @@ export class ArtiaService {
    */
   static async authenticate(email, password) {
     try {
-      const { data } = await client.mutate({
+      const { data, errors } = await client.mutate({
         mutation: AUTHENTICATION_BY_EMAIL,
         variables: {
           email,
@@ -327,13 +327,33 @@ export class ArtiaService {
         },
       });
 
-      if (data.authenticationByEmail.token) {
-        localStorage.setItem('artia_token', data.authenticationByEmail.token);
+      if (errors && errors.length > 0) {
+        const errorMessage = errors.map(err => err.message).join(', ');
+        throw new Error(`Erro de autenticação: ${errorMessage}`);
       }
 
-      return data.authenticationByEmail;
+      if (data?.authenticationByEmail?.token) {
+        localStorage.setItem('artia_token', data.authenticationByEmail.token);
+        return data.authenticationByEmail;
+      } else {
+        throw new Error('Token não encontrado na resposta da API');
+      }
     } catch (error) {
-      throw new Error('Falha na autenticação. Verifique suas credenciais.');
+      // Verificar se é erro de rede/conexão
+      if (error.networkError) {
+        throw new Error(`Erro de conexão: ${error.networkError.message}`);
+      }
+
+      // Verificar se é erro GraphQL
+      if (error.graphQLErrors && error.graphQLErrors.length > 0) {
+        const graphQLMessage = error.graphQLErrors
+          .map(err => err.message)
+          .join(', ');
+        throw new Error(`Erro GraphQL: ${graphQLMessage}`);
+      }
+
+      // Erro genérico
+      throw new Error(`Falha na autenticação: ${error.message}`);
     }
   }
 
@@ -815,30 +835,6 @@ Evidência pendente de anexo
 
     // Definir campos customizados finais
     variables.customField = customFields;
-
-    // Log para debug apenas em desenvolvimento local
-    if (
-      typeof window !== 'undefined' &&
-      window.location.hostname === 'localhost'
-    ) {
-      console.log('🔍 Artia Debug - Campos sendo enviados:');
-      console.log('📋 Tipo de atividade:', activityType);
-      console.log('✅ Campos obrigatórios:', requiredFields);
-      console.log(
-        '📤 Custom fields preparados:',
-        customFields.map(f => ({
-          field: Object.keys(ARTIA_FIELD_HASHES).find(
-            k => ARTIA_FIELD_HASHES[k] === f.hashField
-          ),
-          value: f.value,
-          isRequired: requiredFields.includes(
-            Object.keys(ARTIA_FIELD_HASHES).find(
-              k => ARTIA_FIELD_HASHES[k] === f.hashField
-            )
-          ),
-        }))
-      );
-    }
 
     return variables;
   }

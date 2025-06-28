@@ -2,7 +2,7 @@
  * Hook customizado para gerenciar importação de atividades
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { ArtiaService } from '../services/artiaService';
 import {
@@ -17,6 +17,7 @@ import {
 
 // Constantes para o histórico
 const IMPORT_HISTORY_KEY = 'kqa_import_history';
+const IMPORT_SESSION_KEY = 'kqa_import_session';
 const MAX_HISTORY_ITEMS = 10;
 
 /**
@@ -64,6 +65,88 @@ export const useActivityImport = () => {
     return saved ? JSON.parse(saved) : [];
   });
 
+  // Estado da sessão ativa
+  const [sessionId, setSessionId] = useState(null);
+
+  /**
+   * Salvar sessão atual no localStorage
+   */
+  const saveSession = useCallback(sessionData => {
+    const session = {
+      id: sessionData.id || Date.now(),
+      timestamp: new Date().toISOString(),
+      ...sessionData,
+    };
+
+    localStorage.setItem(IMPORT_SESSION_KEY, JSON.stringify(session));
+    setSessionId(session.id);
+    return session.id;
+  }, []);
+
+  /**
+   * Recuperar sessão salva
+   */
+  const loadSession = useCallback(() => {
+    const saved = localStorage.getItem(IMPORT_SESSION_KEY);
+    if (!saved) return null;
+
+    try {
+      const session = JSON.parse(saved);
+      // Verificar se a sessão não é muito antiga (ex: 24 horas)
+      const sessionAge = Date.now() - new Date(session.timestamp).getTime();
+      const maxAge = 24 * 60 * 60 * 1000; // 24 horas
+
+      if (sessionAge > maxAge) {
+        localStorage.removeItem(IMPORT_SESSION_KEY);
+        return null;
+      }
+
+      return session;
+    } catch (error) {
+      localStorage.removeItem(IMPORT_SESSION_KEY);
+      return null;
+    }
+  }, []);
+
+  /**
+   * Limpar sessão ativa
+   */
+  const clearSession = useCallback(() => {
+    localStorage.removeItem(IMPORT_SESSION_KEY);
+    setSessionId(null);
+  }, []);
+
+  /**
+   * Verificar e recuperar sessão ao inicializar
+   */
+  useEffect(() => {
+    const savedSession = loadSession();
+    if (savedSession) {
+      // Recuperar estado da sessão
+      setCurrentState(savedSession.currentState || IMPORT_STATES.IDLE);
+      setImportName(savedSession.importName || '');
+      setImportMode(savedSession.importMode || 'create');
+      setParsedData(savedSession.parsedData || []);
+      setValidatedData(savedSession.validatedData || []);
+      setParseErrors(savedSession.parseErrors || []);
+      setValidationErrors(savedSession.validationErrors || []);
+      setProcessResults(
+        savedSession.processResults || { success: [], errors: [], total: 0 }
+      );
+      setSessionId(savedSession.id);
+
+      // Mostrar notificação sobre sessão recuperada
+      if (savedSession.currentState !== IMPORT_STATES.IDLE) {
+        toast.info(
+          'Sessão anterior recuperada! Você pode continuar de onde parou.',
+          {
+            autoClose: 5000,
+          }
+        );
+      }
+    }
+  }, [loadSession]);
+
   /**
    * Resetar todos os estados para inicial
    */
@@ -78,7 +161,8 @@ export const useActivityImport = () => {
     setProcessProgress(0);
     setProcessResults({ success: [], errors: [], total: 0 });
     setIsProcessing(false);
-  }, []);
+    clearSession(); // Limpar sessão ao resetar
+  }, [clearSession]);
 
   /**
    * Validar e selecionar arquivo
@@ -286,11 +370,183 @@ export const useActivityImport = () => {
    * Processar arquivo completo (parse + validação)
    */
   const processFile = useCallback(async () => {
-    const parseSuccess = await parseFile();
-    if (!parseSuccess) return false;
+    if (!selectedFile) {
+      toast.error('Nenhum arquivo selecionado');
+      return false;
+    }
 
-    return validateData();
-  }, [parseFile, validateData]);
+    setCurrentState(IMPORT_STATES.PARSING);
+
+    try {
+      // Fazer parse do arquivo
+      const fileContent = await readFileContent(selectedFile);
+      const parseResult = parseCSV(fileContent);
+
+      setParsedData(parseResult.data);
+      setParseErrors(parseResult.errors);
+
+      if (parseResult.errors.length > 0) {
+        setCurrentState(IMPORT_STATES.ERROR);
+
+        // Salvar erro de parsing no histórico
+        const parseErrorHistoryItem = {
+          id: Date.now(),
+          timestamp: new Date().toISOString(),
+          importName: importName || 'Arquivo com erro de formatação',
+          totalActivities: 0,
+          successCount: 0,
+          errorCount: parseResult.errors.length,
+          results: {
+            success: [],
+            errors: parseResult.errors.map((error, index) => ({
+              line: index + 1,
+              title: 'Erro de formatação',
+              error: error,
+              details: 'Erro no parsing do arquivo CSV',
+            })),
+            total: 0,
+          },
+          status: 'parse_error',
+          errorMessage: `${parseResult.errors.length} erros de formatação encontrados`,
+        };
+
+        const updatedHistory = [parseErrorHistoryItem, ...importHistory].slice(
+          0,
+          MAX_HISTORY_ITEMS
+        );
+        setImportHistory(updatedHistory);
+        localStorage.setItem(
+          IMPORT_HISTORY_KEY,
+          JSON.stringify(updatedHistory)
+        );
+
+        toast.error(
+          `Erro no arquivo: ${parseResult.errors.slice(0, 3).join('; ')}`,
+          {
+            autoClose: 8000,
+          }
+        );
+        return false;
+      }
+
+      // Validar dados imediatamente com os dados do parse
+      if (parseResult.data.length === 0) {
+        toast.warning('Nenhum dado para validar');
+        return false;
+      }
+
+      setCurrentState(IMPORT_STATES.VALIDATING);
+
+      const validationResult = validateActivitiesForImport(parseResult.data);
+      setValidatedData(validationResult.validActivities);
+      setValidationErrors(validationResult.errors);
+
+      // Se há apenas erros de validação (sem atividades válidas), salvar no histórico
+      if (
+        validationResult.errors.length > 0 &&
+        validationResult.validActivities.length === 0
+      ) {
+        const validationErrorHistoryItem = {
+          id: Date.now(),
+          timestamp: new Date().toISOString(),
+          importName: importName || 'Arquivo com erros de validação',
+          totalActivities: parseResult.data.length,
+          successCount: 0,
+          errorCount: validationResult.errors.length,
+          results: {
+            success: [],
+            errors: validationResult.errors.map(error => {
+              const lineMatch = error.match(/Linha (\d+):/);
+              const lineNumber = lineMatch ? parseInt(lineMatch[1]) : 'N/A';
+              const cleanError = error.replace(/^Linha \d+:\s*/, '');
+
+              return {
+                line: lineNumber,
+                title: 'Erro de validação',
+                error: cleanError,
+                details: 'Erro na validação dos dados',
+              };
+            }),
+            total: parseResult.data.length,
+          },
+          status: 'parse_error',
+          errorMessage: `${validationResult.errors.length} erros de validação encontrados`,
+        };
+
+        const updatedHistory = [
+          validationErrorHistoryItem,
+          ...importHistory,
+        ].slice(0, MAX_HISTORY_ITEMS);
+        setImportHistory(updatedHistory);
+        localStorage.setItem(
+          IMPORT_HISTORY_KEY,
+          JSON.stringify(updatedHistory)
+        );
+      }
+
+      if (validationResult.errors.length > 0) {
+        const errorCount = validationResult.errors.length;
+        const validCount = validationResult.validActivities.length;
+
+        toast.warning(
+          `${errorCount} erro(s) de validação encontrado(s). ${validCount} atividades válidas.`,
+          { autoClose: 5000 }
+        );
+      }
+
+      setCurrentState(IMPORT_STATES.PREVIEW);
+
+      // Salvar sessão após processamento bem-sucedido
+      saveSession({
+        currentState: IMPORT_STATES.PREVIEW,
+        importName,
+        importMode,
+        parsedData: parseResult.data,
+        validatedData: validationResult.validActivities,
+        parseErrors: parseResult.errors,
+        validationErrors: validationResult.errors,
+        fileName: selectedFile?.name,
+      });
+
+      return true;
+    } catch (error) {
+      setCurrentState(IMPORT_STATES.ERROR);
+
+      // Salvar erro de leitura no histórico
+      const readErrorHistoryItem = {
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        importName: importName || 'Erro na leitura do arquivo',
+        totalActivities: 0,
+        successCount: 0,
+        errorCount: 1,
+        results: {
+          success: [],
+          errors: [
+            {
+              line: 'Arquivo',
+              title: 'Erro de leitura',
+              error: error.message,
+              details: 'Não foi possível ler o conteúdo do arquivo',
+            },
+          ],
+          total: 0,
+        },
+        status: 'read_error',
+        errorMessage: `Erro ao ler arquivo: ${error.message}`,
+      };
+
+      const updatedHistory = [readErrorHistoryItem, ...importHistory].slice(
+        0,
+        MAX_HISTORY_ITEMS
+      );
+      setImportHistory(updatedHistory);
+      localStorage.setItem(IMPORT_HISTORY_KEY, JSON.stringify(updatedHistory));
+
+      toast.error(`Erro ao ler arquivo: ${error.message}`);
+      return false;
+    }
+  }, [selectedFile, importName, importHistory]);
 
   /**
    * Executar importação das atividades válidas
@@ -318,14 +574,28 @@ export const useActivityImport = () => {
       };
 
       try {
-        // Autenticar primeiro
-        const authResult = await ArtiaService.ensureValidToken(
-          credentials.email,
-          credentials.password
-        );
+        // Validar credenciais antes de tentar autenticar
+        if (!credentials.email || !credentials.password) {
+          throw new Error(
+            'Email e senha são obrigatórios para autenticação no Artia'
+          );
+        }
 
-        if (!authResult.success) {
-          throw new Error('Falha na autenticação do Artia');
+        // Autenticar primeiro
+        let authToken;
+        try {
+          authToken = await ArtiaService.ensureValidToken(
+            credentials.email,
+            credentials.password
+          );
+        } catch (authError) {
+          throw new Error(
+            `Falha na autenticação do Artia: ${authError.message}`
+          );
+        }
+
+        if (!authToken) {
+          throw new Error('Falha na autenticação do Artia: Token não recebido');
         }
 
         // Processar atividades em sequência com delay
@@ -392,6 +662,9 @@ export const useActivityImport = () => {
         };
 
         saveToHistory(completeResults);
+
+        // Limpar sessão após importação bem-sucedida
+        clearSession();
 
         // Feedback final
         const successCount = results.success.length;
@@ -572,6 +845,12 @@ export const useActivityImport = () => {
     clearHistory,
     removeHistoryItem,
     downloadTemplate,
+
+    // Sessão
+    sessionId,
+    saveSession,
+    loadSession,
+    clearSession,
   };
 };
 

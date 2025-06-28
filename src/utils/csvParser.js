@@ -93,10 +93,6 @@ export const parseCSV = csvContent => {
         .toLowerCase()
     );
 
-    // Debug temporário
-    console.log('Headers encontrados:', headers);
-    console.log('Total de linhas:', lines.length);
-
     // Validar headers obrigatórios
     const missingHeaders = ['tipo', 'titulo'].filter(
       required => !headers.includes(required)
@@ -114,18 +110,19 @@ export const parseCSV = csvContent => {
       const lineNumber = i + 1;
       const line = lines[i];
 
-      // Pular linhas de comentário (que começam com aspas e contêm "LEGENDA", "TIPO:", etc.)
+      // Pular linhas de comentário (que começam com aspas e contêm palavras-chave específicas)
       if (
         line.startsWith('"') &&
         (line.includes('LEGENDA') ||
           line.includes('TIPO:') ||
-          line.includes('OBRIGATÓRIO'))
+          line.includes('OBRIGATÓRIO') ||
+          line.includes('CAMPOS OBRIGATÓRIOS'))
       ) {
         continue;
       }
 
-      // Pular linhas que são apenas vírgulas (separadores)
-      if (line.replace(/,/g, '').trim() === '') {
+      // Pular linhas que são apenas vírgulas ou espaços (separadores)
+      if (/^[\s,]*$/.test(line)) {
         continue;
       }
 
@@ -154,10 +151,6 @@ export const parseCSV = csvContent => {
         data.push({ ...transformedActivity, _originalLine: lineNumber });
       }
     }
-
-    // Debug temporário
-    console.log('Dados processados:', data.length);
-    console.log('Erros encontrados:', errors.length);
 
     return { data, errors };
   } catch (error) {

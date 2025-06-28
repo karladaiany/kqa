@@ -153,3 +153,166 @@ Bug Produção,Login não funciona no Chrome,MOV-98765,Alto,Desktop,Login,Autent
 ---
 
 💡 **Dúvidas?** O sistema mostra erros detalhados durante a validação, indicando exatamente quais campos estão faltando ou incorretos!
+
+# ActivityImportCard - Importação de Atividades
+
+## 📋 Visão Geral
+
+O `ActivityImportCard` é um componente React avançado para importação de atividades via arquivo CSV para o sistema Artia. Oferece uma interface completa com validação, preview, histórico e **persistência de sessão**.
+
+## ✨ Funcionalidades Principais
+
+### 🔄 **Persistência de Sessão (NOVO!)**
+
+- **Recuperação automática**: Após refresh da página, o progresso é mantido
+- **Notificação visual**: Banner azul informa sobre sessão recuperada
+- **Continuidade**: Possibilidade de continuar exatamente de onde parou
+- **Expiração**: Sessões expiram após 24 horas automaticamente
+- **Controle manual**: Botão para iniciar nova importação quando necessário
+
+### 📁 Download de Template
+
+- **Seleção de tipos**: Escolha quais tipos de atividade incluir
+- **Template personalizado**: CSV gerado com apenas os campos necessários
+- **Guia completo**: Painel informativo com instruções detalhadas
+- **Conversão de datas**: Suporte automático para formato brasileiro (DD/MM/YYYY)
+
+### 📤 Upload e Validação
+
+- **Drag & Drop**: Interface intuitiva para seleção de arquivos
+- **Validação robusta**: Verificação de formato, estrutura e dados
+- **Conversão automática**: Datas brasileiras convertidas para ISO automaticamente
+- **Feedback detalhado**: Erros específicos com linha e descrição
+
+### 👀 Preview Inteligente
+
+- **Visualização completa**: Tabela com todas as atividades a serem importadas
+- **Indicadores visuais**: Status de validação por linha
+- **Estatísticas**: Contadores de sucessos, erros e warnings
+- **Recomendações**: Sugestões automáticas para correção
+
+### 🚀 Importação
+
+- **Processo controlado**: Importação com feedback em tempo real
+- **Barra de progresso**: Acompanhamento visual do processo
+- **Relatório automático**: Download do relatório de importação
+- **Tratamento de erros**: Captura e exibição de erros específicos
+
+### 📊 Histórico Completo
+
+- **Tabela profissional**: Histórico de todas as importações
+- **Todos os erros**: Parse, validação e importação salvos
+- **Remoção individual**: Botão para remover itens específicos
+- **Persistência**: Histórico mantido no localStorage
+
+## 🔧 Estados da Importação
+
+### Fluxo Principal
+
+1. **IDLE** - Estado inicial, aguardando arquivo
+2. **FILE_SELECTED** - Arquivo selecionado, pronto para processar
+3. **PARSING** - Fazendo parse do CSV
+4. **VALIDATING** - Validando dados
+5. **PREVIEW** - Exibindo preview para confirmação
+6. **IMPORTING** - Executando importação
+7. **COMPLETED** - Importação finalizada com sucesso
+8. **ERROR** - Erro em qualquer etapa
+
+### 🔄 Persistência de Estados
+
+- **Sessão salva**: Estados PREVIEW, VALIDATING, PARSING são persistidos
+- **Recuperação**: Ao recarregar, usuário continua do estado salvo
+- **Expiração**: 24 horas após última atividade
+- **Limpeza**: Sessão limpa automaticamente após importação completa
+
+## 💾 Armazenamento Local
+
+### Chaves localStorage
+
+- `kqa_import_history`: Histórico de importações (máx. 10 itens)
+- `kqa_import_session`: Sessão ativa atual
+- `activityImportExpanded`: Estado de expansão do card
+
+### Estrutura da Sessão
+
+```javascript
+{
+  id: timestamp,
+  timestamp: ISO_string,
+  currentState: string,
+  importName: string,
+  importMode: string,
+  parsedData: array,
+  validatedData: array,
+  parseErrors: array,
+  validationErrors: array,
+  processResults: object,
+  fileName: string
+}
+```
+
+## 🎯 Como Testar a Persistência
+
+### Cenário 1: Recuperação após Preview
+
+1. Faça upload de um arquivo CSV válido
+2. Aguarde o processamento até chegar no preview
+3. Recarregue a página (F5)
+4. ✅ Banner azul deve aparecer
+5. ✅ Preview deve estar disponível
+6. ✅ Pode continuar para importação
+
+### Cenário 2: Recuperação com Erros
+
+1. Faça upload de um arquivo com erros
+2. Aguarde o processamento
+3. Recarregue a página
+4. ✅ Banner azul deve aparecer
+5. ✅ Erros devem estar visíveis
+6. ✅ Pode corrigir e tentar novamente
+
+### Cenário 3: Nova Importação
+
+1. Com uma sessão ativa
+2. Clique no botão 🗑️ no banner azul
+3. ✅ Sessão deve ser limpa
+4. ✅ Card volta ao estado inicial
+5. ✅ Pode iniciar nova importação
+
+## 🔒 Segurança e Performance
+
+### Validações
+
+- **Tipo de arquivo**: Apenas .csv aceito
+- **Tamanho**: Limite de 10MB
+- **Estrutura**: Validação de headers obrigatórios
+- **Dados**: Validação de campos por tipo de atividade
+
+### Performance
+
+- **Processamento assíncrono**: Não bloqueia interface
+- **Chunks de dados**: Processamento em lotes
+- **Debounce**: Evita múltiplas operações simultâneas
+- **Cleanup**: Limpeza automática de sessões antigas
+
+### Segurança
+
+- **Sanitização**: Limpeza de dados de entrada
+- **Validação**: Múltiplas camadas de verificação
+- **Escape**: Prevenção de XSS em dados CSV
+- **Timeout**: Expiração automática de sessões
+
+## 🔄 Fluxo de Dados
+
+```
+Arquivo CSV → Parse → Validação → Preview → Importação
+     ↓           ↓         ↓         ↓         ↓
+  Sessão    Sessão    Sessão    Sessão   Limpeza
+   Salva     Salva     Salva     Salva   Sessão
+```
+
+## 📱 Responsividade
+
+- **Desktop**: Interface completa com todas as funcionalidades
+- **Tablet**: Layout adaptado, tabelas responsivas
+- **Mobile**: Interface simplificada, navegação otimizada

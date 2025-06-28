@@ -790,11 +790,11 @@ const ActivityImportCard = () => {
                   Importação
                 </h4>
                 <p>
-                  Baixe o template CSV com exemplos dos tipos de atividade
+                  Baixe o template CSV personalizado para importação
                   <button
                     className={`info-trigger-btn selection-btn ${showInfoPanel ? 'active' : ''}`}
                     onClick={() => setShowInfoPanel(!showInfoPanel)}
-                    title='Como usar e identificar campos obrigatórios'
+                    title='Configurar tipos e ver orientações'
                   >
                     <FaInfoCircle />
                   </button>
@@ -802,47 +802,8 @@ const ActivityImportCard = () => {
               </div>
             </div>
 
-            <div className='activity-types-selector'>
-              <div className='selector-header'>
-                <label className='selector-label'>
-                  Tipos a incluir no template:
-                </label>
-                <div className='selection-actions'>
-                  <button
-                    className='btn-icon selection-btn'
-                    onClick={() => setSelectedTypes(enabledActivityTypesValues)}
-                    title='Selecionar todos os tipos'
-                  >
-                    <FaCheckDouble />
-                  </button>
-                  <button
-                    className='btn-icon selection-btn'
-                    onClick={() => setSelectedTypes([])}
-                    title='Limpar seleção'
-                  >
-                    <FaEraser />
-                  </button>
-                </div>
-              </div>
-              <div className='toggle-buttons-grid'>
-                {enabledActivityTypesValues.map(type => (
-                  <button
-                    key={type}
-                    className={`toggle-button ${selectedTypes.includes(type) ? 'active' : ''}`}
-                    onClick={() => toggleActivityType(type)}
-                  >
-                    <div className='toggle-content'>
-                      <span className='toggle-icon'>
-                        {selectedTypes.includes(type) ? '✓' : '+'}
-                      </span>
-                      <span className='toggle-text'>{type}</span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className='download-action'>
+            {/* Botão de download direto - sempre visível */}
+            <div className='download-action-simple'>
               <button
                 className={`btn-download ${selectedTypes.length === 0 ? 'disabled' : ''}`}
                 onClick={() => downloadTemplate(selectedTypes)}
@@ -851,8 +812,8 @@ const ActivityImportCard = () => {
                 <FaDownload />
                 <span>
                   {selectedTypes.length === 0
-                    ? 'Selecione pelo menos um tipo'
-                    : `Baixar Template (${selectedTypes.length} tipos)`}
+                    ? 'Configure os tipos primeiro ↗️'
+                    : 'Baixar modelo'}
                 </span>
               </button>
             </div>
@@ -862,8 +823,8 @@ const ActivityImportCard = () => {
               <div className='info-panel'>
                 <div className='info-panel-header'>
                   <h4>
-                    <FaClipboardList className='panel-icon' /> Guia Completo de
-                    Importação
+                    <FaClipboardList className='panel-icon' /> Configuração e
+                    Orientações
                   </h4>
                   <button
                     className='close-panel-btn selection-btn'
@@ -873,7 +834,49 @@ const ActivityImportCard = () => {
                   </button>
                 </div>
                 <div className='info-panel-content'>
-                  {/* Seção 1: Campos Obrigatórios */}
+                  {/* Seção 1: Seletor de tipos - movido para cá */}
+                  <div className='info-section'>
+                    <h4>🎯 Tipos a incluir no template</h4>
+                    <div className='activity-types-selector'>
+                      <div className='selector-header'>
+                        <div className='selection-actions'>
+                          <button
+                            className='btn-icon selection-btn'
+                            onClick={() =>
+                              setSelectedTypes(enabledActivityTypesValues)
+                            }
+                            title='Selecionar todos os tipos'
+                          >
+                            <FaCheckDouble />
+                          </button>
+                          <button
+                            className='btn-icon selection-btn'
+                            onClick={() => setSelectedTypes([])}
+                            title='Limpar seleção'
+                          >
+                            <FaEraser />
+                          </button>
+                        </div>
+                      </div>
+                      <div className='toggle-buttons-grid'>
+                        {enabledActivityTypesValues.map(type => (
+                          <button
+                            key={type}
+                            className={`toggle-button ${selectedTypes.includes(type) ? 'active' : ''}`}
+                            onClick={() => toggleActivityType(type)}
+                          >
+                            <div className='toggle-content'>
+                              <span className='toggle-icon'>
+                                {selectedTypes.includes(type) ? '✓' : '+'}
+                              </span>
+                              <span className='toggle-text'>{type}</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  {/* Seção 2: Campos Obrigatórios */}
                   <div className='info-section'>
                     <h4>🎯 Como identificar campos obrigatórios</h4>
                     <div className='field-indicators'>
@@ -889,7 +892,7 @@ const ActivityImportCard = () => {
                     </div>
                   </div>
 
-                  {/* Seção 2: Tutorial Excel */}
+                  {/* Seção 3: Tutorial Excel */}
                   <div className='info-section info-section-spaced'>
                     <h4>📊 Como usar no Excel (RECOMENDADO)</h4>
                     <div className='excel-steps'>
@@ -936,7 +939,7 @@ const ActivityImportCard = () => {
                     </div>
                   </div>
 
-                  {/* Seção 3: Tipos de Atividade */}
+                  {/* Seção 4: Tipos de Atividade */}
                   <div className='info-section info-section-spaced'>
                     <h4>📑 Campos obrigatórios por tipo</h4>
                     <div className='activity-types-info'>
@@ -983,7 +986,7 @@ const ActivityImportCard = () => {
                     </div>
                   </div>
 
-                  {/* Seção 4: Dicas */}
+                  {/* Seção 5: Dicas */}
                   <div className='info-section info-section-spaced'>
                     <h4>💡 Dicas importantes</h4>
                     <div className='tips-list'>
