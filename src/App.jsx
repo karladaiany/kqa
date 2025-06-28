@@ -136,9 +136,6 @@ const App = () => {
           <FaClipboardList className='section-icon' /> Registros de dados
         </h2>
         <main>
-          {/* Card de Importação de Atividades */}
-          <ActivityImportCard />
-
           {/* Dividir os cards de BUG e Comentário QA em duas colunas para melhor visualização
               BugRegistrationCard à esquerda e TestStatusCard à direita */}
           <div className='row'>
@@ -150,6 +147,9 @@ const App = () => {
             </div>
           </div>
           <DeployCard />
+
+          {/* Card de Importação de Atividades - movido para depois do Deploy */}
+          <ActivityImportCard />
         </main>
 
         <h2 className='section-title'>

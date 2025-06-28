@@ -23,6 +23,8 @@ import {
   FaClipboardList,
   FaCheckDouble,
   FaEraser,
+  FaPlus,
+  FaMinus,
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
@@ -71,10 +73,15 @@ const ActivityImportCard = () => {
     executeImport,
     resetImport,
     clearHistory,
+    removeHistoryItem,
     downloadTemplate,
   } = useActivityImport();
 
   // Estados locais do componente
+  const [expanded, setExpanded] = useState(() => {
+    const savedState = localStorage.getItem('activityImportExpanded');
+    return savedState ? JSON.parse(savedState) : false;
+  });
   const [showHistory, setShowHistory] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [showInfoPanel, setShowInfoPanel] = useState(false);
@@ -89,6 +96,26 @@ const ActivityImportCard = () => {
   );
 
   const fileInputRef = useRef(null);
+
+  // Persistir estado de expansão
+  React.useEffect(() => {
+    localStorage.setItem('activityImportExpanded', JSON.stringify(expanded));
+  }, [expanded]);
+
+  // Função para verificar se há dados/atividade em andamento
+  const hasAnyData = useCallback(() => {
+    return (
+      selectedFile ||
+      currentState !== IMPORT_STATES.IDLE ||
+      importHistory.length > 0
+    );
+  }, [selectedFile, currentState, importHistory.length]);
+
+  // Exibe campos se houver dados ou se estiver expandido
+  const showFields = React.useMemo(
+    () => expanded || hasAnyData(),
+    [expanded, hasAnyData]
+  );
 
   /**
    * Toggle de tipo de atividade
@@ -297,6 +324,21 @@ const ActivityImportCard = () => {
   };
 
   /**
+   * Remover item individual do histórico
+   */
+  const handleRemoveHistoryItem = useCallback(
+    itemId => {
+      if (
+        window.confirm('Tem certeza que deseja remover este item do histórico?')
+      ) {
+        removeHistoryItem(itemId);
+        toast.info('Item removido do histórico');
+      }
+    },
+    [removeHistoryItem]
+  );
+
+  /**
    * Renderizar estado atual
    */
   const renderCurrentState = () => {
@@ -417,7 +459,7 @@ const ActivityImportCard = () => {
         </div>
       </div>
 
-      <button className='btn-primary' onClick={handleProcessFile}>
+      <button className='btn-action' onClick={handleProcessFile}>
         <FaRocket /> Processar Arquivo
       </button>
     </div>
@@ -695,7 +737,7 @@ const ActivityImportCard = () => {
         <h4>❌ Erro na Importação</h4>
         <p>Verifique o arquivo e tente novamente.</p>
 
-        <button className='btn-primary' onClick={resetImport}>
+        <button className='btn-action' onClick={resetImport}>
           <FaRocket /> Tentar Novamente
         </button>
       </div>
@@ -703,314 +745,393 @@ const ActivityImportCard = () => {
   );
 
   return (
-    <div className='card activity-import-card'>
+    <section className='card' id='activity-import'>
       <div className='card-header'>
-        <div className='card-title'>
-          <FaFileImport className='card-icon' />
-          <span>Importação de Atividades</span>
-        </div>
-
-        <div className='card-actions'>
+        <h2>
+          <FaFileImport className='header-icon' /> Importação de Atividades
+        </h2>
+        {!showFields && (
           <button
-            className='btn-icon'
-            onClick={() => downloadTemplate(selectedTypes)}
-            title='Baixar template CSV'
+            className='generate-all-btn'
+            onClick={() => setExpanded(true)}
+            title='Nova importação de atividades'
           >
-            <FaDownload />
+            +
           </button>
-
-          <button
-            className='btn-icon'
-            onClick={() => setShowHistory(!showHistory)}
-            title='Histórico de importações'
-          >
-            <FaHistory />
-          </button>
-
-          <button
-            className='btn-icon'
-            onClick={resetImport}
-            title='Reset importação'
-          >
-            <FaTimes />
-          </button>
-        </div>
-      </div>
-
-      <div className='card-content'>
-        {/* Template Download Section */}
-        <div className='template-section'>
-          <div className='template-header'>
-            <div className='template-title'>
-              <h4>
-                <FaClipboardList className='section-icon' /> Modelo de
-                Importação
-              </h4>
-              <p>
-                Baixe o template CSV com exemplos dos tipos de atividade
-                <button
-                  className='info-trigger-btn'
-                  onClick={() => setShowInfoPanel(!showInfoPanel)}
-                  title='Como usar e identificar campos obrigatórios'
-                >
-                  <FaInfoCircle />
-                </button>
-              </p>
-            </div>
-          </div>
-
-          <div className='activity-types-selector'>
-            <div className='selector-header'>
-              <label className='selector-label'>
-                Tipos a incluir no template:
-              </label>
-              <div className='selection-actions'>
-                <button
-                  className='btn-icon selection-btn'
-                  onClick={() => setSelectedTypes(enabledActivityTypesValues)}
-                  title='Selecionar todos os tipos'
-                >
-                  <FaCheckDouble />
-                </button>
-                <button
-                  className='btn-icon selection-btn'
-                  onClick={() => setSelectedTypes([])}
-                  title='Limpar seleção'
-                >
-                  <FaEraser />
-                </button>
-              </div>
-            </div>
-            <div className='toggle-buttons-grid'>
-              {enabledActivityTypesValues.map(type => (
-                <button
-                  key={type}
-                  className={`toggle-button ${selectedTypes.includes(type) ? 'active' : ''}`}
-                  onClick={() => toggleActivityType(type)}
-                >
-                  <div className='toggle-content'>
-                    <span className='toggle-icon'>
-                      {selectedTypes.includes(type) ? '✓' : '+'}
-                    </span>
-                    <span className='toggle-text'>{type}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className='download-action'>
+        )}
+        {showFields && (
+          <div className='card-actions'>
             <button
-              className={`btn-download ${selectedTypes.length === 0 ? 'disabled' : ''}`}
-              onClick={() => downloadTemplate(selectedTypes)}
-              disabled={selectedTypes.length === 0}
+              className={`btn-icon selection-btn ${showHistory ? 'active' : ''}`}
+              onClick={() => setShowHistory(!showHistory)}
+              title='Histórico de importações'
             >
-              <FaDownload />
-              <span>
-                {selectedTypes.length === 0
-                  ? 'Selecione pelo menos um tipo'
-                  : `Baixar Template (${selectedTypes.length} tipos)`}
-              </span>
+              <FaHistory />
             </button>
-          </div>
-
-          {/* Painel informativo */}
-          {showInfoPanel && (
-            <div className='info-panel'>
-              <div className='info-panel-header'>
-                <h4>
-                  <FaClipboardList className='panel-icon' /> Guia Completo de
-                  Importação
-                </h4>
-                <button
-                  className='close-panel-btn'
-                  onClick={() => setShowInfoPanel(false)}
-                >
-                  <FaTimes />
-                </button>
-              </div>
-              <div className='info-panel-content'>
-                {/* Seção 1: Campos Obrigatórios */}
-                <div className='info-section'>
-                  <h4>🎯 Como identificar campos obrigatórios</h4>
-                  <div className='field-indicators'>
-                    <div className='indicator required'>
-                      <strong>(*)</strong> = Sempre obrigatório
-                    </div>
-                    <div className='indicator conditional'>
-                      <strong>(**)</strong> = Obrigatório para alguns tipos
-                    </div>
-                    <div className='indicator optional'>
-                      <strong>sem indicador</strong> = Opcional
-                    </div>
-                  </div>
-                </div>
-
-                {/* Seção 2: Tutorial Excel */}
-                <div className='info-section info-section-spaced'>
-                  <h4>📊 Como usar no Excel (RECOMENDADO)</h4>
-                  <div className='excel-steps'>
-                    <div className='step'>
-                      <strong>1. Abra o Excel</strong>
-                      <p>Crie uma nova planilha em branco</p>
-                    </div>
-
-                    <div className='step'>
-                      <strong>2. Importe o CSV</strong>
-                      <p>Dados → Obter Dados → De Arquivo → Do Texto/CSV</p>
-                    </div>
-
-                    <div className='step'>
-                      <strong>3. Configure a importação</strong>
-                      <p>
-                        Delimiter: Vírgula, Codificação: UTF-8, clique em
-                        &quot;Carregar&quot;
-                      </p>
-                    </div>
-
-                    <div className='step'>
-                      <strong>4. Limpe o arquivo</strong>
-                      <p>
-                        ⚠️ DELETE as linhas explicativas (linhas com
-                        &quot;LEGENDA&quot; e &quot;TIPO:&quot;)
-                      </p>
-                    </div>
-
-                    <div className='step'>
-                      <strong>5. Preencha seus dados</strong>
-                      <p>
-                        Use os exemplos como base e preencha os campos{' '}
-                        <strong>obrigatórios</strong>
-                      </p>
-                    </div>
-
-                    <div className='step'>
-                      <strong>6. Salve como CSV</strong>
-                      <p>
-                        Arquivo → Salvar Como → CSV (delimitado por vírgula)
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Seção 3: Tipos de Atividade */}
-                <div className='info-section info-section-spaced'>
-                  <h4>📑 Campos obrigatórios por tipo</h4>
-                  <div className='activity-types-info'>
-                    <div
-                      className='type-info'
-                      style={{ borderLeft: '4px solid #08ECCC' }}
-                    >
-                      <strong>Desenvolvimento</strong>{' '}
-                      <span className='field-count'>4 campos</span>
-                      <p>Tipo, título, funcionalidade, sub-funcionalidade</p>
-                    </div>
-                    <div
-                      className='type-info'
-                      style={{ borderLeft: '4px solid #F90EF4' }}
-                    >
-                      <strong>Execução de testes</strong>{' '}
-                      <span className='field-count'>4 campos</span>
-                      <p>Tipo, título, funcionalidade, sub-funcionalidade</p>
-                    </div>
-                    <div
-                      className='type-info'
-                      style={{ borderLeft: '4px solid #89B0EB' }}
-                    >
-                      <strong>Teste de mesa</strong>{' '}
-                      <span className='field-count'>4 campos</span>
-                      <p>Tipo, título, funcionalidade, sub-funcionalidade</p>
-                    </div>
-                    <div
-                      className='type-info'
-                      style={{ borderLeft: '4px solid #90F485' }}
-                    >
-                      <strong>Análise de testes</strong>{' '}
-                      <span className='field-count'>4 campos</span>
-                      <p>Tipo, título, funcionalidade, sub-funcionalidade</p>
-                    </div>
-                    <div
-                      className='type-info'
-                      style={{ borderLeft: '4px solid #F1D8D8' }}
-                    >
-                      <strong>Documentação</strong>{' '}
-                      <span className='field-count'>2 campos</span>
-                      <p>Apenas tipo e título</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Seção 4: Dicas */}
-                <div className='info-section info-section-spaced'>
-                  <h4>💡 Dicas importantes</h4>
-                  <div className='tips-list'>
-                    <div className='tip'>
-                      <div className='tip-row'>
-                        <div className='tip-item'>
-                          <strong>✅ Use valores exatos</strong>
-                          <p>
-                            Urgência: &quot;Baixo&quot;, &quot;Médio&quot;,
-                            &quot;Alto&quot;, &quot;Crítico&quot;
-                          </p>
-                        </div>
-                        <div className='tip-item'>
-                          <strong>⚠️ Delete comentários</strong>
-                          <p>Remova linhas explicativas antes de importar</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Main Import Section */}
-        {renderCurrentState()}
-
-        {/* History Section */}
-        {showHistory && (
-          <div className='history-section'>
-            <div className='history-header'>
-              <h4>📚 Histórico de Importações ({importHistory.length})</h4>
-              {importHistory.length > 0 && (
-                <button className='btn-secondary' onClick={clearHistory}>
-                  <FaTrash /> Limpar Histórico
-                </button>
-              )}
-            </div>
-
-            {importHistory.length === 0 ? (
-              <p className='no-history'>Nenhuma importação realizada ainda.</p>
-            ) : (
-              <div className='history-list'>
-                {importHistory.map(item => (
-                  <div key={item.id} className='history-item'>
-                    <div className='history-info'>
-                      <strong>{item.importName}</strong>
-                      <small>
-                        {new Date(item.timestamp).toLocaleString('pt-BR')}
-                      </small>
-                      <div className='history-stats'>
-                        ✅ {item.successCount} sucessos | ❌ {item.errorCount}{' '}
-                        erros
-                      </div>
-                    </div>
-                    <button
-                      className='btn-secondary'
-                      onClick={() => handleRedownload(item)}
-                    >
-                      <FaDownload /> Baixar
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
+            <button
+              className='btn-icon selection-btn'
+              onClick={() => setExpanded(false)}
+              title='Colapsar card'
+            >
+              <FaMinus />
+            </button>
           </div>
         )}
       </div>
-    </div>
+
+      {showFields && (
+        <div className='card-content'>
+          {/* Template Download Section */}
+          <div className='template-section'>
+            <div className='template-header'>
+              <div className='template-title'>
+                <h4>
+                  <FaClipboardList className='section-icon' /> Modelo de
+                  Importação
+                </h4>
+                <p>
+                  Baixe o template CSV com exemplos dos tipos de atividade
+                  <button
+                    className={`info-trigger-btn selection-btn ${showInfoPanel ? 'active' : ''}`}
+                    onClick={() => setShowInfoPanel(!showInfoPanel)}
+                    title='Como usar e identificar campos obrigatórios'
+                  >
+                    <FaInfoCircle />
+                  </button>
+                </p>
+              </div>
+            </div>
+
+            <div className='activity-types-selector'>
+              <div className='selector-header'>
+                <label className='selector-label'>
+                  Tipos a incluir no template:
+                </label>
+                <div className='selection-actions'>
+                  <button
+                    className='btn-icon selection-btn'
+                    onClick={() => setSelectedTypes(enabledActivityTypesValues)}
+                    title='Selecionar todos os tipos'
+                  >
+                    <FaCheckDouble />
+                  </button>
+                  <button
+                    className='btn-icon selection-btn'
+                    onClick={() => setSelectedTypes([])}
+                    title='Limpar seleção'
+                  >
+                    <FaEraser />
+                  </button>
+                </div>
+              </div>
+              <div className='toggle-buttons-grid'>
+                {enabledActivityTypesValues.map(type => (
+                  <button
+                    key={type}
+                    className={`toggle-button ${selectedTypes.includes(type) ? 'active' : ''}`}
+                    onClick={() => toggleActivityType(type)}
+                  >
+                    <div className='toggle-content'>
+                      <span className='toggle-icon'>
+                        {selectedTypes.includes(type) ? '✓' : '+'}
+                      </span>
+                      <span className='toggle-text'>{type}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className='download-action'>
+              <button
+                className={`btn-download ${selectedTypes.length === 0 ? 'disabled' : ''}`}
+                onClick={() => downloadTemplate(selectedTypes)}
+                disabled={selectedTypes.length === 0}
+              >
+                <FaDownload />
+                <span>
+                  {selectedTypes.length === 0
+                    ? 'Selecione pelo menos um tipo'
+                    : `Baixar Template (${selectedTypes.length} tipos)`}
+                </span>
+              </button>
+            </div>
+
+            {/* Painel informativo */}
+            {showInfoPanel && (
+              <div className='info-panel'>
+                <div className='info-panel-header'>
+                  <h4>
+                    <FaClipboardList className='panel-icon' /> Guia Completo de
+                    Importação
+                  </h4>
+                  <button
+                    className='close-panel-btn selection-btn'
+                    onClick={() => setShowInfoPanel(false)}
+                  >
+                    <FaTimes />
+                  </button>
+                </div>
+                <div className='info-panel-content'>
+                  {/* Seção 1: Campos Obrigatórios */}
+                  <div className='info-section'>
+                    <h4>🎯 Como identificar campos obrigatórios</h4>
+                    <div className='field-indicators'>
+                      <div className='indicator required'>
+                        <strong>(*)</strong> = Sempre obrigatório
+                      </div>
+                      <div className='indicator conditional'>
+                        <strong>(**)</strong> = Obrigatório para alguns tipos
+                      </div>
+                      <div className='indicator optional'>
+                        <strong>sem indicador</strong> = Opcional
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Seção 2: Tutorial Excel */}
+                  <div className='info-section info-section-spaced'>
+                    <h4>📊 Como usar no Excel (RECOMENDADO)</h4>
+                    <div className='excel-steps'>
+                      <div className='step'>
+                        <strong>1. Abra o Excel</strong>
+                        <p>Crie uma nova planilha em branco</p>
+                      </div>
+
+                      <div className='step'>
+                        <strong>2. Importe o CSV</strong>
+                        <p>Dados → Obter Dados → De Arquivo → Do Texto/CSV</p>
+                      </div>
+
+                      <div className='step'>
+                        <strong>3. Configure a importação</strong>
+                        <p>
+                          Delimiter: Vírgula, Codificação: UTF-8, clique em
+                          &quot;Carregar&quot;
+                        </p>
+                      </div>
+
+                      <div className='step'>
+                        <strong>4. Limpe o arquivo</strong>
+                        <p>
+                          ⚠️ DELETE as linhas explicativas (linhas com
+                          &quot;LEGENDA&quot; e &quot;TIPO:&quot;)
+                        </p>
+                      </div>
+
+                      <div className='step'>
+                        <strong>5. Preencha seus dados</strong>
+                        <p>
+                          Use os exemplos como base e preencha os campos{' '}
+                          <strong>obrigatórios</strong>
+                        </p>
+                      </div>
+
+                      <div className='step'>
+                        <strong>6. Salve como CSV</strong>
+                        <p>
+                          Arquivo → Salvar Como → CSV (delimitado por vírgula)
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Seção 3: Tipos de Atividade */}
+                  <div className='info-section info-section-spaced'>
+                    <h4>📑 Campos obrigatórios por tipo</h4>
+                    <div className='activity-types-info'>
+                      <div
+                        className='type-info'
+                        style={{ borderLeft: '4px solid #08ECCC' }}
+                      >
+                        <strong>Desenvolvimento</strong>{' '}
+                        <span className='field-count'>4 campos</span>
+                        <p>Tipo, título, funcionalidade, sub-funcionalidade</p>
+                      </div>
+                      <div
+                        className='type-info'
+                        style={{ borderLeft: '4px solid #F90EF4' }}
+                      >
+                        <strong>Execução de testes</strong>{' '}
+                        <span className='field-count'>4 campos</span>
+                        <p>Tipo, título, funcionalidade, sub-funcionalidade</p>
+                      </div>
+                      <div
+                        className='type-info'
+                        style={{ borderLeft: '4px solid #89B0EB' }}
+                      >
+                        <strong>Teste de mesa</strong>{' '}
+                        <span className='field-count'>4 campos</span>
+                        <p>Tipo, título, funcionalidade, sub-funcionalidade</p>
+                      </div>
+                      <div
+                        className='type-info'
+                        style={{ borderLeft: '4px solid #90F485' }}
+                      >
+                        <strong>Análise de testes</strong>{' '}
+                        <span className='field-count'>4 campos</span>
+                        <p>Tipo, título, funcionalidade, sub-funcionalidade</p>
+                      </div>
+                      <div
+                        className='type-info'
+                        style={{ borderLeft: '4px solid #F1D8D8' }}
+                      >
+                        <strong>Documentação</strong>{' '}
+                        <span className='field-count'>2 campos</span>
+                        <p>Apenas tipo e título</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Seção 4: Dicas */}
+                  <div className='info-section info-section-spaced'>
+                    <h4>💡 Dicas importantes</h4>
+                    <div className='tips-list'>
+                      <div className='tip'>
+                        <div className='tip-row'>
+                          <div className='tip-item'>
+                            <strong>✅ Use valores exatos</strong>
+                            <p>
+                              Urgência: &quot;Baixo&quot;, &quot;Médio&quot;,
+                              &quot;Alto&quot;, &quot;Crítico&quot;
+                            </p>
+                          </div>
+                          <div className='tip-item'>
+                            <strong>⚠️ Delete comentários</strong>
+                            <p>Remova linhas explicativas antes de importar</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Main Import Section */}
+          {renderCurrentState()}
+
+          {/* History Section */}
+          {showHistory && (
+            <div className='history-section'>
+              <div className='history-header'>
+                <h4>
+                  <FaHistory className='section-icon' /> Histórico de
+                  Importações
+                </h4>
+                {importHistory.length > 0 && (
+                  <button
+                    className='btn-icon-only'
+                    onClick={clearHistory}
+                    title='Limpar histórico'
+                  >
+                    <FaTrash />
+                  </button>
+                )}
+              </div>
+
+              {importHistory.length === 0 ? (
+                <p className='no-history'>Nenhuma importação realizada</p>
+              ) : (
+                <div className='history-table-container'>
+                  <table className='history-table'>
+                    <thead>
+                      <tr>
+                        <th>Nome</th>
+                        <th>Data</th>
+                        <th>Hora</th>
+                        <th>Status</th>
+                        <th>Erro(s)</th>
+                        <th>Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {importHistory.map(item => (
+                        <tr key={item.id}>
+                          <td title={item.importName}>{item.importName}</td>
+                          <td>
+                            {new Date(item.timestamp).toLocaleDateString(
+                              'pt-BR'
+                            )}
+                          </td>
+                          <td>
+                            {new Date(item.timestamp).toLocaleTimeString(
+                              'pt-BR',
+                              { hour: '2-digit', minute: '2-digit' }
+                            )}
+                          </td>
+                          <td>
+                            {item.status === 'error' ||
+                            item.status === 'parse_error' ||
+                            item.status === 'read_error' ? (
+                              <span className='status-error'>
+                                ❌{' '}
+                                {item.status === 'parse_error'
+                                  ? 'Formatação'
+                                  : item.status === 'read_error'
+                                    ? 'Leitura'
+                                    : 'Importação'}
+                              </span>
+                            ) : (
+                              <span className='status-success'>
+                                ✅ Concluído
+                              </span>
+                            )}
+                          </td>
+                          <td>
+                            {item.status === 'error' ||
+                            item.status === 'parse_error' ||
+                            item.status === 'read_error' ? (
+                              <div className='error-details'>
+                                {item.results?.errors?.map((error, index) => (
+                                  <div key={index} className='error-line'>
+                                    <strong>Linha {error.line}:</strong>{' '}
+                                    {error.error}
+                                  </div>
+                                )) || (
+                                  <div className='error-line'>
+                                    <strong>Erro geral:</strong>{' '}
+                                    {item.errorMessage}
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <span className='success-summary'>
+                                {item.successCount} sucessos, {item.errorCount}{' '}
+                                erros
+                              </span>
+                            )}
+                          </td>
+                          <td>
+                            <div className='action-buttons'>
+                              <button
+                                className='btn-icon-small'
+                                onClick={() => handleRedownload(item)}
+                                title='Baixar relatório'
+                              >
+                                <FaDownload />
+                              </button>
+                              <button
+                                className='btn-icon-small btn-danger'
+                                onClick={() => handleRemoveHistoryItem(item.id)}
+                                title='Remover do histórico'
+                              >
+                                <FaTimes />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </section>
   );
 };
 

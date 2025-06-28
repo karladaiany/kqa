@@ -83,11 +83,23 @@ export const parseCSV = csvContent => {
 
     // Primeira linha deve ser o header
     const headerLine = lines[0];
-    const headers = parseCSVLine(headerLine);
+    const rawHeaders = parseCSVLine(headerLine);
+
+    // Limpar indicadores (*) e (**) dos headers
+    const headers = rawHeaders.map(header =>
+      header
+        .replace(/\s*\(\*+\)\s*$/, '')
+        .trim()
+        .toLowerCase()
+    );
+
+    // Debug temporário
+    console.log('Headers encontrados:', headers);
+    console.log('Total de linhas:', lines.length);
 
     // Validar headers obrigatórios
     const missingHeaders = ['tipo', 'titulo'].filter(
-      required => !headers.some(h => h.toLowerCase() === required)
+      required => !headers.includes(required)
     );
 
     if (missingHeaders.length > 0) {
@@ -100,14 +112,34 @@ export const parseCSV = csvContent => {
     // Processar linhas de dados
     for (let i = 1; i < lines.length; i++) {
       const lineNumber = i + 1;
-      const values = parseCSVLine(lines[i]);
+      const line = lines[i];
+
+      // Pular linhas de comentário (que começam com aspas e contêm "LEGENDA", "TIPO:", etc.)
+      if (
+        line.startsWith('"') &&
+        (line.includes('LEGENDA') ||
+          line.includes('TIPO:') ||
+          line.includes('OBRIGATÓRIO'))
+      ) {
+        continue;
+      }
+
+      // Pular linhas que são apenas vírgulas (separadores)
+      if (line.replace(/,/g, '').trim() === '') {
+        continue;
+      }
+
+      const values = parseCSVLine(line);
 
       if (values.length === 0) continue; // Pular linhas vazias
+
+      // Pular se todos os valores são vazios
+      if (values.every(val => val.trim() === '')) continue;
 
       // Criar objeto da atividade
       const activity = {};
       headers.forEach((header, index) => {
-        const jsProperty = CSV_TO_JS_MAPPING[header.toLowerCase()] || header;
+        const jsProperty = CSV_TO_JS_MAPPING[header] || header;
         const value = values[index] || '';
         activity[jsProperty] = value.trim();
       });
@@ -122,6 +154,10 @@ export const parseCSV = csvContent => {
         data.push({ ...transformedActivity, _originalLine: lineNumber });
       }
     }
+
+    // Debug temporário
+    console.log('Dados processados:', data.length);
+    console.log('Erros encontrados:', errors.length);
 
     return { data, errors };
   } catch (error) {
@@ -200,17 +236,23 @@ const validateActivityLine = (activity, lineNumber) => {
     errors.push(`Linha ${lineNumber}: Campo 'titulo' é obrigatório`);
   }
 
-  // Validar formato de datas se preenchidas
-  if (activity.inicioEstimado && !isValidDate(activity.inicioEstimado)) {
-    errors.push(
-      `Linha ${lineNumber}: Data de início inválida. Use formato YYYY-MM-DD`
-    );
+  // Converter e validar formato de datas se preenchidas
+  if (activity.inicioEstimado) {
+    activity.inicioEstimado = convertDateToISO(activity.inicioEstimado);
+    if (!isValidDate(activity.inicioEstimado)) {
+      errors.push(
+        `Linha ${lineNumber}: Data de início inválida. Use formato DD/MM/YYYY ou YYYY-MM-DD`
+      );
+    }
   }
 
-  if (activity.terminoEstimado && !isValidDate(activity.terminoEstimado)) {
-    errors.push(
-      `Linha ${lineNumber}: Data de término inválida. Use formato YYYY-MM-DD`
-    );
+  if (activity.terminoEstimado) {
+    activity.terminoEstimado = convertDateToISO(activity.terminoEstimado);
+    if (!isValidDate(activity.terminoEstimado)) {
+      errors.push(
+        `Linha ${lineNumber}: Data de término inválida. Use formato DD/MM/YYYY ou YYYY-MM-DD`
+      );
+    }
   }
 
   // Validar esforço estimado se preenchido
@@ -245,6 +287,34 @@ const transformActivityData = activity => {
   }
 
   return transformed;
+};
+
+/**
+ * Converter data do formato brasileiro (DD/MM/YYYY) para ISO (YYYY-MM-DD)
+ * @param {string} dateString - String da data
+ * @returns {string} Data no formato ISO ou string original se já estiver correto
+ */
+const convertDateToISO = dateString => {
+  if (!dateString || dateString.trim() === '') return dateString;
+
+  // Se já está no formato ISO, retorna como está
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+    return dateString;
+  }
+
+  // Tentar converter do formato brasileiro DD/MM/YYYY
+  const brDateRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+  const match = dateString.match(brDateRegex);
+
+  if (match) {
+    const [, day, month, year] = match;
+    // Adicionar zeros à esquerda se necessário
+    const paddedDay = day.padStart(2, '0');
+    const paddedMonth = month.padStart(2, '0');
+    return `${year}-${paddedMonth}-${paddedDay}`;
+  }
+
+  return dateString; // Retorna original se não conseguir converter
 };
 
 /**
@@ -397,8 +467,8 @@ const getExampleForType = (type, index) => {
     titulo: `[${type.toUpperCase()}-${index.toString().padStart(3, '0')}] Exemplo de ${type}`,
     descricao: `Descrição detalhada da atividade de ${type}`,
     esforcoEstimado: '2.5',
-    inicioEstimado: startDate.toISOString().split('T')[0],
-    terminoEstimado: endDate.toISOString().split('T')[0],
+    inicioEstimado: `${startDate.getDate().toString().padStart(2, '0')}/${(startDate.getMonth() + 1).toString().padStart(2, '0')}/${startDate.getFullYear()}`,
+    terminoEstimado: `${endDate.getDate().toString().padStart(2, '0')}/${(endDate.getMonth() + 1).toString().padStart(2, '0')}/${endDate.getFullYear()}`,
     responsavel: 'Alexandre',
   };
 

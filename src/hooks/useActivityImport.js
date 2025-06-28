@@ -123,9 +123,49 @@ export const useActivityImport = () => {
 
       if (parseResult.errors.length > 0) {
         setCurrentState(IMPORT_STATES.ERROR);
-        toast.error(
-          `Erro no parse: ${parseResult.errors.length} erro(s) encontrado(s)`
+
+        // Mostrar erros específicos
+        const errorMessages = parseResult.errors.slice(0, 3).join('; ');
+        const moreErrors =
+          parseResult.errors.length > 3
+            ? ` e mais ${parseResult.errors.length - 3} erros`
+            : '';
+
+        // Salvar erro de parsing no histórico
+        const parseErrorHistoryItem = {
+          id: Date.now(),
+          timestamp: new Date().toISOString(),
+          importName: importName || 'Arquivo com erro de formatação',
+          totalActivities: 0,
+          successCount: 0,
+          errorCount: parseResult.errors.length,
+          results: {
+            success: [],
+            errors: parseResult.errors.map((error, index) => ({
+              line: index + 1,
+              title: 'Erro de formatação',
+              error: error,
+              details: 'Erro no parsing do arquivo CSV',
+            })),
+            total: 0,
+          },
+          status: 'parse_error',
+          errorMessage: `${errorMessages}${moreErrors}`,
+        };
+
+        const updatedHistory = [parseErrorHistoryItem, ...importHistory].slice(
+          0,
+          MAX_HISTORY_ITEMS
         );
+        setImportHistory(updatedHistory);
+        localStorage.setItem(
+          IMPORT_HISTORY_KEY,
+          JSON.stringify(updatedHistory)
+        );
+
+        toast.error(`Erro no arquivo: ${errorMessages}${moreErrors}`, {
+          autoClose: 8000,
+        });
         return false;
       }
 
@@ -133,6 +173,38 @@ export const useActivityImport = () => {
       return true;
     } catch (error) {
       setCurrentState(IMPORT_STATES.ERROR);
+
+      // Salvar erro de leitura no histórico
+      const readErrorHistoryItem = {
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        importName: importName || 'Erro na leitura do arquivo',
+        totalActivities: 0,
+        successCount: 0,
+        errorCount: 1,
+        results: {
+          success: [],
+          errors: [
+            {
+              line: 'Arquivo',
+              title: 'Erro de leitura',
+              error: error.message,
+              details: 'Não foi possível ler o conteúdo do arquivo',
+            },
+          ],
+          total: 0,
+        },
+        status: 'read_error',
+        errorMessage: `Erro ao ler arquivo: ${error.message}`,
+      };
+
+      const updatedHistory = [readErrorHistoryItem, ...importHistory].slice(
+        0,
+        MAX_HISTORY_ITEMS
+      );
+      setImportHistory(updatedHistory);
+      localStorage.setItem(IMPORT_HISTORY_KEY, JSON.stringify(updatedHistory));
+
       toast.error(`Erro ao ler arquivo: ${error.message}`);
       return false;
     }
@@ -154,6 +226,48 @@ export const useActivityImport = () => {
     setValidatedData(validationResult.validActivities);
     setValidationErrors(validationResult.errors);
 
+    // Se há apenas erros de validação (sem atividades válidas), salvar no histórico
+    if (
+      validationResult.errors.length > 0 &&
+      validationResult.validActivities.length === 0
+    ) {
+      const validationErrorHistoryItem = {
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        importName: importName || 'Arquivo com erros de validação',
+        totalActivities: parsedData.length,
+        successCount: 0,
+        errorCount: validationResult.errors.length,
+        results: {
+          success: [],
+          errors: validationResult.errors.map(error => {
+            // Extrair número da linha do erro
+            const lineMatch = error.match(/Linha (\d+):/);
+            const lineNumber = lineMatch ? parseInt(lineMatch[1]) : 'N/A';
+            // Remover "Linha X:" do início da mensagem
+            const cleanError = error.replace(/^Linha \d+:\s*/, '');
+
+            return {
+              line: lineNumber,
+              title: 'Erro de validação',
+              error: cleanError,
+              details: 'Erro na validação dos dados',
+            };
+          }),
+          total: parsedData.length,
+        },
+        status: 'parse_error',
+        errorMessage: `${validationResult.errors.length} erros de validação encontrados`,
+      };
+
+      const updatedHistory = [
+        validationErrorHistoryItem,
+        ...importHistory,
+      ].slice(0, MAX_HISTORY_ITEMS);
+      setImportHistory(updatedHistory);
+      localStorage.setItem(IMPORT_HISTORY_KEY, JSON.stringify(updatedHistory));
+    }
+
     if (validationResult.errors.length > 0) {
       const errorCount = validationResult.errors.length;
       const validCount = validationResult.validActivities.length;
@@ -166,7 +280,7 @@ export const useActivityImport = () => {
 
     setCurrentState(IMPORT_STATES.PREVIEW);
     return true;
-  }, [parsedData]);
+  }, [parsedData, importName, importHistory]);
 
   /**
    * Processar arquivo completo (parse + validação)
@@ -256,8 +370,28 @@ export const useActivityImport = () => {
         setProcessResults(results);
         setCurrentState(IMPORT_STATES.COMPLETED);
 
-        // Salvar no histórico
-        saveToHistory(results);
+        // Salvar no histórico (incluindo erros de validação se houver)
+        const completeResults = {
+          ...results,
+          errors: [
+            ...results.errors,
+            // Adicionar erros de validação que não foram processados
+            ...validationErrors.map(error => {
+              const lineMatch = error.match(/Linha (\d+):/);
+              const lineNumber = lineMatch ? parseInt(lineMatch[1]) : 'N/A';
+              const cleanError = error.replace(/^Linha \d+:\s*/, '');
+
+              return {
+                line: lineNumber,
+                title: 'Erro de validação (não processado)',
+                error: cleanError,
+                details: 'Erro detectado durante validação',
+              };
+            }),
+          ],
+        };
+
+        saveToHistory(completeResults);
 
         // Feedback final
         const successCount = results.success.length;
@@ -280,6 +414,41 @@ export const useActivityImport = () => {
         return true;
       } catch (error) {
         console.error('Erro na importação:', error);
+
+        // Salvar erro no histórico
+        const errorHistoryItem = {
+          id: Date.now(),
+          timestamp: new Date().toISOString(),
+          importName: importName || 'Importação com erro',
+          totalActivities: validatedData.length,
+          successCount: 0,
+          errorCount: validatedData.length,
+          results: {
+            success: [],
+            errors: [
+              {
+                line: 'Geral',
+                title: 'Erro na importação',
+                error: error.message,
+                details: error.response?.data || error.stack,
+              },
+            ],
+            total: validatedData.length,
+          },
+          status: 'error',
+          errorMessage: error.message,
+        };
+
+        const updatedHistory = [errorHistoryItem, ...importHistory].slice(
+          0,
+          MAX_HISTORY_ITEMS
+        );
+        setImportHistory(updatedHistory);
+        localStorage.setItem(
+          IMPORT_HISTORY_KEY,
+          JSON.stringify(updatedHistory)
+        );
+
         setCurrentState(IMPORT_STATES.ERROR);
         toast.error(`Erro na importação: ${error.message}`);
         return false;
@@ -328,6 +497,18 @@ export const useActivityImport = () => {
   }, []);
 
   /**
+   * Remover item individual do histórico
+   */
+  const removeHistoryItem = useCallback(
+    itemId => {
+      const updatedHistory = importHistory.filter(item => item.id !== itemId);
+      setImportHistory(updatedHistory);
+      localStorage.setItem(IMPORT_HISTORY_KEY, JSON.stringify(updatedHistory));
+    },
+    [importHistory]
+  );
+
+  /**
    * Download do template CSV
    */
   const downloadTemplate = useCallback(selectedTypes => {
@@ -352,7 +533,7 @@ export const useActivityImport = () => {
 
   // Getters computados
   const hasErrors = parseErrors.length > 0 || validationErrors.length > 0;
-  const canProceed = validatedData.length > 0 && !hasErrors;
+  const canProceed = validatedData.length > 0; // Permite prosseguir se há atividades válidas, mesmo com alguns erros
   const recommendations = hasErrors
     ? generateRecommendations([...parseErrors, ...validationErrors])
     : [];
@@ -389,6 +570,7 @@ export const useActivityImport = () => {
     executeImport,
     resetImport,
     clearHistory,
+    removeHistoryItem,
     downloadTemplate,
   };
 };

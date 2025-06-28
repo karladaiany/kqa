@@ -12,6 +12,7 @@ import {
   FaRocket,
   FaBriefcase,
   FaFileExport, // Added icons for new cards
+  FaFileImport, // Icon for Activity Import
   FaStickyNote,
 } from 'react-icons/fa';
 
@@ -112,6 +113,12 @@ const SidebarMenu = ({ open = true, onClose }) => {
             onClick={() => scrollToSection('deploy')}
           >
             <FaRocket /> Deploy
+          </div>
+          <div
+            className='floating-nav-item'
+            onClick={() => scrollToSection('activity-import')}
+          >
+            <FaFileImport /> Importação de Atividades
           </div>
           <div
             className='floating-nav-item'
