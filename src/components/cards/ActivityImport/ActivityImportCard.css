@@ -268,42 +268,73 @@
 
 /* Import Mode */
 .import-mode {
+  position: relative;
   margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
 }
 
 .import-mode > label {
+  position: absolute;
+  left: 8px;
+  top: -0.6em;
+  color: var(--text-secondary);
+  font-size: 14px;
+  padding: 0 4px;
+  z-index: 1;
+  display: inline-block;
+  height: 1.2em;
+  white-space: nowrap;
+  backdrop-filter: blur(4px);
   font-weight: 500;
-  color: var(--text-primary);
-  margin: 0;
-  flex-shrink: 0;
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+  background: var(--background-color);
 }
 
-.mode-options {
+.mode-toggles {
   display: flex;
-  gap: 16px;
+  gap: 0.5rem;
+  width: 100%;
+  position: relative;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 10px;
+  background: var(--background-color);
 }
 
-.mode-option {
+.mode-toggle {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: 8px;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  background-color: transparent;
   color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s ease;
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+  font-size: 0.85rem;
+  font-weight: 500;
+  min-height: 40px;
+  white-space: nowrap;
 }
 
-.mode-option:hover {
-  background: var(--bg-hover);
-  border-color: var(--accent-color);
+.mode-toggle:hover {
+  border-color: var(--primary-color);
+  background-color: var(--card-bg);
+  color: var(--primary-color);
 }
 
-.mode-option input[type='radio'] {
-  margin: 0;
+.mode-toggle.active {
+  border-color: var(--primary-color);
+  background-color: var(--primary-color);
+  color: var(--text-button);
+}
+
+.mode-toggle.active:hover {
+  background-color: var(--primary-color);
+  filter: brightness(110%);
 }
 
 /* Processing Status */

@@ -437,26 +437,22 @@ const ActivityImportCard = () => {
       </div>
 
       <div className='import-mode'>
-        <label>Modo de importação:</label>
-        <div className='mode-options'>
-          <label className='mode-option'>
-            <input
-              type='radio'
-              value='create'
-              checked={importMode === 'create'}
-              onChange={e => setImportMode(e.target.value)}
-            />
-            <span>Criar atividades</span>
-          </label>
-          <label className='mode-option'>
-            <input
-              type='radio'
-              value='update'
-              checked={importMode === 'update'}
-              onChange={e => setImportMode(e.target.value)}
-            />
-            <span>Atualizar atividades</span>
-          </label>
+        <label>Modo de importação</label>
+        <div className='mode-toggles'>
+          <button
+            type='button'
+            className={`mode-toggle ${importMode === 'create' ? 'active' : ''}`}
+            onClick={() => setImportMode('create')}
+          >
+            Criar atividades
+          </button>
+          <button
+            type='button'
+            className={`mode-toggle ${importMode === 'update' ? 'active' : ''}`}
+            onClick={() => setImportMode('update')}
+          >
+            Atualizar atividades
+          </button>
         </div>
       </div>
 
