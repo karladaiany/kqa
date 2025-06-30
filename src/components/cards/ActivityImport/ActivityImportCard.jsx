@@ -1022,26 +1022,23 @@ const ActivityImportCard = () => {
           {/* History Section */}
           {showHistory && (
             <div className='history-section'>
-              <div className='history-header'>
-                <div className='history-title-section'>
-                  <h4>
-                    <FaHistory className='section-icon' /> Histórico de
-                    Importações
-                  </h4>
-                  <p className='history-subtitle'>
+              <div className='template-header'>
+                <div className='template-title'>
+                  <h4>Histórico de Importações</h4>
+                  <p>
                     Serão exibidas as últimas 10 importações realizadas. Se
                     necessário, salve os arquivos localmente para uso futuro.
+                    {importHistory.length > 0 && (
+                      <button
+                        className='btn-icon-only'
+                        onClick={clearHistory}
+                        title='Limpar histórico'
+                      >
+                        <FaTrash />
+                      </button>
+                    )}
                   </p>
                 </div>
-                {importHistory.length > 0 && (
-                  <button
-                    className='btn-icon-only'
-                    onClick={clearHistory}
-                    title='Limpar histórico'
-                  >
-                    <FaTrash />
-                  </button>
-                )}
               </div>
 
               {importHistory.length === 0 ? (
