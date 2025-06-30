@@ -417,16 +417,23 @@ const ActivityImportCard = () => {
       </div>
 
       <div className='import-identification'>
-        <label htmlFor='import-name'>Descrição (máx. 30 caracteres):</label>
-        <input
-          id='import-name'
-          type='text'
-          maxLength={100}
-          value={importName}
-          onChange={e => setImportName(e.target.value)}
-          placeholder='Ex: Sprint 15 - Correções de Bug'
-          className='import-name-input'
-        />
+        <label htmlFor='import-name'>Descrição</label>
+        <div className='input-container'>
+          <input
+            id='import-name'
+            type='text'
+            maxLength={30}
+            value={importName}
+            onChange={e => setImportName(e.target.value)}
+            placeholder='Ex: Sprint 15 - Correções de Bug'
+            className='import-name-input'
+          />
+          <div
+            className={`char-counter ${importName.length >= 25 ? 'near-limit' : ''}`}
+          >
+            {importName.length}/30
+          </div>
+        </div>
       </div>
 
       <div className='import-mode'>
