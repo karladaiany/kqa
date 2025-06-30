@@ -814,28 +814,28 @@ const ActivityImportCard = () => {
                 <div className='info-panel-content'>
                   {/* Seção 1: Seletor de tipos - movido para cá */}
                   <div className='info-section'>
-                    <h4>Tipos a incluir no template</h4>
-                    <div className='activity-types-selector'>
-                      <div className='selector-header'>
-                        <div className='selection-actions'>
-                          <button
-                            className='btn-icon selection-btn'
-                            onClick={() =>
-                              setSelectedTypes(enabledActivityTypesValues)
-                            }
-                            title='Selecionar todos os tipos'
-                          >
-                            <FaCheckDouble />
-                          </button>
-                          <button
-                            className='btn-icon selection-btn'
-                            onClick={() => setSelectedTypes([])}
-                            title='Limpar seleção'
-                          >
-                            <FaEraser />
-                          </button>
-                        </div>
+                    <div className='section-header-with-actions'>
+                      <h4>Tipos a incluir no template</h4>
+                      <div className='selection-actions'>
+                        <button
+                          className='btn-icon selection-btn'
+                          onClick={() =>
+                            setSelectedTypes(enabledActivityTypesValues)
+                          }
+                          title='Selecionar todos os tipos'
+                        >
+                          <FaCheckDouble />
+                        </button>
+                        <button
+                          className='btn-icon selection-btn'
+                          onClick={() => setSelectedTypes([])}
+                          title='Limpar seleção'
+                        >
+                          <FaEraser />
+                        </button>
                       </div>
+                    </div>
+                    <div className='activity-types-selector'>
                       <div className='toggle-buttons-grid'>
                         {enabledActivityTypesValues.map(type => (
                           <button
@@ -854,8 +854,34 @@ const ActivityImportCard = () => {
                       </div>
                     </div>
                   </div>
-                  {/* Seção 2: Campos Obrigatórios */}
-                  <div className='info-section'>
+
+                  {/* Seção 2: Download do Template */}
+                  <div className='info-section info-section-spaced'>
+                    <h4>Download do Template</h4>
+                    <div className='download-action-panel'>
+                      <button
+                        className={`btn-download ${selectedTypes.length === 0 ? 'disabled' : ''}`}
+                        onClick={() => downloadTemplate(selectedTypes)}
+                        disabled={selectedTypes.length === 0}
+                      >
+                        <FaDownload />
+                        <span>
+                          {selectedTypes.length === 0
+                            ? 'Nenhum tipo selecionado'
+                            : 'Baixar modelo'}
+                        </span>
+                      </button>
+                      {selectedTypes.length === 0 && (
+                        <p className='download-hint'>
+                          Configure os tipos de atividade na seção acima para
+                          gerar seu template personalizado.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Seção 3: Campos Obrigatórios */}
+                  <div className='info-section info-section-spaced'>
                     <h4>Como identificar campos obrigatórios</h4>
                     <div className='field-indicators'>
                       <div className='indicator required'>
@@ -870,7 +896,7 @@ const ActivityImportCard = () => {
                     </div>
                   </div>
 
-                  {/* Seção 3: Tutorial Excel */}
+                  {/* Seção 4: Tutorial Excel */}
                   <div className='info-section info-section-spaced'>
                     <h4>Como utilizar no Excel (Recomendado)</h4>
                     <div className='excel-steps'>
@@ -917,7 +943,7 @@ const ActivityImportCard = () => {
                     </div>
                   </div>
 
-                  {/* Seção 4: Tipos de Atividade */}
+                  {/* Seção 5: Tipos de Atividade */}
                   <div className='info-section info-section-spaced'>
                     <h4>Campos obrigatórios por tipo</h4>
                     <div className='activity-types-info'>
@@ -964,7 +990,7 @@ const ActivityImportCard = () => {
                     </div>
                   </div>
 
-                  {/* Seção 5: Dicas */}
+                  {/* Seção 6: Dicas */}
                   <div className='info-section info-section-spaced'>
                     <h4>Dicas importantes</h4>
                     <div className='tips-list'>
@@ -983,31 +1009,6 @@ const ActivityImportCard = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-
-                  {/* Seção 6: Download do Template */}
-                  <div className='info-section info-section-spaced'>
-                    <h4>Download do Template</h4>
-                    <div className='download-action-panel'>
-                      <button
-                        className={`btn-download ${selectedTypes.length === 0 ? 'disabled' : ''}`}
-                        onClick={() => downloadTemplate(selectedTypes)}
-                        disabled={selectedTypes.length === 0}
-                      >
-                        <FaDownload />
-                        <span>
-                          {selectedTypes.length === 0
-                            ? 'Selecione os tipos acima primeiro'
-                            : 'Baixar modelo personalizado'}
-                        </span>
-                      </button>
-                      {selectedTypes.length === 0 && (
-                        <p className='download-hint'>
-                          Configure os tipos de atividade na seção acima para
-                          gerar seu template personalizado.
-                        </p>
-                      )}
                     </div>
                   </div>
                 </div>
