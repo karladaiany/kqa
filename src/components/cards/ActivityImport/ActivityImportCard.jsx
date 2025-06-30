@@ -782,10 +782,7 @@ const ActivityImportCard = () => {
           <div className='template-section'>
             <div className='template-header'>
               <div className='template-title'>
-                <h4>
-                  <FaClipboardList className='section-icon' /> Modelo de
-                  Importação
-                </h4>
+                <h4>Modelo de importação</h4>
                 <p>
                   Baixe o template CSV personalizado para importação
                   <button
@@ -797,22 +794,6 @@ const ActivityImportCard = () => {
                   </button>
                 </p>
               </div>
-            </div>
-
-            {/* Botão de download direto - sempre visível */}
-            <div className='download-action-simple'>
-              <button
-                className={`btn-download ${selectedTypes.length === 0 ? 'disabled' : ''}`}
-                onClick={() => downloadTemplate(selectedTypes)}
-                disabled={selectedTypes.length === 0}
-              >
-                <FaDownload />
-                <span>
-                  {selectedTypes.length === 0
-                    ? 'Configure os tipos primeiro ↗️'
-                    : 'Baixar modelo'}
-                </span>
-              </button>
             </div>
 
             {/* Painel informativo */}
@@ -833,7 +814,7 @@ const ActivityImportCard = () => {
                 <div className='info-panel-content'>
                   {/* Seção 1: Seletor de tipos - movido para cá */}
                   <div className='info-section'>
-                    <h4>🎯 Tipos a incluir no template</h4>
+                    <h4>Tipos a incluir no template</h4>
                     <div className='activity-types-selector'>
                       <div className='selector-header'>
                         <div className='selection-actions'>
@@ -875,7 +856,7 @@ const ActivityImportCard = () => {
                   </div>
                   {/* Seção 2: Campos Obrigatórios */}
                   <div className='info-section'>
-                    <h4>🎯 Como identificar campos obrigatórios</h4>
+                    <h4>Como identificar campos obrigatórios</h4>
                     <div className='field-indicators'>
                       <div className='indicator required'>
                         <strong>(*)</strong> = Sempre obrigatório
@@ -891,7 +872,7 @@ const ActivityImportCard = () => {
 
                   {/* Seção 3: Tutorial Excel */}
                   <div className='info-section info-section-spaced'>
-                    <h4>📊 Como usar no Excel (RECOMENDADO)</h4>
+                    <h4>Como utilizar no Excel (Recomendado)</h4>
                     <div className='excel-steps'>
                       <div className='step'>
                         <strong>1. Abra o Excel</strong>
@@ -915,7 +896,7 @@ const ActivityImportCard = () => {
                         <strong>4. Limpe o arquivo</strong>
                         <p>
                           ⚠️ DELETE as linhas explicativas (linhas com
-                          &quot;LEGENDA&quot; e &quot;TIPO:&quot;)
+                          &quot;LEGENDA&quot; e &quot;TIPO&quot;)
                         </p>
                       </div>
 
@@ -938,7 +919,7 @@ const ActivityImportCard = () => {
 
                   {/* Seção 4: Tipos de Atividade */}
                   <div className='info-section info-section-spaced'>
-                    <h4>📑 Campos obrigatórios por tipo</h4>
+                    <h4>Campos obrigatórios por tipo</h4>
                     <div className='activity-types-info'>
                       <div
                         className='type-info'
@@ -985,7 +966,7 @@ const ActivityImportCard = () => {
 
                   {/* Seção 5: Dicas */}
                   <div className='info-section info-section-spaced'>
-                    <h4>💡 Dicas importantes</h4>
+                    <h4>Dicas importantes</h4>
                     <div className='tips-list'>
                       <div className='tip'>
                         <div className='tip-row'>
@@ -1002,6 +983,31 @@ const ActivityImportCard = () => {
                           </div>
                         </div>
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Seção 6: Download do Template */}
+                  <div className='info-section info-section-spaced'>
+                    <h4>Download do Template</h4>
+                    <div className='download-action-panel'>
+                      <button
+                        className={`btn-download ${selectedTypes.length === 0 ? 'disabled' : ''}`}
+                        onClick={() => downloadTemplate(selectedTypes)}
+                        disabled={selectedTypes.length === 0}
+                      >
+                        <FaDownload />
+                        <span>
+                          {selectedTypes.length === 0
+                            ? 'Selecione os tipos acima primeiro'
+                            : 'Baixar modelo personalizado'}
+                        </span>
+                      </button>
+                      {selectedTypes.length === 0 && (
+                        <p className='download-hint'>
+                          Configure os tipos de atividade na seção acima para
+                          gerar seu template personalizado.
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
