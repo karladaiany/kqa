@@ -25,6 +25,7 @@ import {
   FaEraser,
   FaPlus,
   FaMinus,
+  FaExchangeAlt,
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
@@ -152,10 +153,11 @@ const ActivityImportCard = () => {
       e.preventDefault();
       const files = Array.from(e.dataTransfer.files);
       if (files.length > 0) {
+        resetImport(); // Resetar estado antes de selecionar novo arquivo
         selectFile(files[0]);
       }
     },
-    [selectFile]
+    [selectFile, resetImport]
   );
 
   /**
@@ -172,10 +174,13 @@ const ActivityImportCard = () => {
     e => {
       const file = e.target.files[0];
       if (file) {
+        resetImport(); // Resetar estado antes de selecionar novo arquivo
         selectFile(file);
       }
+      // Limpar o input para permitir selecionar o mesmo arquivo novamente
+      e.target.value = '';
     },
-    [selectFile]
+    [selectFile, resetImport]
   );
 
   /**
@@ -386,18 +391,8 @@ const ActivityImportCard = () => {
           Arraste seu arquivo CSV aqui ou{' '}
           <span className='click-text'>clique para selecionar</span>
         </p>
-        <small className='drop-hint'>
-          Formatos aceitos: .csv, .txt (máx. 50MB)
-        </small>
+        <small className='drop-hint'>Formato aceito: .csv (máx. 10MB)</small>
       </div>
-
-      <input
-        ref={fileInputRef}
-        type='file'
-        accept='.csv,.txt'
-        onChange={handleFileSelect}
-        style={{ display: 'none' }}
-      />
     </div>
   );
 
@@ -415,15 +410,14 @@ const ActivityImportCard = () => {
         <button
           className='btn-secondary'
           onClick={() => fileInputRef.current?.click()}
+          title='Selecionar outro arquivo'
         >
-          <FaEdit /> Trocar
+          <FaExchangeAlt /> Substituir
         </button>
       </div>
 
       <div className='import-identification'>
-        <label htmlFor='import-name'>
-          📝 Nome desta importação (máx. 100 caracteres):
-        </label>
+        <label htmlFor='import-name'>Descrição (máx. 30 caracteres):</label>
         <input
           id='import-name'
           type='text'
@@ -1183,6 +1177,15 @@ const ActivityImportCard = () => {
           )}
         </div>
       )}
+
+      {/* Input de arquivo oculto - sempre disponível */}
+      <input
+        ref={fileInputRef}
+        type='file'
+        accept='.csv,.txt'
+        onChange={handleFileSelect}
+        style={{ display: 'none' }}
+      />
     </section>
   );
 };
