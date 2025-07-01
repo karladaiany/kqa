@@ -774,7 +774,7 @@ const ActivityImportCard = () => {
         </div>
 
         <div className='progress-text'>
-          {processProgress.toFixed(1)}% concluído
+          {Math.round(processProgress)}% concluído
         </div>
 
         <div className='progress-stats'>
