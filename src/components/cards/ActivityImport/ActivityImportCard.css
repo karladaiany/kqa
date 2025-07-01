@@ -175,7 +175,7 @@
 
 .file-icon {
   font-size: 2em;
-  color: var(--accent-color);
+  color: var(--text-primary);
 }
 
 .file-info {
@@ -310,14 +310,15 @@
   border: 2px solid transparent;
   border-radius: 6px;
   background-color: transparent;
-  color: var(--text-secondary);
+  color: var(--text-button);
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
   min-height: 40px;
   white-space: nowrap;
+  transition: all 0.2s ease;
 }
 
 .mode-toggle:hover {
@@ -775,11 +776,16 @@
   background: var(--bg-secondary);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
+  font-weight: 500;
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
 }
 
 .btn-secondary:hover {
-  background: var(--bg-hover);
-  border-color: var(--accent-color);
+  background: var(--primary-color-dark);
+  border-color: var(--primary-color-dark);
+  color: var(--text-button);
+  font-weight: 600;
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
   transform: translateY(-1px);
 }
 
@@ -1157,12 +1163,12 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background: var(--accent-color);
+  background-color: var(--primary-color-dark);
   color: var(--text-button);
   border: none;
   border-radius: 8px;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   min-width: 200px;
@@ -1170,8 +1176,8 @@
 }
 
 .btn-action:hover:not(:disabled) {
-  background: var(--accent-color);
-  box-shadow: 0 0 20px rgba(8, 236, 204, 0.6);
+  background-color: var(--primary-color-dark);
+  box-shadow: 0 0 10px var(--accent-color);
   transform: translateY(-1px);
 }
 

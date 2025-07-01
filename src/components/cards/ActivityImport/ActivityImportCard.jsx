@@ -189,11 +189,16 @@ const ActivityImportCard = () => {
   const handleProcessFile = useCallback(async () => {
     if (!selectedFile) return;
 
+    if (!importName.trim()) {
+      toast.error('Por favor, preencha a descrição da importação');
+      return;
+    }
+
     const success = await processFile();
     if (success) {
       setShowPreview(true);
     }
-  }, [selectedFile, processFile]);
+  }, [selectedFile, processFile, importName]);
 
   /**
    * Executar importação
@@ -388,8 +393,8 @@ const ActivityImportCard = () => {
       >
         <FaUpload className='drop-icon' />
         <p className='drop-text'>
-          Arraste seu arquivo CSV aqui ou{' '}
-          <span className='click-text'>clique para selecionar</span>
+          Arraste seu arquivo aqui ou <span className='click-text'>clique</span>{' '}
+          para selecionar
         </p>
         <small className='drop-hint'>Formato aceito: .csv (máx. 10MB)</small>
       </div>
@@ -417,7 +422,9 @@ const ActivityImportCard = () => {
       </div>
 
       <div className='import-identification'>
-        <label htmlFor='import-name'>Descrição</label>
+        <label htmlFor='import-name'>
+          Descrição <span style={{ color: '#dc3545' }}>*</span>
+        </label>
         <div className='input-container'>
           <input
             id='import-name'

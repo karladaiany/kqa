@@ -179,10 +179,6 @@ export const useActivityImport = () => {
     setSelectedFile(file);
     setCurrentState(IMPORT_STATES.FILE_SELECTED);
 
-    // Gerar nome padrão baseado no arquivo
-    const defaultName = file.name.replace(/\.[^/.]+$/, ''); // Remove extensão
-    setImportName(defaultName);
-
     toast.success('Arquivo selecionado com sucesso!');
     return true;
   }, []);
