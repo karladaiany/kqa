@@ -13,6 +13,7 @@ import {
   FaUpload,
   FaFileAlt,
   FaEye,
+  FaEyeSlash,
   FaRocket,
   FaHistory,
   FaTrash,
@@ -493,26 +494,130 @@ const ActivityImportCard = () => {
         </div>
       </div>
 
-      <div className='import-status'>
-        <label htmlFor='status-select'>
-          Situação padrão das atividades{' '}
-          <span style={{ color: '#dc3545' }}>*</span>
-        </label>
-        <select
-          id='status-select'
-          value={selectedStatus}
-          onChange={e => setSelectedStatus(Number(e.target.value))}
-          className='status-select'
-        >
-          {CUSTOM_STATUS_OPTIONS.map(option => (
-            <option key={option.id} value={option.id}>
-              {option.name}
-            </option>
-          ))}
-        </select>
+      {/* Dados adicionais */}
+      <div className='credentials-section'>
+        <h4>📋 Dados adicionais</h4>
+
+        {/* Login */}
+        <div className='import-identification'>
+          <label htmlFor='login-field'>
+            Login <span style={{ color: '#dc3545' }}>*</span>
+          </label>
+          <div className='input-container'>
+            <input
+              id='login-field'
+              type='email'
+              value={credentials.email}
+              onChange={e =>
+                setCredentials(prev => ({ ...prev, email: e.target.value }))
+              }
+              placeholder='seu.email@empresa.com'
+              className='import-name-input'
+              required
+            />
+          </div>
+        </div>
+
+        {/* Senha */}
+        <div className='import-identification'>
+          <label htmlFor='password-field'>
+            Senha <span style={{ color: '#dc3545' }}>*</span>
+          </label>
+          <div className='input-container'>
+            <input
+              id='password-field'
+              type='password'
+              value={credentials.password}
+              onChange={e =>
+                setCredentials(prev => ({
+                  ...prev,
+                  password: e.target.value,
+                }))
+              }
+              placeholder='Sua senha de acesso'
+              className='import-name-input'
+              required
+            />
+          </div>
+        </div>
+
+        {/* ID do Grupo de Trabalho */}
+        <div className='import-identification'>
+          <label htmlFor='account-field'>
+            ID do Grupo de Trabalho <span style={{ color: '#dc3545' }}>*</span>
+          </label>
+          <div className='input-container'>
+            <input
+              id='account-field'
+              type='text'
+              value={credentials.accountId}
+              onChange={e =>
+                setCredentials(prev => ({
+                  ...prev,
+                  accountId: e.target.value,
+                }))
+              }
+              placeholder='Ex: 12345'
+              className='import-name-input'
+              required
+            />
+          </div>
+        </div>
+
+        {/* ID da Pasta/Projeto */}
+        <div className='import-identification'>
+          <label htmlFor='folder-field'>
+            ID da Pasta/Projeto <span style={{ color: '#dc3545' }}>*</span>
+          </label>
+          <div className='input-container'>
+            <input
+              id='folder-field'
+              type='text'
+              value={credentials.folderId}
+              onChange={e =>
+                setCredentials(prev => ({
+                  ...prev,
+                  folderId: e.target.value,
+                }))
+              }
+              placeholder='Ex: 67890'
+              className='import-name-input'
+              required
+            />
+          </div>
+        </div>
+
+        {/* Situação padrão das atividades */}
+        <div className='import-status'>
+          <label htmlFor='status-select'>
+            Situação padrão das atividades{' '}
+            <span style={{ color: '#dc3545' }}>*</span>
+          </label>
+          <select
+            id='status-select'
+            value={selectedStatus}
+            onChange={e => setSelectedStatus(Number(e.target.value))}
+            className='status-select'
+          >
+            {CUSTOM_STATUS_OPTIONS.map(option => (
+              <option key={option.id} value={option.id}>
+                {option.name}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      <button className='btn-action' onClick={handleProcessFile}>
+      <button
+        className='btn-action'
+        onClick={handleProcessFile}
+        disabled={
+          !credentials.email ||
+          !credentials.password ||
+          !credentials.accountId ||
+          !credentials.folderId
+        }
+      >
         <FaRocket /> Processar Arquivo
       </button>
     </div>
@@ -533,67 +638,69 @@ const ActivityImportCard = () => {
 
   /**
    * Renderizar preview dos dados
+   * Nova estrutura: container delimitado, ação no header, credenciais movidas para etapa anterior
    */
   const renderPreview = () => (
     <div className='import-section'>
-      <div className='preview-header'>
-        <h4>
-          <FaEye /> Preview dos Dados
-        </h4>
-        <div className='preview-stats'>
-          <span className='stat success'>
-            ✅ {validatedData.length} válidas
-          </span>
-          {hasErrors && (
-            <span className='stat error'>
-              ❌ {parseErrors.length + validationErrors.length} erros
-            </span>
-          )}
+      {/* Preview Container */}
+      <div className='preview-container'>
+        <div className='preview-header'>
+          <div className='preview-title-stats'>
+            <h4>Preview dos Dados</h4>
+            <div className='preview-stats'>
+              <span className='stat success'>
+                ✅ {validatedData.length} válidas
+              </span>
+              {hasErrors && (
+                <span className='stat error'>
+                  ❌ {parseErrors.length + validationErrors.length} erros
+                </span>
+              )}
+            </div>
+          </div>
+          <button
+            className='btn-icon-only'
+            onClick={() => setShowPreview(!showPreview)}
+            title={showPreview ? 'Ocultar Preview' : 'Mostrar Preview'}
+          >
+            {showPreview ? <FaEyeSlash /> : <FaEye />}
+          </button>
         </div>
-      </div>
 
-      {hasErrors && (
-        <div className='errors-section'>
-          <h5>⚠️ Erros Encontrados:</h5>
-          <div className='errors-list'>
-            {[...parseErrors, ...validationErrors]
-              .slice(0, 10)
-              .map((error, index) => (
-                <div key={index} className='error-item'>
-                  {error}
+        {hasErrors && (
+          <div className='errors-section'>
+            <h5>⚠️ Erros Encontrados:</h5>
+            <div className='errors-list'>
+              {[...parseErrors, ...validationErrors]
+                .slice(0, 10)
+                .map((error, index) => (
+                  <div key={index} className='error-item'>
+                    {error}
+                  </div>
+                ))}
+              {parseErrors.length + validationErrors.length > 10 && (
+                <div className='error-item'>
+                  ... e mais {parseErrors.length + validationErrors.length - 10}{' '}
+                  erros
                 </div>
-              ))}
-            {parseErrors.length + validationErrors.length > 10 && (
-              <div className='error-item'>
-                ... e mais {parseErrors.length + validationErrors.length - 10}{' '}
-                erros
+              )}
+            </div>
+
+            {recommendations.length > 0 && (
+              <div className='recommendations'>
+                <h6>💡 Recomendações:</h6>
+                <ul>
+                  {recommendations.map((rec, index) => (
+                    <li key={index}>{rec}</li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>
+        )}
 
-          {recommendations.length > 0 && (
-            <div className='recommendations'>
-              <h6>💡 Recomendações:</h6>
-              <ul>
-                {recommendations.map((rec, index) => (
-                  <li key={index}>{rec}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
-
-      {validatedData.length > 0 && (
-        <div className='preview-table-container'>
-          <button
-            className='btn-secondary'
-            onClick={() => setShowPreview(!showPreview)}
-          >
-            <FaEye /> {showPreview ? 'Ocultar' : 'Mostrar'} Preview
-          </button>
-
-          {showPreview && (
+        {validatedData.length > 0 && showPreview && (
+          <div className='preview-table-container'>
             <div className='preview-table'>
               <table>
                 <thead>
@@ -625,75 +732,28 @@ const ActivityImportCard = () => {
                 </p>
               )}
             </div>
-          )}
-        </div>
-      )}
-
-      {canProceed && (
-        <div className='credentials-section'>
-          <h5>🔐 Credenciais do Artia:</h5>
-          <div className='credentials-form'>
-            <div className='form-row'>
-              <input
-                type='email'
-                placeholder='Email'
-                value={credentials.email}
-                onChange={e =>
-                  setCredentials(prev => ({ ...prev, email: e.target.value }))
-                }
-              />
-              <input
-                type='password'
-                placeholder='Senha'
-                value={credentials.password}
-                onChange={e =>
-                  setCredentials(prev => ({
-                    ...prev,
-                    password: e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div className='form-row'>
-              <input
-                type='text'
-                placeholder='Account ID'
-                value={credentials.accountId}
-                onChange={e =>
-                  setCredentials(prev => ({
-                    ...prev,
-                    accountId: e.target.value,
-                  }))
-                }
-              />
-              <input
-                type='text'
-                placeholder='Folder ID'
-                value={credentials.folderId}
-                onChange={e =>
-                  setCredentials(prev => ({
-                    ...prev,
-                    folderId: e.target.value,
-                  }))
-                }
-              />
-            </div>
           </div>
+        )}
 
-          <button
-            className='btn-primary'
-            onClick={handleExecuteImport}
-            disabled={!credentials.email || !credentials.password}
-          >
-            <FaRocket /> Executar Importação ({validatedData.length} atividades)
-          </button>
-        </div>
-      )}
-
-      <div className='preview-actions'>
-        <button className='btn-secondary' onClick={handleResetImport}>
-          <FaTimes /> Cancelar
-        </button>
+        {canProceed && (
+          <div className='preview-actions'>
+            <button
+              className='btn-primary'
+              onClick={handleExecuteImport}
+              disabled={
+                !credentials.email ||
+                !credentials.password ||
+                !credentials.accountId ||
+                !credentials.folderId
+              }
+            >
+              <FaRocket /> Executar Importação
+            </button>
+            <button className='btn-secondary' onClick={handleResetImport}>
+              <FaTimes /> Cancelar
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -738,7 +798,7 @@ const ActivityImportCard = () => {
     <div className='import-section'>
       <div className='import-complete'>
         <FaCheck className='success-icon' />
-        <h4>✅ Importação Concluída!</h4>
+        <h4>Importação concluída!</h4>
 
         <div className='completion-stats'>
           <div className='stat-card success'>
@@ -757,10 +817,9 @@ const ActivityImportCard = () => {
 
           <div className='stat-card rate'>
             <span className='stat-number'>
-              {(
-                (processResults.success.length / processResults.total) *
-                100
-              ).toFixed(1)}
+              {Math.round(
+                (processResults.success.length / processResults.total) * 100
+              )}
               %
             </span>
             <span className='stat-label'>Taxa de Sucesso</span>
@@ -834,249 +893,266 @@ const ActivityImportCard = () => {
 
       {showFields && (
         <div className='card-content'>
-          {/* Template Download Section */}
-          <div className='template-section'>
-            <div className='template-header'>
-              <div className='template-title'>
-                <h4>Modelo de importação</h4>
-                <p>
-                  Baixe o template CSV personalizado para importação
-                  <button
-                    className={`info-trigger-btn selection-btn ${showInfoPanel ? 'active' : ''}`}
-                    onClick={() => setShowInfoPanel(!showInfoPanel)}
-                    title='Configurar tipos e ver orientações'
-                  >
-                    <FaInfoCircle />
-                  </button>
-                </p>
-              </div>
-            </div>
-
-            {/* Painel informativo */}
-            {showInfoPanel && (
-              <div className='info-panel'>
-                <div className='info-panel-header'>
-                  <h4>
-                    <FaClipboardList className='panel-icon' /> Configuração e
-                    Orientações
-                  </h4>
-                  <button
-                    className='close-panel-btn selection-btn'
-                    onClick={() => setShowInfoPanel(false)}
-                  >
-                    <FaTimes />
-                  </button>
-                </div>
-                <div className='info-panel-content'>
-                  {/* Seção 1: Seletor de tipos - movido para cá */}
-                  <div className='info-section'>
-                    <div className='section-header-with-actions'>
-                      <h4>Tipos a incluir no template</h4>
-                      <div className='selection-actions'>
-                        <button
-                          className='btn-icon selection-btn'
-                          onClick={() =>
-                            setSelectedTypes(enabledActivityTypesValues)
-                          }
-                          title='Selecionar todos os tipos'
-                        >
-                          <FaCheckDouble />
-                        </button>
-                        <button
-                          className='btn-icon selection-btn'
-                          onClick={() => setSelectedTypes([])}
-                          title='Limpar seleção'
-                        >
-                          <FaEraser />
-                        </button>
-                      </div>
-                    </div>
-                    <div className='activity-types-selector'>
-                      <div className='toggle-buttons-grid'>
-                        {enabledActivityTypesValues.map(type => (
-                          <button
-                            key={type}
-                            className={`toggle-button ${selectedTypes.includes(type) ? 'active' : ''}`}
-                            onClick={() => toggleActivityType(type)}
-                          >
-                            <div className='toggle-content'>
-                              <span className='toggle-icon'>
-                                {selectedTypes.includes(type) ? '✓' : '+'}
-                              </span>
-                              <span className='toggle-text'>{type}</span>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Seção 2: Download do Template */}
-                  <div className='info-section info-section-spaced'>
-                    <h4>Download do Template</h4>
-                    <div className='download-action-panel'>
+          {/* Template Download Section - ocultar durante preview, processamento e quando concluída */}
+          {currentState !== IMPORT_STATES.PREVIEW &&
+            currentState !== IMPORT_STATES.PROCESSING &&
+            currentState !== IMPORT_STATES.COMPLETED && (
+              <div className='template-section'>
+                <div className='template-header'>
+                  <div className='template-title'>
+                    <h4>Modelo de importação</h4>
+                    <p>
+                      Baixe o template CSV personalizado para importação
                       <button
-                        className={`btn-download ${selectedTypes.length === 0 ? 'disabled' : ''}`}
-                        onClick={() =>
-                          downloadTemplate(selectedTypes, selectedStatus)
-                        }
-                        disabled={selectedTypes.length === 0}
+                        className={`info-trigger-btn selection-btn ${showInfoPanel ? 'active' : ''}`}
+                        onClick={() => setShowInfoPanel(!showInfoPanel)}
+                        title='Configurar tipos e ver orientações'
                       >
-                        <FaDownload />
-                        <span>
-                          {selectedTypes.length === 0
-                            ? 'Nenhum tipo selecionado'
-                            : 'Baixar modelo'}
-                        </span>
+                        <FaInfoCircle />
                       </button>
-                      {selectedTypes.length === 0 && (
-                        <p className='download-hint'>
-                          Configure os tipos de atividade na seção acima para
-                          gerar seu template personalizado.
-                        </p>
-                      )}
-                    </div>
+                    </p>
                   </div>
+                </div>
 
-                  {/* Seção 3: Campos Obrigatórios */}
-                  <div className='info-section info-section-spaced'>
-                    <h4>Como identificar campos obrigatórios</h4>
-                    <div className='field-indicators'>
-                      <div className='indicator required'>
-                        <strong>(*)</strong> = Sempre obrigatório
-                      </div>
-                      <div className='indicator conditional'>
-                        <strong>(**)</strong> = Obrigatório para alguns tipos
-                      </div>
-                      <div className='indicator optional'>
-                        <strong>sem indicador</strong> = Opcional
-                      </div>
+                {/* Painel informativo */}
+                {showInfoPanel && (
+                  <div className='info-panel'>
+                    <div className='info-panel-header'>
+                      <h4>
+                        <FaClipboardList className='panel-icon' /> Configuração
+                        e Orientações
+                      </h4>
+                      <button
+                        className='close-panel-btn selection-btn'
+                        onClick={() => setShowInfoPanel(false)}
+                      >
+                        <FaTimes />
+                      </button>
                     </div>
-                  </div>
-
-                  {/* Seção 4: Tutorial Excel */}
-                  <div className='info-section info-section-spaced'>
-                    <h4>Como utilizar no Excel (Recomendado)</h4>
-                    <div className='excel-steps'>
-                      <div className='step'>
-                        <strong>1. Abra o Excel</strong>
-                        <p>Crie uma nova planilha em branco</p>
+                    <div className='info-panel-content'>
+                      {/* Seção 1: Seletor de tipos - movido para cá */}
+                      <div className='info-section'>
+                        <div className='section-header-with-actions'>
+                          <h4>Tipos a incluir no template</h4>
+                          <div className='selection-actions'>
+                            <button
+                              className='btn-icon selection-btn'
+                              onClick={() =>
+                                setSelectedTypes(enabledActivityTypesValues)
+                              }
+                              title='Selecionar todos os tipos'
+                            >
+                              <FaCheckDouble />
+                            </button>
+                            <button
+                              className='btn-icon selection-btn'
+                              onClick={() => setSelectedTypes([])}
+                              title='Limpar seleção'
+                            >
+                              <FaEraser />
+                            </button>
+                          </div>
+                        </div>
+                        <div className='activity-types-selector'>
+                          <div className='toggle-buttons-grid'>
+                            {enabledActivityTypesValues.map(type => (
+                              <button
+                                key={type}
+                                className={`toggle-button ${selectedTypes.includes(type) ? 'active' : ''}`}
+                                onClick={() => toggleActivityType(type)}
+                              >
+                                <div className='toggle-content'>
+                                  <span className='toggle-icon'>
+                                    {selectedTypes.includes(type) ? '✓' : '+'}
+                                  </span>
+                                  <span className='toggle-text'>{type}</span>
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
                       </div>
 
-                      <div className='step'>
-                        <strong>2. Importe o CSV</strong>
-                        <p>Dados → Obter Dados → De Arquivo → Do Texto/CSV</p>
+                      {/* Seção 2: Download do Template */}
+                      <div className='info-section info-section-spaced'>
+                        <h4>Download do Template</h4>
+                        <div className='download-action-panel'>
+                          <button
+                            className={`btn-download ${selectedTypes.length === 0 ? 'disabled' : ''}`}
+                            onClick={() =>
+                              downloadTemplate(selectedTypes, selectedStatus)
+                            }
+                            disabled={selectedTypes.length === 0}
+                          >
+                            <FaDownload />
+                            <span>
+                              {selectedTypes.length === 0
+                                ? 'Nenhum tipo selecionado'
+                                : 'Baixar modelo'}
+                            </span>
+                          </button>
+                          {selectedTypes.length === 0 && (
+                            <p className='download-hint'>
+                              Configure os tipos de atividade na seção acima
+                              para gerar seu template personalizado.
+                            </p>
+                          )}
+                        </div>
                       </div>
 
-                      <div className='step'>
-                        <strong>3. Configure a importação</strong>
-                        <p>
-                          Delimiter: Vírgula, Codificação: UTF-8, clique em
-                          &quot;Carregar&quot;
-                        </p>
+                      {/* Seção 3: Campos Obrigatórios */}
+                      <div className='info-section info-section-spaced'>
+                        <h4>Como identificar campos obrigatórios</h4>
+                        <div className='field-indicators'>
+                          <div className='indicator required'>
+                            <strong>(*)</strong> = Sempre obrigatório
+                          </div>
+                          <div className='indicator conditional'>
+                            <strong>(**)</strong> = Obrigatório para alguns
+                            tipos
+                          </div>
+                          <div className='indicator optional'>
+                            <strong>sem indicador</strong> = Opcional
+                          </div>
+                        </div>
                       </div>
 
-                      <div className='step'>
-                        <strong>4. Limpe o arquivo</strong>
-                        <p>
-                          ⚠️ DELETE as linhas explicativas (linhas com
-                          &quot;LEGENDA&quot; e &quot;TIPO&quot;)
-                        </p>
-                      </div>
+                      {/* Seção 4: Tutorial Excel */}
+                      <div className='info-section info-section-spaced'>
+                        <h4>Como utilizar no Excel (Recomendado)</h4>
+                        <div className='excel-steps'>
+                          <div className='step'>
+                            <strong>1. Abra o Excel</strong>
+                            <p>Crie uma nova planilha em branco</p>
+                          </div>
 
-                      <div className='step'>
-                        <strong>5. Preencha seus dados</strong>
-                        <p>
-                          Use os exemplos como base e preencha os campos{' '}
-                          <strong>obrigatórios</strong>
-                        </p>
-                      </div>
-
-                      <div className='step'>
-                        <strong>6. Salve como CSV</strong>
-                        <p>
-                          Arquivo → Salvar Como → CSV (delimitado por vírgula)
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Seção 5: Tipos de Atividade */}
-                  <div className='info-section info-section-spaced'>
-                    <h4>Campos obrigatórios por tipo</h4>
-                    <div className='activity-types-info'>
-                      <div
-                        className='type-info'
-                        style={{ borderLeft: '4px solid #08ECCC' }}
-                      >
-                        <strong>Desenvolvimento</strong>{' '}
-                        <span className='field-count'>4 campos</span>
-                        <p>Tipo, título, funcionalidade, sub-funcionalidade</p>
-                      </div>
-                      <div
-                        className='type-info'
-                        style={{ borderLeft: '4px solid #F90EF4' }}
-                      >
-                        <strong>Execução de testes</strong>{' '}
-                        <span className='field-count'>4 campos</span>
-                        <p>Tipo, título, funcionalidade, sub-funcionalidade</p>
-                      </div>
-                      <div
-                        className='type-info'
-                        style={{ borderLeft: '4px solid #89B0EB' }}
-                      >
-                        <strong>Teste de mesa</strong>{' '}
-                        <span className='field-count'>4 campos</span>
-                        <p>Tipo, título, funcionalidade, sub-funcionalidade</p>
-                      </div>
-                      <div
-                        className='type-info'
-                        style={{ borderLeft: '4px solid #90F485' }}
-                      >
-                        <strong>Análise de testes</strong>{' '}
-                        <span className='field-count'>4 campos</span>
-                        <p>Tipo, título, funcionalidade, sub-funcionalidade</p>
-                      </div>
-                      <div
-                        className='type-info'
-                        style={{ borderLeft: '4px solid #F1D8D8' }}
-                      >
-                        <strong>Documentação</strong>{' '}
-                        <span className='field-count'>2 campos</span>
-                        <p>Apenas tipo e título</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Seção 6: Dicas */}
-                  <div className='info-section info-section-spaced'>
-                    <h4>Dicas importantes</h4>
-                    <div className='tips-list'>
-                      <div className='tip'>
-                        <div className='tip-row'>
-                          <div className='tip-item'>
-                            <strong>✅ Use valores exatos</strong>
+                          <div className='step'>
+                            <strong>2. Importe o CSV</strong>
                             <p>
-                              Urgência: &quot;Baixo&quot;, &quot;Médio&quot;,
-                              &quot;Alto&quot;, &quot;Crítico&quot;
+                              Dados → Obter Dados → De Arquivo → Do Texto/CSV
                             </p>
                           </div>
-                          <div className='tip-item'>
-                            <strong>⚠️ Delete comentários</strong>
-                            <p>Remova linhas explicativas antes de importar</p>
+
+                          <div className='step'>
+                            <strong>3. Configure a importação</strong>
+                            <p>
+                              Delimiter: Vírgula, Codificação: UTF-8, clique em
+                              &quot;Carregar&quot;
+                            </p>
+                          </div>
+
+                          <div className='step'>
+                            <strong>4. Limpe o arquivo</strong>
+                            <p>
+                              ⚠️ DELETE as linhas explicativas (linhas com
+                              &quot;LEGENDA&quot; e &quot;TIPO&quot;)
+                            </p>
+                          </div>
+
+                          <div className='step'>
+                            <strong>5. Preencha seus dados</strong>
+                            <p>
+                              Use os exemplos como base e preencha os campos{' '}
+                              <strong>obrigatórios</strong>
+                            </p>
+                          </div>
+
+                          <div className='step'>
+                            <strong>6. Salve como CSV</strong>
+                            <p>
+                              Arquivo → Salvar Como → CSV (delimitado por
+                              vírgula)
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Seção 5: Tipos de Atividade */}
+                      <div className='info-section info-section-spaced'>
+                        <h4>Campos obrigatórios por tipo</h4>
+                        <div className='activity-types-info'>
+                          <div
+                            className='type-info'
+                            style={{ borderLeft: '4px solid #08ECCC' }}
+                          >
+                            <strong>Desenvolvimento</strong>{' '}
+                            <span className='field-count'>4 campos</span>
+                            <p>
+                              Tipo, título, funcionalidade, sub-funcionalidade
+                            </p>
+                          </div>
+                          <div
+                            className='type-info'
+                            style={{ borderLeft: '4px solid #F90EF4' }}
+                          >
+                            <strong>Execução de testes</strong>{' '}
+                            <span className='field-count'>4 campos</span>
+                            <p>
+                              Tipo, título, funcionalidade, sub-funcionalidade
+                            </p>
+                          </div>
+                          <div
+                            className='type-info'
+                            style={{ borderLeft: '4px solid #89B0EB' }}
+                          >
+                            <strong>Teste de mesa</strong>{' '}
+                            <span className='field-count'>4 campos</span>
+                            <p>
+                              Tipo, título, funcionalidade, sub-funcionalidade
+                            </p>
+                          </div>
+                          <div
+                            className='type-info'
+                            style={{ borderLeft: '4px solid #90F485' }}
+                          >
+                            <strong>Análise de testes</strong>{' '}
+                            <span className='field-count'>4 campos</span>
+                            <p>
+                              Tipo, título, funcionalidade, sub-funcionalidade
+                            </p>
+                          </div>
+                          <div
+                            className='type-info'
+                            style={{ borderLeft: '4px solid #F1D8D8' }}
+                          >
+                            <strong>Documentação</strong>{' '}
+                            <span className='field-count'>2 campos</span>
+                            <p>Apenas tipo e título</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Seção 6: Dicas */}
+                      <div className='info-section info-section-spaced'>
+                        <h4>Dicas importantes</h4>
+                        <div className='tips-list'>
+                          <div className='tip'>
+                            <div className='tip-row'>
+                              <div className='tip-item'>
+                                <strong>✅ Use valores exatos</strong>
+                                <p>
+                                  Urgência: &quot;Baixo&quot;,
+                                  &quot;Médio&quot;, &quot;Alto&quot;,
+                                  &quot;Crítico&quot;
+                                </p>
+                              </div>
+                              <div className='tip-item'>
+                                <strong>⚠️ Delete comentários</strong>
+                                <p>
+                                  Remova linhas explicativas antes de importar
+                                </p>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
-          </div>
-
           {/* Main Import Section */}
           {renderCurrentState()}
-
           {/* History Section */}
           {showHistory && (
             <div className='history-section'>

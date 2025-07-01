@@ -407,20 +407,36 @@
   color: var(--text-secondary);
 }
 
-/* Preview */
+/* Preview Container */
+.preview-container {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
 .preview-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
 }
 
-.preview-header h4 {
+.preview-title-stats {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.preview-title-stats h4 {
   margin: 0;
   color: var(--text-primary);
+  font-size: 1.2em;
+  font-weight: 600;
 }
 
 .preview-stats {
@@ -545,46 +561,43 @@
   margin: 0;
 }
 
-/* Credentials Section */
+/* Dados adicionais Section */
 .credentials-section {
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 20px;
   margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.credentials-section h5 {
-  margin: 0 0 16px 0;
+.credentials-section h4 {
+  margin: 0 0 20px 0;
   color: var(--text-primary);
+  font-size: 1.1em;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.credentials-form {
+/* Aplicar o mesmo padrão dos campos de identificação para todos os campos */
+.credentials-section .import-identification {
+  position: relative;
   margin-bottom: 20px;
 }
 
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 12px;
+.credentials-section .import-identification:last-child {
+  margin-bottom: 0;
 }
 
-.form-row input {
-  padding: 12px 16px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  font-size: 1em;
-  transition: all 0.2s ease;
+/* Garantir que o select de situação também tenha o espaçamento correto */
+.credentials-section .import-status {
+  position: relative;
+  margin-bottom: 0;
 }
 
-.form-row input:focus {
-  outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px rgba(var(--accent-color-rgb), 0.1);
-}
+/* Classes form-row removidas - agora usando padrão import-identification */
 
 /* Progress */
 .import-progress {
@@ -802,14 +815,16 @@
 }
 
 .btn-primary {
-  background: var(--accent-color);
-  color: white;
+  background-color: var(--primary-color-dark);
+  color: var(--text-button);
+  font-weight: 600;
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--accent-hover);
+  background-color: var(--accent-color);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(var(--accent-color-rgb), 0.3);
+  box-shadow: 0 0 10px rgba(8, 236, 204, 0.6);
 }
 
 .btn-primary:disabled {
@@ -828,9 +843,8 @@
 }
 
 .btn-secondary:hover {
-  background: var(--primary-color-dark);
   border-color: var(--primary-color-dark);
-  color: var(--text-button);
+  color: var(--primary-color-dark);
   font-weight: 600;
   font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
   transform: translateY(-1px);
@@ -841,7 +855,9 @@
   display: flex;
   gap: 12px;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
 }
 
 /* Responsive */
@@ -866,9 +882,7 @@
     grid-template-columns: 1fr;
   }
 
-  .form-row {
-    grid-template-columns: 1fr;
-  }
+  /* .form-row removida - agora usando padrão import-identification */
 
   .completion-stats {
     grid-template-columns: 1fr;
