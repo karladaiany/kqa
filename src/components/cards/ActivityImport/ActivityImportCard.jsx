@@ -1048,7 +1048,7 @@ const ActivityImportCard = () => {
                   <table className='history-table'>
                     <thead>
                       <tr>
-                        <th>Nome</th>
+                        <th>Descrição</th>
                         <th>Data / Hora</th>
                         <th>Situação</th>
                         <th>Ações</th>
@@ -1116,18 +1116,61 @@ const ActivityImportCard = () => {
                                                     className='error-item-expanded'
                                                   >
                                                     <div className='error-line-header'>
-                                                      {error.line !== 'Geral' &&
-                                                        error.line !==
-                                                          'Arquivo' && (
-                                                          <span className='error-line-ref'>
-                                                            Na linha{' '}
-                                                            {error.line}
-                                                          </span>
-                                                        )}
+                                                      <span className='error-line-ref'>
+                                                        Linha{' '}
+                                                        {Number(error.line) + 1}
+                                                      </span>
                                                     </div>
-                                                    <span className='error-message'>
-                                                      {error.error}
-                                                    </span>
+                                                    {error.error.includes(
+                                                      'Data de início inválida'
+                                                    ) ? (
+                                                      <div className='error-message'>
+                                                        Data de início inválida.
+                                                        Use o formato YYYY-MM-DD
+                                                        (ex: 2024-03-20)
+                                                      </div>
+                                                    ) : error.error.includes(
+                                                        'Data de término inválida'
+                                                      ) ? (
+                                                      <div className='error-message'>
+                                                        Data de término
+                                                        inválida. Use o formato
+                                                        YYYY-MM-DD (ex:
+                                                        2024-03-20)
+                                                      </div>
+                                                    ) : error.error.includes(
+                                                        'Headers obrigatórios ausentes'
+                                                      ) ? (
+                                                      <div className='error-message'>
+                                                        Headers obrigatórios
+                                                        ausentes. Verifique se o
+                                                        arquivo possui todos os
+                                                        campos obrigatórios no
+                                                        cabeçalho.
+                                                      </div>
+                                                    ) : error.error.includes(
+                                                        'Falha na autenticação'
+                                                      ) ? (
+                                                      <div className='error-message'>
+                                                        Falha na autenticação.
+                                                        Verifique suas
+                                                        credenciais do Artia e
+                                                        tente novamente.
+                                                      </div>
+                                                    ) : error.error.includes(
+                                                        'tipo, titulo'
+                                                      ) ? (
+                                                      <div className='error-message'>
+                                                        Campos obrigatórios
+                                                        ausentes. Adicione as
+                                                        colunas tipo e titulo ao
+                                                        seu arquivo CSV.
+                                                      </div>
+                                                    ) : (
+                                                      <div className='error-message'>
+                                                        {error.error}
+                                                      </div>
+                                                    )}
                                                   </div>
                                                 )
                                               )}
