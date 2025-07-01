@@ -79,10 +79,8 @@ const ActivityImportCard = () => {
   } = useActivityImport();
 
   // Estados locais do componente
-  const [expanded, setExpanded] = useState(() => {
-    const savedState = localStorage.getItem('activityImportExpanded');
-    return savedState ? JSON.parse(savedState) : false;
-  });
+  const [expanded, setExpanded] = useState(false);
+  const [forceCollapsed, setForceCollapsed] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [showInfoPanel, setShowInfoPanel] = useState(false);
@@ -98,11 +96,6 @@ const ActivityImportCard = () => {
 
   const fileInputRef = useRef(null);
 
-  // Persistir estado de expansão
-  React.useEffect(() => {
-    localStorage.setItem('activityImportExpanded', JSON.stringify(expanded));
-  }, [expanded]);
-
   // Função para verificar se há dados/atividade em andamento
   const hasAnyData = useCallback(() => {
     return (
@@ -112,11 +105,37 @@ const ActivityImportCard = () => {
     );
   }, [selectedFile, currentState, importHistory.length]);
 
-  // Exibe campos se houver dados ou se estiver expandido
-  const showFields = React.useMemo(
-    () => expanded || hasAnyData(),
-    [expanded, hasAnyData]
-  );
+  // Controle de expansão do card
+  const showFields = React.useMemo(() => {
+    // Se o usuário forçou o colapso, mantém colapsado independente dos dados
+    if (forceCollapsed) return false;
+    // Senão, mostra se expandido ou se há dados
+    return expanded || hasAnyData();
+  }, [expanded, hasAnyData, forceCollapsed]);
+
+  /**
+   * Função para expandir o card
+   */
+  const handleExpand = useCallback(() => {
+    setExpanded(true);
+    setForceCollapsed(false);
+  }, []);
+
+  /**
+   * Função para colapsar o card
+   */
+  const handleCollapse = useCallback(() => {
+    setExpanded(false);
+    setForceCollapsed(true);
+  }, []);
+
+  /**
+   * Função para resetar importação e estado de expansão
+   */
+  const handleResetImport = useCallback(() => {
+    resetImport();
+    setForceCollapsed(false);
+  }, [resetImport]);
 
   /**
    * Toggle de tipo de atividade
@@ -153,11 +172,14 @@ const ActivityImportCard = () => {
       e.preventDefault();
       const files = Array.from(e.dataTransfer.files);
       if (files.length > 0) {
-        resetImport(); // Resetar estado antes de selecionar novo arquivo
+        handleResetImport(); // Resetar estado antes de selecionar novo arquivo
         selectFile(files[0]);
+        // Expandir card automaticamente quando arquivo é carregado
+        setExpanded(true);
+        setForceCollapsed(false);
       }
     },
-    [selectFile, resetImport]
+    [selectFile, handleResetImport]
   );
 
   /**
@@ -174,13 +196,16 @@ const ActivityImportCard = () => {
     e => {
       const file = e.target.files[0];
       if (file) {
-        resetImport(); // Resetar estado antes de selecionar novo arquivo
+        handleResetImport(); // Resetar estado antes de selecionar novo arquivo
         selectFile(file);
+        // Expandir card automaticamente quando arquivo é carregado
+        setExpanded(true);
+        setForceCollapsed(false);
       }
       // Limpar o input para permitir selecionar o mesmo arquivo novamente
       e.target.value = '';
     },
-    [selectFile, resetImport]
+    [selectFile, handleResetImport]
   );
 
   /**
@@ -642,7 +667,7 @@ const ActivityImportCard = () => {
       )}
 
       <div className='preview-actions'>
-        <button className='btn-secondary' onClick={resetImport}>
+        <button className='btn-secondary' onClick={handleResetImport}>
           <FaTimes /> Cancelar
         </button>
       </div>
@@ -723,7 +748,7 @@ const ActivityImportCard = () => {
             <FaDownload /> Baixar Relatório Completo
           </button>
 
-          <button className='btn-secondary' onClick={resetImport}>
+          <button className='btn-secondary' onClick={handleResetImport}>
             <FaRocket /> Nova Importação
           </button>
         </div>
@@ -741,7 +766,7 @@ const ActivityImportCard = () => {
         <h4>❌ Erro na Importação</h4>
         <p>Verifique o arquivo e tente novamente.</p>
 
-        <button className='btn-action' onClick={resetImport}>
+        <button className='btn-action' onClick={handleResetImport}>
           <FaRocket /> Tentar Novamente
         </button>
       </div>
@@ -757,7 +782,7 @@ const ActivityImportCard = () => {
         {!showFields && (
           <button
             className='generate-all-btn'
-            onClick={() => setExpanded(true)}
+            onClick={handleExpand}
             title='Nova importação de atividades'
           >
             +
@@ -774,7 +799,7 @@ const ActivityImportCard = () => {
             </button>
             <button
               className='btn-icon selection-btn'
-              onClick={() => setExpanded(false)}
+              onClick={handleCollapse}
               title='Colapsar card'
             >
               <FaMinus />
