@@ -548,7 +548,7 @@ export const useActivityImport = () => {
    * Executar importação das atividades válidas
    */
   const executeImport = useCallback(
-    async credentials => {
+    async (credentials, selectedStatusId = null) => {
       if (validatedData.length === 0) {
         toast.error('Nenhuma atividade válida para importar');
         return false;
@@ -600,7 +600,16 @@ export const useActivityImport = () => {
 
           try {
             // Converter dados para formato do Artia
-            const activityData = convertToArtiaFormat(activity, credentials);
+            // Usar status específico da linha se válido, senão usar padrão do card
+            const finalStatusId = activity.hasValidCustomStatus
+              ? activity.customStatusId
+              : selectedStatusId;
+
+            const activityData = convertToArtiaFormat(
+              activity,
+              credentials,
+              finalStatusId
+            );
 
             // Criar atividade
             const result = await ArtiaService.createActivity(activityData);
@@ -780,9 +789,9 @@ export const useActivityImport = () => {
   /**
    * Download do template CSV
    */
-  const downloadTemplate = useCallback(selectedTypes => {
+  const downloadTemplate = useCallback((selectedTypes, selectedStatusId) => {
     try {
-      const csvContent = generateCSVTemplate(selectedTypes);
+      const csvContent = generateCSVTemplate(selectedTypes, selectedStatusId);
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
       const url = URL.createObjectURL(blob);
 
@@ -867,7 +876,11 @@ const readFileContent = file => {
 /**
  * Converter dados da atividade para formato esperado pelo ArtiaService
  */
-const convertToArtiaFormat = (activity, credentials) => {
+const convertToArtiaFormat = (
+  activity,
+  credentials,
+  defaultStatusId = null
+) => {
   return {
     // Campos básicos
     titulo: activity.titulo,
@@ -879,6 +892,9 @@ const convertToArtiaFormat = (activity, credentials) => {
     inicioEstimado: activity.inicioEstimado || '',
     terminoEstimado: activity.terminoEstimado || '',
     responsibleId: activity.responsibleId || null,
+
+    // Status customizado
+    customStatusId: activity.customStatusId || defaultStatusId || null,
 
     // Campos específicos por tipo
     ticketMovidesk: activity.ticketMovidesk || '',

@@ -36,6 +36,8 @@ import {
 import {
   ACTIVITY_TYPES,
   getEnabledActivityTypes,
+  CUSTOM_STATUS_OPTIONS,
+  DEFAULT_CUSTOM_STATUS_ID,
 } from '../../../constants/artiaOptions';
 import './ActivityImportCard.css';
 
@@ -92,6 +94,9 @@ const ActivityImportCard = () => {
   });
   const [selectedTypes, setSelectedTypes] = useState(
     enabledActivityTypesValues
+  );
+  const [selectedStatus, setSelectedStatus] = useState(
+    DEFAULT_CUSTOM_STATUS_ID
   );
 
   const fileInputRef = useRef(null);
@@ -234,14 +239,14 @@ const ActivityImportCard = () => {
       return;
     }
 
-    const success = await executeImport(credentials);
+    const success = await executeImport(credentials, selectedStatus);
     if (success) {
       // Download automático do relatório
       setTimeout(() => {
         downloadMainReport();
       }, 2000);
     }
-  }, [canProceed, executeImport, credentials]);
+  }, [canProceed, executeImport, credentials, selectedStatus]);
 
   /**
    * Download do relatório principal
@@ -486,6 +491,25 @@ const ActivityImportCard = () => {
             Atualizar atividades
           </button>
         </div>
+      </div>
+
+      <div className='import-status'>
+        <label htmlFor='status-select'>
+          Situação padrão das atividades{' '}
+          <span style={{ color: '#dc3545' }}>*</span>
+        </label>
+        <select
+          id='status-select'
+          value={selectedStatus}
+          onChange={e => setSelectedStatus(Number(e.target.value))}
+          className='status-select'
+        >
+          {CUSTOM_STATUS_OPTIONS.map(option => (
+            <option key={option.id} value={option.id}>
+              {option.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <button className='btn-action' onClick={handleProcessFile}>
@@ -893,7 +917,9 @@ const ActivityImportCard = () => {
                     <div className='download-action-panel'>
                       <button
                         className={`btn-download ${selectedTypes.length === 0 ? 'disabled' : ''}`}
-                        onClick={() => downloadTemplate(selectedTypes)}
+                        onClick={() =>
+                          downloadTemplate(selectedTypes, selectedStatus)
+                        }
                         disabled={selectedTypes.length === 0}
                       >
                         <FaDownload />

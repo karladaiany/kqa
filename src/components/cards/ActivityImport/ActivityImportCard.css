@@ -272,6 +272,53 @@
   margin-bottom: 20px;
 }
 
+/* Import Status */
+.import-status {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.import-status > label {
+  position: absolute;
+  left: 8px;
+  top: -0.6em;
+  color: var(--text-secondary);
+  font-size: 14px;
+  padding: 0 4px;
+  z-index: 1;
+  display: inline-block;
+  height: 1.2em;
+  white-space: nowrap;
+  backdrop-filter: blur(4px);
+  font-weight: 500;
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+  background: var(--background-color);
+}
+
+.status-select {
+  height: 36px;
+  width: 100%;
+  padding: 0 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: var(--background-color);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.status-select:hover {
+  border-color: var(--accent-color);
+}
+
+.status-select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+}
+
 .import-mode > label {
   position: absolute;
   left: 8px;

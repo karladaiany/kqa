@@ -6,6 +6,7 @@ import {
   ACTIVITY_TYPES,
   RESPONSAVEL_OPTIONS,
   getEnabledActivityTypes,
+  CUSTOM_STATUS_OPTIONS,
 } from '../constants/artiaOptions';
 import { REQUIRED_FIELDS_BY_TYPE } from '../constants/artiaFieldHashes';
 
@@ -19,6 +20,7 @@ export const CSV_HEADERS = [
   'esforco_estimado',
   'inicio_estimado',
   'termino_estimado',
+  'situacao_atividade',
   'ticket_movidesk',
   'urgencia',
   'plataforma',
@@ -45,6 +47,7 @@ export const CSV_TO_JS_MAPPING = {
   esforco_estimado: 'esforcoEstimado',
   inicio_estimado: 'inicioEstimado',
   termino_estimado: 'terminoEstimado',
+  situacao_atividade: 'situacaoAtividade',
   ticket_movidesk: 'ticketMovidesk',
   urgencia: 'urgencia',
   plataforma: 'plataforma',
@@ -279,6 +282,23 @@ const transformActivityData = activity => {
     }
   }
 
+  // Converter situação da atividade nome para customStatusId (com validação)
+  if (transformed.situacaoAtividade) {
+    const status = CUSTOM_STATUS_OPTIONS.find(
+      s => s.name.toLowerCase() === transformed.situacaoAtividade.toLowerCase()
+    );
+    if (status) {
+      transformed.customStatusId = status.id;
+      transformed.hasValidCustomStatus = true;
+    } else {
+      // Valor inválido - será usado o padrão do card
+      transformed.hasValidCustomStatus = false;
+    }
+  } else {
+    // Coluna não existe ou vazia - será usado o padrão do card
+    transformed.hasValidCustomStatus = false;
+  }
+
   return transformed;
 };
 
@@ -329,7 +349,8 @@ const isValidDate = dateString => {
  * @returns {string} Conteúdo do CSV template
  */
 export const generateCSVTemplate = (
-  selectedTypes = Object.values(getEnabledActivityTypes())
+  selectedTypes = Object.values(getEnabledActivityTypes()),
+  selectedStatusId = null
 ) => {
   // Header do CSV com indicadores de campos obrigatórios
   const headerWithRequiredIndicators = CSV_HEADERS.map(field => {
@@ -388,7 +409,7 @@ export const generateCSVTemplate = (
 
   // Exemplos para cada tipo selecionado
   const examples = selectedTypes.map((type, index) => {
-    const example = getExampleForType(type, index + 1);
+    const example = getExampleForType(type, index + 1, selectedStatusId);
     return CSV_HEADERS.map(field => {
       const value = example[CSV_TO_JS_MAPPING[field]] || '';
       // Escapar valores que contêm vírgulas ou aspas
@@ -446,9 +467,10 @@ export const generateCSVTemplate = (
  * Gerar exemplo de atividade para um tipo específico
  * @param {string} type - Tipo da atividade
  * @param {number} index - Índice para variação dos dados
+ * @param {number} selectedStatusId - ID do status selecionado
  * @returns {Object} Exemplo de atividade
  */
-const getExampleForType = (type, index) => {
+const getExampleForType = (type, index, selectedStatusId = null) => {
   const today = new Date();
   const startDate = new Date(today);
   startDate.setDate(today.getDate() + index);
@@ -462,6 +484,10 @@ const getExampleForType = (type, index) => {
     esforcoEstimado: '2.5',
     inicioEstimado: `${startDate.getDate().toString().padStart(2, '0')}/${(startDate.getMonth() + 1).toString().padStart(2, '0')}/${startDate.getFullYear()}`,
     terminoEstimado: `${endDate.getDate().toString().padStart(2, '0')}/${(endDate.getMonth() + 1).toString().padStart(2, '0')}/${endDate.getFullYear()}`,
+    situacaoAtividade: selectedStatusId
+      ? CUSTOM_STATUS_OPTIONS.find(status => status.id === selectedStatusId)
+          ?.name || CUSTOM_STATUS_OPTIONS[0].name
+      : CUSTOM_STATUS_OPTIONS[0].name,
     responsavel: 'Alexandre',
   };
 

@@ -586,3 +586,13 @@ export const ACTIVITY_FIELDS = {
   // DOCUMENTAÇÃO → Nenhum campo customizado obrigatório
   [ACTIVITY_TYPES.DOCUMENTACAO]: [],
 };
+
+// Status customizados para atividades
+export const CUSTOM_STATUS_OPTIONS = [
+  { id: 246888, name: 'Não iniciado' },
+  { id: 246886, name: 'Backlog' },
+  { id: 246887, name: 'Backlog Programado' },
+  { id: 246895, name: 'Triagem' },
+];
+
+export const DEFAULT_CUSTOM_STATUS_ID = 246886; // Backlog por padrão

@@ -101,6 +101,7 @@ const CREATE_ACTIVITY_SIMPLE = gql`
     $createdBy: String!
     $priority: Int
     $estimatedEffort: Float
+    $customStatusId: Int
   ) {
     createActivity(
       title: $title
@@ -111,6 +112,7 @@ const CREATE_ACTIVITY_SIMPLE = gql`
       createdBy: $createdBy
       priority: $priority
       estimatedEffort: $estimatedEffort
+      customStatusId: $customStatusId
     ) {
       id
       uid
@@ -138,6 +140,7 @@ const CREATE_ACTIVITY = gql`
     $estimatedEffort: Float
     $customField: [OrganizationCustomFieldsInput!]
     $responsibleId: Int
+    $customStatusId: Int
   ) {
     createActivity(
       title: $title
@@ -150,6 +153,7 @@ const CREATE_ACTIVITY = gql`
       estimatedEffort: $estimatedEffort
       customField: $customField
       responsibleId: $responsibleId
+      customStatusId: $customStatusId
     ) {
       id
       uid
@@ -754,6 +758,7 @@ Evidência pendente de anexo
       estimatedEffort:
         parseInt(activityData.esforcoEstimado) ||
         DEFAULT_ARTIA_VALUES.ESTIMATED_EFFORT,
+      customStatusId: activityData.customStatusId || null,
       customField: [],
     };
 
