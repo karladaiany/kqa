@@ -79,6 +79,7 @@ const ActivityImportCard = () => {
     clearHistory,
     removeHistoryItem,
     downloadTemplate,
+    downloadUpdateTemplate,
   } = useActivityImport();
 
   // Estados locais do componente
@@ -541,71 +542,89 @@ const ActivityImportCard = () => {
           </div>
         </div>
 
-        {/* ID do Grupo de Trabalho */}
-        <div className='import-identification'>
-          <label htmlFor='account-field'>
-            ID do Grupo de Trabalho <span style={{ color: '#dc3545' }}>*</span>
-          </label>
-          <div className='input-container'>
-            <input
-              id='account-field'
-              type='text'
-              value={credentials.accountId}
-              onChange={e =>
-                setCredentials(prev => ({
-                  ...prev,
-                  accountId: e.target.value,
-                }))
-              }
-              placeholder='Ex: 12345'
-              className='import-name-input'
-              required
-            />
-          </div>
-        </div>
+        {/* Campos específicos para criação */}
+        {importMode === 'create' && (
+          <>
+            {/* ID do Grupo de Trabalho */}
+            <div className='import-identification'>
+              <label htmlFor='account-field'>
+                ID do Grupo de Trabalho{' '}
+                <span style={{ color: '#dc3545' }}>*</span>
+              </label>
+              <div className='input-container'>
+                <input
+                  id='account-field'
+                  type='text'
+                  value={credentials.accountId}
+                  onChange={e =>
+                    setCredentials(prev => ({
+                      ...prev,
+                      accountId: e.target.value,
+                    }))
+                  }
+                  placeholder='Ex: 12345'
+                  className='import-name-input'
+                  required
+                />
+              </div>
+            </div>
 
-        {/* ID da Pasta/Projeto */}
-        <div className='import-identification'>
-          <label htmlFor='folder-field'>
-            ID da Pasta/Projeto <span style={{ color: '#dc3545' }}>*</span>
-          </label>
-          <div className='input-container'>
-            <input
-              id='folder-field'
-              type='text'
-              value={credentials.folderId}
-              onChange={e =>
-                setCredentials(prev => ({
-                  ...prev,
-                  folderId: e.target.value,
-                }))
-              }
-              placeholder='Ex: 67890'
-              className='import-name-input'
-              required
-            />
-          </div>
-        </div>
+            {/* ID da Pasta/Projeto */}
+            <div className='import-identification'>
+              <label htmlFor='folder-field'>
+                ID da Pasta/Projeto <span style={{ color: '#dc3545' }}>*</span>
+              </label>
+              <div className='input-container'>
+                <input
+                  id='folder-field'
+                  type='text'
+                  value={credentials.folderId}
+                  onChange={e =>
+                    setCredentials(prev => ({
+                      ...prev,
+                      folderId: e.target.value,
+                    }))
+                  }
+                  placeholder='Ex: 67890'
+                  className='import-name-input'
+                  required
+                />
+              </div>
+            </div>
 
-        {/* Situação padrão das atividades */}
-        <div className='import-status'>
-          <label htmlFor='status-select'>
-            Situação padrão das atividades{' '}
-            <span style={{ color: '#dc3545' }}>*</span>
-          </label>
-          <select
-            id='status-select'
-            value={selectedStatus}
-            onChange={e => setSelectedStatus(Number(e.target.value))}
-            className='status-select'
-          >
-            {CUSTOM_STATUS_OPTIONS.map(option => (
-              <option key={option.id} value={option.id}>
-                {option.name}
-              </option>
-            ))}
-          </select>
-        </div>
+            {/* Situação padrão das atividades */}
+            <div className='import-status'>
+              <label htmlFor='status-select'>
+                Situação padrão das atividades{' '}
+                <span style={{ color: '#dc3545' }}>*</span>
+              </label>
+              <select
+                id='status-select'
+                value={selectedStatus}
+                onChange={e => setSelectedStatus(Number(e.target.value))}
+                className='status-select'
+              >
+                {CUSTOM_STATUS_OPTIONS.map(option => (
+                  <option key={option.id} value={option.id}>
+                    {option.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </>
+        )}
+
+        {/* Informação para modo de atualização */}
+        {importMode === 'update' && (
+          <div className='update-info'>
+            <p
+              style={{ color: '#6c757d', fontSize: '14px', marginTop: '16px' }}
+            >
+              ℹ️ <strong>Modo de Atualização:</strong> As configurações de conta
+              e pasta serão obtidas automaticamente das atividades existentes.
+            </p>
+          </div>
+        )}
       </div>
 
       <button
@@ -614,8 +633,8 @@ const ActivityImportCard = () => {
         disabled={
           !credentials.email ||
           !credentials.password ||
-          !credentials.accountId ||
-          !credentials.folderId
+          (importMode === 'create' &&
+            (!credentials.accountId || !credentials.folderId))
         }
       >
         <FaRocket /> Processar Arquivo
@@ -743,11 +762,14 @@ const ActivityImportCard = () => {
               disabled={
                 !credentials.email ||
                 !credentials.password ||
-                !credentials.accountId ||
-                !credentials.folderId
+                (importMode === 'create' &&
+                  (!credentials.accountId || !credentials.folderId))
               }
             >
-              <FaRocket /> Executar Importação
+              <FaRocket />{' '}
+              {importMode === 'create'
+                ? 'Executar Importação'
+                : 'Executar Atualização'}
             </button>
             <button className='btn-secondary' onClick={handleResetImport}>
               <FaTimes /> Cancelar
@@ -798,12 +820,20 @@ const ActivityImportCard = () => {
     <div className='import-section'>
       <div className='import-complete'>
         <FaCheck className='success-icon' />
-        <h4>Importação concluída!</h4>
+        <h4>
+          {processResults.success.length > 0
+            ? 'Importação concluída!'
+            : 'Importação processada'}
+        </h4>
 
         <div className='completion-stats'>
           <div className='stat-card success'>
             <span className='stat-number'>{processResults.success.length}</span>
-            <span className='stat-label'>Atividades Criadas</span>
+            <span className='stat-label'>
+              {importMode === 'create'
+                ? 'Atividades Criadas'
+                : 'Atividades Atualizadas'}
+            </span>
           </div>
 
           {processResults.errors.length > 0 && (
@@ -817,9 +847,11 @@ const ActivityImportCard = () => {
 
           <div className='stat-card rate'>
             <span className='stat-number'>
-              {Math.round(
-                (processResults.success.length / processResults.total) * 100
-              )}
+              {processResults.total > 0
+                ? Math.round(
+                    (processResults.success.length / processResults.total) * 100
+                  )
+                : 0}
               %
             </span>
             <span className='stat-label'>Taxa de Sucesso</span>
@@ -827,13 +859,28 @@ const ActivityImportCard = () => {
         </div>
 
         <div className='completion-actions'>
-          <button className='btn-primary' onClick={downloadMainReport}>
-            <FaDownload /> Baixar Relatório Completo
-          </button>
+          <div className='action-group'>
+            <button className='btn-primary' onClick={downloadMainReport}>
+              <FaDownload />{' '}
+              {importMode === 'create'
+                ? 'Relatório de Criação'
+                : 'Relatório de Atualização'}
+            </button>
 
-          <button className='btn-secondary' onClick={handleResetImport}>
-            <FaRocket /> Nova Importação
-          </button>
+            {processResults.success.length > 0 && (
+              <button
+                className='btn-secondary'
+                onClick={() => downloadUpdateTemplate(processResults.success)}
+                title='Baixar template para atualização das atividades criadas'
+              >
+                <FaEdit /> Template de Atualização
+              </button>
+            )}
+
+            <button className='btn-secondary' onClick={handleResetImport}>
+              <FaRocket /> Nova Importação
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -1231,14 +1278,12 @@ const ActivityImportCard = () => {
                                   <div className='error-details-improved'>
                                     {item.results?.errors?.length > 0 ? (
                                       item.results.errors.length === 1 ? (
-                                        // Mostrar erro único diretamente
                                         <div className='error-item-compact'>
                                           <span className='error-message'>
                                             {item.results.errors[0].error}
                                           </span>
                                         </div>
                                       ) : (
-                                        // Mostrar resumo para múltiplos erros
                                         <div className='error-summary-compact'>
                                           <details className='error-details-toggle'>
                                             <summary>Ver detalhes</summary>
@@ -1336,17 +1381,38 @@ const ActivityImportCard = () => {
                             </td>
                             <td className='td-actions'>
                               <div className='action-buttons'>
-                                <FaDownload
-                                  onClick={() => handleRedownload(item)}
-                                  title='Baixar relatório'
-                                  className='action-icon'
-                                />
+                                <div className='download-dropdown'>
+                                  <FaDownload className='action-icon' />
+                                  <div className='download-dropdown-content'>
+                                    <div
+                                      className='download-item'
+                                      onClick={() => handleRedownload(item)}
+                                    >
+                                      <FaDownload /> Relatório de Criação
+                                    </div>
+
+                                    {item.status !== 'error' &&
+                                      item.results?.success?.length > 0 && (
+                                        <div
+                                          className='download-item'
+                                          onClick={() =>
+                                            downloadUpdateTemplate(
+                                              item.results.success
+                                            )
+                                          }
+                                        >
+                                          <FaEdit /> Template de Atualização
+                                        </div>
+                                      )}
+                                  </div>
+                                </div>
+
                                 <FaTimes
+                                  className='action-icon danger'
                                   onClick={() =>
                                     handleRemoveHistoryItem(item.id)
                                   }
                                   title='Remover do histórico'
-                                  className='action-icon danger'
                                 />
                               </div>
                             </td>

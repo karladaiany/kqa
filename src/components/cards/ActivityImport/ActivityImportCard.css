@@ -709,10 +709,19 @@
   color: var(--text-secondary);
 }
 
+/* Grupo de ações na conclusão */
 .completion-actions {
   display: flex;
+  flex-direction: column;
   gap: 16px;
+  margin-top: 24px;
+}
+
+.action-group {
+  display: flex;
+  gap: 8px;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 /* Error State */
@@ -2437,25 +2446,22 @@
 
 .history-table .action-buttons {
   display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 8px;
+  align-items: center;
 }
 
 .action-icon {
   cursor: pointer;
-  color: var(--text-secondary);
-  font-size: 1.1em;
-  transition: all 0.2s ease;
+  color: #6c757d;
+  transition: color 0.2s;
 }
 
 .action-icon:hover {
-  color: var(--accent-color);
-  transform: translateY(-1px);
+  color: #fff;
 }
 
 .action-icon.danger:hover {
-  color: #dc2626;
+  color: #dc3545;
 }
 
 /* Situações melhoradas */
@@ -2708,4 +2714,171 @@
   border-left: 2px solid var(--border-color);
   white-space: normal;
   overflow: visible;
+}
+
+/* Dropdown de ações no histórico */
+.action-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.action-dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background-color: #2a2a2a;
+  min-width: 180px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  z-index: 1;
+  padding: 4px;
+  margin-top: 4px;
+}
+
+.action-dropdown:hover .action-dropdown-content {
+  display: block;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  color: #fff;
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-radius: 2px;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dropdown-item svg {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* Botão de opções */
+.options-button {
+  background: none;
+  border: none;
+  color: #6c757d;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s;
+}
+
+.options-button:hover {
+  color: #fff;
+}
+
+/* Ações no histórico */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.action-icon {
+  cursor: pointer;
+  color: #6c757d;
+  transition: color 0.2s;
+}
+
+.action-icon:hover {
+  color: #fff;
+}
+
+.action-icon.danger:hover {
+  color: #dc3545;
+}
+
+/* Dropdown de download */
+.download-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.download-dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: #2a2a2a;
+  min-width: 180px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  z-index: 1;
+  padding: 4px;
+}
+
+/* Posicionamento padrão (para baixo) */
+.download-dropdown-content {
+  top: calc(100% + 4px);
+}
+
+/* Posicionamento para cima quando próximo ao fim da tabela */
+tr:nth-last-child(-n + 2) .download-dropdown-content {
+  bottom: calc(100% + 4px);
+  top: auto;
+}
+
+/* Área de hover extendida para evitar que o menu suma */
+.download-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -8px;
+  right: -8px;
+  bottom: -4px;
+}
+
+.download-dropdown::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: -8px;
+  right: -8px;
+  height: 8px;
+}
+
+/* Para quando o menu abre para cima */
+tr:nth-last-child(-n + 2) .download-dropdown::after {
+  top: auto;
+  bottom: 100%;
+}
+
+/* Mostrar menu quando hover na área extendida */
+.download-dropdown:hover .download-dropdown-content {
+  display: block;
+}
+
+.download-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  color: #fff;
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.download-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.download-item svg {
+  font-size: 14px;
+  opacity: 0.8;
 }
