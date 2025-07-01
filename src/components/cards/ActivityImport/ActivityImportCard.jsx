@@ -618,10 +618,20 @@ const ActivityImportCard = () => {
         {importMode === 'update' && (
           <div className='update-info'>
             <p
-              style={{ color: '#6c757d', fontSize: '14px', marginTop: '16px' }}
+              style={{
+                color: '#dc3545',
+                fontSize: '14px',
+                marginTop: '16px',
+                padding: '12px',
+                backgroundColor: '#fff3cd',
+                border: '1px solid #ffeaa7',
+                borderRadius: '4px',
+              }}
             >
-              ℹ️ <strong>Modo de Atualização:</strong> As configurações de conta
-              e pasta serão obtidas automaticamente das atividades existentes.
+              ⚠️ <strong>Modo de Atualização:</strong> Esta funcionalidade está
+              em desenvolvimento. Por enquanto, use o modo &quot;Criar
+              atividades&quot; e depois faça as atualizações manualmente no
+              Artia.
             </p>
           </div>
         )}
@@ -763,13 +773,19 @@ const ActivityImportCard = () => {
                 !credentials.email ||
                 !credentials.password ||
                 (importMode === 'create' &&
-                  (!credentials.accountId || !credentials.folderId))
+                  (!credentials.accountId || !credentials.folderId)) ||
+                importMode === 'update' // Desabilitar modo atualização temporariamente
+              }
+              title={
+                importMode === 'update'
+                  ? 'Modo de atualização ainda não está disponível'
+                  : ''
               }
             >
               <FaRocket />{' '}
               {importMode === 'create'
                 ? 'Executar Importação'
-                : 'Executar Atualização'}
+                : 'Executar Atualização (Em breve)'}
             </button>
             <button className='btn-secondary' onClick={handleResetImport}>
               <FaTimes /> Cancelar

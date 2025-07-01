@@ -9,6 +9,7 @@ import {
   parseCSV,
   validateFile,
   generateCSVTemplate,
+  generateUpdateTemplate,
 } from '../utils/csvParser';
 import {
   validateActivitiesForImport,
@@ -559,6 +560,14 @@ export const useActivityImport = () => {
         return false;
       }
 
+      // Verificar se é modo de atualização (ainda não implementado)
+      if (importMode === 'update') {
+        toast.error(
+          'Modo de atualização ainda não está disponível. Use o modo "Criar atividades".'
+        );
+        return false;
+      }
+
       setIsProcessing(true);
       setCurrentState(IMPORT_STATES.PROCESSING);
       setProcessProgress(0);
@@ -684,7 +693,7 @@ export const useActivityImport = () => {
 
         if (errorCount > 0) {
           toast.warning(
-            `${errorCount} atividades falharam. Verifique o relatório detalhado.`,
+            `${errorCount} atividades falharam na criação. Verifique o relatório detalhado.`,
             { autoClose: 8000 }
           );
         }
@@ -809,6 +818,31 @@ export const useActivityImport = () => {
     }
   }, []);
 
+  /**
+   * Download do template de atualização baseado no relatório
+   */
+  const downloadUpdateTemplate = useCallback(activities => {
+    try {
+      const csvContent = generateUpdateTemplate(activities);
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const timestamp = new Date().toISOString().slice(0, 10);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `template-atualizacao-${timestamp}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+      toast.success('Template de atualização baixado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao gerar template de atualização:', error);
+      toast.error('Erro ao gerar template de atualização');
+    }
+  }, []);
+
   // Getters computados
   const hasErrors = parseErrors.length > 0 || validationErrors.length > 0;
   const canProceed = validatedData.length > 0; // Permite prosseguir se há atividades válidas, mesmo com alguns erros
@@ -850,6 +884,7 @@ export const useActivityImport = () => {
     clearHistory,
     removeHistoryItem,
     downloadTemplate,
+    downloadUpdateTemplate,
 
     // Sessão
     sessionId,
