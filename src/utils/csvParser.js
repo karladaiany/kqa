@@ -38,11 +38,44 @@ export const CSV_HEADERS = [
 ];
 
 /**
+ * Mapeamento inverso: de nomes internos JS para headers CSV corretos
+ */
+export const JS_TO_CSV_MAPPING = {
+  artiaId: 'artia_id',
+  artiaUid: 'artia_uid',
+  tipo: 'tipo',
+  titulo: 'titulo',
+  descricao: 'descricao',
+  esforcoEstimado: 'esforco_estimado',
+  inicioEstimado: 'inicio_estimado',
+  terminoEstimado: 'termino_estimado',
+  situacaoAtividade: 'situacao_atividade',
+  ticketMovidesk: 'ticket_movidesk',
+  urgencia: 'urgencia',
+  plataforma: 'plataforma',
+  funcionalidade: 'funcionalidade',
+  subFuncionalidade: 'sub_funcionalidade',
+  cliente: 'cliente',
+  idOrganizacao: 'id_organizacao',
+  email: 'email',
+  tipoCliente: 'tipo_cliente',
+  criticidade: 'criticidade',
+  dificuldadeLocalizacao: 'dificuldade_localizacao',
+  causaDemanda: 'causa_demanda',
+  garantia: 'garantia',
+  responsavel: 'responsavel',
+  _originalLine: '_original_line',
+};
+
+/**
  * Mapeamento de headers CSV para nomes de propriedades JS
  */
 export const CSV_TO_JS_MAPPING = {
+  // Campos obrigatórios
   tipo: 'tipo',
   titulo: 'titulo',
+
+  // Campos opcionais comuns
   descricao: 'descricao',
   esforco_estimado: 'esforcoEstimado',
   inicio_estimado: 'inicioEstimado',
@@ -62,6 +95,13 @@ export const CSV_TO_JS_MAPPING = {
   causa_demanda: 'causaDemanda',
   garantia: 'garantia',
   responsavel: 'responsavel',
+
+  // Campos específicos para atualização
+  artia_id: 'artiaId',
+  artia_uid: 'artiaUid',
+
+  // Campos de controle interno
+  _original_line: '_originalLine',
 };
 
 /**
@@ -569,4 +609,121 @@ export const validateFile = file => {
   }
 
   return { isValid: true, error: null };
+};
+
+/**
+ * Gera template CSV para atualização de atividades
+ * @param {Array} activities - Lista de atividades do relatório de importação
+ * @returns {string} Conteúdo do CSV
+ */
+export const generateUpdateTemplate = activities => {
+  if (!activities || activities.length === 0) {
+    return 'Nenhuma atividade disponível para gerar template de atualização';
+  }
+
+  // Campos obrigatórios para identificação
+  const mandatoryFields = ['artiaId', 'artiaUid'];
+
+  // Coletar todos os campos que têm dados em pelo menos uma atividade
+  const allFields = new Set(mandatoryFields);
+
+  activities.forEach(activity => {
+    const originalData = activity.originalData || {};
+    Object.keys(originalData).forEach(field => {
+      const value = originalData[field];
+      // Adicionar campo se tiver valor não vazio
+      if (value && value.toString().trim() !== '') {
+        allFields.add(field);
+      }
+    });
+  });
+
+  // Converter para array e ordenar (mantendo identificadores no início)
+  const headers = [...allFields];
+
+  // Reordenar para ter uma sequência lógica (usando nomes internos)
+  const fieldOrder = [
+    'artiaId',
+    'artiaUid',
+    'tipo',
+    'titulo',
+    'descricao',
+    'responsavel',
+    'esforcoEstimado',
+    'inicioEstimado',
+    'terminoEstimado',
+    'urgencia',
+    'funcionalidade',
+    'subFuncionalidade',
+    'plataforma',
+    'ticketMovidesk',
+    'cliente',
+    'idOrganizacao',
+    'email',
+    'tipoCliente',
+    'criticidade',
+    'dificuldadeLocalizacao',
+    'causaDemanda',
+    'garantia',
+    'dataInicio',
+    'dataFim',
+    'observacoes',
+  ];
+
+  const orderedHeaders = [];
+
+  // Adicionar campos na ordem preferencial se existirem
+  fieldOrder.forEach(field => {
+    if (headers.includes(field)) {
+      orderedHeaders.push(field);
+    }
+  });
+
+  // Adicionar campos restantes que não estão na ordem preferencial
+  headers.forEach(field => {
+    if (!orderedHeaders.includes(field)) {
+      orderedHeaders.push(field);
+    }
+  });
+
+  // Converter headers internos para formato CSV correto
+  const csvHeaders = orderedHeaders.map(
+    header => JS_TO_CSV_MAPPING[header] || header
+  );
+
+  // Criar linhas de documentação
+  const documentation = [
+    'LEGENDA: (*) Campo obrigatório | (**) Obrigatório para alguns tipos | Demais campos são opcionais',
+    'IMPORTANTE: Para atualizar uma atividade, é necessário fornecer artia_id OU artia_uid, e pelo menos um campo para atualizar',
+    'TIPOS: Desenvolvimento, Execução de testes, Teste de mesa, Análise de testes, Documentação',
+    'URGÊNCIA: Baixo, Médio, Alto, Crítico',
+    'DATAS: Formato DD/MM/YYYY (ex: 20/03/2024) - será convertido automaticamente',
+    'CAMPOS DISPONÍVEIS: Apenas os campos que continham dados na importação original são exibidos',
+    '',
+  ];
+
+  // Criar linhas com os dados das atividades existentes
+  const activityRows = activities.map(activity => {
+    const originalData = activity.originalData || {};
+
+    return orderedHeaders
+      .map(header => {
+        let value = '';
+
+        if (header === 'artiaId') {
+          value = activity.id || '';
+        } else if (header === 'artiaUid') {
+          value = activity.uid || '';
+        } else {
+          value = originalData[header] || '';
+        }
+
+        // Escapar aspas duplas no valor
+        return `"${value.toString().replace(/"/g, '""')}"`;
+      })
+      .join(',');
+  });
+
+  // Montar o CSV final
+  return [...documentation, csvHeaders.join(','), ...activityRows].join('\n');
 };
