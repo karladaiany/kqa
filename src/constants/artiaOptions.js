@@ -52,6 +52,12 @@ export const RESPONSAVEL_OPTIONS = [
   { name: 'Karla', id: 208561 },
   { name: 'Mazepa', id: 212376 },
   { name: 'Milles', id: 186004 },
+  { name: 'João', id: 279121 },
+  { name: 'Jeiel', id: 279122 },
+  { name: 'Gustavo', id: 273428 },
+  { name: 'Vini Lisboa', id: 200535 },
+  { name: 'Vine Coelho', id: 200531 },
+  { name: 'Felipe', id: 200527 },
 ];
 
 export const FUNCIONALIDADE_OPTIONS = {

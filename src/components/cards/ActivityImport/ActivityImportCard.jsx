@@ -19,12 +19,10 @@ import {
   FaTrash,
   FaTimes,
   FaInfoCircle,
-  FaCog,
   FaEdit,
   FaClipboardList,
   FaCheckDouble,
   FaEraser,
-  FaPlus,
   FaMinus,
   FaExchangeAlt,
 } from 'react-icons/fa';
@@ -35,10 +33,8 @@ import {
   IMPORT_STATES,
 } from '../../../hooks/useActivityImport';
 import {
-  ACTIVITY_TYPES,
   getEnabledActivityTypes,
   CUSTOM_STATUS_OPTIONS,
-  DEFAULT_CUSTOM_STATUS_ID,
 } from '../../../constants/artiaOptions';
 import './ActivityImportCard.css';
 
@@ -53,11 +49,9 @@ const ActivityImportCard = () => {
     selectedFile,
     importName,
     importMode,
-    isProcessing,
     processProgress,
 
     // Dados
-    parsedData,
     validatedData,
     parseErrors,
     validationErrors,
@@ -88,20 +82,88 @@ const ActivityImportCard = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [showInfoPanel, setShowInfoPanel] = useState(false);
-  const [credentials, setCredentials] = useState({
-    email: '',
-    password: '',
-    accountId: '',
-    folderId: '',
-  });
+
+  // Função para carregar dados salvos do localStorage
+  const loadSavedCredentials = () => {
+    try {
+      const saved = localStorage.getItem('activityImportCredentials');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (error) {
+      // Erro silencioso ao carregar credenciais
+    }
+    return {
+      email: '',
+      password: '',
+      accountId: '',
+      folderId: '',
+      useFileAccountId: true,
+      useFileFolderId: true,
+    };
+  };
+
+  const loadSavedStatus = () => {
+    try {
+      const saved = localStorage.getItem('activityImportStatus');
+      return saved || 'default';
+    } catch (error) {
+      // Erro silencioso ao carregar status
+      return 'default';
+    }
+  };
+
+  const [credentials, setCredentials] = useState(loadSavedCredentials);
+  const [selectedStatus, setSelectedStatus] = useState(loadSavedStatus);
+
+  // Função para salvar credenciais no localStorage
+  const saveCredentials = newCredentials => {
+    try {
+      localStorage.setItem(
+        'activityImportCredentials',
+        JSON.stringify(newCredentials)
+      );
+    } catch (error) {
+      // Erro silencioso ao salvar credenciais
+    }
+  };
+
+  const saveStatus = status => {
+    try {
+      localStorage.setItem('activityImportStatus', status);
+    } catch (error) {
+      // Erro silencioso ao salvar status
+    }
+  };
+
+  // Função para atualizar credenciais com persistência
+  const updateCredentials = updates => {
+    const newCredentials = { ...credentials, ...updates };
+    setCredentials(newCredentials);
+    saveCredentials(newCredentials);
+  };
+
+  // Função para atualizar status com persistência
+  const updateSelectedStatus = status => {
+    setSelectedStatus(status);
+    saveStatus(status);
+  };
+
   const [selectedTypes, setSelectedTypes] = useState(
     enabledActivityTypesValues
   );
-  const [selectedStatus, setSelectedStatus] = useState(
-    DEFAULT_CUSTOM_STATUS_ID
-  );
 
   const fileInputRef = useRef(null);
+
+  // Verificar se há dados salvos no localStorage
+  React.useEffect(() => {
+    const savedCredentials = localStorage.getItem('activityImportCredentials');
+    const savedStatus = localStorage.getItem('activityImportStatus');
+
+    if (savedCredentials || savedStatus) {
+      // Dados carregados silenciosamente do cache
+    }
+  }, []);
 
   // Função para verificar se há dados/atividade em andamento
   const hasAnyData = useCallback(() => {
@@ -136,12 +198,45 @@ const ActivityImportCard = () => {
     setForceCollapsed(true);
   }, []);
 
+  // Função para limpar dados salvos
+  const clearSavedData = () => {
+    try {
+      localStorage.removeItem('activityImportCredentials');
+      localStorage.removeItem('activityImportStatus');
+    } catch (error) {
+      // Erro silencioso ao limpar dados salvos
+    }
+  };
+
   /**
    * Função para resetar importação e estado de expansão
    */
   const handleResetImport = useCallback(() => {
     resetImport();
     setForceCollapsed(false);
+  }, [resetImport]);
+
+  /**
+   * Função para reset completo (incluindo dados salvos)
+   */
+  const handleCompleteReset = useCallback(() => {
+    // Reset do hook de importação
+    resetImport();
+
+    // Reset dos estados locais
+    setCredentials({
+      email: '',
+      password: '',
+      accountId: '',
+      folderId: '',
+      useFileAccountId: true,
+      useFileFolderId: true,
+    });
+    setSelectedStatus('default');
+    setForceCollapsed(false);
+
+    // Limpar dados salvos
+    clearSavedData();
   }, [resetImport]);
 
   /**
@@ -226,11 +321,33 @@ const ActivityImportCard = () => {
       return;
     }
 
+    // Validar credenciais básicas
+    if (!credentials.email || !credentials.password) {
+      toast.error('Por favor, preencha email e senha');
+      return;
+    }
+
+    // Validar campos personalizados quando necessário
+    if (importMode === 'create') {
+      if (!credentials.useFileAccountId && !credentials.accountId) {
+        toast.error(
+          'Por favor, preencha o ID do Grupo de Trabalho ou use o valor do arquivo'
+        );
+        return;
+      }
+      if (!credentials.useFileFolderId && !credentials.folderId) {
+        toast.error(
+          'Por favor, preencha o ID da Pasta/Projeto ou use o valor do arquivo'
+        );
+        return;
+      }
+    }
+
     const success = await processFile();
     if (success) {
       setShowPreview(true);
     }
-  }, [selectedFile, processFile, importName]);
+  }, [selectedFile, processFile, importName, credentials, importMode]);
 
   /**
    * Executar importação
@@ -241,7 +358,18 @@ const ActivityImportCard = () => {
       return;
     }
 
-    const success = await executeImport(credentials, selectedStatus);
+    // Preparar os dados de configuração
+    const importConfig = {
+      email: credentials.email,
+      password: credentials.password,
+      useFileAccountId: credentials.useFileAccountId,
+      useFileFolderId: credentials.useFileFolderId,
+      accountId: credentials.useFileAccountId ? null : credentials.accountId,
+      folderId: credentials.useFileFolderId ? null : credentials.folderId,
+      status: selectedStatus === 'default' ? null : Number(selectedStatus),
+    };
+
+    const success = await executeImport(importConfig);
     if (success) {
       // Download automático do relatório
       setTimeout(() => {
@@ -453,28 +581,6 @@ const ActivityImportCard = () => {
         </button>
       </div>
 
-      <div className='import-identification'>
-        <label htmlFor='import-name'>
-          Descrição <span style={{ color: '#dc3545' }}>*</span>
-        </label>
-        <div className='input-container'>
-          <input
-            id='import-name'
-            type='text'
-            maxLength={30}
-            value={importName}
-            onChange={e => setImportName(e.target.value)}
-            placeholder='Ex: Sprint 15 - Correções de Bug'
-            className='import-name-input'
-          />
-          <div
-            className={`char-counter ${importName.length >= 25 ? 'near-limit' : ''}`}
-          >
-            {importName.length}/30
-          </div>
-        </div>
-      </div>
-
       <div className='import-mode'>
         <label>Modo de importação</label>
         <div className='mode-toggles'>
@@ -497,144 +603,177 @@ const ActivityImportCard = () => {
 
       {/* Dados adicionais */}
       <div className='credentials-section'>
-        <h4>📋 Dados adicionais</h4>
+        <h4>Dados adicionais</h4>
 
-        {/* Login */}
-        <div className='import-identification'>
-          <label htmlFor='login-field'>
-            Login <span style={{ color: '#dc3545' }}>*</span>
-          </label>
-          <div className='input-container'>
-            <input
-              id='login-field'
-              type='email'
-              value={credentials.email}
-              onChange={e =>
-                setCredentials(prev => ({ ...prev, email: e.target.value }))
-              }
-              placeholder='seu.email@empresa.com'
-              className='import-name-input'
-              required
-            />
-          </div>
-        </div>
-
-        {/* Senha */}
-        <div className='import-identification'>
-          <label htmlFor='password-field'>
-            Senha <span style={{ color: '#dc3545' }}>*</span>
-          </label>
-          <div className='input-container'>
-            <input
-              id='password-field'
-              type='password'
-              value={credentials.password}
-              onChange={e =>
-                setCredentials(prev => ({
-                  ...prev,
-                  password: e.target.value,
-                }))
-              }
-              placeholder='Sua senha de acesso'
-              className='import-name-input'
-              required
-            />
-          </div>
-        </div>
-
-        {/* Campos específicos para criação */}
-        {importMode === 'create' && (
-          <>
-            {/* ID do Grupo de Trabalho */}
+        <div className='credentials-grid'>
+          {/* Login e Senha na mesma linha */}
+          <div className='grid-row'>
             <div className='import-identification'>
-              <label htmlFor='account-field'>
-                ID do Grupo de Trabalho{' '}
-                <span style={{ color: '#dc3545' }}>*</span>
+              <label htmlFor='login-field'>
+                Login <span style={{ color: '#dc3545' }}>*</span>
               </label>
               <div className='input-container'>
                 <input
-                  id='account-field'
-                  type='text'
-                  value={credentials.accountId}
-                  onChange={e =>
-                    setCredentials(prev => ({
-                      ...prev,
-                      accountId: e.target.value,
-                    }))
-                  }
-                  placeholder='Ex: 12345'
+                  id='login-field'
+                  type='email'
+                  value={credentials.email}
+                  onChange={e => updateCredentials({ email: e.target.value })}
+                  placeholder='seu.email@empresa.com'
                   className='import-name-input'
                   required
                 />
               </div>
             </div>
 
-            {/* ID da Pasta/Projeto */}
             <div className='import-identification'>
-              <label htmlFor='folder-field'>
-                ID da Pasta/Projeto <span style={{ color: '#dc3545' }}>*</span>
+              <label htmlFor='password-field'>
+                Senha <span style={{ color: '#dc3545' }}>*</span>
               </label>
               <div className='input-container'>
                 <input
-                  id='folder-field'
-                  type='text'
-                  value={credentials.folderId}
+                  id='password-field'
+                  type='password'
+                  value={credentials.password}
                   onChange={e =>
-                    setCredentials(prev => ({
-                      ...prev,
-                      folderId: e.target.value,
-                    }))
+                    updateCredentials({ password: e.target.value })
                   }
-                  placeholder='Ex: 67890'
+                  placeholder='Sua senha de acesso'
                   className='import-name-input'
                   required
                 />
               </div>
             </div>
-
-            {/* Situação padrão das atividades */}
-            <div className='import-status'>
-              <label htmlFor='status-select'>
-                Situação padrão das atividades{' '}
-                <span style={{ color: '#dc3545' }}>*</span>
-              </label>
-              <select
-                id='status-select'
-                value={selectedStatus}
-                onChange={e => setSelectedStatus(Number(e.target.value))}
-                className='status-select'
-              >
-                {CUSTOM_STATUS_OPTIONS.map(option => (
-                  <option key={option.id} value={option.id}>
-                    {option.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </>
-        )}
-
-        {/* Informação para modo de atualização */}
-        {importMode === 'update' && (
-          <div className='update-info'>
-            <p
-              style={{
-                color: '#dc3545',
-                fontSize: '14px',
-                marginTop: '16px',
-                padding: '12px',
-                backgroundColor: '#fff3cd',
-                border: '1px solid #ffeaa7',
-                borderRadius: '4px',
-              }}
-            >
-              ⚠️ <strong>Modo de Atualização:</strong> Esta funcionalidade está
-              em desenvolvimento. Por enquanto, use o modo &quot;Criar
-              atividades&quot; e depois faça as atualizações manualmente no
-              Artia.
-            </p>
           </div>
-        )}
+
+          {/* Descrição e Situação padrão na mesma linha */}
+          <div className='grid-row'>
+            <div className='import-identification'>
+              <label htmlFor='import-name'>
+                Descrição <span style={{ color: '#dc3545' }}>*</span>
+              </label>
+              <div className='input-container'>
+                <input
+                  id='import-name'
+                  type='text'
+                  maxLength={30}
+                  value={importName}
+                  onChange={e => setImportName(e.target.value)}
+                  placeholder='Ex: Sprint 15 - Correções de Bug'
+                  className='import-name-input'
+                />
+                <div
+                  className={`char-counter ${importName.length >= 25 ? 'near-limit' : ''}`}
+                >
+                  {importName.length}/30
+                </div>
+              </div>
+            </div>
+
+            {importMode === 'create' && (
+              <div className='import-identification'>
+                <label htmlFor='status-select'>
+                  Situação padrão das atividades
+                </label>
+                <select
+                  id='status-select'
+                  value={selectedStatus}
+                  onChange={e => updateSelectedStatus(e.target.value)}
+                  className='status-select'
+                >
+                  <option value='default'>Aplicar conforme arquivo</option>
+                  {CUSTOM_STATUS_OPTIONS.map(option => (
+                    <option key={option.id} value={option.id}>
+                      {option.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
+
+          {/* IDs do Grupo e Pasta na mesma linha */}
+          {importMode === 'create' && (
+            <div className='grid-row'>
+              <div className='import-identification'>
+                <label htmlFor='account-field'>ID do Grupo de Trabalho</label>
+                <div className='toggle-field-row'>
+                  <button
+                    type='button'
+                    className={`toggle-button ${!credentials.useFileAccountId ? 'active' : ''}`}
+                    onClick={() =>
+                      updateCredentials({
+                        useFileAccountId: !credentials.useFileAccountId,
+                        accountId: credentials.useFileAccountId
+                          ? ''
+                          : credentials.accountId,
+                      })
+                    }
+                  >
+                    <span className='toggle-icon'>
+                      {!credentials.useFileAccountId ? '✓' : '+'}
+                    </span>
+                    Valor personalizado
+                  </button>
+                  {!credentials.useFileAccountId && (
+                    <div className='inline-input-container'>
+                      <input
+                        id='account-field'
+                        type='text'
+                        value={credentials.accountId}
+                        onChange={e => {
+                          const value = e.target.value.replace(/\D/g, '');
+                          updateCredentials({ accountId: value });
+                        }}
+                        maxLength={10}
+                        placeholder='Ex: 12345'
+                        className='import-name-input'
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className='import-identification'>
+                <label htmlFor='folder-field'>ID da Pasta/Projeto</label>
+                <div className='toggle-field-row'>
+                  <button
+                    type='button'
+                    className={`toggle-button ${!credentials.useFileFolderId ? 'active' : ''}`}
+                    onClick={() =>
+                      updateCredentials({
+                        useFileFolderId: !credentials.useFileFolderId,
+                        folderId: credentials.useFileFolderId
+                          ? ''
+                          : credentials.folderId,
+                      })
+                    }
+                  >
+                    <span className='toggle-icon'>
+                      {!credentials.useFileFolderId ? '✓' : '+'}
+                    </span>
+                    Valor personalizado
+                  </button>
+                  {!credentials.useFileFolderId && (
+                    <div className='inline-input-container'>
+                      <input
+                        id='folder-field'
+                        type='text'
+                        value={credentials.folderId}
+                        onChange={e => {
+                          const value = e.target.value.replace(/\D/g, '');
+                          updateCredentials({ folderId: value });
+                        }}
+                        maxLength={10}
+                        placeholder='Ex: 67890'
+                        className='import-name-input'
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <button
@@ -644,7 +783,9 @@ const ActivityImportCard = () => {
           !credentials.email ||
           !credentials.password ||
           (importMode === 'create' &&
-            (!credentials.accountId || !credentials.folderId))
+            !credentials.useFileAccountId &&
+            !credentials.accountId) ||
+          (!credentials.useFileFolderId && !credentials.folderId)
         }
       >
         <FaRocket /> Processar Arquivo
@@ -696,6 +837,8 @@ const ActivityImportCard = () => {
           </button>
         </div>
 
+        {renderPreviewConfig()}
+
         {hasErrors && (
           <div className='errors-section'>
             <h5>⚠️ Erros Encontrados:</h5>
@@ -735,22 +878,38 @@ const ActivityImportCard = () => {
                 <thead>
                   <tr>
                     <th>Linha</th>
-                    <th>Tipo</th>
-                    <th>Título</th>
-                    <th>Responsável</th>
+                    {Object.keys(validatedData[0])
+                      .filter(
+                        key =>
+                          key !== '_originalLine' && // Excluir campos internos
+                          key !== '_errors' &&
+                          key !== '_warnings' &&
+                          validatedData.some(item => item[key]) // Verificar se algum item tem valor nesta coluna
+                      )
+                      .map(key => (
+                        <th key={key}>{getColumnDisplayName(key)}</th>
+                      ))}
                   </tr>
                 </thead>
                 <tbody>
                   {validatedData.slice(0, 10).map((activity, index) => (
                     <tr key={index}>
                       <td>{activity._originalLine}</td>
-                      <td>{activity.tipo}</td>
-                      <td title={activity.titulo}>
-                        {activity.titulo.length > 50
-                          ? `${activity.titulo.substring(0, 50)}...`
-                          : activity.titulo}
-                      </td>
-                      <td>{activity.responsavel || 'Não definido'}</td>
+                      {Object.keys(activity)
+                        .filter(
+                          key =>
+                            key !== '_originalLine' &&
+                            key !== '_errors' &&
+                            key !== '_warnings' &&
+                            validatedData.some(item => item[key])
+                        )
+                        .map(key => (
+                          <td key={key} title={activity[key]}>
+                            {activity[key]?.length > 50
+                              ? `${activity[key].substring(0, 50)}...`
+                              : activity[key] || '-'}
+                          </td>
+                        ))}
                     </tr>
                   ))}
                 </tbody>
@@ -773,25 +932,109 @@ const ActivityImportCard = () => {
                 !credentials.email ||
                 !credentials.password ||
                 (importMode === 'create' &&
-                  (!credentials.accountId || !credentials.folderId)) ||
-                importMode === 'update' // Desabilitar modo atualização temporariamente
-              }
-              title={
-                importMode === 'update'
-                  ? 'Modo de atualização ainda não está disponível'
-                  : ''
+                  !credentials.useFileAccountId &&
+                  !credentials.accountId) ||
+                (importMode === 'create' &&
+                  !credentials.useFileFolderId &&
+                  !credentials.folderId)
               }
             >
               <FaRocket />{' '}
               {importMode === 'create'
                 ? 'Executar Importação'
-                : 'Executar Atualização (Em breve)'}
+                : 'Executar Atualização'}
             </button>
             <button className='btn-secondary' onClick={handleResetImport}>
               <FaTimes /> Cancelar
             </button>
           </div>
         )}
+      </div>
+    </div>
+  );
+
+  /**
+   * Renderizar configuração que será aplicada
+   */
+  const renderPreviewConfig = () => (
+    <div className='preview-config'>
+      <h5>⚙️ Configurações que serão aplicadas na importação</h5>
+
+      {/* Primeira linha: Modo, ID do Grupo, ID da Pasta */}
+      <div className='preview-config-row'>
+        <div className='preview-config-item'>
+          <span className='preview-config-label'>Modo:</span>
+          <span className='preview-config-value'>
+            {importMode === 'create' ? 'Criar' : 'Atualizar'}
+          </span>
+        </div>
+
+        {importMode === 'create' && (
+          <>
+            <div className='preview-config-item'>
+              <span className='preview-config-label'>ID do grupo:</span>
+              <span
+                className={`preview-config-value ${
+                  credentials.useFileAccountId
+                    ? 'auto'
+                    : credentials.accountId
+                      ? 'cached'
+                      : 'empty'
+                }`}
+              >
+                {credentials.useFileAccountId
+                  ? 'Conforme arquivo'
+                  : credentials.accountId || 'Não definido'}
+              </span>
+            </div>
+
+            <div className='preview-config-item'>
+              <span className='preview-config-label'>ID da pasta:</span>
+              <span
+                className={`preview-config-value ${
+                  credentials.useFileFolderId
+                    ? 'auto'
+                    : credentials.folderId
+                      ? 'cached'
+                      : 'empty'
+                }`}
+              >
+                {credentials.useFileFolderId
+                  ? 'Conforme arquivo'
+                  : credentials.folderId || 'Não definido'}
+              </span>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Segunda linha: Situação da atividade, Login */}
+      <div className='preview-config-row'>
+        {importMode === 'create' && (
+          <div className='preview-config-item'>
+            <span className='preview-config-label'>Situação da atividade:</span>
+            <span
+              className={`preview-config-value ${
+                selectedStatus === 'default' ? 'auto' : 'cached'
+              }`}
+            >
+              {selectedStatus === 'default'
+                ? 'Conforme arquivo'
+                : CUSTOM_STATUS_OPTIONS.find(
+                    opt => opt.id === Number(selectedStatus)
+                  )?.name || 'Padrão do sistema'}
+            </span>
+          </div>
+        )}
+
+        <div className='preview-config-item'>
+          <span className='preview-config-label'>Login:</span>
+          <span
+            className={`preview-config-value ${credentials.email ? 'cached' : 'empty'}`}
+          >
+            {credentials.email || 'Não informado'}
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -817,7 +1060,8 @@ const ActivityImportCard = () => {
 
         <div className='progress-stats'>
           <span className='stat success'>
-            ✅ {processResults.success.length} criadas
+            ✅ {processResults.success.length}{' '}
+            {importMode === 'create' ? 'criadas' : 'atualizadas'}
           </span>
           <span className='stat error'>
             ❌ {processResults.errors.length} erros
@@ -919,6 +1163,36 @@ const ActivityImportCard = () => {
     </div>
   );
 
+  /**
+   * Função para obter nome formal da coluna
+   */
+  const getColumnDisplayName = key => {
+    const columnNames = {
+      linha: 'Linha',
+      tipo: 'Tipo',
+      titulo: 'Título',
+      descricao: 'Descrição',
+      esforcoestimado: 'Esforço',
+      inicioestimado: 'Início estimado',
+      terminoestimado: 'Término estimado',
+      funcionalidade: 'Funcionalidade',
+      subfuncionalidade: 'Sub-funcionalidade',
+      responsavel: 'Responsável',
+      responsabilidade: 'Responsabilidade',
+      account_id: 'ID do grupo',
+      folder_id: 'ID da pasta',
+      urgencia: 'Urgência',
+      complexidade: 'Complexidade',
+      situacao: 'Situação',
+      observacoes: 'Observações',
+    };
+
+    return (
+      columnNames[key.toLowerCase()] ||
+      key.charAt(0).toUpperCase() + key.slice(1)
+    );
+  };
+
   return (
     <section className='card' id='activity-import'>
       <div className='card-header'>
@@ -1017,7 +1291,7 @@ const ActivityImportCard = () => {
                           </div>
                         </div>
                         <div className='activity-types-selector'>
-                          <div className='toggle-buttons-grid'>
+                          <div className='toggle-field-row'>
                             {enabledActivityTypesValues.map(type => (
                               <button
                                 key={type}
@@ -1028,7 +1302,7 @@ const ActivityImportCard = () => {
                                   <span className='toggle-icon'>
                                     {selectedTypes.includes(type) ? '✓' : '+'}
                                   </span>
-                                  <span className='toggle-text'>{type}</span>
+                                  <span>{type}</span>
                                 </div>
                               </button>
                             ))}
@@ -1143,6 +1417,10 @@ const ActivityImportCard = () => {
                             <p>
                               Tipo, título, funcionalidade, sub-funcionalidade
                             </p>
+                            <small className='field-note'>
+                              Se não informado nos campos acima: account_id,
+                              folder_id
+                            </small>
                           </div>
                           <div
                             className='type-info'
@@ -1153,6 +1431,10 @@ const ActivityImportCard = () => {
                             <p>
                               Tipo, título, funcionalidade, sub-funcionalidade
                             </p>
+                            <small className='field-note'>
+                              Se não informado nos campos acima: account_id,
+                              folder_id
+                            </small>
                           </div>
                           <div
                             className='type-info'
@@ -1163,6 +1445,10 @@ const ActivityImportCard = () => {
                             <p>
                               Tipo, título, funcionalidade, sub-funcionalidade
                             </p>
+                            <small className='field-note'>
+                              Se não informado nos campos acima: account_id,
+                              folder_id
+                            </small>
                           </div>
                           <div
                             className='type-info'
@@ -1173,6 +1459,10 @@ const ActivityImportCard = () => {
                             <p>
                               Tipo, título, funcionalidade, sub-funcionalidade
                             </p>
+                            <small className='field-note'>
+                              Se não informado nos campos acima: account_id,
+                              folder_id
+                            </small>
                           </div>
                           <div
                             className='type-info'
@@ -1181,6 +1471,10 @@ const ActivityImportCard = () => {
                             <strong>Documentação</strong>{' '}
                             <span className='field-count'>2 campos</span>
                             <p>Apenas tipo e título</p>
+                            <small className='field-note'>
+                              Se não informado nos campos acima: account_id,
+                              folder_id
+                            </small>
                           </div>
                         </div>
                       </div>
@@ -1226,13 +1520,23 @@ const ActivityImportCard = () => {
                     Serão exibidas as últimas 10 importações realizadas. Se
                     necessário, salve os arquivos localmente para uso futuro.
                     {importHistory.length > 0 && (
-                      <button
-                        className='btn-icon-only'
-                        onClick={clearHistory}
-                        title='Limpar histórico'
-                      >
-                        <FaTrash />
-                      </button>
+                      <>
+                        <button
+                          className='btn-icon-only'
+                          onClick={clearHistory}
+                          title='Limpar histórico'
+                        >
+                          <FaTrash />
+                        </button>
+                        <button
+                          className='btn-icon-only'
+                          onClick={handleCompleteReset}
+                          title='Limpar dados salvos e resetar formulário'
+                          style={{ marginLeft: '8px' }}
+                        >
+                          <FaEraser />
+                        </button>
+                      </>
                     )}
                   </p>
                 </div>
@@ -1258,7 +1562,14 @@ const ActivityImportCard = () => {
                           item.status === 'parse_error' ||
                           item.status === 'read_error';
 
-                        const statusText = hasErrors ? 'Erro' : 'Concluído';
+                        const isPartial = item.status === 'partial';
+
+                        let statusText = 'Concluído';
+                        if (hasErrors) {
+                          statusText = 'Erro';
+                        } else if (isPartial) {
+                          statusText = 'Parcial';
+                        }
 
                         return (
                           <tr key={item.id}>
@@ -1382,6 +1693,16 @@ const ActivityImportCard = () => {
                                     )}
                                   </div>
                                 </div>
+                              ) : isPartial ? (
+                                <div className='situation-partial'>
+                                  <span className='situation-label partial'>
+                                    Parcial
+                                  </span>
+                                  <span className='success-details'>
+                                    {item.successCount} atividades criadas,{' '}
+                                    {item.errorCount} com erro
+                                  </span>
+                                </div>
                               ) : (
                                 <div className='situation-success'>
                                   <span className='situation-label success'>
@@ -1389,8 +1710,6 @@ const ActivityImportCard = () => {
                                   </span>
                                   <span className='success-details'>
                                     {item.successCount} atividades criadas
-                                    {item.errorCount > 0 &&
-                                      `, ${item.errorCount} com erro`}
                                   </span>
                                 </div>
                               )}

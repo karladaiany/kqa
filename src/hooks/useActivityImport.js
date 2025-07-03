@@ -560,12 +560,19 @@ export const useActivityImport = () => {
         return false;
       }
 
-      // Verificar se é modo de atualização (ainda não implementado)
+      // Validar campos obrigatórios baseado no modo
       if (importMode === 'update') {
-        toast.error(
-          'Modo de atualização ainda não está disponível. Use o modo "Criar atividades".'
+        // Para atualização, verificar se temos artia_id ou artia_uid
+        const hasValidIdentifiers = validatedData.every(
+          activity => activity.artiaId || activity.artiaUid
         );
-        return false;
+
+        if (!hasValidIdentifiers) {
+          toast.error(
+            'Para atualização, todas as atividades devem ter artia_id ou artia_uid'
+          );
+          return false;
+        }
       }
 
       setIsProcessing(true);
@@ -620,8 +627,17 @@ export const useActivityImport = () => {
               finalStatusId
             );
 
-            // Criar atividade
-            const result = await ArtiaService.createActivity(activityData);
+            // Criar ou atualizar atividade baseado no modo
+            const result =
+              importMode === 'create'
+                ? await ArtiaService.createActivity(
+                    activityData,
+                    activity.descricao
+                  )
+                : await ArtiaService.updateActivity(
+                    activityData,
+                    activity.descricao
+                  );
 
             results.success.push({
               line: activity._originalLine,
@@ -634,7 +650,7 @@ export const useActivityImport = () => {
             // Atualizar progresso
             setProcessProgress(((i + 1) / validatedData.length) * 100);
           } catch (error) {
-            console.error(`Erro na linha ${activity._originalLine}:`, error);
+            // Erro capturado durante processamento da atividade
 
             results.errors.push({
               line: activity._originalLine,
@@ -700,7 +716,7 @@ export const useActivityImport = () => {
 
         return true;
       } catch (error) {
-        console.error('Erro na importação:', error);
+        // Erro geral durante importação
 
         // Salvar erro no histórico
         const errorHistoryItem = {
@@ -751,6 +767,14 @@ export const useActivityImport = () => {
    */
   const saveToHistory = useCallback(
     results => {
+      // Determinar status baseado nos resultados
+      let status = 'completed';
+      if (results.success.length === 0 && results.errors.length > 0) {
+        status = 'error'; // Todas falharam
+      } else if (results.errors.length > 0) {
+        status = 'partial'; // Algumas falharam
+      }
+
       const historyItem = {
         id: Date.now(),
         timestamp: new Date().toISOString(),
@@ -759,7 +783,7 @@ export const useActivityImport = () => {
         successCount: results.success.length,
         errorCount: results.errors.length,
         results: results,
-        status: 'completed',
+        status: status,
       };
 
       const updatedHistory = [historyItem, ...importHistory].slice(
@@ -838,7 +862,7 @@ export const useActivityImport = () => {
       URL.revokeObjectURL(url);
       toast.success('Template de atualização baixado com sucesso!');
     } catch (error) {
-      console.error('Erro ao gerar template de atualização:', error);
+      // Erro ao gerar template de atualização
       toast.error('Erro ao gerar template de atualização');
     }
   }, []);

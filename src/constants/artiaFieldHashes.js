@@ -15,8 +15,11 @@ export const ARTIA_FIELD_HASHES = {
   EMAIL: '87a26add0591af451d4950260583fad0b383910f',
   TIPO_CLIENTE: 'bd4955d4e08e24b51450ab9557bfba1dad5c51d6',
   CAUSA_DEMANDA: '1ea5ec0a90db2643df579910b49a9c73f84d5596',
-  DIFICULDADE_LOCALIZACAO: '495fbfd782e12bb20b41190fe7e9770a1a5453eb', // ✅ HASH CORRETO
-  GARANTIA: '40a45aca28c74a3e7dad314250cf23c7a45c3a57', // ✅ HASH CORRETO
+  DIFICULDADE_LOCALIZACAO: '495fbfd782e12bb20b41190fe7e9770a1a5453eb',
+  GARANTIA: '40a45aca28c74a3e7dad314250cf23c7a45c3a57',
+  // Campos de datas estimadas (baseados na documentação do Artia)
+  ESTIMATED_START: 'estimatedStart', // Campo nativo da API, não hash
+  ESTIMATED_END: 'estimatedEnd', // Campo nativo da API, não hash
   // Campos adicionais disponíveis
   REBOTE: '35529c896d093897ae89dbdb0362e14e2a05e694',
   CLASSIFICACAO: '7417cfa09e78a94f740c0fa1a3a1b87d4ccc0261',
@@ -78,8 +81,11 @@ export const FORM_FIELD_TO_HASH = {
   email: ARTIA_FIELD_HASHES.EMAIL,
   tipoCliente: ARTIA_FIELD_HASHES.TIPO_CLIENTE,
   causaDemanda: ARTIA_FIELD_HASHES.CAUSA_DEMANDA,
-  dificuldadeLocalizacao: ARTIA_FIELD_HASHES.DIFICULDADE_LOCALIZACAO, // ✅ AGORA COM HASH ÚNICO
-  garantia: ARTIA_FIELD_HASHES.GARANTIA, // ✅ AGORA COM HASH ÚNICO
+  dificuldadeLocalizacao: ARTIA_FIELD_HASHES.DIFICULDADE_LOCALIZACAO,
+  garantia: ARTIA_FIELD_HASHES.GARANTIA,
+  // Campos de datas estimadas
+  inicioEstimado: ARTIA_FIELD_HASHES.ESTIMATED_START,
+  terminoEstimado: ARTIA_FIELD_HASHES.ESTIMATED_END,
   // Campos adicionais (se necessário no futuro)
   rebote: ARTIA_FIELD_HASHES.REBOTE,
   classificacao: ARTIA_FIELD_HASHES.CLASSIFICACAO,

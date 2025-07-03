@@ -14,13 +14,15 @@ import { REQUIRED_FIELDS_BY_TYPE } from '../constants/artiaFieldHashes';
  * Headers esperados no CSV para importação
  */
 export const CSV_HEADERS = [
+  'account_id',
+  'folder_id',
+  'situacao_atividade',
   'tipo',
   'titulo',
   'descricao',
   'esforco_estimado',
   'inicio_estimado',
   'termino_estimado',
-  'situacao_atividade',
   'ticket_movidesk',
   'urgencia',
   'plataforma',
@@ -180,7 +182,10 @@ export const parseCSV = csvContent => {
       const activity = {};
       headers.forEach((header, index) => {
         const jsProperty = CSV_TO_JS_MAPPING[header] || header;
-        const value = values[index] || '';
+        // Remover aspas duplas do início e fim do valor
+        const value = values[index]
+          ? values[index].replace(/^"(.*)"$/, '$1')
+          : '';
         activity[jsProperty] = value.trim();
       });
 
@@ -205,45 +210,40 @@ export const parseCSV = csvContent => {
 };
 
 /**
- * Parse de uma linha CSV considerando aspas e vírgulas
+ * Parse linha CSV considerando aspas e escape
  * @param {string} line - Linha do CSV
  * @returns {Array} Array de valores
  */
-export const parseCSVLine = line => {
-  const values = [];
-  let current = '';
-  let inQuotes = false;
-  let i = 0;
+const parseCSVLine = line => {
+  // Detectar o delimitador (vírgula ou ponto-e-vírgula)
+  const delimiter = line.includes(';') ? ';' : ',';
 
-  while (i < line.length) {
+  const values = [];
+  let currentValue = '';
+  let isInsideQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
     const char = line[i];
-    const nextChar = line[i + 1];
 
     if (char === '"') {
-      if (inQuotes && nextChar === '"') {
-        // Aspas escapadas ("")
-        current += '"';
-        i += 2;
-      } else {
-        // Início ou fim de aspas
-        inQuotes = !inQuotes;
-        i++;
+      // Se encontrar aspas duplas seguidas dentro de um valor entre aspas, considerar como escape
+      if (isInsideQuotes && line[i + 1] === '"') {
+        currentValue += '"';
+        i++; // Pular próxima aspas
+        continue;
       }
-    } else if (char === ',' && !inQuotes) {
-      // Separador de campo
-      values.push(current);
-      current = '';
-      i++;
+      isInsideQuotes = !isInsideQuotes;
+    } else if (char === delimiter && !isInsideQuotes) {
+      // Fim do valor atual
+      values.push(currentValue.trim());
+      currentValue = '';
     } else {
-      // Caractere normal
-      current += char;
-      i++;
+      currentValue += char;
     }
   }
 
   // Adicionar último valor
-  values.push(current);
-
+  values.push(currentValue.trim());
   return values;
 };
 
@@ -292,8 +292,17 @@ const validateActivityLine = (activity, lineNumber) => {
   }
 
   // Validar esforço estimado se preenchido
-  if (activity.esforcoEstimado && isNaN(parseFloat(activity.esforcoEstimado))) {
-    errors.push(`Linha ${lineNumber}: Esforço estimado deve ser um número`);
+  if (activity.esforcoEstimado) {
+    // Converter vírgula para ponto temporariamente apenas para validação numérica
+    const testValue = activity.esforcoEstimado.toString().replace(',', '.');
+    if (isNaN(parseFloat(testValue))) {
+      errors.push(
+        `Linha ${lineNumber}: Esforço estimado deve ser um número (use ponto ou vírgula como separador decimal, ex: 2.5 ou 2,5)`
+      );
+    } else {
+      // Manter o valor original exatamente como está
+      activity.esforcoEstimado = activity.esforcoEstimado.toString();
+    }
   }
 
   return errors;
@@ -322,21 +331,44 @@ const transformActivityData = activity => {
     }
   }
 
-  // Converter situação da atividade nome para customStatusId (com validação)
-  if (transformed.situacaoAtividade) {
-    const status = CUSTOM_STATUS_OPTIONS.find(
-      s => s.name.toLowerCase() === transformed.situacaoAtividade.toLowerCase()
-    );
-    if (status) {
-      transformed.customStatusId = status.id;
-      transformed.hasValidCustomStatus = true;
+  // --- SITUAÇÃO/STATUS ---
+  // Se a coluna existe e está preenchida
+  if (Object.prototype.hasOwnProperty.call(transformed, 'situacaoAtividade')) {
+    if (
+      transformed.situacaoAtividade &&
+      transformed.situacaoAtividade.toString().trim() !== ''
+    ) {
+      const status = CUSTOM_STATUS_OPTIONS.find(
+        s =>
+          s.name.toLowerCase() === transformed.situacaoAtividade.toLowerCase()
+      );
+      if (status) {
+        transformed.customStatusId = status.id;
+        transformed.hasValidCustomStatus = true;
+      } else {
+        // Valor inválido - será usado o padrão do card
+        transformed.hasValidCustomStatus = false;
+      }
     } else {
-      // Valor inválido - será usado o padrão do card
+      // Coluna existe mas está vazia: forçar uso do select
       transformed.hasValidCustomStatus = false;
     }
   } else {
-    // Coluna não existe ou vazia - será usado o padrão do card
+    // Coluna não existe: forçar uso do select
     transformed.hasValidCustomStatus = false;
+  }
+
+  // --- DESCRIÇÃO ---
+  // Se vier preenchida do CSV, usar. Só usar fallback se não houver valor.
+  if (
+    Object.prototype.hasOwnProperty.call(transformed, 'descricao') &&
+    transformed.descricao &&
+    transformed.descricao.toString().trim() !== ''
+  ) {
+    // Mantém a descrição do CSV
+  } else {
+    // Fallback será aplicado no ArtiaService se necessário
+    transformed.descricao = '';
   }
 
   return transformed;
@@ -384,196 +416,131 @@ const isValidDate = dateString => {
 };
 
 /**
- * Gerar template CSV para download
- * @param {Array} selectedTypes - Tipos de atividade selecionados
- * @returns {string} Conteúdo do CSV template
+ * Gerar template CSV para importação
  */
 export const generateCSVTemplate = (
   selectedTypes = Object.values(getEnabledActivityTypes()),
   selectedStatusId = null
 ) => {
-  // Header do CSV com indicadores de campos obrigatórios
-  const headerWithRequiredIndicators = CSV_HEADERS.map(field => {
-    // Mapear header para field interno
-    const fieldMapping = {
-      tipo: 'TIPO',
-      titulo: 'TITULO',
-      ticketMovidesk: 'TICKET_MOVIDESK',
-      urgencia: 'URGENCIA',
-      plataforma: 'PLATAFORMA',
-      funcionalidade: 'FUNCIONALIDADE',
-      subFuncionalidade: 'SUB_FUNCIONALIDADE',
-      cliente: 'CLIENTE',
-      idOrganizacao: 'ID_ORGANIZACAO',
-      email: 'EMAIL',
-      tipoCliente: 'TIPO_CLIENTE',
-      criticidade: 'CRITICIDADE',
-      dificuldadeLocalizacao: 'DIFICULDADE_LOCALIZACAO',
-      causaDemanda: 'CAUSA_DEMANDA',
-      garantia: 'GARANTIA',
-    };
+  try {
+    // Usar ponto-e-vírgula como delimitador padrão (mais comum no Excel BR)
+    const delimiter = ';';
 
-    const fieldKey = fieldMapping[CSV_TO_JS_MAPPING[field]];
-
-    // Verificar se é obrigatório para algum dos tipos selecionados
-    const isRequiredForAnyType = selectedTypes.some(type => {
-      const requiredFields = REQUIRED_FIELDS_BY_TYPE[type] || [];
-      return requiredFields.includes(fieldKey);
+    // Headers com indicadores de obrigatoriedade
+    const headersWithIndicators = CSV_HEADERS.map(header => {
+      if (['tipo', 'titulo', 'account_id', 'folder_id'].includes(header)) {
+        return `${header} (*)`;
+      }
+      return header;
     });
 
-    // Campos sempre obrigatórios
-    const alwaysRequired = ['tipo', 'titulo'];
-    const isAlwaysRequired = alwaysRequired.includes(CSV_TO_JS_MAPPING[field]);
+    // Linhas de explicação
+    const legend = [
+      '"LEGENDA: (*) = SEMPRE OBRIGATÓRIO | (**) = OBRIGATÓRIO PARA ALGUNS TIPOS | sem indicador = OPCIONAL"',
+      '"FORMATO: Arquivo CSV usando vírgula (,) ou ponto-e-vírgula (;) como delimitador"',
+      '"ESFORÇO: Use horas (ex: 2 ou 3). Valores decimais (2.5 ou 2,5) serão arredondados para cima (3)"',
+      '"DATAS: Use o formato DD/MM/YYYY (ex: 20/03/2024)"',
+      '"CAMPOS DISPONÍVEIS: Apenas os campos que continham dados na importação original são exibidos"',
+      '',
+    ];
 
-    if (isAlwaysRequired) {
-      return `${field} (*)`;
-    } else if (isRequiredForAnyType) {
-      return `${field} (**)`;
-    } else {
-      return field;
-    }
-  });
+    // Adicionar lista de responsáveis disponíveis
+    const responsibleList = [
+      '"RESPONSÁVEIS DISPONÍVEIS:"',
+      ...RESPONSAVEL_OPTIONS.map(resp => `"${resp.name}"`),
+    ];
 
-  const header = headerWithRequiredIndicators.join(',');
+    // Exemplos para cada tipo selecionado
+    const examples = selectedTypes.map((type, index) => {
+      const example = getExampleForType(type, index + 1, selectedStatusId);
+      return CSV_HEADERS.map(field => {
+        const value = example[CSV_TO_JS_MAPPING[field]] || '';
+        // Escapar valores APENAS se contêm delimitadores, aspas ou quebras de linha
+        if (
+          value.includes(delimiter) ||
+          value.includes('"') ||
+          value.includes('\n')
+        ) {
+          return `"${value.replace(/"/g, '""')}"`;
+        }
+        return value;
+      }).join(delimiter);
+    });
 
-  // Linha de explicação dos indicadores
-  const legend =
-    '"LEGENDA: (*) = SEMPRE OBRIGATÓRIO | (**) = OBRIGATÓRIO PARA ALGUNS TIPOS | sem indicador = OPCIONAL"' +
-    ',' +
-    Array(CSV_HEADERS.length - 1)
-      .fill('')
-      .join(',');
+    // Adicionar comentário explicativo sobre cada tipo
+    const typeComments = selectedTypes.map(type => {
+      const requiredFields = REQUIRED_FIELDS_BY_TYPE[type] || [];
+      const fieldMapping = {
+        TICKET_MOVIDESK: 'ticketMovidesk',
+        URGENCIA: 'urgencia',
+        PLATAFORMA: 'plataforma',
+        FUNCIONALIDADE: 'funcionalidade',
+        SUB_FUNCIONALIDADE: 'subFuncionalidade',
+      };
 
-  // Linha em branco para separação
-  const separator = Array(CSV_HEADERS.length).fill('').join(',');
+      const requiredFieldsFormatted = requiredFields
+        .map(field => fieldMapping[field] || field)
+        .join(', ');
 
-  // Exemplos para cada tipo selecionado
-  const examples = selectedTypes.map((type, index) => {
-    const example = getExampleForType(type, index + 1, selectedStatusId);
-    return CSV_HEADERS.map(field => {
-      const value = example[CSV_TO_JS_MAPPING[field]] || '';
-      // Escapar valores que contêm vírgulas ou aspas
-      if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-        return `"${value.replace(/"/g, '""')}"`;
-      }
-      return value;
-    }).join(',');
-  });
+      return `"TIPO: ${type} | CAMPOS OBRIGATÓRIOS: ${requiredFieldsFormatted}"`;
+    });
 
-  // Adicionar comentário explicativo sobre cada tipo
-  const typeComments = selectedTypes.map(type => {
-    const requiredFields = REQUIRED_FIELDS_BY_TYPE[type] || [];
-    const fieldMapping = {
-      TICKET_MOVIDESK: 'ticketMovidesk',
-      URGENCIA: 'urgencia',
-      PLATAFORMA: 'plataforma',
-      FUNCIONALIDADE: 'funcionalidade',
-      SUB_FUNCIONALIDADE: 'subFuncionalidade',
-      CLIENTE: 'cliente',
-      ID_ORGANIZACAO: 'idOrganizacao',
-      EMAIL: 'email',
-      TIPO_CLIENTE: 'tipoCliente',
-      CRITICIDADE: 'criticidade',
-      DIFICULDADE_LOCALIZACAO: 'dificuldadeLocalizacao',
-      CAUSA_DEMANDA: 'causaDemanda',
-      GARANTIA: 'garantia',
-    };
+    // Montar conteúdo final com BOM para UTF-8
+    const content = [
+      ...legend,
+      ...responsibleList,
+      '',
+      ...typeComments,
+      '',
+      headersWithIndicators.join(delimiter),
+      ...examples,
+    ].join('\n');
 
-    const requiredFieldNames = requiredFields
-      .map(field => fieldMapping[field])
-      .filter(Boolean);
-    const allRequired = ['tipo', 'titulo', ...requiredFieldNames];
-
-    return (
-      `"TIPO: ${type} | CAMPOS OBRIGATÓRIOS: ${allRequired.join(', ')}"` +
-      ',' +
-      Array(CSV_HEADERS.length - 1)
-        .fill('')
-        .join(',')
-    );
-  });
-
-  return [
-    header,
-    legend,
-    separator,
-    ...typeComments,
-    separator,
-    ...examples,
-  ].join('\n');
+    // Adicionar BOM para UTF-8
+    return '\ufeff' + content;
+  } catch (error) {
+    // Erro ao gerar template CSV
+    throw new Error(`Erro ao gerar template: ${error.message}`);
+  }
 };
 
 /**
- * Gerar exemplo de atividade para um tipo específico
- * @param {string} type - Tipo da atividade
- * @param {number} index - Índice para variação dos dados
- * @param {number} selectedStatusId - ID do status selecionado
- * @returns {Object} Exemplo de atividade
+ * Gerar exemplo para um tipo específico
  */
 const getExampleForType = (type, index, selectedStatusId = null) => {
-  const today = new Date();
-  const startDate = new Date(today);
-  startDate.setDate(today.getDate() + index);
-  const endDate = new Date(startDate);
-  endDate.setDate(startDate.getDate() + 2);
+  const example = {
+    // Campos de identificação
+    accountId: '4874953',
+    folderId: '4885568',
+    customStatusId: selectedStatusId || '246888',
 
-  const baseExample = {
+    // Campos básicos
     tipo: type,
-    titulo: `[${type.toUpperCase()}-${index.toString().padStart(3, '0')}] Exemplo de ${type}`,
+    titulo: `[${type.toUpperCase()}-${String(index).padStart(3, '0')}] Exemplo de ${type}`,
     descricao: `Descrição detalhada da atividade de ${type}`,
-    esforcoEstimado: '2.5',
-    inicioEstimado: `${startDate.getDate().toString().padStart(2, '0')}/${(startDate.getMonth() + 1).toString().padStart(2, '0')}/${startDate.getFullYear()}`,
-    terminoEstimado: `${endDate.getDate().toString().padStart(2, '0')}/${(endDate.getMonth() + 1).toString().padStart(2, '0')}/${endDate.getFullYear()}`,
-    situacaoAtividade: selectedStatusId
-      ? CUSTOM_STATUS_OPTIONS.find(status => status.id === selectedStatusId)
-          ?.name || CUSTOM_STATUS_OPTIONS[0].name
-      : CUSTOM_STATUS_OPTIONS[0].name,
-    responsavel: 'Alexandre',
+
+    // Campos de tempo
+    esforcoEstimado: index % 2 === 0 ? '2' : '3',
+    inicioEstimado: new Date(Date.now() + index * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split('T')[0],
+    terminoEstimado: new Date(Date.now() + (index + 2) * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split('T')[0],
+
+    // Campos específicos por tipo
+    funcionalidade: type === 'Documentação' ? '' : 'API',
+    subFuncionalidade: type === 'Documentação' ? '' : 'Autenticação',
+    ticketMovidesk: type === 'Desenvolvimento' ? '' : '',
+    urgencia: type === 'Desenvolvimento' ? '' : '',
+    plataforma: type === 'Desenvolvimento' ? '' : '',
+
+    // Campos opcionais
+    responsavel:
+      RESPONSAVEL_OPTIONS[index % RESPONSAVEL_OPTIONS.length]?.name || '',
   };
 
-  // Adicionar campos específicos por tipo
-  switch (type) {
-    case ACTIVITY_TYPES.BUG_PRODUCAO:
-      return {
-        ...baseExample,
-        ticketMovidesk: 'MOV-12345',
-        urgencia: 'Alto',
-        plataforma: 'Desktop',
-        funcionalidade: 'Login',
-        subFuncionalidade: 'Autenticação',
-        cliente: 'Cliente Exemplo',
-        idOrganizacao: '12345',
-        email: 'cliente@exemplo.com',
-        tipoCliente: 'Cliente externo',
-        criticidade: 'Alto',
-        dificuldadeLocalizacao: 'Médio',
-        causaDemanda: 'Erro de código',
-        garantia: 'Não',
-      };
-
-    case ACTIVITY_TYPES.BUG_RETRABALHO:
-      return {
-        ...baseExample,
-        plataforma: 'Desktop',
-        funcionalidade: 'Dashboard',
-        subFuncionalidade: 'Dashboard - visão admin',
-        criticidade: 'Médio',
-        causaDemanda: 'Falta de definição',
-      };
-
-    case ACTIVITY_TYPES.DESENVOLVIMENTO:
-    case ACTIVITY_TYPES.EXECUCAO_TESTES:
-    case ACTIVITY_TYPES.AUTOMACAO_TESTES:
-    case ACTIVITY_TYPES.ANALISE_TESTES:
-      return {
-        ...baseExample,
-        funcionalidade: 'API',
-        subFuncionalidade: 'Autenticação',
-      };
-
-    default:
-      return baseExample;
-  }
+  return example;
 };
 
 /**
@@ -622,7 +589,13 @@ export const generateUpdateTemplate = activities => {
   }
 
   // Campos obrigatórios para identificação
-  const mandatoryFields = ['artiaId', 'artiaUid'];
+  const mandatoryFields = [
+    'artiaId',
+    'artiaUid',
+    'accountId',
+    'folderId',
+    'customStatusId',
+  ];
 
   // Coletar todos os campos que têm dados em pelo menos uma atividade
   const allFields = new Set(mandatoryFields);
@@ -645,6 +618,9 @@ export const generateUpdateTemplate = activities => {
   const fieldOrder = [
     'artiaId',
     'artiaUid',
+    'accountId',
+    'folderId',
+    'customStatusId',
     'tipo',
     'titulo',
     'descricao',
@@ -695,6 +671,7 @@ export const generateUpdateTemplate = activities => {
   const documentation = [
     'LEGENDA: (*) Campo obrigatório | (**) Obrigatório para alguns tipos | Demais campos são opcionais',
     'IMPORTANTE: Para atualizar uma atividade, é necessário fornecer artia_id OU artia_uid, e pelo menos um campo para atualizar',
+    'CONFIGURAÇÃO: Os campos account_id, folder_id e custom_status_id são preenchidos automaticamente com os valores da criação',
     'TIPOS: Desenvolvimento, Execução de testes, Teste de mesa, Análise de testes, Documentação',
     'URGÊNCIA: Baixo, Médio, Alto, Crítico',
     'DATAS: Formato DD/MM/YYYY (ex: 20/03/2024) - será convertido automaticamente',
@@ -710,16 +687,37 @@ export const generateUpdateTemplate = activities => {
       .map(header => {
         let value = '';
 
-        if (header === 'artiaId') {
-          value = activity.id || '';
-        } else if (header === 'artiaUid') {
-          value = activity.uid || '';
-        } else {
-          value = originalData[header] || '';
+        switch (header) {
+          case 'artiaId':
+            value = activity.id || '';
+            break;
+          case 'artiaUid':
+            value = activity.uid || '';
+            break;
+          case 'accountId':
+            value = originalData.accountId || activity.accountId || '';
+            break;
+          case 'folderId':
+            value = originalData.folderId || activity.folderId || '';
+            break;
+          case 'customStatusId':
+            value =
+              originalData.customStatusId || activity.customStatusId || '';
+            break;
+          default:
+            value = originalData[header] || '';
         }
 
-        // Escapar aspas duplas no valor
-        return `"${value.toString().replace(/"/g, '""')}"`;
+        // Escapar com aspas apenas se necessário
+        value = value.toString().trim();
+        if (
+          value.includes(',') ||
+          value.includes('"') ||
+          value.includes('\n')
+        ) {
+          return `"${value.replace(/"/g, '""')}"`;
+        }
+        return value;
       })
       .join(',');
   });

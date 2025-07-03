@@ -141,6 +141,8 @@ const CREATE_ACTIVITY = gql`
     $customField: [OrganizationCustomFieldsInput!]
     $responsibleId: Int
     $customStatusId: Int
+    $estimatedStart: DateTime
+    $estimatedEnd: DateTime
   ) {
     createActivity(
       title: $title
@@ -154,6 +156,8 @@ const CREATE_ACTIVITY = gql`
       customField: $customField
       responsibleId: $responsibleId
       customStatusId: $customStatusId
+      estimatedStart: $estimatedStart
+      estimatedEnd: $estimatedEnd
     ) {
       id
       uid
@@ -163,6 +167,52 @@ const CREATE_ACTIVITY = gql`
       priority
       estimatedEffort
       createdAt
+      responsible {
+        id
+        name
+        email
+      }
+      customColumns
+    }
+  }
+`;
+
+// Mutation para atualizar atividade no Artia
+const UPDATE_ACTIVITY = gql`
+  mutation updateActivity(
+    $id: ID!
+    $title: String!
+    $accountId: Int!
+    $description: String
+    $folderTypeId: Int
+    $responsibleId: Int
+    $estimatedStart: DateTime
+    $estimatedEnd: DateTime
+    $estimatedEffort: Float
+    $priority: Int
+    $customField: [OrganizationCustomFieldsInput!]
+  ) {
+    updateActivity(
+      id: $id
+      title: $title
+      accountId: $accountId
+      description: $description
+      folderTypeId: $folderTypeId
+      responsibleId: $responsibleId
+      estimatedStart: $estimatedStart
+      estimatedEnd: $estimatedEnd
+      estimatedEffort: $estimatedEffort
+      priority: $priority
+      customField: $customField
+    ) {
+      id
+      uid
+      title
+      description
+      status
+      priority
+      estimatedEffort
+      updatedAt
       responsible {
         id
         name
@@ -272,6 +322,60 @@ function parseDeployContent(text, title = 'Gerar versão para deploy') {
   html += '</div>';
 
   return html;
+}
+
+/**
+ * Converte data do formato brasileiro (DD/MM/YYYY) para formato da API (YYYY-MM-DDTHH:mm:ss)
+ * @param {string} dateString - Data no formato DD/MM/YYYY
+ * @returns {string|null} Data no formato YYYY-MM-DDTHH:mm:ss ou null se inválida
+ */
+function convertBrazilianDateToAPI(dateString) {
+  if (!dateString || typeof dateString !== 'string') {
+    return null;
+  }
+
+  const trimmed = dateString.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  // Verificar se já está no formato da API (YYYY-MM-DD)
+  const apiFormatRegex = /^\d{4}-\d{2}-\d{2}$/;
+  if (apiFormatRegex.test(trimmed)) {
+    // Adicionar horário padrão para formato DateTime
+    return `${trimmed}T00:00:00`;
+  }
+
+  // Verificar formato brasileiro (DD/MM/YYYY)
+  const brazilianFormatRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+  const match = trimmed.match(brazilianFormatRegex);
+
+  if (!match) {
+    return null;
+  }
+
+  const [, day, month, year] = match;
+
+  // Validar componentes da data
+  const dayNum = parseInt(day, 10);
+  const monthNum = parseInt(month, 10);
+  const yearNum = parseInt(year, 10);
+
+  if (
+    dayNum < 1 ||
+    dayNum > 31 ||
+    monthNum < 1 ||
+    monthNum > 12 ||
+    yearNum < 1900
+  ) {
+    return null;
+  }
+
+  // Formatar para YYYY-MM-DDTHH:mm:ss
+  const formattedDay = day.padStart(2, '0');
+  const formattedMonth = month.padStart(2, '0');
+
+  return `${year}-${formattedMonth}-${formattedDay}T00:00:00`;
 }
 
 /**
@@ -736,6 +840,19 @@ Evidência pendente de anexo
   static prepareActivityVariables(formData, generatedDescription = '') {
     const { login, senha, ...activityData } = formData;
 
+    // Converter esforço estimado para inteiro arredondando para cima
+    let estimatedEffort = DEFAULT_ARTIA_VALUES.ESTIMATED_EFFORT;
+    if (activityData.esforcoEstimado) {
+      // Converter string para número, aceitando tanto ponto quanto vírgula
+      const hoursDecimal = parseFloat(
+        activityData.esforcoEstimado.toString().replace(',', '.')
+      );
+      if (!isNaN(hoursDecimal)) {
+        // Arredondar para cima
+        estimatedEffort = Math.ceil(hoursDecimal);
+      }
+    }
+
     // Campos básicos obrigatórios
     const variables = {
       title: activityData.titulo || '',
@@ -755,9 +872,7 @@ Evidência pendente de anexo
       ),
       priority:
         parseInt(activityData.prioridade) || DEFAULT_ARTIA_VALUES.PRIORITY,
-      estimatedEffort:
-        parseInt(activityData.esforcoEstimado) ||
-        DEFAULT_ARTIA_VALUES.ESTIMATED_EFFORT,
+      estimatedEffort,
       customStatusId: activityData.customStatusId || null,
       customField: [],
     };
@@ -767,12 +882,31 @@ Evidência pendente de anexo
       variables.responsibleId = parseInt(activityData.responsibleId);
     }
 
+    // Adicionar datas estimadas convertidas (formato brasileiro -> YYYY-MM-DD)
+    if (activityData.inicioEstimado) {
+      const convertedStartDate = convertBrazilianDateToAPI(
+        activityData.inicioEstimado
+      );
+      if (convertedStartDate) {
+        variables.estimatedStart = convertedStartDate;
+      }
+    }
+
+    if (activityData.terminoEstimado) {
+      const convertedEndDate = convertBrazilianDateToAPI(
+        activityData.terminoEstimado
+      );
+      if (convertedEndDate) {
+        variables.estimatedEnd = convertedEndDate;
+      }
+    }
+
     // Preparando campos customizados
 
     // Montar campos customizados - garantir que apenas campos com valor sejam enviados
     const customFields = [];
 
-    // Lista de campos que devem ser processados como customFields
+    // Lista de campos que devem ser processados como customFields (excluindo datas estimadas)
     const customFieldNames = [
       'urgencia',
       'plataforma',
@@ -840,6 +974,178 @@ Evidência pendente de anexo
 
     // Definir campos customizados finais
     variables.customField = customFields;
+
+    return variables;
+  }
+
+  /**
+   * Atualizar atividade existente no Artia
+   */
+  static async updateActivity(activityData, generatedDescription = '') {
+    // Garantir que temos um token válido
+    const token = this.getCurrentToken();
+    if (!token) {
+      throw new Error('Token de autenticação não encontrado');
+    }
+
+    // Preparar dados para atualização
+    const variables = this.prepareUpdateVariables(
+      activityData,
+      generatedDescription
+    );
+
+    // Enviando dados para atualização da atividade
+
+    // Executar mutation
+    const result = await client.mutate({
+      mutation: UPDATE_ACTIVITY,
+      variables,
+    });
+
+    if (result.errors) {
+      // Erro GraphQL na atualização da atividade
+      throw new Error(`Erro GraphQL: ${result.errors[0].message}`);
+    }
+
+    // Atividade atualizada com sucesso
+    return result.data.updateActivity;
+  }
+
+  /**
+   * Prepara as variáveis da atividade para atualização no formato esperado pela API GraphQL
+   * Apenas campos com valor serão incluídos, exceto os obrigatórios (id, title, accountId)
+   */
+  static prepareUpdateVariables(activityData, generatedDescription = '') {
+    // Converter esforço estimado para inteiro arredondando para cima
+    let estimatedEffort = DEFAULT_ARTIA_VALUES.ESTIMATED_EFFORT;
+    if (activityData.esforcoEstimado) {
+      // Converter string para número, aceitando tanto ponto quanto vírgula
+      const hoursDecimal = parseFloat(
+        activityData.esforcoEstimado.toString().replace(',', '.')
+      );
+      if (!isNaN(hoursDecimal)) {
+        // Arredondar para cima
+        estimatedEffort = Math.ceil(hoursDecimal);
+      }
+    }
+
+    // Campos obrigatórios
+    const variables = {
+      id: activityData.artiaId,
+      title: activityData.titulo || '',
+      accountId:
+        parseInt(activityData.accountId) ||
+        parseInt(DEFAULT_ARTIA_VALUES.DEFAULT_ACCOUNT_ID),
+      estimatedEffort,
+    };
+
+    // Campos opcionais - incluir apenas se tiverem valor
+    if (activityData.description || generatedDescription) {
+      variables.description = this.getFormattedDescription(
+        activityData,
+        generatedDescription
+      );
+    }
+
+    if (activityData.folderTypeId) {
+      variables.folderTypeId = parseInt(activityData.folderTypeId);
+    }
+
+    if (activityData.responsibleId && activityData.responsibleId !== '') {
+      variables.responsibleId = parseInt(activityData.responsibleId);
+    }
+
+    if (activityData.prioridade) {
+      variables.priority = parseInt(activityData.prioridade);
+    }
+
+    // Adicionar datas estimadas convertidas (formato brasileiro -> DateTime)
+    if (activityData.inicioEstimado) {
+      const convertedStartDate = convertBrazilianDateToAPI(
+        activityData.inicioEstimado
+      );
+      if (convertedStartDate) {
+        variables.estimatedStart = convertedStartDate;
+      }
+    }
+
+    if (activityData.terminoEstimado) {
+      const convertedEndDate = convertBrazilianDateToAPI(
+        activityData.terminoEstimado
+      );
+      if (convertedEndDate) {
+        variables.estimatedEnd = convertedEndDate;
+      }
+    }
+
+    // Preparar campos customizados
+    const customFields = [];
+    const customFieldNames = [
+      'urgencia',
+      'plataforma',
+      'funcionalidade',
+      'subFuncionalidade',
+      'criticidade',
+      'dificuldadeLocalizacao',
+      'causaDemanda',
+      'garantia',
+      'ticketMovidesk',
+      'cliente',
+      'idOrganizacao',
+      'email',
+      'tipoCliente',
+    ];
+
+    // Verificar tipo da atividade para campos obrigatórios
+    const activityType = activityData.tipo;
+    const requiredFields = REQUIRED_FIELDS_BY_TYPE[activityType] || [];
+
+    // Iterar sobre os campos customizados definidos
+    customFieldNames.forEach(fieldName => {
+      const value = activityData[fieldName];
+      const hashField = FORM_FIELD_TO_HASH[fieldName];
+
+      // Validação com consideração de campos obrigatórios
+      const hasValidHash = hashField && hashField !== '';
+      if (!hasValidHash) return;
+
+      // Determinar se o campo é obrigatório para este tipo de atividade
+      const fieldConstantName = Object.keys(ARTIA_FIELD_HASHES).find(
+        key => ARTIA_FIELD_HASHES[key] === hashField
+      );
+      const isRequired = requiredFields.includes(fieldConstantName);
+
+      // Lógica de validação baseada em obrigatoriedade
+      let shouldInclude = false;
+      let finalValue = '';
+
+      if (isRequired) {
+        // Campo obrigatório: sempre incluir, usar valor padrão se vazio
+        finalValue =
+          value && String(value).trim() !== '' ? String(value).trim() : '.';
+        shouldInclude = true;
+      } else if (
+        value &&
+        String(value).trim() !== '' &&
+        String(value).trim() !== '.'
+      ) {
+        // Campo opcional: incluir apenas se tem valor real
+        finalValue = String(value).trim();
+        shouldInclude = true;
+      }
+
+      if (shouldInclude) {
+        customFields.push({
+          hashField,
+          value: finalValue,
+        });
+      }
+    });
+
+    // Adicionar campos customizados apenas se houver algum
+    if (customFields.length > 0) {
+      variables.customField = customFields;
+    }
 
     return variables;
   }
