@@ -1031,7 +1031,7 @@ Evidência pendente de anexo
 
     // Campos obrigatórios
     const variables = {
-      id: activityData.artiaId,
+      id: activityData.artiaId ? String(activityData.artiaId) : '',
       title: activityData.titulo || '',
       accountId:
         parseInt(activityData.accountId) ||

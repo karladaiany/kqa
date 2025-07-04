@@ -839,8 +839,14 @@ export const generateUpdateTemplate = (
   // Converter headers internos para formato CSV correto
   const csvHeaders = orderedHeaders.map(header => {
     const csvHeader = JS_TO_CSV_MAPPING[header] || header;
-    // Adicionar (*) aos campos obrigatórios
-    if (['artiaId', 'titulo', 'accountId'].includes(header)) {
+    // Adicionar (*) aos campos obrigatórios usando o nome correto
+    if (
+      [
+        'artiaId', // id
+        'titulo', // title
+        'accountId',
+      ].includes(header)
+    ) {
       return `${csvHeader} (*)`;
     }
     return csvHeader;

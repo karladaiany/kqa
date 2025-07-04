@@ -1283,18 +1283,33 @@ const ActivityImportCard = () => {
                       {/* Seção 3: Campos Obrigatórios */}
                       <div className='info-section info-section-spaced'>
                         <h4>Como identificar campos obrigatórios</h4>
-                        <div className='field-indicators'>
-                          <div className='indicator required'>
-                            <strong>(*)</strong> = Sempre obrigatório
+                        {importMode === 'update' ? (
+                          <div className='field-indicators'>
+                            <div className='indicator required'>
+                              <strong>(*)</strong> = Sempre obrigatório para
+                              atualização: <strong>artia_id</strong>,{' '}
+                              <strong>account_id</strong> e{' '}
+                              <strong>titulo</strong>
+                            </div>
+                            <div className='indicator optional'>
+                              <strong>Demais campos</strong> = Opcionais na
+                              atualização
+                            </div>
                           </div>
-                          <div className='indicator conditional'>
-                            <strong>(**)</strong> = Obrigatório para alguns
-                            tipos
+                        ) : (
+                          <div className='field-indicators'>
+                            <div className='indicator required'>
+                              <strong>(*)</strong> = Sempre obrigatório
+                            </div>
+                            <div className='indicator conditional'>
+                              <strong>(**)</strong> = Obrigatório para alguns
+                              tipos
+                            </div>
+                            <div className='indicator optional'>
+                              <strong>sem indicador</strong> = Opcional
+                            </div>
                           </div>
-                          <div className='indicator optional'>
-                            <strong>sem indicador</strong> = Opcional
-                          </div>
-                        </div>
+                        )}
                       </div>
 
                       {/* Seção 4: Tutorial Excel */}
@@ -1348,79 +1363,81 @@ const ActivityImportCard = () => {
                       </div>
 
                       {/* Seção 5: Tipos de Atividade */}
-                      <div className='info-section info-section-spaced'>
-                        <h4>Campos obrigatórios por tipo</h4>
-                        <div className='activity-types-info'>
-                          <div
-                            className='type-info'
-                            style={{ borderLeft: '4px solid #08ECCC' }}
-                          >
-                            <strong>Desenvolvimento</strong>{' '}
-                            <span className='field-count'>4 campos</span>
-                            <p>
-                              Tipo, título, funcionalidade, sub-funcionalidade
-                            </p>
-                            <small className='field-note'>
-                              Se não informado nos campos acima: account_id,
-                              folder_id
-                            </small>
-                          </div>
-                          <div
-                            className='type-info'
-                            style={{ borderLeft: '4px solid #F90EF4' }}
-                          >
-                            <strong>Execução de testes</strong>{' '}
-                            <span className='field-count'>4 campos</span>
-                            <p>
-                              Tipo, título, funcionalidade, sub-funcionalidade
-                            </p>
-                            <small className='field-note'>
-                              Se não informado nos campos acima: account_id,
-                              folder_id
-                            </small>
-                          </div>
-                          <div
-                            className='type-info'
-                            style={{ borderLeft: '4px solid #89B0EB' }}
-                          >
-                            <strong>Teste de mesa</strong>{' '}
-                            <span className='field-count'>4 campos</span>
-                            <p>
-                              Tipo, título, funcionalidade, sub-funcionalidade
-                            </p>
-                            <small className='field-note'>
-                              Se não informado nos campos acima: account_id,
-                              folder_id
-                            </small>
-                          </div>
-                          <div
-                            className='type-info'
-                            style={{ borderLeft: '4px solid #90F485' }}
-                          >
-                            <strong>Análise de testes</strong>{' '}
-                            <span className='field-count'>4 campos</span>
-                            <p>
-                              Tipo, título, funcionalidade, sub-funcionalidade
-                            </p>
-                            <small className='field-note'>
-                              Se não informado nos campos acima: account_id,
-                              folder_id
-                            </small>
-                          </div>
-                          <div
-                            className='type-info'
-                            style={{ borderLeft: '4px solid #F1D8D8' }}
-                          >
-                            <strong>Documentação</strong>{' '}
-                            <span className='field-count'>2 campos</span>
-                            <p>Apenas tipo e título</p>
-                            <small className='field-note'>
-                              Se não informado nos campos acima: account_id,
-                              folder_id
-                            </small>
+                      {importMode === 'create' && (
+                        <div className='info-section info-section-spaced'>
+                          <h4>Campos obrigatórios por tipo</h4>
+                          <div className='activity-types-info'>
+                            <div
+                              className='type-info'
+                              style={{ borderLeft: '4px solid #08ECCC' }}
+                            >
+                              <strong>Desenvolvimento</strong>{' '}
+                              <span className='field-count'>4 campos</span>
+                              <p>
+                                Tipo, título, funcionalidade, sub-funcionalidade
+                              </p>
+                              <small className='field-note'>
+                                Se não informado nos campos acima: account_id,
+                                folder_id
+                              </small>
+                            </div>
+                            <div
+                              className='type-info'
+                              style={{ borderLeft: '4px solid #F90EF4' }}
+                            >
+                              <strong>Execução de testes</strong>{' '}
+                              <span className='field-count'>4 campos</span>
+                              <p>
+                                Tipo, título, funcionalidade, sub-funcionalidade
+                              </p>
+                              <small className='field-note'>
+                                Se não informado nos campos acima: account_id,
+                                folder_id
+                              </small>
+                            </div>
+                            <div
+                              className='type-info'
+                              style={{ borderLeft: '4px solid #89B0EB' }}
+                            >
+                              <strong>Teste de mesa</strong>{' '}
+                              <span className='field-count'>4 campos</span>
+                              <p>
+                                Tipo, título, funcionalidade, sub-funcionalidade
+                              </p>
+                              <small className='field-note'>
+                                Se não informado nos campos acima: account_id,
+                                folder_id
+                              </small>
+                            </div>
+                            <div
+                              className='type-info'
+                              style={{ borderLeft: '4px solid #90F485' }}
+                            >
+                              <strong>Análise de testes</strong>{' '}
+                              <span className='field-count'>4 campos</span>
+                              <p>
+                                Tipo, título, funcionalidade, sub-funcionalidade
+                              </p>
+                              <small className='field-note'>
+                                Se não informado nos campos acima: account_id,
+                                folder_id
+                              </small>
+                            </div>
+                            <div
+                              className='type-info'
+                              style={{ borderLeft: '4px solid #F1D8D8' }}
+                            >
+                              <strong>Documentação</strong>{' '}
+                              <span className='field-count'>2 campos</span>
+                              <p>Apenas tipo e título</p>
+                              <small className='field-note'>
+                                Se não informado nos campos acima: account_id,
+                                folder_id
+                              </small>
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      )}
 
                       {/* Seção 6: Dicas */}
                       <div className='info-section info-section-spaced'>

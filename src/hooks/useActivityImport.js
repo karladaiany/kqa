@@ -302,7 +302,10 @@ export const useActivityImport = () => {
 
     setCurrentState(IMPORT_STATES.VALIDATING);
 
-    const validationResult = validateActivitiesForImport(parsedData);
+    const validationResult = validateActivitiesForImport(
+      parsedData,
+      importMode === 'update'
+    );
 
     setValidatedData(validationResult.validActivities);
     setValidationErrors(validationResult.errors);
@@ -434,7 +437,10 @@ export const useActivityImport = () => {
 
       setCurrentState(IMPORT_STATES.VALIDATING);
 
-      const validationResult = validateActivitiesForImport(parseResult.data);
+      const validationResult = validateActivitiesForImport(
+        parseResult.data,
+        importMode === 'update'
+      );
       setValidatedData(validationResult.validActivities);
       setValidationErrors(validationResult.errors);
 

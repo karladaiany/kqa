@@ -21,15 +21,20 @@ import { REQUIRED_FIELDS_BY_TYPE } from '../constants/artiaFieldHashes';
 /**
  * Validar array de atividades antes da importação
  * @param {Array} activities - Array de atividades
+ * @param {boolean} isUpdate - Se é importação de atualização
  * @returns {Object} { validActivities: Array, errors: Array }
  */
-export const validateActivitiesForImport = activities => {
+export const validateActivitiesForImport = (activities, isUpdate = false) => {
   const validActivities = [];
   const errors = [];
 
   activities.forEach((activity, index) => {
     const lineNumber = activity._originalLine || index + 2; // +2 porque linha 1 é header
-    const activityErrors = validateSingleActivity(activity, lineNumber);
+    const activityErrors = validateSingleActivity(
+      activity,
+      lineNumber,
+      isUpdate
+    );
 
     if (activityErrors.length === 0) {
       validActivities.push(activity);
@@ -45,10 +50,35 @@ export const validateActivitiesForImport = activities => {
  * Validar uma única atividade
  * @param {Object} activity - Dados da atividade
  * @param {number} lineNumber - Número da linha no CSV
+ * @param {boolean} isUpdate - Se é importação de atualização
  * @returns {Array} Array de erros
  */
-export const validateSingleActivity = (activity, lineNumber) => {
+export const validateSingleActivity = (
+  activity,
+  lineNumber,
+  isUpdate = false
+) => {
   const errors = [];
+
+  if (isUpdate) {
+    // Apenas campos essenciais para atualização
+    if (!activity.artiaId) {
+      errors.push(
+        `Linha ${lineNumber}: Campo 'artia_id' é obrigatório para atualização`
+      );
+    }
+    if (!activity.titulo || activity.titulo.trim() === '') {
+      errors.push(
+        `Linha ${lineNumber}: Campo 'titulo' é obrigatório para atualização`
+      );
+    }
+    if (!activity.accountId) {
+      errors.push(
+        `Linha ${lineNumber}: Campo 'account_id' é obrigatório para atualização`
+      );
+    }
+    return errors;
+  }
 
   // Validações básicas comuns
   errors.push(...validateBasicFields(activity, lineNumber));
@@ -150,66 +180,93 @@ const validateFieldValues = (activity, lineNumber) => {
   const errors = [];
 
   // Validar urgência
-  if (activity.urgencia && !URGENCIA_OPTIONS.includes(activity.urgencia)) {
+  if (
+    activity.urgencia &&
+    !(
+      Array.isArray(URGENCIA_OPTIONS) &&
+      URGENCIA_OPTIONS.includes(activity.urgencia)
+    )
+  ) {
     errors.push(
-      `Linha ${lineNumber}: Urgência '${activity.urgencia}' inválida. Valores válidos: ${URGENCIA_OPTIONS.join(', ')}`
+      `Linha ${lineNumber}: Urgência '${activity.urgencia}' inválida. Valores válidos: ${Array.isArray(URGENCIA_OPTIONS) ? URGENCIA_OPTIONS.join(', ') : ''}`
     );
   }
 
   // Validar plataforma
   if (
     activity.plataforma &&
-    !PLATAFORMA_OPTIONS.includes(activity.plataforma)
+    !(
+      Array.isArray(PLATAFORMA_OPTIONS) &&
+      PLATAFORMA_OPTIONS.includes(activity.plataforma)
+    )
   ) {
     errors.push(
-      `Linha ${lineNumber}: Plataforma '${activity.plataforma}' inválida. Valores válidos: ${PLATAFORMA_OPTIONS.join(', ')}`
+      `Linha ${lineNumber}: Plataforma '${activity.plataforma}' inválida. Valores válidos: ${Array.isArray(PLATAFORMA_OPTIONS) ? PLATAFORMA_OPTIONS.join(', ') : ''}`
     );
   }
 
   // Validar tipo de cliente
   if (
     activity.tipoCliente &&
-    !TIPO_CLIENTE_OPTIONS.includes(activity.tipoCliente)
+    !(
+      Array.isArray(TIPO_CLIENTE_OPTIONS) &&
+      TIPO_CLIENTE_OPTIONS.includes(activity.tipoCliente)
+    )
   ) {
     errors.push(
-      `Linha ${lineNumber}: Tipo de cliente '${activity.tipoCliente}' inválido. Valores válidos: ${TIPO_CLIENTE_OPTIONS.join(', ')}`
+      `Linha ${lineNumber}: Tipo de cliente '${activity.tipoCliente}' inválido. Valores válidos: ${Array.isArray(TIPO_CLIENTE_OPTIONS) ? TIPO_CLIENTE_OPTIONS.join(', ') : ''}`
     );
   }
 
   // Validar criticidade
   if (
     activity.criticidade &&
-    !CRITICIDADE_OPTIONS.includes(activity.criticidade)
+    !(
+      Array.isArray(CRITICIDADE_OPTIONS) &&
+      CRITICIDADE_OPTIONS.includes(activity.criticidade)
+    )
   ) {
     errors.push(
-      `Linha ${lineNumber}: Criticidade '${activity.criticidade}' inválida. Valores válidos: ${CRITICIDADE_OPTIONS.join(', ')}`
+      `Linha ${lineNumber}: Criticidade '${activity.criticidade}' inválida. Valores válidos: ${Array.isArray(CRITICIDADE_OPTIONS) ? CRITICIDADE_OPTIONS.join(', ') : ''}`
     );
   }
 
   // Validar dificuldade de localização
   if (
     activity.dificuldadeLocalizacao &&
-    !DIFICULDADE_LOCALIZACAO_OPTIONS.includes(activity.dificuldadeLocalizacao)
+    !(
+      Array.isArray(DIFICULDADE_LOCALIZACAO_OPTIONS) &&
+      DIFICULDADE_LOCALIZACAO_OPTIONS.includes(activity.dificuldadeLocalizacao)
+    )
   ) {
     errors.push(
-      `Linha ${lineNumber}: Dificuldade de localização '${activity.dificuldadeLocalizacao}' inválida. Valores válidos: ${DIFICULDADE_LOCALIZACAO_OPTIONS.join(', ')}`
+      `Linha ${lineNumber}: Dificuldade de localização '${activity.dificuldadeLocalizacao}' inválida. Valores válidos: ${Array.isArray(DIFICULDADE_LOCALIZACAO_OPTIONS) ? DIFICULDADE_LOCALIZACAO_OPTIONS.join(', ') : ''}`
     );
   }
 
   // Validar causa da demanda
   if (
     activity.causaDemanda &&
-    !CAUSA_DEMANDA_OPTIONS.includes(activity.causaDemanda)
+    !(
+      Array.isArray(CAUSA_DEMANDA_OPTIONS) &&
+      CAUSA_DEMANDA_OPTIONS.includes(activity.causaDemanda)
+    )
   ) {
     errors.push(
-      `Linha ${lineNumber}: Causa da demanda '${activity.causaDemanda}' inválida. Valores válidos: ${CAUSA_DEMANDA_OPTIONS.join(', ')}`
+      `Linha ${lineNumber}: Causa da demanda '${activity.causaDemanda}' inválida. Valores válidos: ${Array.isArray(CAUSA_DEMANDA_OPTIONS) ? CAUSA_DEMANDA_OPTIONS.join(', ') : ''}`
     );
   }
 
   // Validar garantia
-  if (activity.garantia && !GARANTIA_OPTIONS.includes(activity.garantia)) {
+  if (
+    activity.garantia &&
+    !(
+      Array.isArray(GARANTIA_OPTIONS) &&
+      GARANTIA_OPTIONS.includes(activity.garantia)
+    )
+  ) {
     errors.push(
-      `Linha ${lineNumber}: Garantia '${activity.garantia}' inválida. Valores válidos: ${GARANTIA_OPTIONS.join(', ')}`
+      `Linha ${lineNumber}: Garantia '${activity.garantia}' inválida. Valores válidos: ${Array.isArray(GARANTIA_OPTIONS) ? GARANTIA_OPTIONS.join(', ') : ''}`
     );
   }
 
