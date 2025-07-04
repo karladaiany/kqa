@@ -369,75 +369,17 @@ const ActivityImportCard = () => {
     };
 
     // Determinar o status selecionado
-    const selectedStatusId = selectedStatus === 'default' ? null : Number(selectedStatus);
+    const selectedStatusId =
+      selectedStatus === 'default' ? null : Number(selectedStatus);
 
     const success = await executeImport(importConfig, selectedStatusId);
     if (success) {
-      // Download automático do relatório
-      setTimeout(() => {
-        downloadMainReport();
-      }, 2000);
+      // Importação concluída com sucesso
+      toast.success(
+        '✅ Importação concluída! Verifique o histórico para baixar relatórios.'
+      );
     }
   }, [canProceed, executeImport, credentials, selectedStatus]);
-
-  /**
-   * Download do relatório principal
-   */
-  const downloadMainReport = useCallback(() => {
-    if (processResults.success.length === 0) return;
-
-    const csvContent = generateMainReportCSV();
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `relatorio-${importName}-${new Date().toISOString().slice(0, 10)}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    URL.revokeObjectURL(url);
-    toast.success('📥 Relatório baixado automaticamente!');
-  }, [processResults, importName]);
-
-  /**
-   * Gerar CSV do relatório principal
-   */
-  const generateMainReportCSV = useCallback(() => {
-    const headers = [
-      'artia_id',
-      'artia_uid',
-      'linha_original',
-      'titulo',
-      'tipo',
-      'status',
-      'erro',
-    ];
-
-    const rows = [
-      ...processResults.success.map(item => [
-        item.id,
-        item.uid,
-        item.line,
-        `"${item.title}"`,
-        item.originalData.tipo,
-        'Sucesso',
-        '',
-      ]),
-      ...processResults.errors.map(item => [
-        '',
-        '',
-        item.line,
-        `"${item.title}"`,
-        item.originalData.tipo,
-        'Erro',
-        `"${item.error}"`,
-      ]),
-    ];
-
-    return [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
-  }, [processResults]);
 
   /**
    * Redownload de relatório do histórico
@@ -1122,13 +1064,6 @@ const ActivityImportCard = () => {
 
         <div className='completion-actions'>
           <div className='action-group'>
-            <button className='btn-primary' onClick={downloadMainReport}>
-              <FaDownload />{' '}
-              {importMode === 'create'
-                ? 'Relatório de Criação'
-                : 'Relatório de Atualização'}
-            </button>
-
             {processResults.success.length > 0 && (
               <button
                 className='btn-secondary'
