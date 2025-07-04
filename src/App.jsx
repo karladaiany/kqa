@@ -22,6 +22,7 @@ import {
   BugRegistrationCard,
   DeployCard,
   TestStatusCard,
+  ActivityImportCard,
 } from './components/cards';
 import AnnotationsCard from './components/Annotations/AnnotationsCard';
 
@@ -146,6 +147,9 @@ const App = () => {
             </div>
           </div>
           <DeployCard />
+
+          {/* Card de Importação de Atividades - movido para depois do Deploy */}
+          <ActivityImportCard />
         </main>
 
         <h2 className='section-title'>

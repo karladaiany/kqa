@@ -14,6 +14,8 @@ import {
   ACTIVITY_TYPES,
   ACTIVITY_FIELDS,
   FUNCIONALIDADE_OPTIONS,
+  CUSTOM_STATUS_OPTIONS,
+  DEFAULT_CUSTOM_STATUS_ID,
 } from '../../../constants/artiaOptions';
 import { ArtiaService } from '../../../services/artiaService';
 import ActivityHistoryCard from './ActivityHistoryCard';
@@ -71,6 +73,7 @@ const ArtiaActivityModal = ({
       funcionalidade: '',
       subFuncionalidade: '',
       responsibleId: '',
+      customStatusId: DEFAULT_CUSTOM_STATUS_ID,
       ...initialData,
     };
 
@@ -442,6 +445,7 @@ ${bugData.others}${evidenceSection}`;
       funcionalidade: '',
       subFuncionalidade: '',
       responsibleId: '',
+      customStatusId: DEFAULT_CUSTOM_STATUS_ID,
       ...initialData,
     });
     setSubFuncionalidadeOptions([]);
@@ -738,6 +742,30 @@ ${bugData.others}${evidenceSection}`;
                 />
                 <label htmlFor='folderId'>
                   ID da Pasta/Projeto
+                  <span className='modal-required'>*</span>
+                </label>
+              </div>
+            </div>
+
+            <div className='modal-field-group'>
+              <div className='modal-input-container'>
+                <select
+                  id='customStatusId'
+                  value={formData.customStatusId}
+                  onChange={e =>
+                    handleInputChange('customStatusId', Number(e.target.value))
+                  }
+                  required
+                  disabled={loading}
+                >
+                  {CUSTOM_STATUS_OPTIONS.map(status => (
+                    <option key={status.id} value={status.id}>
+                      {status.name}
+                    </option>
+                  ))}
+                </select>
+                <label htmlFor='customStatusId'>
+                  Situação padrão das atividades
                   <span className='modal-required'>*</span>
                 </label>
               </div>

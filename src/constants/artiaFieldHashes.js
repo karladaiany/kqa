@@ -15,8 +15,11 @@ export const ARTIA_FIELD_HASHES = {
   EMAIL: '87a26add0591af451d4950260583fad0b383910f',
   TIPO_CLIENTE: 'bd4955d4e08e24b51450ab9557bfba1dad5c51d6',
   CAUSA_DEMANDA: '1ea5ec0a90db2643df579910b49a9c73f84d5596',
-  DIFICULDADE_LOCALIZACAO: '495fbfd782e12bb20b41190fe7e9770a1a5453eb', // ✅ HASH CORRETO
-  GARANTIA: '40a45aca28c74a3e7dad314250cf23c7a45c3a57', // ✅ HASH CORRETO
+  DIFICULDADE_LOCALIZACAO: '495fbfd782e12bb20b41190fe7e9770a1a5453eb',
+  GARANTIA: '40a45aca28c74a3e7dad314250cf23c7a45c3a57',
+  // Campos de datas estimadas (baseados na documentação do Artia)
+  ESTIMATED_START: 'estimatedStart', // Campo nativo da API, não hash
+  ESTIMATED_END: 'estimatedEnd', // Campo nativo da API, não hash
   // Campos adicionais disponíveis
   REBOTE: '35529c896d093897ae89dbdb0362e14e2a05e694',
   CLASSIFICACAO: '7417cfa09e78a94f740c0fa1a3a1b87d4ccc0261',
@@ -26,6 +29,13 @@ export const ARTIA_FIELD_HASHES = {
  * Campos obrigatórios por tipo de atividade
  */
 export const REQUIRED_FIELDS_BY_TYPE = {
+  Desenvolvimento: ['FUNCIONALIDADE', 'SUB_FUNCIONALIDADE'],
+  'Execução de testes': ['FUNCIONALIDADE', 'SUB_FUNCIONALIDADE'],
+  'Teste de mesa': [
+    // Nenhum campo customizado obrigatório
+  ],
+  'Automação de testes': ['FUNCIONALIDADE', 'SUB_FUNCIONALIDADE'],
+  'Análise de testes': ['FUNCIONALIDADE', 'SUB_FUNCIONALIDADE'],
   'Bug produção': [
     'TICKET_MOVIDESK',
     'URGENCIA',
@@ -46,11 +56,13 @@ export const REQUIRED_FIELDS_BY_TYPE = {
     'FUNCIONALIDADE',
     'SUB_FUNCIONALIDADE',
     'CRITICIDADE',
-    'DIFICULDADE_LOCALIZACAO',
     'CAUSA_DEMANDA',
   ],
   Deploy: [
     // Deploy não tem campos customizados obrigatórios
+  ],
+  Documentação: [
+    // Documentação não tem campos customizados obrigatórios
   ],
 };
 
@@ -69,8 +81,11 @@ export const FORM_FIELD_TO_HASH = {
   email: ARTIA_FIELD_HASHES.EMAIL,
   tipoCliente: ARTIA_FIELD_HASHES.TIPO_CLIENTE,
   causaDemanda: ARTIA_FIELD_HASHES.CAUSA_DEMANDA,
-  dificuldadeLocalizacao: ARTIA_FIELD_HASHES.DIFICULDADE_LOCALIZACAO, // ✅ AGORA COM HASH ÚNICO
-  garantia: ARTIA_FIELD_HASHES.GARANTIA, // ✅ AGORA COM HASH ÚNICO
+  dificuldadeLocalizacao: ARTIA_FIELD_HASHES.DIFICULDADE_LOCALIZACAO,
+  garantia: ARTIA_FIELD_HASHES.GARANTIA,
+  // Campos de datas estimadas
+  inicioEstimado: ARTIA_FIELD_HASHES.ESTIMATED_START,
+  terminoEstimado: ARTIA_FIELD_HASHES.ESTIMATED_END,
   // Campos adicionais (se necessário no futuro)
   rebote: ARTIA_FIELD_HASHES.REBOTE,
   classificacao: ARTIA_FIELD_HASHES.CLASSIFICACAO,
@@ -80,10 +95,17 @@ export const FORM_FIELD_TO_HASH = {
  * Valores padrão para campos obrigatórios da API
  */
 export const DEFAULT_ARTIA_VALUES = {
-  // IDs configurados para o ambiente atual
+  // IDs configurados para o ambiente atual - TODOS OS TIPOS
+  FOLDER_TYPE_ID_DESENVOLVIMENTO: 546649, // Desenvolvimento
+  FOLDER_TYPE_ID_EXECUCAO_TESTES: 546650, // Execução de testes
+  FOLDER_TYPE_ID_TESTE_MESA: 578464, // Teste de mesa
+  FOLDER_TYPE_ID_AUTOMACAO_TESTES: 546652, // Automação de testes
+  FOLDER_TYPE_ID_ANALISE_TESTES: 546651, // Análise de testes
   FOLDER_TYPE_ID_BUG_PRODUCAO: 546654, // Bug Produção
   FOLDER_TYPE_ID_BUG_RETRABALHO: 546653, // Bug Retrabalho
   FOLDER_TYPE_ID_DEPLOY: 546658, // Deploy
+  FOLDER_TYPE_ID_DOCUMENTACAO: 546655, // Documentação
+
   PRIORITY: 1,
   ESTIMATED_EFFORT: 1,
   ORGANIZATION_ID: 136701, // OrganizationId fixo
@@ -97,7 +119,13 @@ export const DEFAULT_ARTIA_VALUES = {
  * Mapeia tipos de atividade para folder type IDs
  */
 export const ACTIVITY_TYPE_TO_FOLDER_TYPE_ID = {
+  Desenvolvimento: DEFAULT_ARTIA_VALUES.FOLDER_TYPE_ID_DESENVOLVIMENTO,
+  'Execução de testes': DEFAULT_ARTIA_VALUES.FOLDER_TYPE_ID_EXECUCAO_TESTES,
+  'Teste de mesa': DEFAULT_ARTIA_VALUES.FOLDER_TYPE_ID_TESTE_MESA,
+  'Automação de testes': DEFAULT_ARTIA_VALUES.FOLDER_TYPE_ID_AUTOMACAO_TESTES,
+  'Análise de testes': DEFAULT_ARTIA_VALUES.FOLDER_TYPE_ID_ANALISE_TESTES,
   'Bug produção': DEFAULT_ARTIA_VALUES.FOLDER_TYPE_ID_BUG_PRODUCAO,
   'Bug retrabalho': DEFAULT_ARTIA_VALUES.FOLDER_TYPE_ID_BUG_RETRABALHO,
   Deploy: DEFAULT_ARTIA_VALUES.FOLDER_TYPE_ID_DEPLOY,
+  Documentação: DEFAULT_ARTIA_VALUES.FOLDER_TYPE_ID_DOCUMENTACAO,
 };

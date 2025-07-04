@@ -44,9 +44,20 @@ export const GARANTIA_OPTIONS = ['Sim', 'Não'];
 
 export const RESPONSAVEL_OPTIONS = [
   { name: 'Alexandre', id: 263356 },
+  { name: 'Angelica', id: 203772 },
+  { name: 'Eduardo', id: 242721 },
+  { name: 'Éverton', id: 200317 },
   { name: 'Fred', id: 174652 },
+  { name: 'Josué', id: 259332 },
+  { name: 'Karla', id: 208561 },
   { name: 'Mazepa', id: 212376 },
   { name: 'Milles', id: 186004 },
+  { name: 'João', id: 279121 },
+  { name: 'Jeiel', id: 279122 },
+  { name: 'Gustavo', id: 273428 },
+  { name: 'Vini Lisboa', id: 200535 },
+  { name: 'Vine Coelho', id: 200531 },
+  { name: 'Felipe', id: 200527 },
 ];
 
 export const FUNCIONALIDADE_OPTIONS = {
@@ -309,12 +320,153 @@ export const FUNCIONALIDADE_OPTIONS = {
 };
 
 export const ACTIVITY_TYPES = {
+  DESENVOLVIMENTO: 'Desenvolvimento',
+  EXECUCAO_TESTES: 'Execução de testes',
+  TESTE_MESA: 'Teste de mesa',
+  AUTOMACAO_TESTES: 'Automação de testes',
+  ANALISE_TESTES: 'Análise de testes',
   BUG_PRODUCAO: 'Bug produção',
   BUG_RETRABALHO: 'Bug retrabalho',
   DEPLOY: 'Deploy',
+  DOCUMENTACAO: 'Documentação',
+};
+
+// Configuração de visibilidade dos tipos de atividade
+export const ACTIVITY_TYPES_CONFIG = {
+  [ACTIVITY_TYPES.DESENVOLVIMENTO]: { enabled: true },
+  [ACTIVITY_TYPES.EXECUCAO_TESTES]: { enabled: true },
+  [ACTIVITY_TYPES.TESTE_MESA]: { enabled: true },
+  [ACTIVITY_TYPES.AUTOMACAO_TESTES]: { enabled: false }, // ❌ Oculto
+  [ACTIVITY_TYPES.ANALISE_TESTES]: { enabled: true },
+  [ACTIVITY_TYPES.BUG_PRODUCAO]: { enabled: false }, // ❌ Oculto
+  [ACTIVITY_TYPES.BUG_RETRABALHO]: { enabled: false }, // ❌ Oculto
+  [ACTIVITY_TYPES.DEPLOY]: { enabled: false }, // ❌ Oculto
+  [ACTIVITY_TYPES.DOCUMENTACAO]: { enabled: true },
+};
+
+// Função helper para obter apenas os tipos habilitados
+export const getEnabledActivityTypes = () => {
+  return Object.entries(ACTIVITY_TYPES)
+    .filter(([key]) => ACTIVITY_TYPES_CONFIG[ACTIVITY_TYPES[key]]?.enabled)
+    .reduce((acc, [key, value]) => {
+      acc[key] = value;
+      return acc;
+    }, {});
 };
 
 export const ACTIVITY_FIELDS = {
+  // Campos básicos que todos os tipos possuem
+  COMMON_FIELDS: [
+    { name: 'titulo', label: 'Título', type: 'text', required: true },
+    {
+      name: 'descricao',
+      label: 'Descrição',
+      type: 'textarea',
+      required: false,
+    },
+    {
+      name: 'esforcoEstimado',
+      label: 'Esforço estimado (horas)',
+      type: 'number',
+      required: false,
+    },
+    {
+      name: 'inicioEstimado',
+      label: 'Início estimado',
+      type: 'date',
+      required: false,
+    },
+    {
+      name: 'terminoEstimado',
+      label: 'Término estimado',
+      type: 'date',
+      required: false,
+    },
+    {
+      name: 'responsibleId',
+      label: 'Responsável',
+      type: 'select',
+      options: RESPONSAVEL_OPTIONS,
+      required: false,
+    },
+  ],
+
+  // DESENVOLVIMENTO → Apenas funcionalidade e sub-funcionalidade obrigatórias
+  [ACTIVITY_TYPES.DESENVOLVIMENTO]: [
+    {
+      name: 'funcionalidade',
+      label: 'Funcionalidade',
+      type: 'select',
+      options: Object.keys(FUNCIONALIDADE_OPTIONS),
+      required: true,
+    },
+    {
+      name: 'subFuncionalidade',
+      label: 'Sub-funcionalidade',
+      type: 'select',
+      options: [],
+      required: true,
+    },
+  ],
+
+  // EXECUÇÃO DE TESTES → Apenas funcionalidade e sub-funcionalidade obrigatórias
+  [ACTIVITY_TYPES.EXECUCAO_TESTES]: [
+    {
+      name: 'funcionalidade',
+      label: 'Funcionalidade',
+      type: 'select',
+      options: Object.keys(FUNCIONALIDADE_OPTIONS),
+      required: true,
+    },
+    {
+      name: 'subFuncionalidade',
+      label: 'Sub-funcionalidade',
+      type: 'select',
+      options: [],
+      required: true,
+    },
+  ],
+
+  // TESTE DE MESA → Nenhum campo customizado obrigatório
+  [ACTIVITY_TYPES.TESTE_MESA]: [],
+
+  // AUTOMAÇÃO DE TESTES → Apenas funcionalidade e sub-funcionalidade obrigatórias
+  [ACTIVITY_TYPES.AUTOMACAO_TESTES]: [
+    {
+      name: 'funcionalidade',
+      label: 'Funcionalidade',
+      type: 'select',
+      options: Object.keys(FUNCIONALIDADE_OPTIONS),
+      required: true,
+    },
+    {
+      name: 'subFuncionalidade',
+      label: 'Sub-funcionalidade',
+      type: 'select',
+      options: [],
+      required: true,
+    },
+  ],
+
+  // ANÁLISE DE TESTES → Apenas funcionalidade e sub-funcionalidade obrigatórias
+  [ACTIVITY_TYPES.ANALISE_TESTES]: [
+    {
+      name: 'funcionalidade',
+      label: 'Funcionalidade',
+      type: 'select',
+      options: Object.keys(FUNCIONALIDADE_OPTIONS),
+      required: true,
+    },
+    {
+      name: 'subFuncionalidade',
+      label: 'Sub-funcionalidade',
+      type: 'select',
+      options: [],
+      required: true,
+    },
+  ],
+
+  // BUG PRODUÇÃO → Todos os campos obrigatórios
   [ACTIVITY_TYPES.BUG_PRODUCAO]: [
     {
       name: 'ticketMovidesk',
@@ -329,7 +481,6 @@ export const ACTIVITY_FIELDS = {
       options: URGENCIA_OPTIONS,
       required: true,
     },
-    { name: 'prioridade', label: 'Prioridade', type: 'number', required: true },
     {
       name: 'plataforma',
       label: 'Plataforma',
@@ -395,8 +546,9 @@ export const ACTIVITY_FIELDS = {
       required: true,
     },
   ],
+
+  // BUG RETRABALHO → Campos específicos obrigatórios
   [ACTIVITY_TYPES.BUG_RETRABALHO]: [
-    { name: 'prioridade', label: 'Prioridade', type: 'number', required: true },
     {
       name: 'plataforma',
       label: 'Plataforma',
@@ -426,13 +578,6 @@ export const ACTIVITY_FIELDS = {
       required: true,
     },
     {
-      name: 'dificuldadeLocalizacao',
-      label: 'Dificuldade de localização',
-      type: 'select',
-      options: DIFICULDADE_LOCALIZACAO_OPTIONS,
-      required: true,
-    },
-    {
       name: 'causaDemanda',
       label: 'Causa da demanda',
       type: 'select',
@@ -440,13 +585,20 @@ export const ACTIVITY_FIELDS = {
       required: true,
     },
   ],
-  [ACTIVITY_TYPES.DEPLOY]: [
-    {
-      name: 'responsibleId',
-      label: 'Responsável',
-      type: 'select',
-      options: RESPONSAVEL_OPTIONS,
-      required: false,
-    },
-  ],
+
+  // DEPLOY → Nenhum campo customizado obrigatório
+  [ACTIVITY_TYPES.DEPLOY]: [],
+
+  // DOCUMENTAÇÃO → Nenhum campo customizado obrigatório
+  [ACTIVITY_TYPES.DOCUMENTACAO]: [],
 };
+
+// Status customizados para atividades
+export const CUSTOM_STATUS_OPTIONS = [
+  { id: 246888, name: 'Não iniciado' },
+  { id: 246886, name: 'Backlog' },
+  { id: 246887, name: 'Backlog Programado' },
+  { id: 246895, name: 'Triagem' },
+];
+
+export const DEFAULT_CUSTOM_STATUS_ID = 246886; // Backlog por padrão
