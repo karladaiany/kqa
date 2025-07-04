@@ -366,10 +366,12 @@ const ActivityImportCard = () => {
       useFileFolderId: credentials.useFileFolderId,
       accountId: credentials.useFileAccountId ? null : credentials.accountId,
       folderId: credentials.useFileFolderId ? null : credentials.folderId,
-      status: selectedStatus === 'default' ? null : Number(selectedStatus),
     };
 
-    const success = await executeImport(importConfig);
+    // Determinar o status selecionado
+    const selectedStatusId = selectedStatus === 'default' ? null : Number(selectedStatus);
+
+    const success = await executeImport(importConfig, selectedStatusId);
     if (success) {
       // Download automático do relatório
       setTimeout(() => {

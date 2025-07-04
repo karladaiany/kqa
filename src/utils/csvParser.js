@@ -305,6 +305,18 @@ const validateActivityLine = (activity, lineNumber) => {
     }
   }
 
+  // Validar situação/status se preenchido
+  if (activity.situacaoAtividade && activity.situacaoAtividade.toString().trim() !== '') {
+    const status = CUSTOM_STATUS_OPTIONS.find(
+      s => s.name.toLowerCase() === activity.situacaoAtividade.toLowerCase()
+    );
+    if (!status) {
+      errors.push(
+        `Linha ${lineNumber}: Situação '${activity.situacaoAtividade}' inválida. Valores válidos: ${CUSTOM_STATUS_OPTIONS.map(s => s.name).join(', ')}`
+      );
+    }
+  }
+
   return errors;
 };
 
@@ -338,23 +350,28 @@ const transformActivityData = activity => {
       transformed.situacaoAtividade &&
       transformed.situacaoAtividade.toString().trim() !== ''
     ) {
+      // Buscar status por nome (case-insensitive)
       const status = CUSTOM_STATUS_OPTIONS.find(
         s =>
           s.name.toLowerCase() === transformed.situacaoAtividade.toLowerCase()
       );
+      
       if (status) {
         transformed.customStatusId = status.id;
         transformed.hasValidCustomStatus = true;
       } else {
         // Valor inválido - será usado o padrão do card
+        transformed.customStatusId = null;
         transformed.hasValidCustomStatus = false;
       }
     } else {
       // Coluna existe mas está vazia: forçar uso do select
+      transformed.customStatusId = null;
       transformed.hasValidCustomStatus = false;
     }
   } else {
     // Coluna não existe: forçar uso do select
+    transformed.customStatusId = null;
     transformed.hasValidCustomStatus = false;
   }
 

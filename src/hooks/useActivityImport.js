@@ -616,10 +616,17 @@ export const useActivityImport = () => {
 
           try {
             // Converter dados para formato do Artia
-            // Usar status específico da linha se válido, senão usar padrão do card
-            const finalStatusId = activity.hasValidCustomStatus
-              ? activity.customStatusId
-              : selectedStatusId;
+            // Lógica de prioridade: CSV válido > Select do card
+            let finalStatusId = null;
+
+            // Prioridade 1: Status válido do CSV (se existir e for válido)
+            if (activity.hasValidCustomStatus && activity.customStatusId) {
+              finalStatusId = activity.customStatusId;
+            }
+            // Prioridade 2: Status selecionado no card (se não houver CSV válido)
+            else if (selectedStatusId && selectedStatusId !== null) {
+              finalStatusId = selectedStatusId;
+            }
 
             const activityData = convertToArtiaFormat(
               activity,
@@ -934,12 +941,12 @@ const readFileContent = file => {
 
 /**
  * Converter dados da atividade para formato esperado pelo ArtiaService
+ * @param {Object} activity - Dados da atividade
+ * @param {Object} credentials - Credenciais do Artia
+ * @param {number|null} finalStatusId - ID do status final já determinado pela lógica de prioridade
+ * @returns {Object} Dados formatados para o Artia
  */
-const convertToArtiaFormat = (
-  activity,
-  credentials,
-  defaultStatusId = null
-) => {
+const convertToArtiaFormat = (activity, credentials, finalStatusId = null) => {
   return {
     // Campos básicos
     titulo: activity.titulo,
@@ -952,8 +959,8 @@ const convertToArtiaFormat = (
     terminoEstimado: activity.terminoEstimado || '',
     responsibleId: activity.responsibleId || null,
 
-    // Status customizado
-    customStatusId: activity.customStatusId || defaultStatusId || null,
+    // Status final já determinado pela lógica de prioridade (sem fallback)
+    customStatusId: finalStatusId,
 
     // Campos específicos por tipo
     ticketMovidesk: activity.ticketMovidesk || '',
