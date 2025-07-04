@@ -77,6 +77,10 @@ export const CSV_TO_JS_MAPPING = {
   tipo: 'tipo',
   titulo: 'titulo',
 
+  // Campos de identificação do Artia
+  account_id: 'accountId',
+  folder_id: 'folderId',
+
   // Campos opcionais comuns
   descricao: 'descricao',
   esforco_estimado: 'esforcoEstimado',
@@ -306,13 +310,36 @@ const validateActivityLine = (activity, lineNumber) => {
   }
 
   // Validar situação/status se preenchido
-  if (activity.situacaoAtividade && activity.situacaoAtividade.toString().trim() !== '') {
+  if (
+    activity.situacaoAtividade &&
+    activity.situacaoAtividade.toString().trim() !== ''
+  ) {
     const status = CUSTOM_STATUS_OPTIONS.find(
       s => s.name.toLowerCase() === activity.situacaoAtividade.toLowerCase()
     );
     if (!status) {
       errors.push(
         `Linha ${lineNumber}: Situação '${activity.situacaoAtividade}' inválida. Valores válidos: ${CUSTOM_STATUS_OPTIONS.map(s => s.name).join(', ')}`
+      );
+    }
+  }
+
+  // Validar accountId se preenchido
+  if (activity.accountId && activity.accountId.toString().trim() !== '') {
+    const accountIdValue = parseInt(activity.accountId);
+    if (isNaN(accountIdValue) || accountIdValue <= 0) {
+      errors.push(
+        `Linha ${lineNumber}: ID do Grupo de Trabalho '${activity.accountId}' deve ser um número inteiro positivo`
+      );
+    }
+  }
+
+  // Validar folderId se preenchido
+  if (activity.folderId && activity.folderId.toString().trim() !== '') {
+    const folderIdValue = parseInt(activity.folderId);
+    if (isNaN(folderIdValue) || folderIdValue <= 0) {
+      errors.push(
+        `Linha ${lineNumber}: ID da Pasta/Projeto '${activity.folderId}' deve ser um número inteiro positivo`
       );
     }
   }
@@ -331,6 +358,22 @@ const transformActivityData = activity => {
   // Converter esforço para número
   if (transformed.esforcoEstimado) {
     transformed.esforcoEstimado = parseFloat(transformed.esforcoEstimado) || 0;
+  }
+
+  // Converter accountId para número se preenchido
+  if (transformed.accountId && transformed.accountId.toString().trim() !== '') {
+    const accountIdValue = parseInt(transformed.accountId);
+    if (!isNaN(accountIdValue) && accountIdValue > 0) {
+      transformed.accountId = accountIdValue.toString();
+    }
+  }
+
+  // Converter folderId para número se preenchido
+  if (transformed.folderId && transformed.folderId.toString().trim() !== '') {
+    const folderIdValue = parseInt(transformed.folderId);
+    if (!isNaN(folderIdValue) && folderIdValue > 0) {
+      transformed.folderId = folderIdValue.toString();
+    }
   }
 
   // Converter responsável nome para ID
@@ -355,7 +398,7 @@ const transformActivityData = activity => {
         s =>
           s.name.toLowerCase() === transformed.situacaoAtividade.toLowerCase()
       );
-      
+
       if (status) {
         transformed.customStatusId = status.id;
         transformed.hasValidCustomStatus = true;

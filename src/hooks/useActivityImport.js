@@ -947,6 +947,19 @@ const readFileContent = file => {
  * @returns {Object} Dados formatados para o Artia
  */
 const convertToArtiaFormat = (activity, credentials, finalStatusId = null) => {
+  // Lógica de prioridade para accountId e folderId:
+  // 1. Valores do CSV (se existirem e forem válidos)
+  // 2. Valores das credenciais (se configurados)
+  // 3. Valores padrão do sistema
+  
+  const accountId = activity.accountId && !isNaN(parseInt(activity.accountId)) 
+    ? activity.accountId 
+    : (credentials.accountId || '');
+    
+  const folderId = activity.folderId && !isNaN(parseInt(activity.folderId)) 
+    ? activity.folderId 
+    : (credentials.folderId || '');
+
   return {
     // Campos básicos
     titulo: activity.titulo,
@@ -980,7 +993,7 @@ const convertToArtiaFormat = (activity, credentials, finalStatusId = null) => {
     // Credenciais para criação
     login: credentials.email,
     senha: credentials.password,
-    accountId: credentials.accountId || '',
-    folderId: credentials.folderId || '',
+    accountId: accountId,
+    folderId: folderId,
   };
 };
