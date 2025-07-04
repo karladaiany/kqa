@@ -10,6 +10,12 @@ O template CSV baixado utiliza um sistema de indicadores visuais para identifica
 - **`(**)`** = Campo **OBRIGATÓRIO PARA ALGUNS TIPOS\*\* específicos
 - **Sem indicador** = Campo **OPCIONAL**
 
+### 🔧 Formato e Codificação
+
+- **Delimitador**: Ponto-e-vírgula (`;`) - compatível com Excel BR
+- **Codificação**: UTF-8 com BOM para caracteres especiais
+- **Importação**: Aceita automaticamente vírgula (`,`) ou ponto-e-vírgula (`;`) como delimitadores
+
 ### 📑 Campos Sempre Obrigatórios
 
 Estes campos são **obrigatórios para TODOS os tipos de atividade**:
@@ -140,6 +146,45 @@ tipo (*),titulo (*),ticketMovidesk (**),urgencia (**),plataforma (**),funcionali
 Bug Produção,Login não funciona no Chrome,MOV-98765,Alto,Desktop,Login,Autenticação,Cliente ABC,12345,cliente@abc.com,Cliente externo,Alto,Médio,Erro de código,Não
 ```
 
+## 🔄 Template de Atualização
+
+### 📋 Campos Obrigatórios para Atualização
+
+Para atualizar uma atividade, você DEVE fornecer:
+
+1. **`artia_id (*)`** - ID da atividade no Artia
+2. **`titulo (*)`** - Título da atividade
+3. **`account_id (*)`** - ID do grupo de trabalho
+
+### 📝 Exemplo de Template de Atualização
+
+```csv
+artia_id (*),titulo (*),account_id (*),folder_id,custom_status_id,descricao,esforco_estimado,inicio_estimado,termino_estimado
+12345,Novo título da atividade,4874953,4885568,246888,Nova descrição detalhada,4,25/03/2024,27/03/2024
+```
+
+### 🔧 Configuração Automática
+
+O template de atualização inclui automaticamente os campos de configuração da aplicação:
+
+- **`account_id`**: Preenchido com o valor configurado na aplicação (se disponível)
+- **`folder_id`**: Preenchido com o valor configurado na aplicação (se disponível)  
+- **`custom_status_id`**: Preenchido com o status selecionado na aplicação (se disponível)
+
+**Prioridade dos valores:**
+1. Dados originais do CSV de criação
+2. Configuração atual da aplicação
+3. Campo vazio (se nenhum valor disponível)
+
+### ⚠️ Dicas para Atualização
+
+- **Mantenha os campos obrigatórios**: Sempre preencha `artia_id`, `titulo` e `account_id`
+- **Apenas campos alterados**: Preencha apenas os campos que deseja atualizar
+- **Configuração automática**: O template inclui automaticamente `account_id`, `folder_id` e `custom_status_id` se configurados na aplicação
+- **Formato de datas**: Use DD/MM/YYYY (será convertido automaticamente)
+- **Delimitador**: O template usa ponto-e-vírgula (`;`) por padrão
+- **Codificação**: UTF-8 com BOM para caracteres especiais
+
 ## 🔄 Fluxo Recomendado
 
 1. **📥 Baixe o template** com os tipos desejados
@@ -176,6 +221,9 @@ O `ActivityImportCard` é um componente React avançado para importação de ati
 - **Template personalizado**: CSV gerado com apenas os campos necessários
 - **Guia completo**: Painel informativo com instruções detalhadas
 - **Conversão de datas**: Suporte automático para formato brasileiro (DD/MM/YYYY)
+- **Template de atualização**: CSV para atualizar atividades já importadas
+- **Formato otimizado**: Ponto-e-vírgula como delimitador e UTF-8 com BOM
+- **Campos obrigatórios**: Template de atualização exige id, title e accountId conforme API
 
 ### 📤 Upload e Validação
 

@@ -111,11 +111,94 @@ export const CSV_TO_JS_MAPPING = {
 };
 
 /**
+ * Validações específicas para template de atualização
+ * @param {Object} activity - Dados da atividade
+ * @param {number} lineNumber - Número da linha
+ * @returns {Array} Array de erros
+ */
+const validateUpdateActivityLine = (activity, lineNumber) => {
+  const errors = [];
+
+  // Campos obrigatórios para atualização
+  if (!activity.artiaId) {
+    errors.push(
+      `Linha ${lineNumber}: Campo 'artia_id' é obrigatório para atualização`
+    );
+  }
+
+  if (!activity.titulo) {
+    errors.push(
+      `Linha ${lineNumber}: Campo 'titulo' é obrigatório para atualização`
+    );
+  }
+
+  if (!activity.accountId) {
+    errors.push(
+      `Linha ${lineNumber}: Campo 'account_id' é obrigatório para atualização`
+    );
+  }
+
+  // Validar accountId se preenchido
+  if (activity.accountId && activity.accountId.toString().trim() !== '') {
+    const accountIdValue = parseInt(activity.accountId);
+    if (isNaN(accountIdValue) || accountIdValue <= 0) {
+      errors.push(
+        `Linha ${lineNumber}: ID do Grupo de Trabalho '${activity.accountId}' deve ser um número inteiro positivo`
+      );
+    }
+  }
+
+  // Validar folderId se preenchido
+  if (activity.folderId && activity.folderId.toString().trim() !== '') {
+    const folderIdValue = parseInt(activity.folderId);
+    if (isNaN(folderIdValue) || folderIdValue <= 0) {
+      errors.push(
+        `Linha ${lineNumber}: ID da Pasta/Projeto '${activity.folderId}' deve ser um número inteiro positivo`
+      );
+    }
+  }
+
+  // Converter e validar formato de datas se preenchidas
+  if (activity.inicioEstimado) {
+    activity.inicioEstimado = convertDateToISO(activity.inicioEstimado);
+    if (!isValidDate(activity.inicioEstimado)) {
+      errors.push(
+        `Linha ${lineNumber}: Data de início inválida. Use formato DD/MM/YYYY ou YYYY-MM-DD`
+      );
+    }
+  }
+
+  if (activity.terminoEstimado) {
+    activity.terminoEstimado = convertDateToISO(activity.terminoEstimado);
+    if (!isValidDate(activity.terminoEstimado)) {
+      errors.push(
+        `Linha ${lineNumber}: Data de término inválida. Use formato DD/MM/YYYY ou YYYY-MM-DD`
+      );
+    }
+  }
+
+  // Validar esforço estimado se preenchido
+  if (activity.esforcoEstimado) {
+    const testValue = activity.esforcoEstimado.toString().replace(',', '.');
+    if (isNaN(parseFloat(testValue))) {
+      errors.push(
+        `Linha ${lineNumber}: Esforço estimado deve ser um número (use ponto ou vírgula como separador decimal, ex: 2.5 ou 2,5)`
+      );
+    } else {
+      activity.esforcoEstimado = activity.esforcoEstimado.toString();
+    }
+  }
+
+  return errors;
+};
+
+/**
  * Parse CSV content para array de objetos
  * @param {string} csvContent - Conteúdo do arquivo CSV
+ * @param {boolean} isUpdateTemplate - Se é template de atualização
  * @returns {Object} { data: Array, errors: Array }
  */
-export const parseCSV = csvContent => {
+export const parseCSV = (csvContent, isUpdateTemplate = false) => {
   const errors = [];
   const data = [];
 
@@ -143,7 +226,14 @@ export const parseCSV = csvContent => {
     );
 
     // Validar headers obrigatórios
-    const missingHeaders = ['tipo', 'titulo'].filter(
+    let requiredHeaders = [];
+    if (isUpdateTemplate) {
+      requiredHeaders = ['artia_id', 'titulo', 'account_id'];
+    } else {
+      requiredHeaders = ['tipo', 'titulo'];
+    }
+
+    const missingHeaders = requiredHeaders.filter(
       required => !headers.includes(required)
     );
 
@@ -194,13 +284,24 @@ export const parseCSV = csvContent => {
       });
 
       // Validações básicas
-      const lineErrors = validateActivityLine(activity, lineNumber);
-      if (lineErrors.length > 0) {
-        errors.push(...lineErrors);
+      if (isUpdateTemplate) {
+        const lineErrors = validateUpdateActivityLine(activity, lineNumber);
+        if (lineErrors.length > 0) {
+          errors.push(...lineErrors);
+        } else {
+          // Transformar dados conforme necessário
+          const transformedActivity = transformActivityData(activity);
+          data.push({ ...transformedActivity, _originalLine: lineNumber });
+        }
       } else {
-        // Transformar dados conforme necessário
-        const transformedActivity = transformActivityData(activity);
-        data.push({ ...transformedActivity, _originalLine: lineNumber });
+        const lineErrors = validateActivityLine(activity, lineNumber);
+        if (lineErrors.length > 0) {
+          errors.push(...lineErrors);
+        } else {
+          // Transformar dados conforme necessário
+          const transformedActivity = transformActivityData(activity);
+          data.push({ ...transformedActivity, _originalLine: lineNumber });
+        }
       }
     }
 
@@ -497,7 +598,9 @@ export const generateCSVTemplate = (
     // Linhas de explicação
     const legend = [
       '"LEGENDA: (*) = SEMPRE OBRIGATÓRIO | (**) = OBRIGATÓRIO PARA ALGUNS TIPOS | sem indicador = OPCIONAL"',
-      '"FORMATO: Arquivo CSV usando vírgula (,) ou ponto-e-vírgula (;) como delimitador"',
+      '"FORMATO: Arquivo CSV usando ponto-e-vírgula (;) como delimitador - compatível com Excel BR"',
+      '"IMPORTAÇÃO: Aceita tanto vírgula (,) quanto ponto-e-vírgula (;) como delimitadores automaticamente"',
+      '"CODIFICAÇÃO: UTF-8 com BOM para compatibilidade total com caracteres especiais"',
       '"ESFORÇO: Use horas (ex: 2 ou 3). Valores decimais (2.5 ou 2,5) serão arredondados para cima (3)"',
       '"DATAS: Use o formato DD/MM/YYYY (ex: 20/03/2024)"',
       '"CAMPOS DISPONÍVEIS: Apenas os campos que continham dados na importação original são exibidos"',
@@ -641,24 +744,39 @@ export const validateFile = file => {
 /**
  * Gera template CSV para atualização de atividades
  * @param {Array} activities - Lista de atividades do relatório de importação
+ * @param {Object} credentials - Credenciais/configurações da aplicação
+ * @param {string} selectedStatus - Status selecionado na aplicação
  * @returns {string} Conteúdo do CSV
  */
-export const generateUpdateTemplate = activities => {
+export const generateUpdateTemplate = (
+  activities,
+  credentials = null,
+  selectedStatus = null
+) => {
   if (!activities || activities.length === 0) {
     return 'Nenhuma atividade disponível para gerar template de atualização';
   }
 
-  // Campos obrigatórios para identificação
+  // Campos obrigatórios para atualização segundo a documentação da API
   const mandatoryFields = [
-    'artiaId',
-    'artiaUid',
+    'artiaId', // id
+    'titulo', // title
     'accountId',
-    'folderId',
-    'customStatusId',
   ];
 
   // Coletar todos os campos que têm dados em pelo menos uma atividade
   const allFields = new Set(mandatoryFields);
+
+  // Adicionar campos de configuração se disponíveis
+  if (credentials?.accountId) {
+    allFields.add('accountId');
+  }
+  if (credentials?.folderId) {
+    allFields.add('folderId');
+  }
+  if (selectedStatus) {
+    allFields.add('customStatusId');
+  }
 
   activities.forEach(activity => {
     const originalData = activity.originalData || {};
@@ -674,15 +792,15 @@ export const generateUpdateTemplate = activities => {
   // Converter para array e ordenar (mantendo identificadores no início)
   const headers = [...allFields];
 
-  // Reordenar para ter uma sequência lógica (usando nomes internos)
+  // Ordem preferencial: obrigatórios primeiro
   const fieldOrder = [
-    'artiaId',
-    'artiaUid',
+    'artiaId', // id
+    'titulo', // title
     'accountId',
+    'artiaUid',
     'folderId',
     'customStatusId',
     'tipo',
-    'titulo',
     'descricao',
     'responsavel',
     'esforcoEstimado',
@@ -707,15 +825,11 @@ export const generateUpdateTemplate = activities => {
   ];
 
   const orderedHeaders = [];
-
-  // Adicionar campos na ordem preferencial se existirem
   fieldOrder.forEach(field => {
     if (headers.includes(field)) {
       orderedHeaders.push(field);
     }
   });
-
-  // Adicionar campos restantes que não estão na ordem preferencial
   headers.forEach(field => {
     if (!orderedHeaders.includes(field)) {
       orderedHeaders.push(field);
@@ -723,55 +837,71 @@ export const generateUpdateTemplate = activities => {
   });
 
   // Converter headers internos para formato CSV correto
-  const csvHeaders = orderedHeaders.map(
-    header => JS_TO_CSV_MAPPING[header] || header
-  );
+  const csvHeaders = orderedHeaders.map(header => {
+    const csvHeader = JS_TO_CSV_MAPPING[header] || header;
+    // Adicionar (*) aos campos obrigatórios
+    if (['artiaId', 'titulo', 'accountId'].includes(header)) {
+      return `${csvHeader} (*)`;
+    }
+    return csvHeader;
+  });
 
   // Criar linhas de documentação
   const documentation = [
-    'LEGENDA: (*) Campo obrigatório | (**) Obrigatório para alguns tipos | Demais campos são opcionais',
-    'IMPORTANTE: Para atualizar uma atividade, é necessário fornecer artia_id OU artia_uid, e pelo menos um campo para atualizar',
-    'CONFIGURAÇÃO: Os campos account_id, folder_id e custom_status_id são preenchidos automaticamente com os valores da criação',
-    'TIPOS: Desenvolvimento, Execução de testes, Teste de mesa, Análise de testes, Documentação',
-    'URGÊNCIA: Baixo, Médio, Alto, Crítico',
-    'DATAS: Formato DD/MM/YYYY (ex: 20/03/2024) - será convertido automaticamente',
-    'CAMPOS DISPONÍVEIS: Apenas os campos que continham dados na importação original são exibidos',
+    '"LEGENDA: (*) Campo obrigatório para atualização | Demais campos são opcionais"',
+    '"IMPORTANTE: Para atualizar uma atividade, é necessário fornecer id (artia_id), title (titulo) e accountId"',
+    '"CONFIGURAÇÃO: Os campos account_id, folder_id e custom_status_id podem ser preenchidos automaticamente com os valores da criação"',
+    '"FORMATO: Arquivo CSV usando ponto-e-vírgula (;) como delimitador - compatível com Excel BR"',
+    '"CODIFICAÇÃO: UTF-8 com BOM para compatibilidade total com caracteres especiais"',
     '',
   ];
 
   // Criar linhas com os dados das atividades existentes
   const activityRows = activities.map(activity => {
     const originalData = activity.originalData || {};
-
     return orderedHeaders
       .map(header => {
         let value = '';
-
         switch (header) {
           case 'artiaId':
             value = activity.id || '';
             break;
+          case 'titulo':
+            value = originalData.titulo || activity.titulo || '';
+            break;
+          case 'accountId':
+            // Prioridade: dados originais > configuração da aplicação
+            value =
+              originalData.accountId ||
+              activity.accountId ||
+              credentials?.accountId ||
+              '';
+            break;
           case 'artiaUid':
             value = activity.uid || '';
             break;
-          case 'accountId':
-            value = originalData.accountId || activity.accountId || '';
-            break;
           case 'folderId':
-            value = originalData.folderId || activity.folderId || '';
+            // Prioridade: dados originais > configuração da aplicação
+            value =
+              originalData.folderId ||
+              activity.folderId ||
+              credentials?.folderId ||
+              '';
             break;
           case 'customStatusId':
+            // Prioridade: dados originais > configuração da aplicação
             value =
-              originalData.customStatusId || activity.customStatusId || '';
+              originalData.customStatusId ||
+              activity.customStatusId ||
+              selectedStatus ||
+              '';
             break;
           default:
             value = originalData[header] || '';
         }
-
-        // Escapar com aspas apenas se necessário
         value = value.toString().trim();
         if (
-          value.includes(',') ||
+          value.includes(';') ||
           value.includes('"') ||
           value.includes('\n')
         ) {
@@ -779,9 +909,14 @@ export const generateUpdateTemplate = activities => {
         }
         return value;
       })
-      .join(',');
+      .join(';');
   });
 
-  // Montar o CSV final
-  return [...documentation, csvHeaders.join(','), ...activityRows].join('\n');
+  // Montar o CSV final com BOM para UTF-8
+  const content = [
+    ...documentation,
+    csvHeaders.join(';'),
+    ...activityRows,
+  ].join('\n');
+  return '\ufeff' + content;
 };

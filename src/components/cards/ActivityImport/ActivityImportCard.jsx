@@ -1067,10 +1067,16 @@ const ActivityImportCard = () => {
             {processResults.success.length > 0 && (
               <button
                 className='btn-secondary'
-                onClick={() => downloadUpdateTemplate(processResults.success)}
+                onClick={() =>
+                  downloadUpdateTemplate(
+                    processResults.success,
+                    credentials,
+                    selectedStatus
+                  )
+                }
                 title='Baixar template para atualização das atividades criadas'
               >
-                <FaEdit /> Template de Atualização
+                <FaEdit /> Template de atualização
               </button>
             )}
 
@@ -1669,11 +1675,13 @@ const ActivityImportCard = () => {
                                           className='download-item'
                                           onClick={() =>
                                             downloadUpdateTemplate(
-                                              item.results.success
+                                              item.results.success,
+                                              credentials,
+                                              selectedStatus
                                             )
                                           }
                                         >
-                                          <FaEdit /> Template de Atualização
+                                          <FaEdit /> Template de atualização
                                         </div>
                                       )}
                                   </div>

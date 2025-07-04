@@ -197,7 +197,7 @@ export const useActivityImport = () => {
 
     try {
       const fileContent = await readFileContent(selectedFile);
-      const parseResult = parseCSV(fileContent);
+      const parseResult = parseCSV(fileContent, importMode === 'update');
 
       setParsedData(parseResult.data);
       setParseErrors(parseResult.errors);
@@ -377,7 +377,7 @@ export const useActivityImport = () => {
     try {
       // Fazer parse do arquivo
       const fileContent = await readFileContent(selectedFile);
-      const parseResult = parseCSV(fileContent);
+      const parseResult = parseCSV(fileContent, importMode === 'update');
 
       setParsedData(parseResult.data);
       setParseErrors(parseResult.errors);
@@ -852,27 +852,34 @@ export const useActivityImport = () => {
   /**
    * Download do template de atualização baseado no relatório
    */
-  const downloadUpdateTemplate = useCallback(activities => {
-    try {
-      const csvContent = generateUpdateTemplate(activities);
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const timestamp = new Date().toISOString().slice(0, 10);
+  const downloadUpdateTemplate = useCallback(
+    (activities, credentials = null, selectedStatus = null) => {
+      try {
+        const csvContent = generateUpdateTemplate(
+          activities,
+          credentials,
+          selectedStatus
+        );
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const timestamp = new Date().toISOString().slice(0, 10);
 
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `template-atualizacao-${timestamp}.csv`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `template-atualizacao-${timestamp}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
-      URL.revokeObjectURL(url);
-      toast.success('Template de atualização baixado com sucesso!');
-    } catch (error) {
-      // Erro ao gerar template de atualização
-      toast.error('Erro ao gerar template de atualização');
-    }
-  }, []);
+        URL.revokeObjectURL(url);
+        toast.success('Template de atualização baixado com sucesso!');
+      } catch (error) {
+        // Erro ao gerar template de atualização
+        toast.error('Erro ao gerar template de atualização');
+      }
+    },
+    []
+  );
 
   // Getters computados
   const hasErrors = parseErrors.length > 0 || validationErrors.length > 0;
@@ -951,14 +958,16 @@ const convertToArtiaFormat = (activity, credentials, finalStatusId = null) => {
   // 1. Valores do CSV (se existirem e forem válidos)
   // 2. Valores das credenciais (se configurados)
   // 3. Valores padrão do sistema
-  
-  const accountId = activity.accountId && !isNaN(parseInt(activity.accountId)) 
-    ? activity.accountId 
-    : (credentials.accountId || '');
-    
-  const folderId = activity.folderId && !isNaN(parseInt(activity.folderId)) 
-    ? activity.folderId 
-    : (credentials.folderId || '');
+
+  const accountId =
+    activity.accountId && !isNaN(parseInt(activity.accountId))
+      ? activity.accountId
+      : credentials.accountId || '';
+
+  const folderId =
+    activity.folderId && !isNaN(parseInt(activity.folderId))
+      ? activity.folderId
+      : credentials.folderId || '';
 
   return {
     // Campos básicos
