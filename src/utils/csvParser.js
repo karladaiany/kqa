@@ -124,6 +124,14 @@ const validateUpdateActivityLine = (activity, lineNumber) => {
     errors.push(
       `Linha ${lineNumber}: Campo 'artia_id' é obrigatório para atualização`
     );
+  } else {
+    // Validar se artiaId é um número válido
+    const artiaIdValue = parseInt(activity.artiaId);
+    if (isNaN(artiaIdValue) || artiaIdValue <= 0) {
+      errors.push(
+        `Linha ${lineNumber}: ID da atividade '${activity.artiaId}' deve ser um número inteiro positivo`
+      );
+    }
   }
 
   if (!activity.titulo) {

@@ -981,6 +981,9 @@ const convertToArtiaFormat = (activity, credentials, finalStatusId = null) => {
     descricao: activity.descricao || '',
     tipo: activity.tipo,
 
+    // Campo obrigatório para atualização
+    artiaId: activity.artiaId,
+
     // Campos opcionais
     esforcoEstimado: activity.esforcoEstimado || 1,
     inicioEstimado: activity.inicioEstimado || '',
