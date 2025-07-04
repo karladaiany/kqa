@@ -207,18 +207,11 @@ const UPDATE_ACTIVITY = gql`
     ) {
       id
       uid
-      title
-      description
-      status
-      priority
-      estimatedEffort
-      updatedAt
-      responsible {
+      customStatus {
         id
-        name
-        email
+        statusName
+        status
       }
-      customColumns
     }
   }
 `;
@@ -994,8 +987,6 @@ Evidência pendente de anexo
       generatedDescription
     );
 
-    // Enviando dados para atualização da atividade
-
     // Executar mutation
     const result = await client.mutate({
       mutation: UPDATE_ACTIVITY,
@@ -1051,8 +1042,15 @@ Evidência pendente de anexo
       variables.folderTypeId = parseInt(activityData.folderTypeId);
     }
 
-    if (activityData.responsibleId && activityData.responsibleId !== '') {
-      variables.responsibleId = parseInt(activityData.responsibleId);
+    if (
+      activityData.responsibleId &&
+      activityData.responsibleId !== '' &&
+      activityData.responsibleId !== 'null'
+    ) {
+      const responsibleIdValue = parseInt(activityData.responsibleId);
+      if (!isNaN(responsibleIdValue) && responsibleIdValue > 0) {
+        variables.responsibleId = responsibleIdValue;
+      }
     }
 
     if (activityData.prioridade) {

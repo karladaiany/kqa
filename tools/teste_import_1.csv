@@ -1,6 +1,0 @@
-﻿tipo,titulo,descricao,esforco_estimado,inicio_estimado,termino_estimado,ticket_movidesk,urgencia,plataforma,funcionalidade (**),sub_funcionalidade (**),cliente,id_organizacao,email,tipo_cliente,criticidade,dificuldade_localizacao,causa_demanda,garantia,responsavel
-Desenvolvimento,[DESENVOLVIMENTO-001] Exemplo de Desenvolvimento,Descrição detalhada da atividade de Desenvolvimento,25,28/06/2025,30/06/2025,,,,API,Autenticação,,,,,,,,,
-Execução de testes,[EXECUÇÃO DE TESTES-002] Exemplo de Execução de testes,Descrição detalhada da atividade de Execução de testes,25,29/06/2025,01/07/2025,,,,API,Autenticação,,,,,,,,,
-Teste de mesa,[TESTE DE MESA-003] Exemplo de Teste de mesa,Descrição detalhada da atividade de Teste de mesa,25,30/06/2025,02/07/2025,,,,,,,,,,,,,,
-Análise de testes,[ANÁLISE DE TESTES-004] Exemplo de Análise de testes,Descrição detalhada da atividade de Análise de testes,25,01/07/2025,03/07/2025,,,,API,Autenticação,,,,,,,,,
-Documentação,[DOCUMENTAÇÃO-005] Exemplo de Documentação,Descrição detalhada da atividade de Documentação,25,02/07/2025,04/07/2025,,,,,,,,,,,,,,
