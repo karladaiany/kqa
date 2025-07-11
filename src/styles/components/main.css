@@ -2657,3 +2657,124 @@ body.dark-theme .quick-notes-badge:hover {
    VERSION COMPONENT STYLES
    =================================== */
 @import url('./version.css');
+
+/* ========================================
+   ESTILOS PARA EXTRAÇÃO DE ID DO AMBIENTE VIA URL TWYGO
+   ======================================== */
+
+/* Estados dos campos URL */
+.campo-valor.url-error {
+  border-color: var(--error-color);
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.campo-valor.url-success {
+  border-color: var(--success-color, #10b981);
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+/* Indicador de sucesso no label */
+.url-success-indicator {
+  color: var(--success-color, #10b981);
+  font-size: 12px;
+  font-weight: 500;
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  animation: urlFadeIn 0.3s ease-in;
+}
+
+.url-success-indicator svg {
+  font-size: 10px;
+}
+
+/* Mensagens de feedback para URL */
+.url-error-message,
+.url-help-message {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  font-size: 12px;
+  margin-top: 4px;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 2;
+  border-radius: 4px;
+  word-wrap: break-word;
+}
+
+.url-error-message {
+  color: var(--error-color);
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid var(--error-color);
+  font-weight: 500;
+}
+
+.url-help-message {
+  color: var(--text-secondary);
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  font-style: italic;
+}
+
+.url-error-message svg {
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+/* Ajuste do espaçamento quando há mensagens de URL */
+.campo-item:has(.url-error-message),
+.campo-item:has(.url-help-message) {
+  margin-bottom: 2rem;
+}
+
+/* Animação para feedback de sucesso da URL */
+@keyframes urlFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hover states para campos com URL do Twygo */
+.campo-valor.url-error:hover {
+  border-color: var(--error-color);
+  background-color: rgba(239, 68, 68, 0.15);
+}
+
+.campo-valor.url-success:hover {
+  border-color: var(--success-color, #10b981);
+  background-color: rgba(16, 185, 129, 0.15);
+}
+
+/* Placeholder melhorado para URL */
+.campo-valor input[type='url']::placeholder {
+  color: var(--text-muted, #6b7280);
+  font-style: italic;
+}
+
+/* Responsividade para mensagens de URL */
+@media (max-width: 768px) {
+  .url-error-message,
+  .url-help-message {
+    font-size: 11px;
+    padding: 3px 6px;
+  }
+
+  .url-success-indicator {
+    font-size: 11px;
+    margin-left: 6px;
+  }
+
+  .url-success-indicator svg {
+    font-size: 9px;
+  }
+}

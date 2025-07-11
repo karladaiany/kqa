@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   FaBug,
   FaInfoCircle,
@@ -9,6 +9,8 @@ import {
   FaBroom,
   FaEye,
   FaRocket,
+  FaCheck,
+  FaExclamationTriangle,
 } from 'react-icons/fa';
 import { useBugRegistration } from '../../../hooks/useBugRegistration';
 import useTextareaResizeActions from '../../../hooks/useTextareaResizeActions';
@@ -19,6 +21,69 @@ const hasAnyData = bugData => {
     if (key === 'hasAttachment') return bugData[key];
     return !!bugData[key];
   });
+};
+
+// Função para extrair ID do ambiente de links do Twygo
+const extractEnvIdFromTwygoLink = url => {
+  if (!url || typeof url !== 'string') {
+    return { envId: '', isValid: false };
+  }
+
+  try {
+    // Regex para capturar ID do ambiente após '/o/'
+    const envMatch = url.match(/\/o\/(\d+)/);
+    const envId = envMatch ? envMatch[1] : '';
+    const isValid = !!(envId && url.includes('twygoead.com'));
+
+    return { envId, isValid };
+  } catch (error) {
+    return { envId: '', isValid: false };
+  }
+};
+
+// Função para validar se é um link válido do Twygo
+const validateTwygoLink = url => {
+  if (!url) return { isValid: true, message: '', showHint: false }; // URL vazio é válido (opcional)
+
+  try {
+    new URL(url); // Verifica se é uma URL válida
+
+    // Verificar se contém domínio do Twygo
+    if (!url.includes('twygoead.com')) {
+      return {
+        isValid: true, // URL válida, mas não do Twygo (não mostra erro)
+        message: '',
+        showHint: false,
+      };
+    }
+
+    // Se é do Twygo mas não tem /o/, ainda é válido (pode ser página de login, home, etc.)
+    if (!url.includes('/o/')) {
+      return {
+        isValid: true,
+        message: '',
+        showHint: false, // Não é erro, apenas não tem ID para extrair
+      };
+    }
+
+    // Se tem /o/, tenta extrair o ID
+    const { envId } = extractEnvIdFromTwygoLink(url);
+    if (!envId) {
+      return {
+        isValid: true, // Não é erro, apenas não conseguiu extrair
+        message: '',
+        showHint: false,
+      };
+    }
+
+    return { isValid: true, message: '', showHint: true };
+  } catch {
+    return {
+      isValid: false,
+      message: 'URL inválida',
+      showHint: false,
+    };
+  }
 };
 
 const BugRegistrationCard = () => {
@@ -40,6 +105,14 @@ const BugRegistrationCard = () => {
   // Estado para controlar o modal do Artia
   const [showArtiaModal, setShowArtiaModal] = useState(false);
 
+  // Estados para validação e feedback do URL do Twygo
+  const [urlValidation, setUrlValidation] = useState({
+    isValid: true,
+    message: '',
+    showHint: false,
+  });
+  const [envIdExtracted, setEnvIdExtracted] = useState(false);
+
   // Sempre que limpar tudo, fecha os campos e limpa os tamanhos dos textareas
   const handleClearAll = () => {
     handleClearField('all');
@@ -47,6 +120,42 @@ const BugRegistrationCard = () => {
     // Limpar tamanhos dos textareas do localStorage
     clearCardTextareaSizes('bug');
   };
+
+  // Processar URL do Twygo quando alterada
+  useEffect(() => {
+    const url = bugData.url?.trim();
+
+    if (!url) {
+      setUrlValidation({ isValid: true, message: '', showHint: false });
+      setEnvIdExtracted(false);
+      return;
+    }
+
+    // Validar formato da URL
+    const validation = validateTwygoLink(url);
+    setUrlValidation(validation);
+
+    if (validation.isValid && validation.showHint) {
+      // Extrair ID do ambiente do link do Twygo
+      const { envId, isValid } = extractEnvIdFromTwygoLink(url);
+
+      if (isValid && envId) {
+        // Atualizar campo apenas se estiver vazio ou se o valor for diferente
+        const shouldUpdateEnvId = !bugData.envId || bugData.envId !== envId;
+
+        if (shouldUpdateEnvId) {
+          setEnvIdExtracted(true);
+          // Mostrar feedback positivo temporário
+          setTimeout(() => setEnvIdExtracted(false), 3000);
+
+          // Usar handleInputChange para manter a consistência com o hook
+          handleInputChange('envId', envId);
+        }
+      }
+    } else {
+      setEnvIdExtracted(false);
+    }
+  }, [bugData.url, handleInputChange, bugData.envId]);
 
   // Exibe campos se houver dados ou se estiver expandido
   const showFields = useMemo(
@@ -133,20 +242,33 @@ const BugRegistrationCard = () => {
           </div>
 
           <div className='campo-item'>
-            <div className='campo-valor'>
+            <div className={`campo-valor ${!urlValidation.isValid ? 'url-error' : envIdExtracted ? 'url-success' : ''}`}>
               <input
-                type='text'
+                type='url'
                 value={bugData.url}
                 onChange={e => handleInputChange('url', e.target.value)}
                 className='copyable'
                 placeholder=' '
               />
-              <label>URL</label>
+              <label>
+                URL
+                {envIdExtracted && (
+                  <span className='url-success-indicator'>
+                    <FaCheck /> ID do ambiente extraído automaticamente
+                  </span>
+                )}
+              </label>
               {bugData.url && (
                 <FaTimes
                   className='clear-icon'
                   onClick={() => handleClearField('url')}
                 />
+              )}
+              {!urlValidation.isValid && (
+                <div className='url-error-message'>
+                  <FaExclamationTriangle />
+                  {urlValidation.message}
+                </div>
               )}
             </div>
           </div>

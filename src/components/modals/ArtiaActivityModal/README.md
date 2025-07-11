@@ -1,205 +1,220 @@
-# Integração com Artia
+# Modal de Criação de Atividades - Artia
 
-Este módulo implementa a integração da plataforma KQA com a API GraphQL do Artia para criação de atividades de trabalho.
+Este modal permite criar atividades no Artia através da API GraphQL.
 
-## Funcionalidades
+## Como usar
 
-### Tipos de Atividade Suportados
+### Método tradicional
 
-1. **BUG Produção** - Criado a partir do card "Registro de BUG"
-2. **BUG Retrabalho** - Criado a partir do card "Registro de BUG"
-3. **Deploy** - Criado a partir do card "Deploy"
+1. Acesse a funcionalidade através dos cards no dashboard:
+   - **Registro de Bug**: Clique no ícone de bug (🐛)
+   - **Deploy**: Clique no ícone de foguete (🚀)
+2. Preencha as informações básicas:
 
-### Como Usar
+   - Login e senha do Artia
+   - Título da atividade
+   - Tipo (selecionado automaticamente baseado na origem)
 
-1. **No card de Registro de BUG:**
+3. Insira manualmente:
+   - ID do Grupo de Trabalho
+   - ID da Pasta/Projeto
+   - Demais configurações específicas
 
-   - Preencha os dados do bug
-   - Clique no botão "🚀 Criar atividade" (cor laranja)
-   - Selecione entre "Bug produção" ou "Bug retrabalho"
+### 🆕 Novo Método: Extração Automática via Link
 
-2. **No card de Deploy:**
-   - Preencha os dados do deploy
-   - Clique no botão "☁️ Criar atividade" (cor laranja)
-   - O tipo "Deploy" já vem pré-selecionado
+1. **Cole o link do projeto Artia** no campo "Link do projeto Artia"
 
-### Campos do Modal
+   - Exemplo: `https://app2.artia.com/a/4874953/f/4885568/kanban?filter_id=7719544`
 
-#### Campos Básicos (obrigatórios para todos os tipos):
+2. **IDs extraídos automaticamente**:
 
-- **Login**: Seu login do Artia
-- **Senha**: Sua senha do Artia
-- **Título**: Título da atividade (pré-preenchido baseado nos dados do card)
-- **Tipo**: Tipo da atividade
+   - **ID do Grupo**: `4874953` (número após `/a/`)
+   - **ID da Pasta**: `4885568` (número após `/f/`)
 
-#### Campos Específicos por Tipo:
+3. **Validação em tempo real**:
 
-**BUG Produção:**
+   - ✅ Link válido: Feedback verde e ícone de sucesso
+   - ❌ Link inválido: Borda vermelha e mensagem de erro
+   - 💡 Link vazio: Campo opcional, sem validação
 
-- Nº ticket movidesk (número)
-- Urgência (Alto/Médio/Baixo/Urgente/Escalação)
-- Prioridade (número)
-- Plataforma (Desktop/Mobile)
-- Funcionalidade (lista dinâmica)
-- Sub-funcionalidade (baseada na funcionalidade selecionada)
-- Cliente (texto)
-- ID organização (número)
-- E-mail (email)
-- Tipo de cliente (lista de opções)
-- Criticidade (Alto/Médio/Baixo)
-- Dificuldade de localização (Alto/Médio/Baixo)
-- Causa da demanda (lista de opções)
-- Garantia (Sim/Não)
+4. **Persistência automática**: O link é salvo no localStorage para reutilização
 
-**BUG Retrabalho:**
-
-- Prioridade (número)
-- Plataforma (Desktop/Mobile)
-- Funcionalidade (lista dinâmica)
-- Sub-funcionalidade (baseada na funcionalidade selecionada)
-- Criticidade (Alto/Médio/Baixo)
-- Dificuldade de localização (Alto/Médio/Baixo)
-- Causa da demanda (lista de opções)
-
-**Deploy:**
-
-- Nenhum campo adicional necessário
-
-## Estrutura dos Arquivos
+### Exemplos de Links Válidos
 
 ```
-src/components/ArtiaActivityModal/
-├── ArtiaActivityModal.jsx    // Componente principal do modal
-├── ArtiaActivityModal.css    // Estilos do modal
-├── index.js                  // Export do componente
-└── README.md                 // Esta documentação
+https://app2.artia.com/a/4874953/f/4885568/kanban
+https://app.artia.com/a/123456/f/789012/board?view=timeline
+https://artia.com/workspace/a/555444/f/333222/tasks
+```
 
-src/constants/
-└── artiaOptions.js           // Constantes com todas as opções dos campos
+### Validações Implementadas
+
+- **Domínio**: Deve conter "artia.com"
+- **Estrutura**: Deve ter `/a/[número]` e `/f/[número]`
+- **IDs**: Números válidos extraíveis dos padrões
+- **Formato**: URL válida
+
+## Estados Visuais
+
+### Campo de Link
+
+- **Normal**: Borda padrão
+- **Sucesso**: Borda verde + indicador "IDs extraídos automaticamente"
+- **Erro**: Borda vermelha + mensagem de erro específica
+- **Ajuda**: Texto explicativo para links válidos
+
+### Feedback de Usuário
+
+- **Extração bem-sucedida**: Animação de confirmação (3 segundos)
+- **Link salvo**: Persistido automaticamente no localStorage
+- **Campos preenchidos**: Atualização automática dos IDs
+
+## Casos de Uso
+
+### 1. Primeiro Acesso
+
+```
+1. Usuário cola link do Artia
+2. Sistema extrai IDs automaticamente
+3. Campos ID do Grupo e ID da Pasta são preenchidos
+4. Link é salvo para próximas sessões
+```
+
+### 2. Reutilização
+
+```
+1. Usuário abre modal novamente
+2. Link anterior é carregado do localStorage
+3. IDs são mantidos dos valores salvos
+4. Usuário pode alterar link se necessário
+```
+
+### 3. Validação de Entrada
+
+```
+1. Link inválido: Mensagem de erro clara
+2. Link sem IDs: "Não foi possível extrair os IDs"
+3. Domínio incorreto: "Link deve ser do domínio artia.com"
+4. Formato inválido: "Link inválido"
 ```
 
 ## Implementação Técnica
 
-### Estados do Modal
+### Funções Principais
 
-- `formData`: Dados do formulário
-- `showPassword`: Controle de visibilidade da senha
-- `loading`: Estado de carregamento durante submissão
-- `subFuncionalidadeOptions`: Opções dinâmicas de sub-funcionalidade
+#### `extractIdsFromArtiaLink(link)`
 
-### Validações
+Extrai account_id e folder_id do link usando regex:
 
-- Todos os campos marcados como obrigatórios são validados
-- Sub-funcionalidade só fica disponível após selecionar a funcionalidade
-- Diferentes campos são exibidos baseados no tipo de atividade selecionado
+- Padrão conta: `/a/(\d+)`
+- Padrão pasta: `/f/(\d+)`
 
-### Integração com GraphQL
+#### `validateArtiaLink(link)`
 
-A implementação atual inclui uma simulação da chamada à API. A integração real com GraphQL deve substituir a seção comentada no método `handleSubmit`:
+Valida formato e estrutura do link:
 
-```javascript
-// Aqui será implementada a chamada GraphQL para o Artia
-console.log('Dados para enviar ao Artia:', formData);
+- URL válida
+- Domínio artia.com
+- Presença de padrões `/a/` e `/f/`
 
-// Simulação de sucesso - substitua pela implementação real da API
-await new Promise(resolve => setTimeout(resolve, 2000));
-```
+### Estados Gerenciados
 
-## Próximos Passos
+- `linkValidation`: Status e mensagem de validação
+- `linkExtracted`: Flag de sucesso temporário
+- `formData.artiaLink`: Valor do link
 
-1. Implementar a chamada GraphQL real para o Artia
-2. Adicionar tratamento de erros específicos da API
-3. Implementar cache das credenciais do usuário
-4. Adicionar validações adicionais conforme necessário
+### Persistência
 
-## Dependências
+- Link salvo em `localStorage` junto com outros dados do modal
+- Carregamento automático na inicialização
+- Exclusão de credenciais do armazenamento (apenas link e configurações)
 
-- `@apollo/client`: Cliente GraphQL
-- `graphql`: Biblioteca GraphQL
-- `react-icons`: Ícones utilizados no modal
-- `react-toastify`: Notificações toast
+## Benefícios UX/UI
 
-# Modal de Atividades do Artia
+1. **Redução de Erros**: Eliminação de digitação manual de IDs
+2. **Velocidade**: Extração instantânea de múltiplos valores
+3. **Feedback Visual**: Estados claros de sucesso/erro
+4. **Persistência**: Reutilização automática de links
+5. **Flexibilidade**: Campo opcional, não obrigatório
+6. **Acessibilidade**: Mensagens claras e indicadores visuais
 
-Este modal permite criar atividades no Artia através da API GraphQL.
+## Compatibilidade
 
-## 🔧 **Fase 1: Teste de Autenticação**
+- ✅ Todos os tipos de atividade (Bug, Deploy)
+- ✅ Links com parâmetros adicionais
+- ✅ Diferentes subdomínios do Artia
+- ✅ Mobile e desktop
+- ✅ Navegadores modernos com suporte a `:has()` CSS
 
-### Como testar a integração:
+---
 
-#### **1. Através do Modal (Recomendado)**
+## Processo de Criação (Original)
 
-1. Abra qualquer modal do Artia (Bug ou Deploy)
-2. Preencha login e senha do Artia
-3. Clique no botão **"🔍 Testar Autenticação"**
-4. Verifique o console do navegador para logs detalhados
+- Clique no botão "🚀 Criar atividade" (cor laranja)
+- Aguarde o processamento da requisição
+- Receba confirmação de sucesso/erro via toast
+- Visualize no histórico de atividades criadas
 
-#### **2. Através do Console do Navegador**
+### Para atividade específica:
 
-```javascript
-// No console do navegador (F12):
-testArtiaIntegration('seu@email.com', 'suasenha');
-```
+- Clique no botão "☁️ Criar atividade" (cor laranja)
+- Aguarde o processamento da requisição
+- Receba confirmação de sucesso/erro via toast
+- Visualize no histórico de atividades criadas
 
-### **O que os testes verificam:**
+### Campos obrigatórios:
 
-✅ **Conectividade** - Se consegue acessar a API do Artia  
-✅ **Autenticação** - Se login/senha são válidos  
-✅ **Token** - Se o token é retornado e salvo  
-✅ **Estado** - Se o sistema mantém o token
+- Login e senha do Artia
+- Título da atividade
+- Tipo da atividade
+- ID do Grupo de Trabalho (agora com extração automática)
+- ID da Pasta/Projeto (agora com extração automática)
+- Situação padrão das atividades
 
-### **Logs esperados em caso de sucesso:**
+### Campos específicos por tipo:
 
-```
-🔍 === TESTE DE AUTENTICAÇÃO ARTIA ===
-📧 Email: seu@email.com
-🔗 URL: https://app.artia.com/graphql
-🚀 Enviando requisição...
-✅ Resposta recebida:
-📊 Status da requisição: SUCCESS
-🔑 Token recebido: eyJ0eXAiOiJKV1QiLCJhbG...
-💾 Token salvo no localStorage
-```
+- **Deploy**: Funcionalidade, Sub-funcionalidade, ID do Responsável
+- **Bug**: Campos dinâmicos baseados na configuração
 
-### **Logs esperados em caso de erro:**
+## Estados do Modal
 
-```
-🚨 === ERRO NA AUTENTICAÇÃO ===
-❌ Tipo do erro: Error
-📝 Mensagem: GraphQL error: Invalid credentials
-🌐 Network Error: (detalhes...)
-📋 GraphQL Errors: (detalhes...)
-```
+### 1. Autenticação
 
-### **Debug adicional:**
+- Campos de login e senha (senha não salva no localStorage)
+- Toggle de visibilidade da senha
 
-```javascript
-// Limpar token para teste limpo
-localStorage.removeItem('artia_token');
+### 2. Dados da Atividade
 
-// Verificar se tem token
-localStorage.getItem('artia_token');
+- Campos básicos da atividade
+- Seleção de tipo baseada na origem (bug/deploy)
+- Geração automática de template do título
 
-// Ver utilitários disponíveis
-console.log(window.testArtiaIntegration);
-```
+### 3. Link do Artia (Nova Funcionalidade)
 
-## 🚀 **Próximas Fases**
+- Campo opcional para inserção de link
+- Extração automática de IDs
+- Validação em tempo real
 
-- **Fase 2**: Criação de atividades (após autenticação funcionar)
-- **Fase 3**: Refinamentos e validações
+### 4. Campos Específicos
 
-## 📝 **Configuração Atual**
+- Renderização dinâmica baseada no tipo de atividade
+- Validação contextual
 
-- **URL**: https://app.artia.com/graphql
-- **Mutation**: AuthenticationByEmail
-- **Token**: Salvo em localStorage como 'artia_token'
+### 5. Histórico
 
-## 🐛 **Problemas Conhecidos**
+- Lista de atividades criadas recentemente
+- Links diretos para atividades no Artia
+- Opção de limpar histórico
 
-Se você encontrar erros, verifique:
+## Armazenamento Local
 
-1. **CORS**: A API do Artia permite requisições do localhost?
-2. **Credenciais**: Login/senha estão corretos?
-3. **Rede**: Conexão com a internet funciona?
-4. **Console**: Há erros JavaScript na página?
+O modal salva automaticamente (com debounce de 800ms):
+
+- Dados do formulário (exceto credenciais)
+- Link do Artia
+- Configurações de campos específicos
+- Histórico de atividades criadas
+
+**Não são salvos**: Login e senha por questões de segurança.
+
+This modal permite criar atividades no Artia através da API GraphQL.
