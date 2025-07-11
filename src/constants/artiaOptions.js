@@ -331,23 +331,46 @@ export const ACTIVITY_TYPES = {
   DOCUMENTACAO: 'Documentação',
 };
 
-// Configuração de visibilidade dos tipos de atividade
+// Configuração de visibilidade dos tipos de atividade para importação
 export const ACTIVITY_TYPES_CONFIG = {
   [ACTIVITY_TYPES.DESENVOLVIMENTO]: { enabled: true },
   [ACTIVITY_TYPES.EXECUCAO_TESTES]: { enabled: true },
   [ACTIVITY_TYPES.TESTE_MESA]: { enabled: true },
   [ACTIVITY_TYPES.AUTOMACAO_TESTES]: { enabled: false }, // ❌ Oculto
   [ACTIVITY_TYPES.ANALISE_TESTES]: { enabled: true },
-  [ACTIVITY_TYPES.BUG_PRODUCAO]: { enabled: false }, // ❌ Oculto
-  [ACTIVITY_TYPES.BUG_RETRABALHO]: { enabled: false }, // ❌ Oculto
+  [ACTIVITY_TYPES.BUG_PRODUCAO]: { enabled: false }, // ❌ Oculto na importação
+  [ACTIVITY_TYPES.BUG_RETRABALHO]: { enabled: false }, // ❌ Oculto na importação
   [ACTIVITY_TYPES.DEPLOY]: { enabled: false }, // ❌ Oculto
   [ACTIVITY_TYPES.DOCUMENTACAO]: { enabled: true },
 };
 
-// Função helper para obter apenas os tipos habilitados
+// Configuração específica para criação de atividades (modal)
+export const ACTIVITY_CREATION_CONFIG = {
+  [ACTIVITY_TYPES.DESENVOLVIMENTO]: { enabled: false }, // ❌ Não usado no modal
+  [ACTIVITY_TYPES.EXECUCAO_TESTES]: { enabled: false }, // ❌ Não usado no modal
+  [ACTIVITY_TYPES.TESTE_MESA]: { enabled: false }, // ❌ Não usado no modal
+  [ACTIVITY_TYPES.AUTOMACAO_TESTES]: { enabled: false }, // ❌ Não usado no modal
+  [ACTIVITY_TYPES.ANALISE_TESTES]: { enabled: false }, // ❌ Não usado no modal
+  [ACTIVITY_TYPES.BUG_PRODUCAO]: { enabled: true }, // ✅ Disponível no modal de bug
+  [ACTIVITY_TYPES.BUG_RETRABALHO]: { enabled: true }, // ✅ Disponível no modal de bug
+  [ACTIVITY_TYPES.DEPLOY]: { enabled: true }, // ✅ Disponível no modal de deploy
+  [ACTIVITY_TYPES.DOCUMENTACAO]: { enabled: false }, // ❌ Não usado no modal
+};
+
+// Função helper para obter apenas os tipos habilitados para importação
 export const getEnabledActivityTypes = () => {
   return Object.entries(ACTIVITY_TYPES)
     .filter(([key]) => ACTIVITY_TYPES_CONFIG[ACTIVITY_TYPES[key]]?.enabled)
+    .reduce((acc, [key, value]) => {
+      acc[key] = value;
+      return acc;
+    }, {});
+};
+
+// Função helper para obter tipos habilitados para criação de atividades
+export const getEnabledActivityTypesForCreation = () => {
+  return Object.entries(ACTIVITY_TYPES)
+    .filter(([key]) => ACTIVITY_CREATION_CONFIG[ACTIVITY_TYPES[key]]?.enabled)
     .reduce((acc, [key, value]) => {
       acc[key] = value;
       return acc;
@@ -475,6 +498,14 @@ export const ACTIVITY_FIELDS = {
       required: true,
     },
     {
+      name: 'prioridade',
+      label: 'Prioridade',
+      type: 'number',
+      required: true,
+      min: 0,
+      max: 4,
+    },
+    {
       name: 'urgencia',
       label: 'Urgência',
       type: 'select',
@@ -550,6 +581,14 @@ export const ACTIVITY_FIELDS = {
   // BUG RETRABALHO → Campos específicos obrigatórios
   [ACTIVITY_TYPES.BUG_RETRABALHO]: [
     {
+      name: 'prioridade',
+      label: 'Prioridade',
+      type: 'number',
+      required: true,
+      min: 0,
+      max: 4,
+    },
+    {
       name: 'plataforma',
       label: 'Plataforma',
       type: 'select',
@@ -575,6 +614,13 @@ export const ACTIVITY_FIELDS = {
       label: 'Criticidade',
       type: 'select',
       options: CRITICIDADE_OPTIONS,
+      required: true,
+    },
+    {
+      name: 'dificuldadeLocalizacao',
+      label: 'Dificuldade de localização',
+      type: 'select',
+      options: DIFICULDADE_LOCALIZACAO_OPTIONS,
       required: true,
     },
     {

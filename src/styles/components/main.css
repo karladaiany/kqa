@@ -1,3 +1,5 @@
+@import url('./version.css');
+
 .theme-toggle {
   background: transparent;
   border: 1px solid var(--border-color);
@@ -2656,7 +2658,6 @@ body.dark-theme .quick-notes-badge:hover {
 /* ===================================
    VERSION COMPONENT STYLES
    =================================== */
-@import url('./version.css');
 
 /* ========================================
    ESTILOS PARA EXTRAÇÃO DE ID DO AMBIENTE VIA URL TWYGO

@@ -181,6 +181,14 @@
   margin-left: 0.25rem;
 }
 
+.modal-field-hint {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 400;
+  margin-left: 0.25rem;
+  opacity: 0.8;
+}
+
 /* Input container global - compatível com campo-valor */
 .modal-input-container {
   position: relative;
@@ -1188,7 +1196,7 @@ body.modal-open {
 }
 
 /* Hover states para campos com link */
-.modal-input-container:has(input[type="url"]):hover {
+.modal-input-container:has(input[type='url']):hover {
   border-color: var(--primary-color);
 }
 
@@ -1201,7 +1209,7 @@ body.modal-open {
 }
 
 /* Placeholder melhorado para URL */
-.modal-input-container input[type="url"]::placeholder {
+.modal-input-container input[type='url']::placeholder {
   color: var(--text-muted, #6b7280);
   font-style: italic;
 }
