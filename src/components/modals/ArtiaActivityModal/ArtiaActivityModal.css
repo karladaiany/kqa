@@ -574,11 +574,13 @@
 
 /* Estilo para campos de número - compatível com number-input */
 .modal-input-container input[type='number'] {
+  appearance: textfield;
   -moz-appearance: textfield;
 }
 
 .modal-input-container input[type='number']::-webkit-outer-spin-button,
 .modal-input-container input[type='number']::-webkit-inner-spin-button {
+  appearance: none;
   -webkit-appearance: none;
   margin: 0;
 }
@@ -858,11 +860,13 @@
 }
 
 .modal-container .field-group input[type='number'] {
+  appearance: textfield;
   -moz-appearance: textfield;
 }
 
 .modal-container .field-group input[type='number']::-webkit-outer-spin-button,
 .modal-container .field-group input[type='number']::-webkit-inner-spin-button {
+  appearance: none;
   -webkit-appearance: none;
   margin: 0;
 }

@@ -879,6 +879,7 @@ body.dark-theme .card-option {
 /* Remove controles do input number */
 input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {
+  appearance: none;
   -webkit-appearance: none;
   margin: 0;
 }
