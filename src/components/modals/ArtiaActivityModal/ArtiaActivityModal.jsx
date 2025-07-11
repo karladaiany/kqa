@@ -8,6 +8,9 @@ import {
   FaRocket,
   FaLock,
   FaClipboardList,
+  FaLink,
+  FaCheck,
+  FaExclamationTriangle,
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import {
@@ -54,6 +57,68 @@ const generateTitleTemplate = type => {
   return '';
 };
 
+// Função para extrair IDs do link do Artia
+const extractIdsFromArtiaLink = link => {
+  if (!link || typeof link !== 'string') {
+    return { accountId: '', folderId: '', isValid: false };
+  }
+
+  try {
+    // Regex para capturar ID da conta após 'a/' e ID da pasta após 'f/'
+    const accountMatch = link.match(/\/a\/(\d+)/);
+    const folderMatch = link.match(/\/f\/(\d+)/);
+
+    const accountId = accountMatch ? accountMatch[1] : '';
+    const folderId = folderMatch ? folderMatch[1] : '';
+
+    const isValid = !!(accountId && folderId);
+
+    return { accountId, folderId, isValid };
+  } catch (error) {
+    return { accountId: '', folderId: '', isValid: false };
+  }
+};
+
+// Função para validar se é um link válido do Artia
+const validateArtiaLink = link => {
+  if (!link) return { isValid: true, message: '' }; // Link vazio é válido (opcional)
+
+  try {
+    const url = new URL(link);
+
+    // Verificar se contém domínio do Artia
+    if (!url.hostname.includes('artia.com')) {
+      return {
+        isValid: false,
+        message: 'Link deve ser do domínio artia.com',
+      };
+    }
+
+    // Verificar se contém a/ e f/
+    if (!link.includes('/a/') || !link.includes('/f/')) {
+      return {
+        isValid: false,
+        message: 'Link deve conter ID do grupo (/a/) e ID da pasta (/f/)',
+      };
+    }
+
+    const { accountId, folderId } = extractIdsFromArtiaLink(link);
+    if (!accountId || !folderId) {
+      return {
+        isValid: false,
+        message: 'Não foi possível extrair os IDs do link',
+      };
+    }
+
+    return { isValid: true, message: '' };
+  } catch {
+    return {
+      isValid: false,
+      message: 'Link inválido',
+    };
+  }
+};
+
 const ArtiaActivityModal = ({
   isOpen,
   onClose,
@@ -70,6 +135,7 @@ const ArtiaActivityModal = ({
       tipo: '',
       accountId: '',
       folderId: '',
+      artiaLink: '',
       funcionalidade: '',
       subFuncionalidade: '',
       responsibleId: '',
@@ -92,6 +158,13 @@ const ArtiaActivityModal = ({
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [subFuncionalidadeOptions, setSubFuncionalidadeOptions] = useState([]);
+
+  // Estados para validação e feedback do link
+  const [linkValidation, setLinkValidation] = useState({
+    isValid: true,
+    message: '',
+  });
+  const [linkExtracted, setLinkExtracted] = useState(false);
 
   // Estado para histórico de atividades criadas
   const [createdActivities, setCreatedActivities] = useState(() => {
@@ -191,6 +264,50 @@ const ArtiaActivityModal = ({
       }
     }
   }, [formData.tipo]);
+
+  // Processar link do Artia quando alterado
+  useEffect(() => {
+    const link = formData.artiaLink?.trim();
+    
+    if (!link) {
+      setLinkValidation({ isValid: true, message: '' });
+      setLinkExtracted(false);
+      return;
+    }
+
+    // Validar formato do link
+    const validation = validateArtiaLink(link);
+    setLinkValidation(validation);
+
+    if (validation.isValid) {
+      // Extrair IDs do link
+      const { accountId, folderId, isValid } = extractIdsFromArtiaLink(link);
+      
+      if (isValid && accountId && folderId) {
+        // Atualizar campos apenas se estiverem vazios ou se os valores forem diferentes
+        setFormData(prev => {
+          const shouldUpdateAccount = !prev.accountId || prev.accountId !== accountId;
+          const shouldUpdateFolder = !prev.folderId || prev.folderId !== folderId;
+          
+          if (shouldUpdateAccount || shouldUpdateFolder) {
+            setLinkExtracted(true);
+            // Mostrar feedback positivo temporário
+            setTimeout(() => setLinkExtracted(false), 3000);
+            
+            return {
+              ...prev,
+              accountId: accountId,
+              folderId: folderId,
+            };
+          }
+          
+          return prev;
+        });
+      }
+    } else {
+      setLinkExtracted(false);
+    }
+  }, [formData.artiaLink]);
 
   const handleInputChange = (name, value) => {
     setFormData(prev => ({
@@ -663,6 +780,43 @@ ${bugData.others}${evidenceSection}`;
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
+              </div>
+            </div>
+
+            <div className='section-divider'>
+              <FaLink /> Link do Artia (opcional)
+            </div>
+
+            <div className='modal-field-group'>
+              <div className='modal-input-container'>
+                <input
+                  type='url'
+                  id='artiaLink'
+                  value={formData.artiaLink}
+                  onChange={e => handleInputChange('artiaLink', e.target.value)}
+                  disabled={loading}
+                  placeholder='https://app2.artia.com/a/4874953/f/4885568/kanban...'
+                  className={!linkValidation.isValid ? 'input-error' : linkExtracted ? 'input-success' : ''}
+                />
+                <label htmlFor='artiaLink'>
+                  Link do projeto Artia
+                  {linkExtracted && (
+                    <span className='link-success-indicator'>
+                      <FaCheck /> IDs extraídos automaticamente
+                    </span>
+                  )}
+                </label>
+                {!linkValidation.isValid && (
+                  <div className='input-error-message'>
+                    <FaExclamationTriangle />
+                    {linkValidation.message}
+                  </div>
+                )}
+                {linkValidation.isValid && formData.artiaLink && !linkExtracted && (
+                  <div className='input-help-message'>
+                    Link válido - os IDs serão extraídos automaticamente
+                  </div>
+                )}
               </div>
             </div>
 

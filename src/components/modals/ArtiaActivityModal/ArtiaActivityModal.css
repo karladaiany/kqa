@@ -1072,3 +1072,102 @@ body.modal-open {
   text-transform: capitalize;
   letter-spacing: 0.3px;
 }
+
+/* ========================================
+   ESTILOS PARA CAMPO DE LINK DO ARTIA
+   ======================================== */
+
+/* Estados dos inputs */
+.modal-input-container input.input-error {
+  border-color: var(--error-color);
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.modal-input-container input.input-success {
+  border-color: var(--success-color, #10b981);
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+/* Indicador de sucesso no label */
+.link-success-indicator {
+  color: var(--success-color, #10b981);
+  font-size: 12px;
+  font-weight: 500;
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.link-success-indicator svg {
+  font-size: 10px;
+}
+
+/* Mensagens de feedback */
+.input-error-message,
+.input-help-message {
+  position: absolute;
+  top: 100%;
+  left: 8px;
+  font-size: 12px;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 2;
+  max-width: calc(100% - 16px);
+  word-wrap: break-word;
+}
+
+.input-error-message {
+  color: var(--error-color);
+  font-weight: 500;
+}
+
+.input-help-message {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.input-error-message svg {
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+/* Ajuste do espaçamento quando há mensagens */
+.modal-field-group:has(.input-error-message),
+.modal-field-group:has(.input-help-message) {
+  margin-bottom: 1.75rem;
+}
+
+/* Animação para feedback de sucesso */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hover states para campos com link */
+.modal-input-container:has(input[type="url"]):hover {
+  border-color: var(--primary-color);
+}
+
+.modal-input-container:has(input.input-error):hover {
+  border-color: var(--error-color);
+}
+
+.modal-input-container:has(input.input-success):hover {
+  border-color: var(--success-color, #10b981);
+}
+
+/* Placeholder melhorado para URL */
+.modal-input-container input[type="url"]::placeholder {
+  color: var(--text-muted, #6b7280);
+  font-style: italic;
+}
