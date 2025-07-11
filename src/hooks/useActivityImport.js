@@ -10,6 +10,7 @@ import {
   validateFile,
   generateCSVTemplate,
   generateUpdateTemplate,
+  generateUpdateTemplateFromHeaders,
 } from '../utils/csvParser';
 import {
   validateActivitiesForImport,
@@ -50,6 +51,7 @@ export const useActivityImport = () => {
   const [validatedData, setValidatedData] = useState([]);
   const [parseErrors, setParseErrors] = useState([]);
   const [validationErrors, setValidationErrors] = useState([]);
+  const [originalHeaders, setOriginalHeaders] = useState([]);
 
   // Estados do processamento
   const [isProcessing, setIsProcessing] = useState(false);
@@ -155,10 +157,12 @@ export const useActivityImport = () => {
     setCurrentState(IMPORT_STATES.IDLE);
     setSelectedFile(null);
     setImportName('');
+    setImportMode('create'); // Reset do modo para o padrão
     setParsedData([]);
     setValidatedData([]);
     setParseErrors([]);
     setValidationErrors([]);
+    setOriginalHeaders([]);
     setProcessProgress(0);
     setProcessResults({ success: [], errors: [], total: 0 });
     setIsProcessing(false);
@@ -168,21 +172,75 @@ export const useActivityImport = () => {
   /**
    * Validar e selecionar arquivo
    */
-  const selectFile = useCallback(file => {
-    const validation = validateFile(file);
+  const selectFile = useCallback(
+    async file => {
+      const validation = validateFile(file);
 
-    if (!validation.isValid) {
-      toast.error(validation.error);
-      setCurrentState(IMPORT_STATES.ERROR);
-      return false;
-    }
+      if (!validation.isValid) {
+        toast.error(validation.error);
+        setCurrentState(IMPORT_STATES.ERROR);
+        return false;
+      }
 
-    setSelectedFile(file);
-    setCurrentState(IMPORT_STATES.FILE_SELECTED);
+      setSelectedFile(file);
+      setCurrentState(IMPORT_STATES.FILE_SELECTED);
 
-    toast.success('Arquivo selecionado com sucesso!');
-    return true;
-  }, []);
+      // Fazer pré-análise do arquivo para detectar tipo automaticamente
+      try {
+        const fileContent = await readFileContent(file);
+
+        // Fazer parsing apenas dos headers para detectar tipo
+        const preParseResult = parseCSV(fileContent, importMode === 'update');
+
+        // Template detectado automaticamente
+
+        // Detectar automaticamente se é template de atualização e ajustar modo
+        if (preParseResult.isUpdateDetected) {
+          if (importMode !== 'update') {
+            setImportMode('update');
+            toast.info(
+              '✅ Template de atualização detectado automaticamente! Modo alterado para "Atualizar".',
+              {
+                autoClose: 4000,
+              }
+            );
+          } else {
+            toast.info(
+              '✅ Template de atualização detectado! Modo "Atualizar" já estava selecionado.',
+              {
+                autoClose: 3000,
+              }
+            );
+          }
+        } else {
+          // Template de criação detectado
+          if (importMode !== 'create') {
+            setImportMode('create');
+            toast.info(
+              '✅ Template de criação detectado automaticamente! Modo alterado para "Criar".',
+              {
+                autoClose: 4000,
+              }
+            );
+          } else {
+            toast.info(
+              '✅ Template de criação detectado! Modo "Criar" já estava selecionado.',
+              {
+                autoClose: 3000,
+              }
+            );
+          }
+        }
+      } catch (error) {
+        console.warn('Erro na pré-análise do arquivo:', error);
+        // Se der erro na pré-análise, continua normalmente
+      }
+
+      toast.success('Arquivo selecionado com sucesso!');
+      return true;
+    },
+    [importMode]
+  );
 
   /**
    * Fazer parse do arquivo CSV
@@ -199,8 +257,49 @@ export const useActivityImport = () => {
       const fileContent = await readFileContent(selectedFile);
       const parseResult = parseCSV(fileContent, importMode === 'update');
 
+      // Análise do resultado do parse concluída
+
+      // Detectar automaticamente se é template de atualização e ajustar modo
+      if (parseResult.isUpdateDetected) {
+        if (importMode !== 'update') {
+          setImportMode('update');
+          toast.info(
+            '✅ Template de atualização detectado automaticamente! Modo alterado para "Atualizar".',
+            {
+              autoClose: 4000,
+            }
+          );
+        } else {
+          toast.info(
+            '✅ Template de atualização detectado! Modo "Atualizar" já estava selecionado.',
+            {
+              autoClose: 3000,
+            }
+          );
+        }
+      } else {
+        // Template de criação detectado
+        if (importMode !== 'create') {
+          setImportMode('create');
+          toast.info(
+            '✅ Template de criação detectado automaticamente! Modo alterado para "Criar".',
+            {
+              autoClose: 4000,
+            }
+          );
+        } else {
+          toast.info(
+            '✅ Template de criação detectado! Modo "Criar" já estava selecionado.',
+            {
+              autoClose: 3000,
+            }
+          );
+        }
+      }
+
       setParsedData(parseResult.data);
       setParseErrors(parseResult.errors);
+      setOriginalHeaders(parseResult.originalHeaders || []);
 
       if (parseResult.errors.length > 0) {
         setCurrentState(IMPORT_STATES.ERROR);
@@ -289,7 +388,7 @@ export const useActivityImport = () => {
       toast.error(`Erro ao ler arquivo: ${error.message}`);
       return false;
     }
-  }, [selectedFile]);
+  }, [selectedFile, importMode, importName, importHistory]);
 
   /**
    * Validar dados após parse
@@ -382,8 +481,54 @@ export const useActivityImport = () => {
       const fileContent = await readFileContent(selectedFile);
       const parseResult = parseCSV(fileContent, importMode === 'update');
 
+      // Parse do arquivo processado com sucesso
+
+      // Detectar automaticamente se é template de atualização e ajustar modo
+      let currentImportMode = importMode;
+      if (parseResult.isUpdateDetected) {
+        if (importMode !== 'update') {
+          setImportMode('update');
+          currentImportMode = 'update';
+          toast.info(
+            '✅ Template de atualização detectado automaticamente! Modo alterado para "Atualizar".',
+            {
+              autoClose: 4000,
+            }
+          );
+        } else {
+          currentImportMode = 'update';
+          toast.info(
+            '✅ Template de atualização detectado! Modo "Atualizar" já estava selecionado.',
+            {
+              autoClose: 3000,
+            }
+          );
+        }
+      } else {
+        // Template de criação detectado
+        if (importMode !== 'create') {
+          setImportMode('create');
+          currentImportMode = 'create';
+          toast.info(
+            '✅ Template de criação detectado automaticamente! Modo alterado para "Criar".',
+            {
+              autoClose: 4000,
+            }
+          );
+        } else {
+          currentImportMode = 'create';
+          toast.info(
+            '✅ Template de criação detectado! Modo "Criar" já estava selecionado.',
+            {
+              autoClose: 3000,
+            }
+          );
+        }
+      }
+
       setParsedData(parseResult.data);
       setParseErrors(parseResult.errors);
+      setOriginalHeaders(parseResult.originalHeaders || []);
 
       if (parseResult.errors.length > 0) {
         setCurrentState(IMPORT_STATES.ERROR);
@@ -439,7 +584,7 @@ export const useActivityImport = () => {
 
       const validationResult = validateActivitiesForImport(
         parseResult.data,
-        importMode === 'update'
+        currentImportMode === 'update'
       );
       setValidatedData(validationResult.validActivities);
       setValidationErrors(validationResult.errors);
@@ -503,7 +648,7 @@ export const useActivityImport = () => {
       saveSession({
         currentState: IMPORT_STATES.PREVIEW,
         importName,
-        importMode,
+        importMode: currentImportMode,
         parsedData: parseResult.data,
         validatedData: validationResult.validActivities,
         parseErrors: parseResult.errors,
@@ -568,9 +713,9 @@ export const useActivityImport = () => {
 
       // Validar campos obrigatórios baseado no modo
       if (importMode === 'update') {
-        // Para atualização, verificar se temos artia_id ou artia_uid
+        // Para atualização, verificar se temos artia_id ou artia_uid (snake_case como vêm do CSV)
         const hasValidIdentifiers = validatedData.every(
-          activity => activity.artiaId || activity.artiaUid
+          activity => activity.artia_id || activity.artia_uid
         );
 
         if (!hasValidIdentifiers) {
@@ -838,7 +983,13 @@ export const useActivityImport = () => {
   const downloadTemplate = useCallback((selectedTypes, selectedStatusId) => {
     try {
       const csvContent = generateCSVTemplate(selectedTypes, selectedStatusId);
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+      // Garante BOM UTF-8 e delimitador ;
+      const contentWithBOM = csvContent.startsWith('\ufeff')
+        ? csvContent
+        : '\ufeff' + csvContent;
+      const blob = new Blob([contentWithBOM], {
+        type: 'text/csv;charset=utf-8',
+      });
       const url = URL.createObjectURL(blob);
 
       const link = document.createElement('a');
@@ -861,11 +1012,55 @@ export const useActivityImport = () => {
   const downloadUpdateTemplate = useCallback(
     (activities, credentials = null, selectedStatus = null) => {
       try {
-        const csvContent = generateUpdateTemplate(
-          activities,
-          credentials,
-          selectedStatus
-        );
+        // Validações básicas
+        if (!activities || activities.length === 0) {
+          toast.error(
+            'Nenhuma atividade disponível para gerar template de atualização'
+          );
+          return;
+        }
+
+        // Verificar se as atividades possuem dados mínimos necessários
+        const activitiesWithId = activities.filter(activity => activity.id);
+        if (activitiesWithId.length === 0) {
+          toast.error(
+            'Nenhuma atividade com ID válido encontrada para atualização'
+          );
+          return;
+        }
+
+        // Usar headers originais se disponíveis, senão usar função padrão
+        let csvContent;
+
+        if (originalHeaders && originalHeaders.length > 0) {
+          // Usar função avançada com headers originais (tela de importação concluída)
+          csvContent = generateUpdateTemplateFromHeaders(
+            activitiesWithId,
+            originalHeaders,
+            credentials,
+            selectedStatus
+          );
+        } else {
+          // Usar função básica sem headers originais (histórico de importações)
+          csvContent = generateUpdateTemplate(
+            activitiesWithId,
+            credentials,
+            selectedStatus
+          );
+        }
+
+        // Verificar se a geração foi bem-sucedida
+        if (
+          !csvContent ||
+          csvContent.includes('Nenhuma atividade disponível') ||
+          csvContent.includes('Headers originais não encontrados')
+        ) {
+          throw new Error(
+            'Não foi possível gerar o template de atualização com os dados disponíveis'
+          );
+        }
+
+        // Criar e baixar arquivo
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const timestamp = new Date().toISOString().slice(0, 10);
@@ -878,13 +1073,17 @@ export const useActivityImport = () => {
         document.body.removeChild(link);
 
         URL.revokeObjectURL(url);
-        toast.success('Template de atualização baixado com sucesso!');
+        toast.success(
+          `✅ Template de atualização baixado com sucesso! (${activitiesWithId.length} atividades)`
+        );
       } catch (error) {
-        // Erro ao gerar template de atualização
-        toast.error('Erro ao gerar template de atualização');
+        console.error('Erro ao gerar template de atualização:', error);
+        toast.error(
+          `❌ Erro ao gerar template de atualização: ${error.message}`
+        );
       }
     },
-    []
+    [originalHeaders]
   );
 
   // Getters computados
@@ -908,6 +1107,7 @@ export const useActivityImport = () => {
     validatedData,
     parseErrors,
     validationErrors,
+    originalHeaders,
     processResults,
     importHistory,
 
@@ -966,14 +1166,18 @@ const convertToArtiaFormat = (activity, credentials, finalStatusId = null) => {
   // 3. Valores padrão do sistema
 
   const accountId =
-    activity.accountId && !isNaN(parseInt(activity.accountId))
-      ? activity.accountId
+    activity.account_id && !isNaN(parseInt(activity.account_id))
+      ? activity.account_id
       : credentials.accountId || '';
 
   const folderId =
-    activity.folderId && !isNaN(parseInt(activity.folderId))
-      ? activity.folderId
+    activity.folder_id && !isNaN(parseInt(activity.folder_id))
+      ? activity.folder_id
       : credentials.folderId || '';
+
+  // Lógica de prioridade para status: CSV > select do card > null
+  const finalCustomStatusId =
+    activity.custom_status_id || finalStatusId || null;
 
   return {
     // Campos básicos
@@ -982,30 +1186,31 @@ const convertToArtiaFormat = (activity, credentials, finalStatusId = null) => {
     tipo: activity.tipo,
 
     // Campo obrigatório para atualização
-    artiaId: activity.artiaId,
+    artiaId: activity.artia_id,
 
     // Campos opcionais
-    esforcoEstimado: activity.esforcoEstimado || 1,
-    inicioEstimado: activity.inicioEstimado || '',
-    terminoEstimado: activity.terminoEstimado || '',
-    responsibleId: activity.responsibleId || null,
+    esforcoEstimado: activity.esforco_estimado || 1,
+    inicioEstimado: activity.inicio_estimado || '',
+    terminoEstimado: activity.termino_estimado || '',
+    responsibleId: activity.responsible_id || null,
 
-    // Status final já determinado pela lógica de prioridade (sem fallback)
-    customStatusId: finalStatusId,
+    // Status - priorizar CSV, depois select do card, depois null
+    situacao_atividade: activity.situacao_atividade || '',
+    customStatusId: finalCustomStatusId,
 
-    // Campos específicos por tipo
-    ticketMovidesk: activity.ticketMovidesk || '',
+    // Campos específicos por tipo - CORRIGIDO para snake_case
+    ticketMovidesk: activity.ticket_movidesk || '',
     urgencia: activity.urgencia || '',
     plataforma: activity.plataforma || '',
     funcionalidade: activity.funcionalidade || '',
-    subFuncionalidade: activity.subFuncionalidade || '',
+    subFuncionalidade: activity.sub_funcionalidade || '', // CORREÇÃO PRINCIPAL
     cliente: activity.cliente || '',
-    idOrganizacao: activity.idOrganizacao || '',
+    idOrganizacao: activity.id_organizacao || '',
     email: activity.email || '',
-    tipoCliente: activity.tipoCliente || '',
+    tipoCliente: activity.tipo_cliente || '',
     criticidade: activity.criticidade || '',
-    dificuldadeLocalizacao: activity.dificuldadeLocalizacao || '',
-    causaDemanda: activity.causaDemanda || '',
+    dificuldadeLocalizacao: activity.dificuldade_localizacao || '',
+    causaDemanda: activity.causa_demanda || '',
     garantia: activity.garantia || '',
 
     // Credenciais para criação

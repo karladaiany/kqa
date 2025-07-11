@@ -61,20 +61,22 @@ export const validateSingleActivity = (
   const errors = [];
 
   if (isUpdate) {
-    // Apenas campos essenciais para atualização
-    if (!activity.artiaId) {
+    const dataLineNumber = lineNumber - 1; // Número da linha de dados (excluindo header)
+
+    // Campos obrigatórios para atualização - usar nomes snake_case como vêm do CSV
+    if (!activity.artia_id || activity.artia_id.toString().trim() === '') {
       errors.push(
-        `Linha ${lineNumber}: Campo 'artia_id' é obrigatório para atualização`
+        `Linha ${dataLineNumber} (linha de dados): Campo 'artia_id' é obrigatório para atualização`
       );
     }
-    if (!activity.titulo || activity.titulo.trim() === '') {
+    if (!activity.titulo || activity.titulo.toString().trim() === '') {
       errors.push(
-        `Linha ${lineNumber}: Campo 'titulo' é obrigatório para atualização`
+        `Linha ${dataLineNumber} (linha de dados): Campo 'titulo' é obrigatório para atualização`
       );
     }
-    if (!activity.accountId) {
+    if (!activity.account_id || activity.account_id.toString().trim() === '') {
       errors.push(
-        `Linha ${lineNumber}: Campo 'account_id' é obrigatório para atualização`
+        `Linha ${dataLineNumber} (linha de dados): Campo 'account_id' é obrigatório para atualização`
       );
     }
     return errors;
@@ -126,6 +128,22 @@ const validateBasicFields = (activity, lineNumber) => {
 };
 
 /**
+ * Função utilitária para normalizar tipo para snake_case
+ * @param {string} type - Tipo de atividade original
+ * @returns {string} Tipo normalizado em snake_case
+ */
+function normalizeType(type) {
+  return type
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
+    .replace(/[\s-]+/g, '_')
+    .replace(/__+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .toLowerCase();
+}
+
+/**
  * Validar campos obrigatórios específicos por tipo
  * @param {Object} activity - Dados da atividade
  * @param {number} lineNumber - Número da linha
@@ -136,33 +154,14 @@ const validateTypeSpecificFields = (activity, lineNumber) => {
 
   if (!activity.tipo) return errors;
 
-  const requiredFields = REQUIRED_FIELDS_BY_TYPE[activity.tipo] || [];
-
-  // Mapeamento de campos internos para propriedades do objeto
-  const fieldMapping = {
-    TICKET_MOVIDESK: 'ticketMovidesk',
-    URGENCIA: 'urgencia',
-    PLATAFORMA: 'plataforma',
-    FUNCIONALIDADE: 'funcionalidade',
-    SUB_FUNCIONALIDADE: 'subFuncionalidade',
-    CLIENTE: 'cliente',
-    ID_ORGANIZACAO: 'idOrganizacao',
-    EMAIL: 'email',
-    TIPO_CLIENTE: 'tipoCliente',
-    CRITICIDADE: 'criticidade',
-    DIFICULDADE_LOCALIZACAO: 'dificuldadeLocalizacao',
-    CAUSA_DEMANDA: 'causaDemanda',
-    GARANTIA: 'garantia',
-  };
+  // Buscar tipo normalizado
+  const normalizedType = normalizeType(activity.tipo);
+  const requiredFields = REQUIRED_FIELDS_BY_TYPE[normalizedType] || [];
 
   requiredFields.forEach(field => {
-    const propertyName = fieldMapping[field];
-    if (
-      propertyName &&
-      (!activity[propertyName] || activity[propertyName].trim() === '')
-    ) {
+    if (!activity[field] || activity[field].trim() === '') {
       errors.push(
-        `Linha ${lineNumber}: Campo '${propertyName}' é obrigatório para tipo '${activity.tipo}'`
+        `Linha ${lineNumber}: Campo '${field}' é obrigatório para tipo '${activity.tipo}'`
       );
     }
   });

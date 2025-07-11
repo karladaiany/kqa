@@ -12,6 +12,7 @@ import {
   REQUIRED_FIELDS_BY_TYPE,
   ARTIA_FIELD_HASHES,
 } from '../constants/artiaFieldHashes';
+import { CUSTOM_STATUS_OPTIONS } from '../constants/artiaOptions';
 
 // Constantes para formatação HTML das atividades do Artia
 const FORMATTING_CONSTANTS = {
@@ -190,6 +191,7 @@ const UPDATE_ACTIVITY = gql`
     $estimatedEnd: DateTime
     $estimatedEffort: Float
     $priority: Int
+    $customStatusId: Int
     $customField: [OrganizationCustomFieldsInput!]
   ) {
     updateActivity(
@@ -203,6 +205,7 @@ const UPDATE_ACTIVITY = gql`
       estimatedEnd: $estimatedEnd
       estimatedEffort: $estimatedEffort
       priority: $priority
+      customStatusId: $customStatusId
       customField: $customField
     ) {
       id
@@ -1004,7 +1007,10 @@ Evidência pendente de anexo
 
   /**
    * Prepara as variáveis da atividade para atualização no formato esperado pela API GraphQL
-   * Apenas campos com valor serão incluídos, exceto os obrigatórios (id, title, accountId)
+   * Implementa estratégia de campos vazios:
+   * - Se coluna existe no CSV e está vazia: envia vazio (permite limpeza intencional)
+   * - Se coluna não existe no CSV: não envia (mantém valor existente no Artia)
+   * - Campos obrigatórios (id, title, accountId): sempre enviados
    */
   static prepareUpdateVariables(activityData, generatedDescription = '') {
     // Converter esforço estimado para inteiro arredondando para cima
@@ -1020,7 +1026,7 @@ Evidência pendente de anexo
       }
     }
 
-    // Campos obrigatórios
+    // Campos obrigatórios - sempre enviados
     const variables = {
       id: activityData.artiaId ? String(activityData.artiaId) : '',
       title: activityData.titulo || '',
@@ -1030,53 +1036,116 @@ Evidência pendente de anexo
       estimatedEffort,
     };
 
-    // Campos opcionais - incluir apenas se tiverem valor
-    if (activityData.description || generatedDescription) {
+    // Campos obrigatórios definidos
+
+    // Campos opcionais - implementar estratégia de campos vazios
+    // Se existe a propriedade no objeto (coluna estava no CSV), processar
+    // Se não existe, não enviar (mantém valor atual no Artia)
+
+    if (Object.prototype.hasOwnProperty.call(activityData, 'descricao')) {
+      variables.description =
+        activityData.descricao || generatedDescription || '';
+    } else if (generatedDescription) {
+      // Se não há coluna descricao mas há descrição gerada, usar a gerada
       variables.description = this.getFormattedDescription(
         activityData,
         generatedDescription
       );
     }
 
-    if (activityData.folderTypeId) {
-      variables.folderTypeId = parseInt(activityData.folderTypeId);
-    }
-
-    if (
-      activityData.responsibleId &&
-      activityData.responsibleId !== '' &&
-      activityData.responsibleId !== 'null'
+    // CORREÇÃO 1: Mapear "tipo" para "folderTypeId" - SEMPRE incluir se existe tipo válido
+    if (activityData.tipo && activityData.tipo.toString().trim() !== '') {
+      const folderTypeId = ACTIVITY_TYPE_TO_FOLDER_TYPE_ID[activityData.tipo];
+      if (folderTypeId) {
+        variables.folderTypeId = parseInt(folderTypeId);
+      } else {
+        // Tipo não encontrado no mapeamento
+      }
+    } else if (
+      Object.prototype.hasOwnProperty.call(activityData, 'folderTypeId')
     ) {
-      const responsibleIdValue = parseInt(activityData.responsibleId);
-      if (!isNaN(responsibleIdValue) && responsibleIdValue > 0) {
-        variables.responsibleId = responsibleIdValue;
+      // Fallback: se não há campo "tipo" válido mas há "folderTypeId" diretamente no CSV
+      if (activityData.folderTypeId) {
+        variables.folderTypeId = parseInt(activityData.folderTypeId);
       }
     }
 
-    if (activityData.prioridade) {
-      variables.priority = parseInt(activityData.prioridade);
+    // CORREÇÃO 2: Processar "situacao_atividade" para "customStatusId"
+    if (
+      Object.prototype.hasOwnProperty.call(activityData, 'situacao_atividade')
+    ) {
+      if (
+        activityData.situacao_atividade &&
+        activityData.situacao_atividade.toString().trim() !== ''
+      ) {
+        const statusValue = activityData.situacao_atividade
+          .toLowerCase()
+          .trim();
+
+        const status = CUSTOM_STATUS_OPTIONS.find(
+          s => s.name.toLowerCase().trim() === statusValue
+        );
+
+        if (status) {
+          variables.customStatusId = status.id;
+        }
+      }
+    } else if (
+      Object.prototype.hasOwnProperty.call(activityData, 'customStatusId')
+    ) {
+      // Fallback: se não há coluna "situacao_atividade" mas há "customStatusId" diretamente
+      if (activityData.customStatusId) {
+        variables.customStatusId = parseInt(activityData.customStatusId);
+      }
+    }
+
+    // CORREÇÃO 3: Adicionar prioridade (faltava na atualização mas existe na criação)
+    if (Object.prototype.hasOwnProperty.call(activityData, 'prioridade')) {
+      if (activityData.prioridade) {
+        variables.priority = parseInt(activityData.prioridade);
+      }
+    }
+
+    if (Object.prototype.hasOwnProperty.call(activityData, 'responsibleId')) {
+      if (
+        activityData.responsibleId &&
+        activityData.responsibleId !== '' &&
+        activityData.responsibleId !== 'null'
+      ) {
+        const responsibleIdValue = parseInt(activityData.responsibleId);
+        if (!isNaN(responsibleIdValue) && responsibleIdValue > 0) {
+          variables.responsibleId = responsibleIdValue;
+        }
+      } else {
+        // Coluna existe mas está vazia - limpar responsável
+        variables.responsibleId = null;
+      }
     }
 
     // Adicionar datas estimadas convertidas (formato brasileiro -> DateTime)
-    if (activityData.inicioEstimado) {
-      const convertedStartDate = convertBrazilianDateToAPI(
-        activityData.inicioEstimado
-      );
-      if (convertedStartDate) {
-        variables.estimatedStart = convertedStartDate;
+    if (Object.prototype.hasOwnProperty.call(activityData, 'inicioEstimado')) {
+      if (activityData.inicioEstimado) {
+        const convertedStartDate = convertBrazilianDateToAPI(
+          activityData.inicioEstimado
+        );
+        if (convertedStartDate) {
+          variables.estimatedStart = convertedStartDate;
+        }
       }
     }
 
-    if (activityData.terminoEstimado) {
-      const convertedEndDate = convertBrazilianDateToAPI(
-        activityData.terminoEstimado
-      );
-      if (convertedEndDate) {
-        variables.estimatedEnd = convertedEndDate;
+    if (Object.prototype.hasOwnProperty.call(activityData, 'terminoEstimado')) {
+      if (activityData.terminoEstimado) {
+        const convertedEndDate = convertBrazilianDateToAPI(
+          activityData.terminoEstimado
+        );
+        if (convertedEndDate) {
+          variables.estimatedEnd = convertedEndDate;
+        }
       }
     }
 
-    // Preparar campos customizados
+    // Preparar campos customizados com a mesma estratégia
     const customFields = [];
     const customFieldNames = [
       'urgencia',
@@ -1098,14 +1167,22 @@ Evidência pendente de anexo
     const activityType = activityData.tipo;
     const requiredFields = REQUIRED_FIELDS_BY_TYPE[activityType] || [];
 
+    // Verificação de campos obrigatórios para o tipo de atividade
+
     // Iterar sobre os campos customizados definidos
     customFieldNames.forEach(fieldName => {
-      const value = activityData[fieldName];
       const hashField = FORM_FIELD_TO_HASH[fieldName];
 
-      // Validação com consideração de campos obrigatórios
+      // Validação de hash field
       const hasValidHash = hashField && hashField !== '';
       if (!hasValidHash) return;
+
+      // Verificar se a coluna existe no CSV (propriedade existe no objeto)
+      if (!Object.prototype.hasOwnProperty.call(activityData, fieldName)) {
+        return; // Coluna não existe - não enviar
+      }
+
+      const value = activityData[fieldName];
 
       // Determinar se o campo é obrigatório para este tipo de atividade
       const fieldConstantName = Object.keys(ARTIA_FIELD_HASHES).find(
@@ -1113,7 +1190,7 @@ Evidência pendente de anexo
       );
       const isRequired = requiredFields.includes(fieldConstantName);
 
-      // Lógica de validação baseada em obrigatoriedade
+      // Lógica de validação baseada em obrigatoriedade e estratégia de campos vazios
       let shouldInclude = false;
       let finalValue = '';
 
@@ -1122,13 +1199,10 @@ Evidência pendente de anexo
         finalValue =
           value && String(value).trim() !== '' ? String(value).trim() : '.';
         shouldInclude = true;
-      } else if (
-        value &&
-        String(value).trim() !== '' &&
-        String(value).trim() !== '.'
-      ) {
-        // Campo opcional: incluir apenas se tem valor real
-        finalValue = String(value).trim();
+      } else {
+        // Campo opcional: incluir sempre (mesmo se vazio) pois a coluna existe no CSV
+        finalValue =
+          value && String(value).trim() !== '' ? String(value).trim() : '';
         shouldInclude = true;
       }
 
@@ -1144,7 +1218,6 @@ Evidência pendente de anexo
     if (customFields.length > 0) {
       variables.customField = customFields;
     }
-
     return variables;
   }
 
