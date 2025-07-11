@@ -29,41 +29,35 @@ export const ARTIA_FIELD_HASHES = {
  * Campos obrigatórios por tipo de atividade
  */
 export const REQUIRED_FIELDS_BY_TYPE = {
-  Desenvolvimento: ['FUNCIONALIDADE', 'SUB_FUNCIONALIDADE'],
-  'Execução de testes': ['FUNCIONALIDADE', 'SUB_FUNCIONALIDADE'],
-  'Teste de mesa': [
-    // Nenhum campo customizado obrigatório
+  desenvolvimento: ['funcionalidade', 'sub_funcionalidade'],
+  execucao_de_testes: ['funcionalidade', 'sub_funcionalidade'],
+  teste_de_mesa: [],
+  automacao_de_testes: ['funcionalidade', 'sub_funcionalidade'],
+  analise_de_testes: ['funcionalidade', 'sub_funcionalidade'],
+  bug_producao: [
+    'ticket_movidesk',
+    'urgencia',
+    'plataforma',
+    'funcionalidade',
+    'sub_funcionalidade',
+    'cliente',
+    'id_organizacao',
+    'email',
+    'tipo_cliente',
+    'criticidade',
+    'dificuldade_localizacao',
+    'causa_demanda',
+    'garantia',
   ],
-  'Automação de testes': ['FUNCIONALIDADE', 'SUB_FUNCIONALIDADE'],
-  'Análise de testes': ['FUNCIONALIDADE', 'SUB_FUNCIONALIDADE'],
-  'Bug produção': [
-    'TICKET_MOVIDESK',
-    'URGENCIA',
-    'PLATAFORMA',
-    'FUNCIONALIDADE',
-    'SUB_FUNCIONALIDADE',
-    'CLIENTE',
-    'ID_ORGANIZACAO',
-    'EMAIL',
-    'TIPO_CLIENTE',
-    'CRITICIDADE',
-    'DIFICULDADE_LOCALIZACAO',
-    'CAUSA_DEMANDA',
-    'GARANTIA',
+  bug_retrabalho: [
+    'plataforma',
+    'funcionalidade',
+    'sub_funcionalidade',
+    'criticidade',
+    'causa_demanda',
   ],
-  'Bug retrabalho': [
-    'PLATAFORMA',
-    'FUNCIONALIDADE',
-    'SUB_FUNCIONALIDADE',
-    'CRITICIDADE',
-    'CAUSA_DEMANDA',
-  ],
-  Deploy: [
-    // Deploy não tem campos customizados obrigatórios
-  ],
-  Documentação: [
-    // Documentação não tem campos customizados obrigatórios
-  ],
+  deploy: [],
+  documentacao: [],
 };
 
 /**

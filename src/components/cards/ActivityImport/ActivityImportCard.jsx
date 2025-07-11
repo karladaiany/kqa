@@ -55,6 +55,7 @@ const ActivityImportCard = () => {
     validatedData,
     parseErrors,
     validationErrors,
+    originalHeaders,
     processResults,
     importHistory,
 
@@ -452,6 +453,14 @@ const ActivityImportCard = () => {
     [removeHistoryItem]
   );
 
+  // Handler para substituir arquivo
+  const handleReplaceFile = useCallback(() => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+      fileInputRef.current.click();
+    }
+  }, []);
+
   /**
    * Renderizar estado atual
    */
@@ -815,6 +824,18 @@ const ActivityImportCard = () => {
           </div>
         )}
 
+        {/* Botões de ação quando não há registros válidos */}
+        {validatedData.length === 0 && (
+          <div className='preview-error-actions'>
+            <button className='btn-action' onClick={handleReplaceFile}>
+              <FaUpload /> Substituir arquivo
+            </button>
+            <button className='btn-action' onClick={handleResetImport}>
+              <FaEraser /> Cancelar
+            </button>
+          </div>
+        )}
+
         {validatedData.length > 0 && showPreview && (
           <div className='preview-table-container'>
             <div className='preview-table'>
@@ -848,7 +869,7 @@ const ActivityImportCard = () => {
                             validatedData.some(item => item[key])
                         )
                         .map(key => (
-                          <td key={key} title={activity[key]}>
+                          <td key={key} title={String(activity[key] || '')}>
                             {activity[key]?.length > 50
                               ? `${activity[key].substring(0, 50)}...`
                               : activity[key] || '-'}
@@ -1098,10 +1119,14 @@ const ActivityImportCard = () => {
         <FaExclamationTriangle className='error-icon' />
         <h4>❌ Erro na Importação</h4>
         <p>Verifique o arquivo e tente novamente.</p>
-
-        <button className='btn-action' onClick={handleResetImport}>
-          <FaRocket /> Tentar Novamente
-        </button>
+        <div className='import-error-actions'>
+          <button className='btn-action' onClick={handleReplaceFile}>
+            <FaUpload /> Substituir arquivo
+          </button>
+          <button className='btn-action' onClick={handleResetImport}>
+            <FaEraser /> Cancelar
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -1583,8 +1608,7 @@ const ActivityImportCard = () => {
                                                   >
                                                     <div className='error-line-header'>
                                                       <span className='error-line-ref'>
-                                                        Linha{' '}
-                                                        {Number(error.line) + 1}
+                                                        Linha {error.line}
                                                       </span>
                                                     </div>
                                                     {error.error.includes(

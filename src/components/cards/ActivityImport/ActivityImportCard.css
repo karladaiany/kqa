@@ -3726,7 +3726,8 @@ tr:nth-last-child(-n + 2) .download-dropdown::after {
   border-right: 2px solid rgba(8, 236, 204, 0.3) !important;
   font-weight: 600 !important;
   text-align: center !important;
-  background: var(--background-primary) !important;
+  background: var(--bg-secondary) !important;
+  z-index: 2;
 }
 
 .preview-table thead th:first-child {
@@ -3835,3 +3836,23 @@ tr:nth-last-child(-n + 2) .download-dropdown::after {
 }
 
 /* Estilos removidos - indicador de dados salvos não usado */
+
+.preview-error-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  justify-content: flex-start;
+}
+
+/* Cor de fundo para primeira coluna fixa da tabela de preview */
+.preview-table th:first-child,
+.preview-table td:first-child {
+  background: var(--bg-secondary);
+  z-index: 2;
+}
+
+/* Garantir que a cor se mantenha mesmo ao hover */
+.preview-table tbody tr:hover td:first-child {
+  background: var(--bg-secondary) !important;
+}

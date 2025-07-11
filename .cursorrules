@@ -22,6 +22,31 @@
    - Quando a implementação for significativa ou complexa
    - Seguir template padrão definido abaixo
 
+## CRÍTICO: Regras de Troca/Instalação de Bibliotecas
+
+### OBRIGATÓRIO: Antes de sugerir troca ou instalação de bibliotecas:
+
+1. **Análise Completa de Impactos**
+
+   - Identificar TODOS os pontos da aplicação que podem ser afetados
+   - Mapear funções, hooks, componentes e utilitários que usam a funcionalidade atual
+   - Listar arquivos que precisarão ser modificados
+   - Verificar mapeamentos de dados, transformações e validações
+
+2. **Quando Aprovada a Mudança**
+
+   - Aplicar alterações em TODOS os pontos identificados
+   - Garantir consistência entre parsing, validação, transformação e envio de dados
+   - Verificar fluxos de criação E atualização
+   - Testar cenários de edge cases e compatibilidade
+
+3. **Validação Pós-Implementação**
+   - Confirmar que funcionalidades anteriormente funcionais continuam operando
+   - Verificar se novos bugs não foram introduzidos
+   - Garantir que mapeamentos de dados estão corretos em toda a cadeia
+
+### ⚠️ NUNCA sugerir mudança de biblioteca sem análise completa dos impactos!
+
 ## Template Padrão para Pull Requests
 
 ```markdown
