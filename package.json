@@ -1,6 +1,6 @@
 {
   "name": "kqa",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "private": true,
   "description": "Gerador de dados fictícios para QA",
   "type": "module",
