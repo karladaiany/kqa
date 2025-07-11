@@ -268,7 +268,7 @@ const ArtiaActivityModal = ({
   // Processar link do Artia quando alterado
   useEffect(() => {
     const link = formData.artiaLink?.trim();
-    
+
     if (!link) {
       setLinkValidation({ isValid: true, message: '' });
       setLinkExtracted(false);
@@ -282,25 +282,27 @@ const ArtiaActivityModal = ({
     if (validation.isValid) {
       // Extrair IDs do link
       const { accountId, folderId, isValid } = extractIdsFromArtiaLink(link);
-      
+
       if (isValid && accountId && folderId) {
         // Atualizar campos apenas se estiverem vazios ou se os valores forem diferentes
         setFormData(prev => {
-          const shouldUpdateAccount = !prev.accountId || prev.accountId !== accountId;
-          const shouldUpdateFolder = !prev.folderId || prev.folderId !== folderId;
-          
+          const shouldUpdateAccount =
+            !prev.accountId || prev.accountId !== accountId;
+          const shouldUpdateFolder =
+            !prev.folderId || prev.folderId !== folderId;
+
           if (shouldUpdateAccount || shouldUpdateFolder) {
             setLinkExtracted(true);
             // Mostrar feedback positivo temporário
             setTimeout(() => setLinkExtracted(false), 3000);
-            
+
             return {
               ...prev,
               accountId: accountId,
               folderId: folderId,
             };
           }
-          
+
           return prev;
         });
       }
@@ -668,6 +670,16 @@ ${bugData.others}${evidenceSection}`;
                 {field.label}
                 {field.required && <span className='modal-required'>*</span>}
               </label>
+              {value && (
+                <button
+                  type='button'
+                  className='modal-clear-field'
+                  onClick={() => handleInputChange(field.name, '')}
+                  title={`Limpar ${field.label}`}
+                >
+                  <FaTimes />
+                </button>
+              )}
             </div>
           </div>
         );
@@ -687,6 +699,16 @@ ${bugData.others}${evidenceSection}`;
                 {field.label}
                 {field.required && <span className='modal-required'>*</span>}
               </label>
+              {value && (
+                <button
+                  type='button'
+                  className='modal-clear-field'
+                  onClick={() => handleInputChange(field.name, '')}
+                  title={`Limpar ${field.label}`}
+                >
+                  <FaTimes />
+                </button>
+              )}
             </div>
           </div>
         );
@@ -706,6 +728,16 @@ ${bugData.others}${evidenceSection}`;
                 {field.label}
                 {field.required && <span className='modal-required'>*</span>}
               </label>
+              {value && (
+                <button
+                  type='button'
+                  className='modal-clear-field'
+                  onClick={() => handleInputChange(field.name, '')}
+                  title={`Limpar ${field.label}`}
+                >
+                  <FaTimes />
+                </button>
+              )}
             </div>
           </div>
         );
@@ -754,6 +786,16 @@ ${bugData.others}${evidenceSection}`;
                   Login
                   <span className='modal-required'>*</span>
                 </label>
+                {formData.login && !loading && (
+                  <button
+                    type='button'
+                    className='modal-clear-field'
+                    onClick={() => handleInputChange('login', '')}
+                    title='Limpar Login'
+                  >
+                    <FaTimes />
+                  </button>
+                )}
               </div>
             </div>
 
@@ -772,6 +814,16 @@ ${bugData.others}${evidenceSection}`;
                   Senha
                   <span className='modal-required'>*</span>
                 </label>
+                {formData.senha && !loading && (
+                  <button
+                    type='button'
+                    className='modal-clear-field'
+                    onClick={() => handleInputChange('senha', '')}
+                    title='Limpar Senha'
+                  >
+                    <FaTimes />
+                  </button>
+                )}
                 <button
                   type='button'
                   className='modal-toggle-password'
@@ -796,7 +848,13 @@ ${bugData.others}${evidenceSection}`;
                   onChange={e => handleInputChange('artiaLink', e.target.value)}
                   disabled={loading}
                   placeholder='https://app2.artia.com/a/4874953/f/4885568/kanban...'
-                  className={!linkValidation.isValid ? 'input-error' : linkExtracted ? 'input-success' : ''}
+                  className={
+                    !linkValidation.isValid
+                      ? 'input-error'
+                      : linkExtracted
+                        ? 'input-success'
+                        : ''
+                  }
                 />
                 <label htmlFor='artiaLink'>
                   Link do projeto Artia
@@ -806,17 +864,29 @@ ${bugData.others}${evidenceSection}`;
                     </span>
                   )}
                 </label>
+                {formData.artiaLink && !loading && (
+                  <button
+                    type='button'
+                    className='modal-clear-field'
+                    onClick={() => handleInputChange('artiaLink', '')}
+                    title='Limpar Link do Artia'
+                  >
+                    <FaTimes />
+                  </button>
+                )}
                 {!linkValidation.isValid && (
                   <div className='input-error-message'>
                     <FaExclamationTriangle />
                     {linkValidation.message}
                   </div>
                 )}
-                {linkValidation.isValid && formData.artiaLink && !linkExtracted && (
-                  <div className='input-help-message'>
-                    Link válido - os IDs serão extraídos automaticamente
-                  </div>
-                )}
+                {linkValidation.isValid &&
+                  formData.artiaLink &&
+                  !linkExtracted && (
+                    <div className='input-help-message'>
+                      Link válido - os IDs serão extraídos automaticamente
+                    </div>
+                  )}
               </div>
             </div>
 
@@ -839,6 +909,16 @@ ${bugData.others}${evidenceSection}`;
                   Título
                   <span className='modal-required'>*</span>
                 </label>
+                {formData.titulo && !loading && (
+                  <button
+                    type='button'
+                    className='modal-clear-field'
+                    onClick={() => handleInputChange('titulo', '')}
+                    title='Limpar Título'
+                  >
+                    <FaTimes />
+                  </button>
+                )}
               </div>
             </div>
 
@@ -880,6 +960,16 @@ ${bugData.others}${evidenceSection}`;
                   ID do Grupo de Trabalho
                   <span className='modal-required'>*</span>
                 </label>
+                {formData.accountId && !loading && (
+                  <button
+                    type='button'
+                    className='modal-clear-field'
+                    onClick={() => handleInputChange('accountId', '')}
+                    title='Limpar ID do Grupo de Trabalho'
+                  >
+                    <FaTimes />
+                  </button>
+                )}
               </div>
             </div>
 
@@ -898,6 +988,16 @@ ${bugData.others}${evidenceSection}`;
                   ID da Pasta/Projeto
                   <span className='modal-required'>*</span>
                 </label>
+                {formData.folderId && !loading && (
+                  <button
+                    type='button'
+                    className='modal-clear-field'
+                    onClick={() => handleInputChange('folderId', '')}
+                    title='Limpar ID da Pasta/Projeto'
+                  >
+                    <FaTimes />
+                  </button>
+                )}
               </div>
             </div>
 

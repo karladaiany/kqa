@@ -294,6 +294,40 @@
   cursor: not-allowed;
 }
 
+/* Botão para limpar campos */
+.modal-clear-field {
+  background: none;
+  border: none;
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-speed);
+  font-size: 12px;
+  z-index: 2;
+}
+
+.modal-clear-field:hover {
+  background-color: var(--hover-color);
+  color: var(--error-color);
+}
+
+.modal-clear-field:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+/* Ajustar posicionamento quando há toggle password */
+.modal-input-container:has(.modal-toggle-password) .modal-clear-field {
+  right: 40px; /* Deixar espaço para o botão de toggle da senha */
+}
+
 /* Ajuste para o input de senha ter espaço para o botão */
 .modal-input-container input[type='password'],
 .modal-input-container
