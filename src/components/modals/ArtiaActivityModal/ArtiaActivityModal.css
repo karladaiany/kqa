@@ -566,11 +566,13 @@
 
 /* Estilo para campos de número - compatível com number-input */
 .modal-input-container input[type='number'] {
+  appearance: textfield;
   -moz-appearance: textfield;
 }
 
 .modal-input-container input[type='number']::-webkit-outer-spin-button,
 .modal-input-container input[type='number']::-webkit-inner-spin-button {
+  appearance: none;
   -webkit-appearance: none;
   margin: 0;
 }
@@ -850,11 +852,13 @@
 }
 
 .modal-container .field-group input[type='number'] {
+  appearance: textfield;
   -moz-appearance: textfield;
 }
 
 .modal-container .field-group input[type='number']::-webkit-outer-spin-button,
 .modal-container .field-group input[type='number']::-webkit-inner-spin-button {
+  appearance: none;
   -webkit-appearance: none;
   margin: 0;
 }
@@ -1188,7 +1192,7 @@ body.modal-open {
 }
 
 /* Hover states para campos com link */
-.modal-input-container:has(input[type="url"]):hover {
+.modal-input-container:has(input[type='url']):hover {
   border-color: var(--primary-color);
 }
 
@@ -1201,7 +1205,7 @@ body.modal-open {
 }
 
 /* Placeholder melhorado para URL */
-.modal-input-container input[type="url"]::placeholder {
+.modal-input-container input[type='url']::placeholder {
   color: var(--text-muted, #6b7280);
   font-style: italic;
 }
