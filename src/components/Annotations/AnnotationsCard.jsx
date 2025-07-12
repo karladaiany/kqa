@@ -28,6 +28,7 @@ import { useAnnotations } from '../../hooks/useAnnotations';
 import { useBugRegistration } from '../../hooks/useBugRegistration';
 import { MiniCard } from './MiniCard';
 import QuickNotesBadge from './QuickNotesBadge';
+import MyEnvironmentsSection from './MyEnvironmentsSection';
 
 // Contexto para gerenciar o editor ativo
 const ActiveEditorContext = createContext();
@@ -741,4 +742,12 @@ const AnnotationsCard = () => {
   );
 };
 
-export default AnnotationsCard;
+// Adiciona a seção Meus Ambientes como independente
+export default function AnnotationsCardWrapper() {
+  return (
+    <>
+      <AnnotationsCard />
+      <MyEnvironmentsSection />
+    </>
+  );
+}

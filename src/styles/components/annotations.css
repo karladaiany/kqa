@@ -98,8 +98,7 @@
 }
 
 .mini-card-drag-handle:hover {
-  color: var(--accent-color);
-  background: rgba(120, 93, 200, 0.1);
+  color: var(--text-button-hover);
 }
 
 .mini-card-actions {
@@ -123,17 +122,8 @@
 }
 
 .mini-card-action:hover {
-  background: var(--accent-color);
-  color: white;
   transform: scale(1.1);
-}
-
-.mini-card-action.copy:hover {
-  background: #10b981;
-}
-
-.mini-card-action.delete:hover {
-  background: #dc2626;
+  color: var(--text-button-hover);
 }
 
 /* Toolbar de formatação - hover melhorado */
@@ -649,15 +639,8 @@
   justify-content: center;
 }
 
-.action-button.delete {
-  background: #dc2626;
-  color: white;
-  border-color: #dc2626;
-}
-
 .action-button.delete:hover {
-  background: #b91c1c;
-  border-color: #b91c1c;
+  color: #dc2626;
 }
 
 /* =================================================================
@@ -851,7 +834,7 @@ body.dark-theme .color-picker {
 
 .global-toolbar-button:hover:not(.disabled) {
   background: var(--accent-color);
-  color: white;
+  color: var(--text-button);
   border-color: var(--accent-color);
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
@@ -859,7 +842,7 @@ body.dark-theme .color-picker {
 
 .global-toolbar-button.active {
   background: var(--accent-color);
-  color: white;
+  color: var(--text-button);
   border-color: var(--accent-color);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -871,29 +854,21 @@ body.dark-theme .color-picker {
 }
 
 .global-toolbar-button.action-add {
-  background: var(--accent-color);
-  color: white;
-  border-color: var(--accent-color);
+  color: var(--text-button);
 }
 
 .global-toolbar-button.action-add:hover {
-  background: #7c3aed;
-  border-color: #7c3aed;
+  background: var(--primary-color);
+  border-color: var(--primary-color);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
 .global-toolbar-button.action-clear {
-  background: #dc2626;
-  color: white;
-  border-color: #dc2626;
+  color: var(--text-button);
 }
 
 .global-toolbar-button.action-clear:hover {
-  background: #b91c1c;
-  border-color: #b91c1c;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 }
 
 .global-color-picker {
@@ -1512,4 +1487,35 @@ body.dark-theme .quick-notes-placeholder {
   .quick-notes-placeholder {
     padding: 1rem;
   }
+}
+
+/* 1. Remover borda externa do container principal das anotações */
+.annotations-section,
+.annotations-main-container,
+.annotations-outer,
+.annotations-wrapper {
+  border: none !important;
+  box-shadow: none !important;
+  background: none !important;
+  padding: 0 !important;
+}
+
+/* 2. Ajustar espaçamento entre as seções de anotações */
+.section-title {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.my-environments-section {
+  margin-top: 1.5rem !important;
+}
+
+/* 3. Padronizar fundo da seção Meus Ambientes */
+.my-environments-section {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border) !important;
+}
+body.dark-theme .my-environments-section {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border) !important;
 }
