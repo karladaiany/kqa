@@ -12,18 +12,18 @@ const getActivityTypeBadge = type => {
   const badgeConfig = {
     Deploy: {
       text: 'Deploy',
-      backgroundColor: '#010003',
-      textColor: '#6272A4',
+      backgroundColor: 'var(--deploy-color)',
+      textColor: 'var(--deploy-text-selected)',
     },
     'Bug retrabalho': {
       text: 'Bug retrabalho',
-      backgroundColor: '#EFB650',
-      textColor: '#6272A4',
+      backgroundColor: 'var(--bug-retrabalho-color)',
+      textColor: 'var(--badge-text-selected)',
     },
     'Bug produção': {
       text: 'Bug Produção',
-      backgroundColor: '#EC0B2A',
-      textColor: '#FFFFFF',
+      backgroundColor: 'var(--bug-producao-color)',
+      textColor: '#FFFFFF', // Mantém branco para melhor contraste no histórico
     },
   };
 

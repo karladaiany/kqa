@@ -118,7 +118,7 @@ const SidebarMenu = ({ open = true, onClose }) => {
             className='floating-nav-item'
             onClick={() => scrollToSection('activity-import')}
           >
-            <FaFileImport /> Importação de Atividades
+            <FaFileImport /> Importar atividades
           </div>
           <div
             className='floating-nav-item'

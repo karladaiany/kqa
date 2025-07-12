@@ -38,15 +38,15 @@ export const useBugRegistration = () => {
     localStorage.setItem('bugRegistration', JSON.stringify(dataToSave));
   }, [bugData]);
 
-  const handleInputChange = (field, value) => {
+  const handleInputChange = useCallback((field, value) => {
     if (field === 'envId' && value.length > 7) return;
     setBugData(prev => ({
       ...prev,
       [field]: value,
     }));
-  };
+  }, []);
 
-  const handleClearField = field => {
+  const handleClearField = useCallback(field => {
     if (field === 'all') {
       setBugData({
         incident: '',
@@ -68,14 +68,14 @@ export const useBugRegistration = () => {
       ...prev,
       [field]: '',
     }));
-  };
+  }, []);
 
-  const handleToggleAttachment = () => {
+  const handleToggleAttachment = useCallback(() => {
     setBugData(prev => ({
       ...prev,
       hasAttachment: !prev.hasAttachment,
     }));
-  };
+  }, []);
 
   const formatEvidenceSection = () => {
     // Incluir seção de evidências apenas se houver algum conteúdo

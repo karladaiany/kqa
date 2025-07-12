@@ -961,7 +961,6 @@ input-clearable .number-input {
   position: fixed;
   top: 70px; /* logo abaixo do ícone do menu */
   right: 20px;
-  width: 240px;
   background: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: 12px;
