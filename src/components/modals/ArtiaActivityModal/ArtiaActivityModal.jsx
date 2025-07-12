@@ -57,6 +57,50 @@ const generateTitleTemplate = type => {
   return '';
 };
 
+// Função para obter as configurações da badge baseado no tipo
+const getActivityTypeToggleBadge = type => {
+  const badgeConfig = {
+    [ACTIVITY_TYPES.DEPLOY]: {
+      text: 'Deploy',
+      cssClass: 'deploy',
+    },
+    [ACTIVITY_TYPES.BUG_RETRABALHO]: {
+      text: 'Bug retrabalho',
+      cssClass: 'bug-retrabalho',
+    },
+    [ACTIVITY_TYPES.BUG_PRODUCAO]: {
+      text: 'Bug produção',
+      cssClass: 'bug-producao',
+    },
+  };
+
+  return badgeConfig[type] || null;
+};
+
+// Função para obter as configurações da badge baseado no status customizado
+const getCustomStatusToggleBadge = statusId => {
+  const badgeConfig = {
+    246888: { // Não iniciado
+      text: 'Não iniciado',
+      cssClass: 'nao-iniciado',
+    },
+    246886: { // Backlog
+      text: 'Backlog',
+      cssClass: 'backlog',
+    },
+    246887: { // Backlog Programado
+      text: 'Backlog Programado',
+      cssClass: 'backlog-programado',
+    },
+    246895: { // Triagem
+      text: 'Triagem',
+      cssClass: 'triagem',
+    },
+  };
+
+  return badgeConfig[statusId] || null;
+};
+
 // Função para extrair IDs do link do Artia
 const extractIdsFromArtiaLink = link => {
   if (!link || typeof link !== 'string') {
@@ -165,6 +209,7 @@ const ArtiaActivityModal = ({
     message: '',
   });
   const [linkExtracted, setLinkExtracted] = useState(false);
+  const [shouldHideIdFields, setShouldHideIdFields] = useState(false);
 
   // Estado para histórico de atividades criadas
   const [createdActivities, setCreatedActivities] = useState(() => {
@@ -238,6 +283,7 @@ const ArtiaActivityModal = ({
       );
       // Limpar sub-funcionalidade selecionada se não for compatível
       if (
+        formData.subFuncionalidade &&
         !FUNCIONALIDADE_OPTIONS[formData.funcionalidade].includes(
           formData.subFuncionalidade
         )
@@ -250,7 +296,7 @@ const ArtiaActivityModal = ({
     } else {
       setSubFuncionalidadeOptions([]);
     }
-  }, [formData.funcionalidade]);
+  }, [formData.funcionalidade, formData.subFuncionalidade]);
 
   // Aplicar template do título quando tipo de atividade mudar (especialmente para bugs)
   useEffect(() => {
@@ -263,7 +309,7 @@ const ArtiaActivityModal = ({
         }));
       }
     }
-  }, [formData.tipo]);
+  }, [formData.tipo, formData.titulo]);
 
   // Processar link do Artia quando alterado
   useEffect(() => {
@@ -272,6 +318,7 @@ const ArtiaActivityModal = ({
     if (!link) {
       setLinkValidation({ isValid: true, message: '' });
       setLinkExtracted(false);
+      setShouldHideIdFields(false);
       return;
     }
 
@@ -285,38 +332,40 @@ const ArtiaActivityModal = ({
 
       if (isValid && accountId && folderId) {
         // Atualizar campos apenas se estiverem vazios ou se os valores forem diferentes
-        setFormData(prev => {
-          const shouldUpdateAccount =
-            !prev.accountId || prev.accountId !== accountId;
-          const shouldUpdateFolder =
-            !prev.folderId || prev.folderId !== folderId;
+        const shouldUpdateAccount =
+          !formData.accountId || formData.accountId !== accountId;
+        const shouldUpdateFolder =
+          !formData.folderId || formData.folderId !== folderId;
 
-          if (shouldUpdateAccount || shouldUpdateFolder) {
-            setLinkExtracted(true);
-            // Mostrar feedback positivo temporário
-            setTimeout(() => setLinkExtracted(false), 3000);
+        if (shouldUpdateAccount || shouldUpdateFolder) {
+          setLinkExtracted(true);
+          // Mostrar feedback positivo temporário
+          setTimeout(() => setLinkExtracted(false), 3000);
 
-            return {
-              ...prev,
-              accountId: accountId,
-              folderId: folderId,
-            };
-          }
+          setFormData(prev => ({
+            ...prev,
+            accountId: accountId,
+            folderId: folderId,
+          }));
+        }
 
-          return prev;
-        });
+        // Ocultar os campos de ID quando o link for válido e os IDs forem extraídos
+        setShouldHideIdFields(true);
+      } else {
+        setShouldHideIdFields(false);
       }
     } else {
       setLinkExtracted(false);
+      setShouldHideIdFields(false);
     }
-  }, [formData.artiaLink]);
+  }, [formData.artiaLink, formData.accountId, formData.folderId]);
 
-  const handleInputChange = (name, value) => {
+  const handleInputChange = useCallback((name, value) => {
     setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
-  };
+  }, []);
 
   const getFieldsForType = type => {
     return ACTIVITY_FIELDS[type] || [];
@@ -387,14 +436,22 @@ const ArtiaActivityModal = ({
       }
 
       // Validação específica para campos numéricos com min/max
-      if (field.type === 'number' && formData[field.name] !== undefined && formData[field.name] !== '') {
+      if (
+        field.type === 'number' &&
+        formData[field.name] !== undefined &&
+        formData[field.name] !== ''
+      ) {
         const value = Number(formData[field.name]);
         if (field.min !== undefined && value < field.min) {
-          toast.error(`O campo "${field.label}" deve ser maior ou igual a ${field.min}`);
+          toast.error(
+            `O campo "${field.label}" deve ser maior ou igual a ${field.min}`
+          );
           return false;
         }
         if (field.max !== undefined && value > field.max) {
-          toast.error(`O campo "${field.label}" deve ser menor ou igual a ${field.max}`);
+          toast.error(
+            `O campo "${field.label}" deve ser menor ou igual a ${field.max}`
+          );
           return false;
         }
       }
@@ -641,7 +698,7 @@ ${bugData.others}${evidenceSection}`;
                   field.name === 'subFuncionalidade' && !formData.funcionalidade
                 }
               >
-                <option value=''>Selecione...</option>
+                <option value=''></option>
                 {options.map(option => {
                   // Verificar se a opção é um objeto com id e name (para responsáveis)
                   if (typeof option === 'object' && option.id && option.name) {
@@ -680,11 +737,6 @@ ${bugData.others}${evidenceSection}`;
                 required={field.required}
                 min={field.min}
                 max={field.max}
-                placeholder={
-                  field.min !== undefined && field.max !== undefined
-                    ? `${field.min} a ${field.max}`
-                    : ''
-                }
               />
               <label htmlFor={field.name}>
                 {field.label}
@@ -806,7 +858,6 @@ ${bugData.others}${evidenceSection}`;
                   onChange={e => handleInputChange('login', e.target.value)}
                   required
                   disabled={loading}
-                  placeholder='Seu login do Artia'
                 />
                 <label htmlFor='login'>
                   Login
@@ -834,7 +885,6 @@ ${bugData.others}${evidenceSection}`;
                   onChange={e => handleInputChange('senha', e.target.value)}
                   required
                   disabled={loading}
-                  placeholder='Sua senha do Artia'
                 />
                 <label htmlFor='senha'>
                   Senha
@@ -883,7 +933,7 @@ ${bugData.others}${evidenceSection}`;
                   }
                 />
                 <label htmlFor='artiaLink'>
-                  Link do projeto Artia
+                  Link do projeto no Artia
                   {linkExtracted && (
                     <span className='link-success-indicator'>
                       <FaCheck /> IDs extraídos automaticamente
@@ -894,7 +944,11 @@ ${bugData.others}${evidenceSection}`;
                   <button
                     type='button'
                     className='modal-clear-field'
-                    onClick={() => handleInputChange('artiaLink', '')}
+                    onClick={() => {
+                      handleInputChange('artiaLink', '');
+                      // Quando o link for limpo, mostrar novamente os campos de ID
+                      setShouldHideIdFields(false);
+                    }}
                     title='Limpar Link do Artia'
                   >
                     <FaTimes />
@@ -909,8 +963,14 @@ ${bugData.others}${evidenceSection}`;
                 {linkValidation.isValid &&
                   formData.artiaLink &&
                   !linkExtracted && (
-                    <div className='input-help-message'>
-                      Link válido - os IDs serão extraídos automaticamente
+                    <div className={shouldHideIdFields ? 'input-success-message' : 'input-help-message'}>
+                      {shouldHideIdFields ? (
+                        <>
+                          <FaCheck /> IDs do Grupo e Pasta preenchidos automaticamente
+                        </>
+                      ) : (
+                        'Link válido - os IDs serão extraídos automaticamente'
+                      )}
                     </div>
                   )}
               </div>
@@ -918,6 +978,64 @@ ${bugData.others}${evidenceSection}`;
 
             <div className='section-divider'>
               <FaClipboardList /> Dados da atividade
+            </div>
+
+            <div className='modal-field-group'>
+              <label className='modal-toggle-badge-label'>
+                Tipo
+                <span className='modal-required'>*</span>
+              </label>
+              <div className='modal-toggle-badges-container'>
+                {availableTypes.map(type => {
+                  const badgeConfig = getActivityTypeToggleBadge(type);
+                  const isSelected = formData.tipo === type;
+                  const isDisabled =
+                    loading ||
+                    (activityType === 'deploy' &&
+                      type !== ACTIVITY_TYPES.DEPLOY);
+
+                  return (
+                    <button
+                      key={type}
+                      type='button'
+                      className={`modal-toggle-badge ${badgeConfig ? badgeConfig.cssClass : ''} ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
+                      onClick={() =>
+                        !isDisabled && handleInputChange('tipo', type)
+                      }
+                      disabled={isDisabled}
+                    >
+                      {badgeConfig ? badgeConfig.text : type}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className='modal-field-group'>
+              <label className='modal-toggle-badge-label'>
+                Situação
+                <span className='modal-required'>*</span>
+              </label>
+              <div className='modal-toggle-badges-container'>
+                {CUSTOM_STATUS_OPTIONS.map(status => {
+                  const badgeConfig = getCustomStatusToggleBadge(status.id);
+                  const isSelected = formData.customStatusId === status.id;
+
+                  return (
+                    <button
+                      key={status.id}
+                      type='button'
+                      className={`modal-toggle-badge ${badgeConfig ? badgeConfig.cssClass : ''} ${isSelected ? 'selected' : ''} ${loading ? 'disabled' : ''}`}
+                      onClick={() =>
+                        !loading && handleInputChange('customStatusId', status.id)
+                      }
+                      disabled={loading}
+                    >
+                      {badgeConfig ? badgeConfig.text : status.name}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <div className='modal-field-group'>
@@ -929,7 +1047,6 @@ ${bugData.others}${evidenceSection}`;
                   onChange={e => handleInputChange('titulo', e.target.value)}
                   required
                   disabled={loading}
-                  placeholder='Título da atividade'
                 />
                 <label htmlFor='titulo'>
                   Título
@@ -948,108 +1065,70 @@ ${bugData.others}${evidenceSection}`;
               </div>
             </div>
 
-            <div className='modal-field-group'>
-              <div className='modal-input-container'>
-                <select
-                  id='tipo'
-                  value={formData.tipo}
-                  onChange={e => handleInputChange('tipo', e.target.value)}
-                  required
-                  disabled={loading || activityType === 'deploy'}
-                >
-                  <option value=''>Selecione o tipo...</option>
-                  {availableTypes.map(type => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
-                <label htmlFor='tipo'>
-                  Tipo
-                  <span className='modal-required'>*</span>
-                </label>
-              </div>
-            </div>
+            {/* Campos de ID - ocultados quando link válido é fornecido */}
+            {!shouldHideIdFields && (
+              <>
+                <div className='modal-field-group'>
+                  <div className='modal-input-container'>
+                    <input
+                      type='number'
+                      id='accountId'
+                      value={formData.accountId}
+                      onChange={e =>
+                        handleInputChange('accountId', e.target.value)
+                      }
+                      required
+                      disabled={loading}
+                    />
+                    <label htmlFor='accountId'>
+                      ID do Grupo de Trabalho
+                      <span className='modal-required'>*</span>
+                    </label>
+                    {formData.accountId && !loading && (
+                      <button
+                        type='button'
+                        className='modal-clear-field'
+                        onClick={() => handleInputChange('accountId', '')}
+                        title='Limpar ID do Grupo de Trabalho'
+                      >
+                        <FaTimes />
+                      </button>
+                    )}
+                  </div>
+                </div>
 
-            <div className='modal-field-group'>
-              <div className='modal-input-container'>
-                <input
-                  type='number'
-                  id='accountId'
-                  value={formData.accountId}
-                  onChange={e => handleInputChange('accountId', e.target.value)}
-                  required
-                  disabled={loading}
-                  placeholder='Ex: 4874953'
-                />
-                <label htmlFor='accountId'>
-                  ID do Grupo de Trabalho
-                  <span className='modal-required'>*</span>
-                </label>
-                {formData.accountId && !loading && (
-                  <button
-                    type='button'
-                    className='modal-clear-field'
-                    onClick={() => handleInputChange('accountId', '')}
-                    title='Limpar ID do Grupo de Trabalho'
-                  >
-                    <FaTimes />
-                  </button>
-                )}
-              </div>
-            </div>
+                <div className='modal-field-group'>
+                  <div className='modal-input-container'>
+                    <input
+                      type='number'
+                      id='folderId'
+                      value={formData.folderId}
+                      onChange={e =>
+                        handleInputChange('folderId', e.target.value)
+                      }
+                      required
+                      disabled={loading}
+                    />
+                    <label htmlFor='folderId'>
+                      ID da Pasta/Projeto
+                      <span className='modal-required'>*</span>
+                    </label>
+                    {formData.folderId && !loading && (
+                      <button
+                        type='button'
+                        className='modal-clear-field'
+                        onClick={() => handleInputChange('folderId', '')}
+                        title='Limpar ID da Pasta/Projeto'
+                      >
+                        <FaTimes />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
 
-            <div className='modal-field-group'>
-              <div className='modal-input-container'>
-                <input
-                  type='number'
-                  id='folderId'
-                  value={formData.folderId}
-                  onChange={e => handleInputChange('folderId', e.target.value)}
-                  required
-                  disabled={loading}
-                  placeholder='Ex: 4883952'
-                />
-                <label htmlFor='folderId'>
-                  ID da Pasta/Projeto
-                  <span className='modal-required'>*</span>
-                </label>
-                {formData.folderId && !loading && (
-                  <button
-                    type='button'
-                    className='modal-clear-field'
-                    onClick={() => handleInputChange('folderId', '')}
-                    title='Limpar ID da Pasta/Projeto'
-                  >
-                    <FaTimes />
-                  </button>
-                )}
-              </div>
-            </div>
 
-            <div className='modal-field-group'>
-              <div className='modal-input-container'>
-                <select
-                  id='customStatusId'
-                  value={formData.customStatusId}
-                  onChange={e =>
-                    handleInputChange('customStatusId', Number(e.target.value))
-                  }
-                  required
-                  disabled={loading}
-                >
-                  {CUSTOM_STATUS_OPTIONS.map(status => (
-                    <option key={status.id} value={status.id}>
-                      {status.name}
-                    </option>
-                  ))}
-                </select>
-                <label htmlFor='customStatusId'>
-                  Situação padrão das atividades
-                  <span className='modal-required'>*</span>
-                </label>
-              </div>
-            </div>
 
             {/* Campos específicos do tipo de atividade */}
             {formData.tipo && getFieldsForType(formData.tipo).length > 0 && (

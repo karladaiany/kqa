@@ -1165,7 +1165,7 @@ const ActivityImportCard = () => {
     <section className='card' id='activity-import'>
       <div className='card-header'>
         <h2>
-          <FaFileImport className='header-icon' /> Importação de Atividades
+          <FaFileImport className='header-icon' /> Importar atividades
         </h2>
         {!showFields && (
           <button

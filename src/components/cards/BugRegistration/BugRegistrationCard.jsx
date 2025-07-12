@@ -155,7 +155,7 @@ const BugRegistrationCard = () => {
     } else {
       setEnvIdExtracted(false);
     }
-  }, [bugData.url, handleInputChange, bugData.envId]);
+  }, [bugData.url, bugData.envId, handleInputChange]);
 
   // Exibe campos se houver dados ou se estiver expandido
   const showFields = useMemo(
@@ -242,7 +242,9 @@ const BugRegistrationCard = () => {
           </div>
 
           <div className='campo-item'>
-            <div className={`campo-valor ${!urlValidation.isValid ? 'url-error' : envIdExtracted ? 'url-success' : ''}`}>
+            <div
+              className={`campo-valor ${!urlValidation.isValid ? 'url-error' : envIdExtracted ? 'url-success' : ''}`}
+            >
               <input
                 type='url'
                 value={bugData.url}

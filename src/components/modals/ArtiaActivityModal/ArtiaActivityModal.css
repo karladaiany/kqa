@@ -65,8 +65,7 @@
 }
 
 .modal-close-button:hover:not(:disabled) {
-  background-color: var(--hover-color);
-  color: var(--text-color);
+  color: var(--accent-color);
 }
 
 .modal-close-button:disabled {
@@ -139,7 +138,7 @@
 }
 
 .modal-body .section-divider svg {
-  color: var(--accent-color);
+  color: var(--primary-color);
   font-size: 1rem;
 }
 
@@ -173,7 +172,7 @@
   backdrop-filter: blur(4px);
   font-weight: 500;
   font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
-  background-color: #2d2e31;
+  background: transparent;
 }
 
 .modal-required {
@@ -200,7 +199,7 @@
   width: 100%;
   box-sizing: border-box;
   transition: border-color 0.2s ease;
-  background: #2d2e31;
+  background: var(--card-background);
   padding: 4px 8px;
 }
 
@@ -269,7 +268,7 @@
 
 .modal-input-container select option {
   padding: 8px;
-  background-color: #2d2e31;
+  background-color: var(--card-background);
   color: var(--text-primary);
 }
 
@@ -323,8 +322,7 @@
 }
 
 .modal-clear-field:hover {
-  background-color: var(--hover-color);
-  color: var(--error-color);
+  color: var(--accent-color);
 }
 
 .modal-clear-field:active {
@@ -676,7 +674,7 @@
   width: 100%;
   box-sizing: border-box;
   transition: border-color 0.2s ease;
-  background: #2d2e31;
+  background: var(--card-background);
   padding: 4px 8px;
 }
 
@@ -699,7 +697,7 @@
   width: 100%;
   box-sizing: border-box;
   transition: border-color 0.2s ease;
-  background: #2d2e31;
+  background: var(--card-background);
   padding: 4px 8px;
 }
 
@@ -831,7 +829,7 @@
 
 .modal-container .field-group select option {
   padding: 8px;
-  background-color: #2d2e31;
+  background-color: var(--card-background);
   color: var(--text-primary);
 }
 
@@ -850,7 +848,7 @@
   backdrop-filter: blur(4px);
   font-weight: 500;
   font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
-  background-color: #2d2e31;
+  background: transparent;
 }
 
 .modal-container .password-field input {
@@ -1120,6 +1118,197 @@ body.modal-open {
 }
 
 /* ========================================
+   ESTILOS PARA TOGGLE-BADGES DE TIPO
+   ======================================== */
+
+/* Variáveis CSS para cores dos tipos de atividade */
+:root {
+  --deploy-color: #010003;
+  --deploy-text-selected: #6272a4;
+  --bug-retrabalho-color: #efb650;
+  --bug-producao-color: #b91c1c;
+  --badge-text-selected: #282a36;
+
+  /* Cores para status de situação */
+  --nao-iniciado-color: #6b7280;
+  --backlog-color: #3b82f6;
+  --backlog-programado-color: #8b5cf6;
+  --triagem-color: #f59e0b;
+}
+
+.modal-toggle-badge-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--text-color);
+  margin-bottom: var(--spacing-xs);
+  font-weight: 500;
+}
+
+.modal-toggle-badges-container {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Estilo base para todos os toggle-badges */
+.modal-toggle-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'Google Sans Mono', Consolas, 'Courier New', monospace;
+  white-space: nowrap;
+  /* Estado normal igual ao botão secundário */
+  background: var(--card-background);
+  color: var(--text-secondary);
+  border: 2px solid var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  letter-spacing: 0.3px;
+  min-height: 34px;
+  text-transform: capitalize;
+  user-select: none;
+  margin: 14px 0px;
+}
+
+/* Estados hover para cada tipo específico */
+.modal-toggle-badge.deploy:hover:not(.disabled):not(.selected) {
+  border-color: var(--deploy-color);
+  color: var(--deploy-color);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(1, 0, 3, 0.2);
+}
+
+.modal-toggle-badge.bug-retrabalho:hover:not(.disabled):not(.selected) {
+  border-color: var(--bug-retrabalho-color);
+  color: var(--bug-retrabalho-color);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(239, 182, 80, 0.2);
+}
+
+.modal-toggle-badge.bug-producao:hover:not(.disabled):not(.selected) {
+  border-color: var(--bug-producao-color);
+  color: var(--bug-producao-color);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(185, 28, 28, 0.2);
+}
+
+/* Estados selected para cada tipo específico */
+.modal-toggle-badge.deploy.selected {
+  background-color: var(--deploy-color);
+  color: var(--deploy-text-selected);
+  border-color: var(--deploy-color);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(1, 0, 3, 0.3);
+}
+
+.modal-toggle-badge.bug-retrabalho.selected {
+  background-color: var(--bug-retrabalho-color);
+  color: var(--badge-text-selected);
+  border-color: var(--bug-retrabalho-color);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(239, 182, 80, 0.3);
+}
+
+.modal-toggle-badge.bug-producao.selected {
+  background-color: var(--bug-producao-color);
+  color: var(--badge-text-selected);
+  border-color: var(--bug-producao-color);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(185, 28, 28, 0.3);
+}
+
+/* Estados hover para cada status específico */
+.modal-toggle-badge.nao-iniciado:hover:not(.disabled):not(.selected) {
+  border-color: var(--nao-iniciado-color);
+  color: var(--nao-iniciado-color);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(107, 114, 128, 0.2);
+}
+
+.modal-toggle-badge.backlog:hover:not(.disabled):not(.selected) {
+  border-color: var(--backlog-color);
+  color: var(--backlog-color);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+.modal-toggle-badge.backlog-programado:hover:not(.disabled):not(.selected) {
+  border-color: var(--backlog-programado-color);
+  color: var(--backlog-programado-color);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
+}
+
+.modal-toggle-badge.triagem:hover:not(.disabled):not(.selected) {
+  border-color: var(--triagem-color);
+  color: var(--triagem-color);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
+}
+
+/* Estados selected para cada status específico */
+.modal-toggle-badge.nao-iniciado.selected {
+  background-color: var(--nao-iniciado-color);
+  color: var(--badge-text-selected);
+  border-color: var(--nao-iniciado-color);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3);
+}
+
+.modal-toggle-badge.backlog.selected {
+  background-color: var(--backlog-color);
+  color: var(--badge-text-selected);
+  border-color: var(--backlog-color);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.modal-toggle-badge.backlog-programado.selected {
+  background-color: var(--backlog-programado-color);
+  color: var(--badge-text-selected);
+  border-color: var(--backlog-programado-color);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+.modal-toggle-badge.triagem.selected {
+  background-color: var(--triagem-color);
+  color: var(--badge-text-selected);
+  border-color: var(--triagem-color);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+/* Estados gerais */
+.modal-toggle-badge.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.modal-toggle-badge:active:not(.disabled) {
+  transform: translateY(0);
+}
+
+/* Responsividade */
+@media (max-width: 640px) {
+  .modal-toggle-badges-container {
+    gap: var(--spacing-xs);
+  }
+
+  .modal-toggle-badge {
+    padding: 4px 8px;
+    font-size: 11px;
+    min-height: 30px;
+  }
+}
+
+/* ========================================
    ESTILOS PARA CAMPO DE LINK DO ARTIA
    ======================================== */
 
@@ -1152,7 +1341,8 @@ body.modal-open {
 
 /* Mensagens de feedback */
 .input-error-message,
-.input-help-message {
+.input-help-message,
+.input-success-message {
   position: absolute;
   top: 100%;
   left: 8px;
@@ -1176,6 +1366,11 @@ body.modal-open {
   font-style: italic;
 }
 
+.input-success-message {
+  color: var(--success-color, #10b981);
+  font-weight: 500;
+}
+
 .input-error-message svg {
   font-size: 10px;
   flex-shrink: 0;
@@ -1183,7 +1378,8 @@ body.modal-open {
 
 /* Ajuste do espaçamento quando há mensagens */
 .modal-field-group:has(.input-error-message),
-.modal-field-group:has(.input-help-message) {
+.modal-field-group:has(.input-help-message),
+.modal-field-group:has(.input-success-message) {
   margin-bottom: 1.75rem;
 }
 
