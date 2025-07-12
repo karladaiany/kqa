@@ -369,7 +369,7 @@ const AnnotationsCard = () => {
 
   return (
     <ActiveEditorContext.Provider value={contextValue}>
-      <section className='card' id='annotations'>
+      <>
         {/* Anotações Rápidas */}
         <div className='annotations-subsection'>
           <div className='subsection-header'>
@@ -706,10 +706,8 @@ const AnnotationsCard = () => {
               style={{ display: 'none' }}
               onChange={handleImageUpload}
             />
-          </div>{' '}
-          {/* Fim do subsection-content */}
-        </div>{' '}
-        {/* Fim da seção de anotações personalizadas */}
+          </div>
+        </div>
         {/* Modal de confirmação de exclusão */}
         {showDeleteConfirm && (
           <div className='delete-modal-overlay' onClick={cancelDelete}>
@@ -737,7 +735,7 @@ const AnnotationsCard = () => {
             </div>
           </div>
         )}
-      </section>
+      </>
     </ActiveEditorContext.Provider>
   );
 };
