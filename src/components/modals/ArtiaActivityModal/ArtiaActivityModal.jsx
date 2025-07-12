@@ -385,6 +385,19 @@ const ArtiaActivityModal = ({
         toast.error(`O campo "${field.label}" é obrigatório`);
         return false;
       }
+
+      // Validação específica para campos numéricos com min/max
+      if (field.type === 'number' && formData[field.name] !== undefined && formData[field.name] !== '') {
+        const value = Number(formData[field.name]);
+        if (field.min !== undefined && value < field.min) {
+          toast.error(`O campo "${field.label}" deve ser maior ou igual a ${field.min}`);
+          return false;
+        }
+        if (field.max !== undefined && value > field.max) {
+          toast.error(`O campo "${field.label}" deve ser menor ou igual a ${field.max}`);
+          return false;
+        }
+      }
     }
 
     return true;
@@ -665,10 +678,23 @@ ${bugData.others}${evidenceSection}`;
                 value={value}
                 onChange={e => handleInputChange(field.name, e.target.value)}
                 required={field.required}
+                min={field.min}
+                max={field.max}
+                placeholder={
+                  field.min !== undefined && field.max !== undefined
+                    ? `${field.min} a ${field.max}`
+                    : ''
+                }
               />
               <label htmlFor={field.name}>
                 {field.label}
                 {field.required && <span className='modal-required'>*</span>}
+                {field.min !== undefined && field.max !== undefined && (
+                  <span className='modal-field-hint'>
+                    {' '}
+                    ({field.min} a {field.max})
+                  </span>
+                )}
               </label>
               {value && (
                 <button
