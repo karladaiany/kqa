@@ -10,3 +10,4 @@
 /* Component Styles */
 @import './components/main.css';
 @import './components/annotations.css';
+@import './components/my-environments.css';

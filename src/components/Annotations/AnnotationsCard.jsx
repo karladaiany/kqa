@@ -28,6 +28,7 @@ import { useAnnotations } from '../../hooks/useAnnotations';
 import { useBugRegistration } from '../../hooks/useBugRegistration';
 import { MiniCard } from './MiniCard';
 import QuickNotesBadge from './QuickNotesBadge';
+import MyEnvironmentsSection from './MyEnvironmentsSection';
 
 // Contexto para gerenciar o editor ativo
 const ActiveEditorContext = createContext();
@@ -368,7 +369,7 @@ const AnnotationsCard = () => {
 
   return (
     <ActiveEditorContext.Provider value={contextValue}>
-      <section className='card' id='annotations'>
+      <>
         {/* Anotações Rápidas */}
         <div className='annotations-subsection'>
           <div className='subsection-header'>
@@ -705,10 +706,8 @@ const AnnotationsCard = () => {
               style={{ display: 'none' }}
               onChange={handleImageUpload}
             />
-          </div>{' '}
-          {/* Fim do subsection-content */}
-        </div>{' '}
-        {/* Fim da seção de anotações personalizadas */}
+          </div>
+        </div>
         {/* Modal de confirmação de exclusão */}
         {showDeleteConfirm && (
           <div className='delete-modal-overlay' onClick={cancelDelete}>
@@ -736,9 +735,17 @@ const AnnotationsCard = () => {
             </div>
           </div>
         )}
-      </section>
+      </>
     </ActiveEditorContext.Provider>
   );
 };
 
-export default AnnotationsCard;
+// Adiciona a seção Meus Ambientes como independente
+export default function AnnotationsCardWrapper() {
+  return (
+    <>
+      <AnnotationsCard />
+      <MyEnvironmentsSection />
+    </>
+  );
+}
