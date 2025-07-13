@@ -37,6 +37,7 @@ import {
   CUSTOM_STATUS_OPTIONS,
 } from '../../../constants/artiaOptions';
 import './ActivityImportCard.css';
+import useSettings from '../../../hooks/useSettings';
 
 const ActivityImportCard = () => {
   // Obter apenas os tipos de atividade habilitados
@@ -76,6 +77,8 @@ const ActivityImportCard = () => {
     downloadTemplate,
     downloadUpdateTemplate,
   } = useActivityImport();
+
+  const { artiaCredentials, hasArtiaCredentials } = useSettings();
 
   // Estados locais do componente
   const [expanded, setExpanded] = useState(false);
@@ -323,8 +326,10 @@ const ActivityImportCard = () => {
     }
 
     // Validar credenciais básicas
-    if (!credentials.email || !credentials.password) {
-      toast.error('Por favor, preencha email e senha');
+    if (!artiaCredentials.login || !artiaCredentials.senha) {
+      toast.error(
+        'Por favor, configure suas credenciais de acesso ao Artia nas Configurações.'
+      );
       return;
     }
 
@@ -348,7 +353,14 @@ const ActivityImportCard = () => {
     if (success) {
       setShowPreview(true);
     }
-  }, [selectedFile, processFile, importName, credentials, importMode]);
+  }, [
+    selectedFile,
+    processFile,
+    importName,
+    credentials,
+    importMode,
+    artiaCredentials,
+  ]);
 
   /**
    * Executar importação
@@ -361,8 +373,8 @@ const ActivityImportCard = () => {
 
     // Preparar os dados de configuração
     const importConfig = {
-      email: credentials.email,
-      password: credentials.password,
+      email: artiaCredentials.login,
+      password: artiaCredentials.senha,
       useFileAccountId: credentials.useFileAccountId,
       useFileFolderId: credentials.useFileFolderId,
       accountId: credentials.useFileAccountId ? null : credentials.accountId,
@@ -380,7 +392,13 @@ const ActivityImportCard = () => {
         '✅ Importação concluída! Verifique o histórico para baixar relatórios.'
       );
     }
-  }, [canProceed, executeImport, credentials, selectedStatus]);
+  }, [
+    canProceed,
+    executeImport,
+    credentials,
+    selectedStatus,
+    artiaCredentials,
+  ]);
 
   /**
    * Redownload de relatório do histórico
@@ -557,47 +575,21 @@ const ActivityImportCard = () => {
       {/* Dados adicionais */}
       <div className='credentials-section'>
         <h4>Dados adicionais</h4>
-
         <div className='credentials-grid'>
-          {/* Login e Senha na mesma linha */}
-          <div className='grid-row'>
-            <div className='import-identification'>
-              <label htmlFor='login-field'>
-                Login <span style={{ color: '#dc3545' }}>*</span>
-              </label>
-              <div className='input-container'>
-                <input
-                  id='login-field'
-                  type='email'
-                  value={credentials.email}
-                  onChange={e => updateCredentials({ email: e.target.value })}
-                  placeholder='seu.email@empresa.com'
-                  className='import-name-input'
-                  required
-                />
-              </div>
-            </div>
-
-            <div className='import-identification'>
-              <label htmlFor='password-field'>
-                Senha <span style={{ color: '#dc3545' }}>*</span>
-              </label>
-              <div className='input-container'>
-                <input
-                  id='password-field'
-                  type='password'
-                  value={credentials.password}
-                  onChange={e =>
-                    updateCredentials({ password: e.target.value })
-                  }
-                  placeholder='Sua senha de acesso'
-                  className='import-name-input'
-                  required
-                />
+          {/* Aviso sobre credenciais do Artia */}
+          <div className='credentials-info-row'>
+            <div className='import-identification' style={{ width: '100%' }}>
+              <div
+                className='input-container'
+                style={{ background: '#f8f9fa', border: '1px solid #e0e0e0' }}
+              >
+                <span style={{ color: '#555', fontSize: 13 }}>
+                  Agora, as credenciais de acesso do Artia são configuradas na
+                  área de <b>Configurações</b> (no menu lateral).
+                </span>
               </div>
             </div>
           </div>
-
           {/* Descrição e Situação padrão na mesma linha */}
           <div className='grid-row'>
             <div className='import-identification'>
@@ -733,8 +725,8 @@ const ActivityImportCard = () => {
         className='btn-action'
         onClick={handleProcessFile}
         disabled={
-          !credentials.email ||
-          !credentials.password ||
+          !artiaCredentials.login ||
+          !artiaCredentials.senha ||
           (importMode === 'create' &&
             !credentials.useFileAccountId &&
             !credentials.accountId) ||
@@ -894,8 +886,8 @@ const ActivityImportCard = () => {
               className='btn-primary'
               onClick={handleExecuteImport}
               disabled={
-                !credentials.email ||
-                !credentials.password ||
+                !artiaCredentials.login ||
+                !artiaCredentials.senha ||
                 (importMode === 'create' &&
                   !credentials.useFileAccountId &&
                   !credentials.accountId) ||
@@ -995,9 +987,9 @@ const ActivityImportCard = () => {
         <div className='preview-config-item'>
           <span className='preview-config-label'>Login:</span>
           <span
-            className={`preview-config-value ${credentials.email ? 'cached' : 'empty'}`}
+            className={`preview-config-value ${artiaCredentials.login ? 'cached' : 'empty'}`}
           >
-            {credentials.email || 'Não informado'}
+            {artiaCredentials.login || 'Não informado'}
           </span>
         </div>
       </div>

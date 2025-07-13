@@ -14,9 +14,10 @@ import {
   FaFileExport, // Added icons for new cards
   FaFileImport, // Icon for Activity Import
   FaStickyNote,
+  FaCog, // Icon for Settings
 } from 'react-icons/fa';
 
-const SidebarMenu = ({ open = true, onClose }) => {
+const SidebarMenu = ({ open = true, onClose, onSettingsClick }) => {
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -126,6 +127,18 @@ const SidebarMenu = ({ open = true, onClose }) => {
           >
             <FaStickyNote /> Anotações
           </div>
+
+          {/* Separador visual */}
+          <div className='sidebar-separator'></div>
+
+          {/* Botão de configurações */}
+          <div
+            className='floating-nav-item settings-item'
+            onClick={onSettingsClick}
+            title='Configurações'
+          >
+            <FaCog /> Configurações
+          </div>
         </>
       )}
     </nav>
@@ -135,6 +148,7 @@ const SidebarMenu = ({ open = true, onClose }) => {
 SidebarMenu.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
+  onSettingsClick: PropTypes.func,
 };
 
 export default SidebarMenu;

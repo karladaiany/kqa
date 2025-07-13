@@ -11,6 +11,7 @@ import { useRandomChars } from '../../hooks/useRandomChars';
 import { useTextCounter } from '../../hooks/useTextCounter';
 import { toast } from 'react-toastify';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import useSettings, { AVAILABLE_FEATURES } from '../../hooks/useSettings';
 import {
   FaCopy,
   FaSync,
@@ -84,6 +85,7 @@ CategoryCard.propTypes = {
 
 const DataGenerator = () => {
   useTextareaResize();
+  const { isFeatureVisible } = useSettings();
 
   const {
     isLoading,
@@ -434,23 +436,31 @@ const DataGenerator = () => {
     <div className='row'>
       <div className='col-6'>
         <div className='card-stack'>
-          {renderDocumentosCard()}
-          {renderDadosPessoaisCard()}
-          <Suspense fallback={<LoadingSpinner />}>
-            <FileGeneratorCard generatorFunctions={allGeneratorFunctions} />
-          </Suspense>
+          {isFeatureVisible(AVAILABLE_FEATURES.DOCUMENTOS) &&
+            renderDocumentosCard()}
+          {isFeatureVisible(AVAILABLE_FEATURES.DADOS_PESSOAIS) &&
+            renderDadosPessoaisCard()}
+          {isFeatureVisible(AVAILABLE_FEATURES.FILE_GENERATOR) && (
+            <Suspense fallback={<LoadingSpinner />}>
+              <FileGeneratorCard generatorFunctions={allGeneratorFunctions} />
+            </Suspense>
+          )}
         </div>
       </div>
 
       <div className='col-6'>
         <div className='card-stack'>
-          {renderProdutoCard()}
-          {renderCartaoCard()}
-          {renderCaracteresCard()}
-          {renderContadorCard()}
-          <Suspense fallback={<LoadingSpinner />}>
-            <ComplementaryDataCard />
-          </Suspense>
+          {isFeatureVisible(AVAILABLE_FEATURES.PRODUTO) && renderProdutoCard()}
+          {isFeatureVisible(AVAILABLE_FEATURES.CARTAO) && renderCartaoCard()}
+          {isFeatureVisible(AVAILABLE_FEATURES.CARACTERES) &&
+            renderCaracteresCard()}
+          {isFeatureVisible(AVAILABLE_FEATURES.CONTADOR) &&
+            renderContadorCard()}
+          {isFeatureVisible(AVAILABLE_FEATURES.DADOS_COMPLEMENTARES) && (
+            <Suspense fallback={<LoadingSpinner />}>
+              <ComplementaryDataCard />
+            </Suspense>
+          )}
         </div>
       </div>
     </div>
