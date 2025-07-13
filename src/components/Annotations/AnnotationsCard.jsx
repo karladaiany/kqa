@@ -371,7 +371,7 @@ const AnnotationsCard = () => {
     <ActiveEditorContext.Provider value={contextValue}>
       <>
         {/* Anotações Rápidas */}
-        <div className='annotations-subsection'>
+        <div id='quick-annotations' className='annotations-subsection'>
           <div className='subsection-header'>
             <h3>
               <FaBolt className='subsection-icon' /> Anotações rápidas
@@ -422,7 +422,7 @@ const AnnotationsCard = () => {
           </div>
         </div>
         {/* Anotações Personalizadas */}
-        <div className='annotations-subsection'>
+        <div id='custom-annotations' className='annotations-subsection'>
           <div className='subsection-header'>
             <h3>
               <FaEdit className='subsection-icon' /> Anotações personalizadas

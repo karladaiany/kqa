@@ -14,9 +14,13 @@ import {
   FaFileExport, // Added icons for new cards
   FaFileImport, // Icon for Activity Import
   FaStickyNote,
+  FaCog, // Icon for Settings
+  FaBolt, // Ícone para Anotações rápidas
+  FaEdit, // Ícone para Anotações personalizadas
+  FaGlobe, // Ícone para Meus ambientes
 } from 'react-icons/fa';
 
-const SidebarMenu = ({ open = true, onClose }) => {
+const SidebarMenu = ({ open = true, onClose, onSettingsClick }) => {
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -122,9 +126,33 @@ const SidebarMenu = ({ open = true, onClose }) => {
           </div>
           <div
             className='floating-nav-item'
-            onClick={() => scrollToSection('annotations')}
+            onClick={() => scrollToSection('quick-annotations')}
           >
-            <FaStickyNote /> Anotações
+            <FaBolt /> Anotações rápidas
+          </div>
+          <div
+            className='floating-nav-item'
+            onClick={() => scrollToSection('custom-annotations')}
+          >
+            <FaEdit /> Anotações personalizadas
+          </div>
+          <div
+            className='floating-nav-item'
+            onClick={() => scrollToSection('my-environments')}
+          >
+            <FaGlobe /> Meus ambientes
+          </div>
+
+          {/* Separador visual */}
+          <div className='sidebar-separator'></div>
+
+          {/* Botão de configurações */}
+          <div
+            className='floating-nav-item settings-item'
+            onClick={onSettingsClick}
+            title='Configurações'
+          >
+            <FaCog /> Configurações
           </div>
         </>
       )}
@@ -135,6 +163,7 @@ const SidebarMenu = ({ open = true, onClose }) => {
 SidebarMenu.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
+  onSettingsClick: PropTypes.func,
 };
 
 export default SidebarMenu;

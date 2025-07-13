@@ -1021,6 +1021,26 @@ input-clearable .number-input {
   font-size: 1.2rem;
 }
 
+/* Separador visual no sidebar */
+.sidebar-separator {
+  height: 1px;
+  background: var(--border-color);
+  margin: 0.5rem 1rem;
+  opacity: 0.5;
+}
+
+/* Botão de configurações no sidebar */
+.sidebar-menu .floating-nav-item.settings-item {
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 0.5rem;
+}
+
+.sidebar-menu .floating-nav-item.settings-item:hover {
+  background-color: var(--primary-color);
+  color: var(--text-button);
+}
+
 /* Componentes da estrutura principal */
 .content-wrapper {
   display: flex;

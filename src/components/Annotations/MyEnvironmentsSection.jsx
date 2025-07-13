@@ -67,7 +67,7 @@ const MyEnvironmentsSection = () => {
   }
 
   return (
-    <div className='my-environments-section'>
+    <div id='my-environments' className='my-environments-section'>
       <div className='section-header'>
         <h4>
           <FaGlobe className='section-icon' />

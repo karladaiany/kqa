@@ -11,6 +11,7 @@ import {
   FaLink,
   FaCheck,
   FaExclamationTriangle,
+  FaCog,
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import {
@@ -22,6 +23,7 @@ import {
 } from '../../../constants/artiaOptions';
 import { ArtiaService } from '../../../services/artiaService';
 import ActivityHistoryCard from './ActivityHistoryCard';
+import useSettings from '../../../hooks/useSettings';
 import './ArtiaActivityModal.css';
 
 // Hook para debounce
@@ -80,19 +82,23 @@ const getActivityTypeToggleBadge = type => {
 // Função para obter as configurações da badge baseado no status customizado
 const getCustomStatusToggleBadge = statusId => {
   const badgeConfig = {
-    246888: { // Não iniciado
+    246888: {
+      // Não iniciado
       text: 'Não iniciado',
       cssClass: 'nao-iniciado',
     },
-    246886: { // Backlog
+    246886: {
+      // Backlog
       text: 'Backlog',
       cssClass: 'backlog',
     },
-    246887: { // Backlog Programado
+    246887: {
+      // Backlog Programado
       text: 'Backlog Programado',
       cssClass: 'backlog-programado',
     },
-    246895: { // Triagem
+    246895: {
+      // Triagem
       text: 'Triagem',
       cssClass: 'triagem',
     },
@@ -169,12 +175,12 @@ const ArtiaActivityModal = ({
   activityType,
   initialData = {},
 }) => {
+  const { artiaCredentials, hasArtiaCredentials } = useSettings();
+
   const [formData, setFormData] = useState(() => {
-    // Carregar dados salvos do localStorage
+    // Carregar dados salvos do localStorage (exceto credenciais)
     const savedData = localStorage.getItem('artiaModalData');
     const defaultData = {
-      login: '',
-      senha: '',
       titulo: '',
       tipo: '',
       accountId: '',
@@ -190,7 +196,9 @@ const ArtiaActivityModal = ({
     if (savedData) {
       try {
         const parsed = JSON.parse(savedData);
-        return { ...defaultData, ...parsed };
+        // Não carregar credenciais do localStorage, usar do hook de configurações
+        const { login, senha, ...otherData } = parsed;
+        return { ...defaultData, ...otherData };
       } catch (error) {
         return defaultData;
       }
@@ -219,6 +227,16 @@ const ArtiaActivityModal = ({
 
   // Debounce para salvar dados no localStorage (exceto credenciais)
   const debouncedFormData = useDebounce(formData, 800);
+
+  // Verificar se as credenciais estão configuradas
+  useEffect(() => {
+    if (isOpen && !hasArtiaCredentials()) {
+      toast.error(
+        'Credenciais do Artia não configuradas. Configure-as nas configurações.',
+        { autoClose: 5000 }
+      );
+    }
+  }, [isOpen, hasArtiaCredentials]);
 
   // Definir tipos disponíveis baseado na origem
   const availableTypes =
@@ -267,8 +285,7 @@ const ArtiaActivityModal = ({
   // Salvar dados com debounce (exceto credenciais)
   useEffect(() => {
     if (debouncedFormData && Object.keys(debouncedFormData).length > 0) {
-      const { login, senha, ...dataToSave } = debouncedFormData;
-      localStorage.setItem('artiaModalData', JSON.stringify(dataToSave));
+      localStorage.setItem('artiaModalData', JSON.stringify(debouncedFormData));
     }
   }, [debouncedFormData]);
 
@@ -373,10 +390,13 @@ const ArtiaActivityModal = ({
 
   // Validação melhorada para todos os campos obrigatórios
   const isFormValid = useCallback(() => {
+    // Verificar se as credenciais estão configuradas
+    if (!hasArtiaCredentials()) {
+      return false;
+    }
+
     // Campos básicos obrigatórios
     if (
-      !formData.login?.trim() ||
-      !formData.senha?.trim() ||
       !formData.titulo?.trim() ||
       !formData.tipo?.trim() ||
       !formData.accountId?.toString().trim() ||
@@ -405,10 +425,16 @@ const ArtiaActivityModal = ({
   }, [formData]);
 
   const validateForm = () => {
+    // Verificar se as credenciais estão configuradas
+    if (!hasArtiaCredentials()) {
+      toast.error(
+        'Credenciais do Artia não configuradas. Configure-as nas configurações.'
+      );
+      return false;
+    }
+
     // Campos básicos obrigatórios
     if (
-      !formData.login ||
-      !formData.senha ||
       !formData.titulo ||
       !formData.tipo ||
       !formData.accountId ||
@@ -844,70 +870,19 @@ ${bugData.others}${evidenceSection}`;
 
         <form onSubmit={handleSubmit} className='modal-form'>
           <div className='modal-body'>
-            {/* Campos básicos obrigatórios */}
+            {/* Aviso sobre credenciais do Artia */}
             <div className='section-divider'>
-              <FaLock /> Autenticação
+              <FaLock /> Autenticação Artia
             </div>
-
             <div className='modal-field-group'>
-              <div className='modal-input-container'>
-                <input
-                  type='text'
-                  id='login'
-                  value={formData.login}
-                  onChange={e => handleInputChange('login', e.target.value)}
-                  required
-                  disabled={loading}
-                />
-                <label htmlFor='login'>
-                  Login
-                  <span className='modal-required'>*</span>
-                </label>
-                {formData.login && !loading && (
-                  <button
-                    type='button'
-                    className='modal-clear-field'
-                    onClick={() => handleInputChange('login', '')}
-                    title='Limpar Login'
-                  >
-                    <FaTimes />
-                  </button>
-                )}
-              </div>
-            </div>
-
-            <div className='modal-field-group'>
-              <div className='modal-input-container'>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  id='senha'
-                  value={formData.senha}
-                  onChange={e => handleInputChange('senha', e.target.value)}
-                  required
-                  disabled={loading}
-                />
-                <label htmlFor='senha'>
-                  Senha
-                  <span className='modal-required'>*</span>
-                </label>
-                {formData.senha && !loading && (
-                  <button
-                    type='button'
-                    className='modal-clear-field'
-                    onClick={() => handleInputChange('senha', '')}
-                    title='Limpar Senha'
-                  >
-                    <FaTimes />
-                  </button>
-                )}
-                <button
-                  type='button'
-                  className='modal-toggle-password'
-                  onClick={() => setShowPassword(!showPassword)}
-                  disabled={loading}
-                >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </button>
+              <div
+                className='modal-input-container'
+                style={{ background: '#f8f9fa', border: '1px solid #e0e0e0' }}
+              >
+                <span style={{ color: '#555', fontSize: 13 }}>
+                Agora, as credenciais de acesso do Artia são configuradas na
+                  área de <b>Configurações</b> (no menu lateral).
+                </span>
               </div>
             </div>
 
@@ -963,10 +938,17 @@ ${bugData.others}${evidenceSection}`;
                 {linkValidation.isValid &&
                   formData.artiaLink &&
                   !linkExtracted && (
-                    <div className={shouldHideIdFields ? 'input-success-message' : 'input-help-message'}>
+                    <div
+                      className={
+                        shouldHideIdFields
+                          ? 'input-success-message'
+                          : 'input-help-message'
+                      }
+                    >
                       {shouldHideIdFields ? (
                         <>
-                          <FaCheck /> IDs do Grupo e Pasta preenchidos automaticamente
+                          <FaCheck /> IDs do Grupo e Pasta preenchidos
+                          automaticamente
                         </>
                       ) : (
                         'Link válido - os IDs serão extraídos automaticamente'
@@ -1027,7 +1009,8 @@ ${bugData.others}${evidenceSection}`;
                       type='button'
                       className={`modal-toggle-badge ${badgeConfig ? badgeConfig.cssClass : ''} ${isSelected ? 'selected' : ''} ${loading ? 'disabled' : ''}`}
                       onClick={() =>
-                        !loading && handleInputChange('customStatusId', status.id)
+                        !loading &&
+                        handleInputChange('customStatusId', status.id)
                       }
                       disabled={loading}
                     >
@@ -1127,8 +1110,6 @@ ${bugData.others}${evidenceSection}`;
                 </div>
               </>
             )}
-
-
 
             {/* Campos específicos do tipo de atividade */}
             {formData.tipo && getFieldsForType(formData.tipo).length > 0 && (
