@@ -22,7 +22,6 @@ import {
 import { useSettings, AVAILABLE_FEATURES } from '../../contexts/SettingsContext';
 
 const SidebarMenu = ({ open = true, onClose, onSettingsClick }) => {
-const SidebarMenu = ({ open = true, onClose, onSettingsClick }) => {
   const menuRef = useRef(null);
   const { isFeatureVisible } = useSettings();
 
