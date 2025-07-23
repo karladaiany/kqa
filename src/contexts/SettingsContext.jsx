@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { encrypt, decrypt } from '../utils/crypto';
 
 const SETTINGS_STORAGE_KEY = 'kqa_settings';
@@ -18,7 +18,6 @@ export const AVAILABLE_FEATURES = {
   TEST_STATUS: 'test-status',
   DEPLOY: 'deploy',
   ACTIVITY_IMPORT: 'activity-import',
-  // Remover ANNOTATIONS agrupado e adicionar separados:
   QUICK_ANNOTATIONS: 'quick-annotations',
   CUSTOM_ANNOTATIONS: 'custom-annotations',
   MY_ENVIRONMENTS: 'my-environments',
@@ -45,7 +44,11 @@ const DEFAULT_SETTINGS = {
   },
 };
 
-const useSettings = () => {
+// Criar o contexto
+const SettingsContext = createContext();
+
+// Provider do contexto
+export const SettingsProvider = ({ children }) => {
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [artiaCredentials, setArtiaCredentials] = useState({
     login: '',
@@ -60,7 +63,6 @@ const useSettings = () => {
       const savedSettings = localStorage.getItem(SETTINGS_STORAGE_KEY);
       const savedCredentials = localStorage.getItem(ARTIA_CREDENTIALS_KEY);
 
-      // Se há dados salvos, marca que o usuário já modificou as configurações
       if (savedSettings || savedCredentials) {
         setHasUserModifiedSettings(true);
       }
@@ -77,7 +79,6 @@ const useSettings = () => {
         }));
       }
 
-      // Carregar credenciais criptografadas
       if (savedCredentials) {
         try {
           const decrypted = JSON.parse(decrypt(savedCredentials));
@@ -96,7 +97,7 @@ const useSettings = () => {
 
   // Salvar configurações no localStorage
   const saveSettings = useCallback(
-    newSettings => {
+    (newSettings, forceSave = false) => {
       try {
         const settingsToSave = {
           ...settings,
@@ -107,13 +108,13 @@ const useSettings = () => {
           },
         };
 
-        // Só salva no localStorage se o usuário já modificou as configurações
-        if (hasUserModifiedSettings) {
+        if (forceSave || hasUserModifiedSettings) {
           localStorage.setItem(
             SETTINGS_STORAGE_KEY,
             JSON.stringify(settingsToSave)
           );
         }
+        
         setSettings(settingsToSave);
       } catch (error) {
         console.error('Erro ao salvar configurações:', error);
@@ -122,7 +123,36 @@ const useSettings = () => {
     [settings, hasUserModifiedSettings]
   );
 
-  // Salvar credenciais do Artia de forma criptografada
+  // Verificar se uma funcionalidade está visível
+  const isFeatureVisible = useCallback(
+    featureId => {
+      return settings.features[featureId] !== false;
+    },
+    [settings.features]
+  );
+
+  // Alternar visibilidade de uma funcionalidade
+  const toggleFeature = useCallback(
+    featureId => {
+      setHasUserModifiedSettings(true);
+      
+      const newFeatures = {
+        ...settings.features,
+        [featureId]: !settings.features[featureId],
+      };
+      
+      const newSettings = {
+        ...settings,
+        features: newFeatures,
+      };
+
+      localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(newSettings));
+      setSettings(newSettings);
+    },
+    [settings]
+  );
+
+  // Salvar credenciais do Artia
   const saveArtiaCredentials = useCallback(credentials => {
     try {
       const encrypted = encrypt(JSON.stringify(credentials));
@@ -145,27 +175,6 @@ const useSettings = () => {
     }
   }, []);
 
-  // Verificar se uma funcionalidade está visível
-  const isFeatureVisible = useCallback(
-    featureId => {
-      return settings.features[featureId] !== false;
-    },
-    [settings.features]
-  );
-
-  // Alternar visibilidade de uma funcionalidade
-  const toggleFeature = useCallback(
-    featureId => {
-      setHasUserModifiedSettings(true);
-      saveSettings({
-        features: {
-          [featureId]: !settings.features[featureId],
-        },
-      });
-    },
-    [settings.features, saveSettings]
-  );
-
   // Verificar se as credenciais do Artia estão configuradas
   const hasArtiaCredentials = useCallback(() => {
     return !!(artiaCredentials.login && artiaCredentials.senha);
@@ -176,7 +185,7 @@ const useSettings = () => {
     loadSettings();
   }, [loadSettings]);
 
-  return {
+  const contextValue = {
     settings,
     artiaCredentials,
     isLoading,
@@ -188,6 +197,21 @@ const useSettings = () => {
     hasArtiaCredentials,
     AVAILABLE_FEATURES,
   };
+
+  return (
+    <SettingsContext.Provider value={contextValue}>
+      {children}
+    </SettingsContext.Provider>
+  );
 };
 
-export default useSettings;
+// Hook para usar o contexto
+export const useSettings = () => {
+  const context = useContext(SettingsContext);
+  if (!context) {
+    throw new Error('useSettings deve ser usado dentro de um SettingsProvider');
+  }
+  return context;
+};
+
+export default SettingsContext; 

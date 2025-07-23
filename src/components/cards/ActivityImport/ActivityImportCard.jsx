@@ -37,7 +37,7 @@ import {
   CUSTOM_STATUS_OPTIONS,
 } from '../../../constants/artiaOptions';
 import './ActivityImportCard.css';
-import useSettings from '../../../hooks/useSettings';
+import { useSettings } from '../../../contexts/SettingsContext';
 
 const ActivityImportCard = () => {
   // Obter apenas os tipos de atividade habilitados

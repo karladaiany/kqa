@@ -116,40 +116,53 @@
   font-size: 0.9rem;
 }
 
-/* Botão de toggle de funcionalidade */
-.feature-toggle {
-  background: none;
-  border: none;
-  padding: 0.5rem;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  transition: all var(--transition-speed);
+/* Status círculo minimalista */
+.feature-status {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 2.5rem;
-  height: 2.5rem;
 }
 
-.feature-toggle:hover {
-  background: var(--background-color);
+.status-circle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.feature-toggle:active {
+.status-circle.active {
+  background: linear-gradient(135deg, #10b981, #059669);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+}
+
+.status-circle.inactive {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+}
+
+.status-circle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.status-circle.active:hover {
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.6);
+}
+
+.status-circle.inactive:hover {
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.6);
+}
+
+.status-circle:active {
   transform: scale(0.95);
 }
 
-.toggle-icon {
-  font-size: 1rem;
-  transition: color var(--transition-speed);
-}
-
-.toggle-icon.visible {
-  color: var(--success-color);
-}
-
-.toggle-icon.hidden {
-  color: var(--text-secondary);
+.status-circle:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
 }
 
 /* Ações de credenciais */
@@ -193,6 +206,11 @@
     font-size: 1.1rem;
     width: 1.25rem;
   }
+
+  .status-circle {
+    width: 14px;
+    height: 14px;
+  }
 }
 
 /* Animações */
@@ -218,11 +236,6 @@
 }
 
 /* Melhorias de acessibilidade */
-.feature-toggle:focus {
-  outline: 2px solid var(--primary-color);
-  outline-offset: 2px;
-}
-
 .feature-item:focus-within {
   box-shadow: 0 0 0 2px rgba(255, 121, 198, 0.2);
 }

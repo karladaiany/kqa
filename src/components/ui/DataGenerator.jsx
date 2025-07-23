@@ -11,7 +11,7 @@ import { useRandomChars } from '../../hooks/useRandomChars';
 import { useTextCounter } from '../../hooks/useTextCounter';
 import { toast } from 'react-toastify';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import useSettings, { AVAILABLE_FEATURES } from '../../hooks/useSettings';
+import { useSettings, AVAILABLE_FEATURES } from '../../contexts/SettingsContext';
 import {
   FaCopy,
   FaSync,
@@ -267,7 +267,7 @@ const DataGenerator = () => {
           onRegenerate={() => regenerateProductField('descricao')}
         />
         <div className='campo-item' data-testid='produto-categorias-field'>
-          <label>Categorias</label>
+          <div className='campo-label'>Categorias</div>
           <div className='campo-valor'>
             <div className='categories-container'>
               {product.categorias.map((categoria, index) => (
@@ -370,6 +370,8 @@ const DataGenerator = () => {
         <div className='card-filters'>
           <div className='input-clearable'>
             <input
+              id='caracteres-length'
+              name='caracteresLength'
               type='number'
               min='1'
               max='99999'
@@ -421,7 +423,7 @@ const DataGenerator = () => {
           showCopy={false}
         />
         <div className='campo-item' data-testid='contador-total-field'>
-          <label>Total de caracteres</label>
+          <div className='campo-label'>Total de caracteres</div>
           <div className='campo-valor'>
             <span className='copyable' data-testid='contador-total-value'>
               {textCounter.count}

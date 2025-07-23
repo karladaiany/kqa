@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ToastContainer } from 'react-toastify';
 import {
   FaSun,
@@ -42,8 +42,8 @@ import {
   alternarTema,
 } from './config/theme';
 
-// Utilitários de debug removidos - código limpo para produção
-import useSettings, { AVAILABLE_FEATURES } from './hooks/useSettings';
+// Usar o novo contexto de configurações
+import { useSettings, AVAILABLE_FEATURES } from './contexts/SettingsContext';
 
 const App = () => {
   const [darkMode, setDarkMode] = useState(() => inicializarTema());
@@ -52,7 +52,45 @@ const App = () => {
   const [canScrollUp, setCanScrollUp] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
 
-  const { isFeatureVisible } = useSettings();
+  const { isFeatureVisible, forceUpdateCounter } = useSettings();
+
+  // Função para verificar se a seção "Geração de dados" deve ser exibida
+  const shouldShowDataGenerationSection = useCallback(() => {
+    return (
+      isFeatureVisible(AVAILABLE_FEATURES.DOCUMENTOS) ||
+      isFeatureVisible(AVAILABLE_FEATURES.DADOS_PESSOAIS) ||
+      isFeatureVisible(AVAILABLE_FEATURES.PRODUTO) ||
+      isFeatureVisible(AVAILABLE_FEATURES.CARTAO) ||
+      isFeatureVisible(AVAILABLE_FEATURES.CARACTERES) ||
+      isFeatureVisible(AVAILABLE_FEATURES.CONTADOR) ||
+      isFeatureVisible(AVAILABLE_FEATURES.DADOS_COMPLEMENTARES) ||
+      isFeatureVisible(AVAILABLE_FEATURES.FILE_GENERATOR)
+    );
+  }, [isFeatureVisible, forceUpdateCounter]);
+
+  // Função para verificar se a seção "Registros de dados" deve ser exibida
+  const shouldShowDataRecordsSection = useCallback(() => {
+    return (
+      isFeatureVisible(AVAILABLE_FEATURES.BUG) ||
+      isFeatureVisible(AVAILABLE_FEATURES.TEST_STATUS) ||
+      isFeatureVisible(AVAILABLE_FEATURES.DEPLOY) ||
+      isFeatureVisible(AVAILABLE_FEATURES.ACTIVITY_IMPORT)
+    );
+  }, [isFeatureVisible, forceUpdateCounter]);
+
+  // Função para verificar se a seção "Anotações" deve ser exibida
+  const shouldShowAnnotationsSection = useCallback(() => {
+    return (
+      isFeatureVisible(AVAILABLE_FEATURES.QUICK_ANNOTATIONS) ||
+      isFeatureVisible(AVAILABLE_FEATURES.CUSTOM_ANNOTATIONS) ||
+      isFeatureVisible(AVAILABLE_FEATURES.MY_ENVIRONMENTS)
+    );
+  }, [isFeatureVisible, forceUpdateCounter]);
+
+  // Função para fechar o modal de configurações
+  const handleCloseSettingsModal = useCallback(() => {
+    setShowSettingsModal(false);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -90,7 +128,7 @@ const App = () => {
   };
 
   return (
-    <div className='app'>
+    <div className='app' key={`app-${forceUpdateCounter}`}>
       <MobileHeader
         darkMode={darkMode}
         toggleTheme={toggleTheme}
@@ -135,7 +173,7 @@ const App = () => {
       </header>
 
       <div className='content-wrapper'>
-        {isFeatureVisible(AVAILABLE_FEATURES.DOCUMENTOS) && (
+        {shouldShowDataGenerationSection() && (
           <>
             <h2 className='section-title'>
               <FaDatabase className='section-icon' /> Geração de dados
@@ -146,10 +184,7 @@ const App = () => {
           </>
         )}
 
-        {isFeatureVisible(AVAILABLE_FEATURES.BUG) ||
-        isFeatureVisible(AVAILABLE_FEATURES.TEST_STATUS) ||
-        isFeatureVisible(AVAILABLE_FEATURES.DEPLOY) ||
-        isFeatureVisible(AVAILABLE_FEATURES.ACTIVITY_IMPORT) ? (
+        {shouldShowDataRecordsSection() && (
           <>
             <h2 className='section-title'>
               <FaClipboardList className='section-icon' /> Registros de dados
@@ -176,9 +211,9 @@ const App = () => {
               )}
             </main>
           </>
-        ) : null}
+        )}
 
-        {isFeatureVisible(AVAILABLE_FEATURES.ANNOTATIONS) && (
+        {shouldShowAnnotationsSection() && (
           <>
             <h2 className='section-title'>
               <FaStickyNote className='section-icon' /> Anotações
@@ -197,7 +232,7 @@ const App = () => {
       {/* Modal de Configurações */}
       <SettingsModal
         isOpen={showSettingsModal}
-        onClose={() => setShowSettingsModal(false)}
+        onClose={handleCloseSettingsModal}
       />
 
       <ToastContainer {...CONFIG_TOAST} theme={darkMode ? 'dark' : 'light'} />

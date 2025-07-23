@@ -1032,7 +1032,6 @@ input-clearable .number-input {
 /* Botão de configurações no sidebar */
 .sidebar-menu .floating-nav-item.settings-item {
   margin-top: 0.5rem;
-  border-top: 1px solid var(--border-color);
   padding-top: 0.5rem;
 }
 

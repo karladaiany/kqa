@@ -284,12 +284,14 @@ const DeployCard = () => {
             <div key={field.id} className='campo-item'>
               <div className='campo-valor'>
                 <input
+                  id={`deploy-field-${field.id}`}
+                  name={`deploy-${field.id}`}
                   value={fieldValues[field.id] || ''}
                   onChange={e => handleInputChange(field.id, e.target.value)}
                   className='copyable'
                   placeholder=' '
                 />
-                <label>{field.label}</label>
+                <label htmlFor={`deploy-field-${field.id}`}>{field.label}</label>
                 {fieldValues[field.id] && (
                   <FaTimes
                     className='clear-icon'

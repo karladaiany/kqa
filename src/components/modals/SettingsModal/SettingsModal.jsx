@@ -6,13 +6,11 @@ import {
   FaEyeSlash,
   FaCog,
   FaLink,
-  FaEye as FaVisible,
-  FaEyeSlash as FaHidden,
   FaSave,
   FaTrash,
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-import useSettings, { AVAILABLE_FEATURES } from '../../../hooks/useSettings';
+import { useSettings, AVAILABLE_FEATURES } from '../../../contexts/SettingsContext';
 import './SettingsModal.css';
 
 // Mapeamento de funcionalidades para nomes e ícones
@@ -89,21 +87,14 @@ const SettingsModal = ({ isOpen, onClose }) => {
     hasArtiaCredentials,
   } = useSettings();
 
-  const [credentials, setCredentials] = useState({
-    login: artiaCredentials.login,
-    senha: artiaCredentials.senha,
-  });
+  // Inicializar credenciais uma única vez baseado nas credenciais atuais
+  const [credentials, setCredentials] = useState(() => ({
+    login: artiaCredentials.login || '',
+    senha: artiaCredentials.senha || '',
+  }));
 
   const [showPassword, setShowPassword] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-
-  // Atualizar credenciais quando mudarem no hook
-  React.useEffect(() => {
-    setCredentials({
-      login: artiaCredentials.login,
-      senha: artiaCredentials.senha,
-    });
-  }, [artiaCredentials]);
 
   const handleSaveCredentials = async () => {
     if (!credentials.login || !credentials.senha) {
@@ -200,7 +191,6 @@ const SettingsModal = ({ isOpen, onClose }) => {
                       login: e.target.value,
                     }))
                   }
-                  placeholder='seu.email@empresa.com'
                 />
               </div>
             </div>
@@ -220,7 +210,6 @@ const SettingsModal = ({ isOpen, onClose }) => {
                       senha: e.target.value,
                     }))
                   }
-                  placeholder='Sua senha de acesso'
                 />
                 <button
                   type='button'
@@ -279,7 +268,6 @@ const SettingsModal = ({ isOpen, onClose }) => {
             </div>
 
             <div className='features-grid'>
-              {/* Renderizar funcionalidades normalmente, mas garantir ordem e separação visual das três novas funcionalidades de anotações */}
               {Object.entries(FEATURE_CONFIG).map(([featureId, config]) => (
                 <div
                   key={featureId}
@@ -290,18 +278,21 @@ const SettingsModal = ({ isOpen, onClose }) => {
                     <span className='feature-name'>{config.name}</span>
                   </div>
 
-                  <button
-                    type='button'
-                    className='feature-toggle'
-                    onClick={() => handleToggleFeature(featureId)}
-                    title={`${settings.features[featureId] ? 'Ocultar' : 'Mostrar'} ${config.name}`}
-                  >
-                    {settings.features[featureId] ? (
-                      <FaVisible className='toggle-icon visible' />
-                    ) : (
-                      <FaHidden className='toggle-icon hidden' />
-                    )}
-                  </button>
+                  <div className='feature-status'>
+                    <div 
+                      className={`status-circle ${settings.features[featureId] ? 'active' : 'inactive'}`}
+                      onClick={() => handleToggleFeature(featureId)}
+                      title={`${settings.features[featureId] ? 'Ocultar' : 'Mostrar'} ${config.name}`}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleToggleFeature(featureId);
+                        }
+                      }}
+                    />
+                  </div>
                 </div>
               ))}
             </div>

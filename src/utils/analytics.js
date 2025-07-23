@@ -334,9 +334,19 @@ export const initErrorTracking = () => {
  * Monitora tempo de sessão automaticamente
  */
 export const initSessionTracking = () => {
-  // Registra fim da sessão ao sair da página
-  window.addEventListener('beforeunload', () => {
+  // Registra fim da sessão ao sair da página usando eventos modernos
+  const handlePageHide = () => {
     trackSessionDuration();
+  };
+
+  // Evento pagehide é mais confiável que beforeunload
+  window.addEventListener('pagehide', handlePageHide);
+  
+  // Backup com visibilitychange para quando a aba fica inativa
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      trackSessionDuration();
+    }
   });
 
   // Registra atividade a cada 5 minutos

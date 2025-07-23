@@ -539,8 +539,10 @@ export class ArtiaService {
           activityData,
           generatedDescription
         ),
-        priority:
-          parseInt(activityData.prioridade) || DEFAULT_ARTIA_VALUES.PRIORITY,
+              priority:
+        activityData.prioridade !== undefined && activityData.prioridade !== null && activityData.prioridade !== ''
+          ? parseInt(activityData.prioridade)
+          : DEFAULT_ARTIA_VALUES.PRIORITY,
         estimatedEffort:
           parseInt(activityData.esforcoEstimado) ||
           DEFAULT_ARTIA_VALUES.ESTIMATED_EFFORT,
@@ -867,7 +869,9 @@ Evidência pendente de anexo
         generatedDescription
       ),
       priority:
-        parseInt(activityData.prioridade) || DEFAULT_ARTIA_VALUES.PRIORITY,
+        activityData.prioridade !== undefined && activityData.prioridade !== null && activityData.prioridade !== ''
+          ? parseInt(activityData.prioridade)
+          : DEFAULT_ARTIA_VALUES.PRIORITY,
       estimatedEffort,
       customStatusId: activityData.customStatusId || null,
       customField: [],
@@ -1101,7 +1105,7 @@ Evidência pendente de anexo
 
     // CORREÇÃO 3: Adicionar prioridade (faltava na atualização mas existe na criação)
     if (Object.prototype.hasOwnProperty.call(activityData, 'prioridade')) {
-      if (activityData.prioridade) {
+      if (activityData.prioridade !== undefined && activityData.prioridade !== null && activityData.prioridade !== '') {
         variables.priority = parseInt(activityData.prioridade);
       }
     }

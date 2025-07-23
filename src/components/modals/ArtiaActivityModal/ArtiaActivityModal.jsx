@@ -23,7 +23,7 @@ import {
 } from '../../../constants/artiaOptions';
 import { ArtiaService } from '../../../services/artiaService';
 import ActivityHistoryCard from './ActivityHistoryCard';
-import useSettings from '../../../hooks/useSettings';
+import { useSettings } from '../../../contexts/SettingsContext';
 import './ArtiaActivityModal.css';
 
 // Hook para debounce
