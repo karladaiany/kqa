@@ -12,6 +12,7 @@ import {
   FaCheck,
   FaExclamationTriangle,
   FaCog,
+  FaCog,
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import {
@@ -84,9 +85,13 @@ const getCustomStatusToggleBadge = statusId => {
   const badgeConfig = {
     246888: {
       // Não iniciado
+    246888: {
+      // Não iniciado
       text: 'Não iniciado',
       cssClass: 'nao-iniciado',
     },
+    246886: {
+      // Backlog
     246886: {
       // Backlog
       text: 'Backlog',
@@ -94,9 +99,13 @@ const getCustomStatusToggleBadge = statusId => {
     },
     246887: {
       // Backlog Programado
+    246887: {
+      // Backlog Programado
       text: 'Backlog Programado',
       cssClass: 'backlog-programado',
     },
+    246895: {
+      // Triagem
     246895: {
       // Triagem
       text: 'Triagem',
@@ -177,7 +186,10 @@ const ArtiaActivityModal = ({
 }) => {
   const { artiaCredentials, hasArtiaCredentials } = useSettings();
 
+  const { artiaCredentials, hasArtiaCredentials } = useSettings();
+
   const [formData, setFormData] = useState(() => {
+    // Carregar dados salvos do localStorage (exceto credenciais)
     // Carregar dados salvos do localStorage (exceto credenciais)
     const savedData = localStorage.getItem('artiaModalData');
     const defaultData = {
@@ -196,6 +208,9 @@ const ArtiaActivityModal = ({
     if (savedData) {
       try {
         const parsed = JSON.parse(savedData);
+        // Não carregar credenciais do localStorage, usar do hook de configurações
+        const { login, senha, ...otherData } = parsed;
+        return { ...defaultData, ...otherData };
         // Não carregar credenciais do localStorage, usar do hook de configurações
         const { login, senha, ...otherData } = parsed;
         return { ...defaultData, ...otherData };
@@ -227,6 +242,16 @@ const ArtiaActivityModal = ({
 
   // Debounce para salvar dados no localStorage (exceto credenciais)
   const debouncedFormData = useDebounce(formData, 800);
+
+  // Verificar se as credenciais estão configuradas
+  useEffect(() => {
+    if (isOpen && !hasArtiaCredentials()) {
+      toast.error(
+        'Credenciais do Artia não configuradas. Configure-as nas configurações.',
+        { autoClose: 5000 }
+      );
+    }
+  }, [isOpen, hasArtiaCredentials]);
 
   // Verificar se as credenciais estão configuradas
   useEffect(() => {
@@ -285,6 +310,7 @@ const ArtiaActivityModal = ({
   // Salvar dados com debounce (exceto credenciais)
   useEffect(() => {
     if (debouncedFormData && Object.keys(debouncedFormData).length > 0) {
+      localStorage.setItem('artiaModalData', JSON.stringify(debouncedFormData));
       localStorage.setItem('artiaModalData', JSON.stringify(debouncedFormData));
     }
   }, [debouncedFormData]);
@@ -395,6 +421,11 @@ const ArtiaActivityModal = ({
       return false;
     }
 
+    // Verificar se as credenciais estão configuradas
+    if (!hasArtiaCredentials()) {
+      return false;
+    }
+
     // Campos básicos obrigatórios
     if (
       !formData.titulo?.trim() ||
@@ -425,6 +456,14 @@ const ArtiaActivityModal = ({
   }, [formData]);
 
   const validateForm = () => {
+    // Verificar se as credenciais estão configuradas
+    if (!hasArtiaCredentials()) {
+      toast.error(
+        'Credenciais do Artia não configuradas. Configure-as nas configurações.'
+      );
+      return false;
+    }
+
     // Verificar se as credenciais estão configuradas
     if (!hasArtiaCredentials()) {
       toast.error(
@@ -871,10 +910,20 @@ ${bugData.others}${evidenceSection}`;
         <form onSubmit={handleSubmit} className='modal-form'>
           <div className='modal-body'>
             {/* Aviso sobre credenciais do Artia */}
+            {/* Aviso sobre credenciais do Artia */}
             <div className='section-divider'>
+              <FaLock /> Autenticação Artia
               <FaLock /> Autenticação Artia
             </div>
             <div className='modal-field-group'>
+              <div
+                className='modal-input-container'
+                style={{ background: '#f8f9fa', border: '1px solid #e0e0e0' }}
+              >
+                <span style={{ color: '#555', fontSize: 13 }}>
+                Agora, as credenciais de acesso do Artia são configuradas na
+                  área de <b>Configurações</b> (no menu lateral).
+                </span>
               <div
                 className='modal-input-container'
                 style={{ background: '#f8f9fa', border: '1px solid #e0e0e0' }}
@@ -945,8 +994,17 @@ ${bugData.others}${evidenceSection}`;
                           : 'input-help-message'
                       }
                     >
+                    <div
+                      className={
+                        shouldHideIdFields
+                          ? 'input-success-message'
+                          : 'input-help-message'
+                      }
+                    >
                       {shouldHideIdFields ? (
                         <>
+                          <FaCheck /> IDs do Grupo e Pasta preenchidos
+                          automaticamente
                           <FaCheck /> IDs do Grupo e Pasta preenchidos
                           automaticamente
                         </>
@@ -1009,6 +1067,8 @@ ${bugData.others}${evidenceSection}`;
                       type='button'
                       className={`modal-toggle-badge ${badgeConfig ? badgeConfig.cssClass : ''} ${isSelected ? 'selected' : ''} ${loading ? 'disabled' : ''}`}
                       onClick={() =>
+                        !loading &&
+                        handleInputChange('customStatusId', status.id)
                         !loading &&
                         handleInputChange('customStatusId', status.id)
                       }
