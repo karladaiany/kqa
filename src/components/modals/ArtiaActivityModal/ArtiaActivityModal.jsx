@@ -420,7 +420,7 @@ const ArtiaActivityModal = ({
     // Campos específicos do tipo de atividade
     const fields = getFieldsForType(formData.tipo);
     for (const field of fields) {
-      if (field.required && !formData[field.name]?.toString().trim()) {
+      if (field.required && (formData[field.name] === undefined || formData[field.name] === '' || formData[field.name] === null)) {
         return false;
       }
     }
@@ -453,7 +453,7 @@ const ArtiaActivityModal = ({
     // Campos específicos do tipo de atividade
     const fields = getFieldsForType(formData.tipo);
     for (const field of fields) {
-      if (field.required && !formData[field.name]) {
+      if (field.required && (formData[field.name] === undefined || formData[field.name] === '' || formData[field.name] === null)) {
         toast.error(`O campo "${field.label}" é obrigatório`);
         return false;
       }
