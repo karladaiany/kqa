@@ -2,13 +2,14 @@
 
 ## Visão Geral
 
-A seção "Meus Ambientes" foi implementada como uma sub-seção dentro das "Anotações Rápidas", permitindo aos usuários gerenciar seus ambientes de desenvolvimento de forma organizada e intuitiva.
+- A seção "Meus Ambientes" agora é independente, não mais sub-seção de "Anotações Rápidas".
+- Permite aos usuários gerenciar seus ambientes de desenvolvimento de forma organizada e intuitiva.
 
 ## Funcionalidades
 
 ### 📌 Características Principais
 
-- **Integração com Anotações**: Implementada como sub-seção das anotações rápidas
+- **Integração com Anotações**: Agora é uma seção independente
 - **Grid Responsivo**: Layout que se adapta a diferentes tamanhos de tela
 - **Personalização Completa**: Ícones, cores e tags customizáveis
 - **Persistência Local**: Dados salvos no localStorage do navegador

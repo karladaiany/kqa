@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ToastContainer } from 'react-toastify';
 import {
   FaSun,
@@ -9,6 +9,7 @@ import {
   FaDice,
   FaStickyNote,
 } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 // Importações organizadas por categoria
 import { DataGenerator } from './components/ui';
@@ -18,6 +19,7 @@ import {
   SidebarMenu,
   ScrollButtons,
 } from './components/layout';
+import { SettingsModal } from './components/modals';
 import {
   BugRegistrationCard,
   DeployCard,
@@ -40,13 +42,55 @@ import {
   alternarTema,
 } from './config/theme';
 
-// Utilitários de debug removidos - código limpo para produção
+// Usar o novo contexto de configurações
+import { useSettings, AVAILABLE_FEATURES } from './contexts/SettingsContext';
 
 const App = () => {
   const [darkMode, setDarkMode] = useState(() => inicializarTema());
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [canScrollUp, setCanScrollUp] = useState(false);
   const [canScrollDown, setCanScrollDown] = useState(true);
+  const [canScrollUp, setCanScrollUp] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+
+  const { isFeatureVisible, forceUpdateCounter } = useSettings();
+
+  // Função para verificar se a seção "Geração de dados" deve ser exibida
+  const shouldShowDataGenerationSection = useCallback(() => {
+    return (
+      isFeatureVisible(AVAILABLE_FEATURES.DOCUMENTOS) ||
+      isFeatureVisible(AVAILABLE_FEATURES.DADOS_PESSOAIS) ||
+      isFeatureVisible(AVAILABLE_FEATURES.PRODUTO) ||
+      isFeatureVisible(AVAILABLE_FEATURES.CARTAO) ||
+      isFeatureVisible(AVAILABLE_FEATURES.CARACTERES) ||
+      isFeatureVisible(AVAILABLE_FEATURES.CONTADOR) ||
+      isFeatureVisible(AVAILABLE_FEATURES.DADOS_COMPLEMENTARES) ||
+      isFeatureVisible(AVAILABLE_FEATURES.FILE_GENERATOR)
+    );
+  }, [isFeatureVisible, forceUpdateCounter]);
+
+  // Função para verificar se a seção "Registros de dados" deve ser exibida
+  const shouldShowDataRecordsSection = useCallback(() => {
+    return (
+      isFeatureVisible(AVAILABLE_FEATURES.BUG) ||
+      isFeatureVisible(AVAILABLE_FEATURES.TEST_STATUS) ||
+      isFeatureVisible(AVAILABLE_FEATURES.DEPLOY) ||
+      isFeatureVisible(AVAILABLE_FEATURES.ACTIVITY_IMPORT)
+    );
+  }, [isFeatureVisible, forceUpdateCounter]);
+
+  // Função para verificar se a seção "Anotações" deve ser exibida
+  const shouldShowAnnotationsSection = useCallback(() => {
+    return (
+      isFeatureVisible(AVAILABLE_FEATURES.QUICK_ANNOTATIONS) ||
+      isFeatureVisible(AVAILABLE_FEATURES.CUSTOM_ANNOTATIONS) ||
+      isFeatureVisible(AVAILABLE_FEATURES.MY_ENVIRONMENTS)
+    );
+  }, [isFeatureVisible, forceUpdateCounter]);
+
+  // Função para fechar o modal de configurações
+  const handleCloseSettingsModal = useCallback(() => {
+    setShowSettingsModal(false);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -84,7 +128,7 @@ const App = () => {
   };
 
   return (
-    <div className='app'>
+    <div className='app' key={`app-${forceUpdateCounter}`}>
       <MobileHeader
         darkMode={darkMode}
         toggleTheme={toggleTheme}
@@ -105,7 +149,11 @@ const App = () => {
       >
         <FaBars />
       </button>
-      <SidebarMenu open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <SidebarMenu
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        onSettingsClick={() => setShowSettingsModal(true)}
+      />
       <button
         className='theme-toggle'
         onClick={toggleTheme}
@@ -125,44 +173,68 @@ const App = () => {
       </header>
 
       <div className='content-wrapper'>
-        <h2 className='section-title'>
-          <FaDatabase className='section-icon' /> Geração de dados
-        </h2>
-        <main>
-          <DataGenerator />
-        </main>
+        {shouldShowDataGenerationSection() && (
+          <>
+            <h2 className='section-title'>
+              <FaDatabase className='section-icon' /> Geração de dados
+            </h2>
+            <main>
+              <DataGenerator />
+            </main>
+          </>
+        )}
 
-        <h2 className='section-title'>
-          <FaClipboardList className='section-icon' /> Registros de dados
-        </h2>
-        <main>
-          {/* Dividir os cards de BUG e Comentário QA em duas colunas para melhor visualização
-              BugRegistrationCard à esquerda e TestStatusCard à direita */}
-          <div className='row'>
-            <div className='col-6'>
-              <BugRegistrationCard />
-            </div>
-            <div className='col-6'>
-              <TestStatusCard />
-            </div>
-          </div>
-          <DeployCard />
+        {shouldShowDataRecordsSection() && (
+          <>
+            <h2 className='section-title'>
+              <FaClipboardList className='section-icon' /> Registros de dados
+            </h2>
+            <main>
+              {/* Dividir os cards de BUG e Comentário QA em duas colunas para melhor visualização
+                  BugRegistrationCard à esquerda e TestStatusCard à direita */}
+              <div className='row'>
+                {isFeatureVisible(AVAILABLE_FEATURES.BUG) && (
+                  <div className='col-6'>
+                    <BugRegistrationCard />
+                  </div>
+                )}
+                {isFeatureVisible(AVAILABLE_FEATURES.TEST_STATUS) && (
+                  <div className='col-6'>
+                    <TestStatusCard />
+                  </div>
+                )}
+              </div>
+              {isFeatureVisible(AVAILABLE_FEATURES.DEPLOY) && <DeployCard />}
+              {isFeatureVisible(AVAILABLE_FEATURES.ACTIVITY_IMPORT) && (
+                /* Card de Importação de Atividades - movido para depois do Deploy */
+                <ActivityImportCard />
+              )}
+            </main>
+          </>
+        )}
 
-          {/* Card de Importação de Atividades - movido para depois do Deploy */}
-          <ActivityImportCard />
-        </main>
-
-        <h2 className='section-title'>
-          <FaStickyNote className='section-icon' /> Anotações
-        </h2>
-        <main>
-          <AnnotationsCard />
-        </main>
+        {shouldShowAnnotationsSection() && (
+          <>
+            <h2 className='section-title'>
+              <FaStickyNote className='section-icon' /> Anotações
+            </h2>
+            <main>
+              <AnnotationsCard />
+            </main>
+          </>
+        )}
       </div>
 
       <Footer />
 
       <ScrollButtons />
+
+      {/* Modal de Configurações */}
+      <SettingsModal
+        isOpen={showSettingsModal}
+        onClose={handleCloseSettingsModal}
+      />
+
       <ToastContainer {...CONFIG_TOAST} theme={darkMode ? 'dark' : 'light'} />
     </div>
   );

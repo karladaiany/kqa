@@ -202,12 +202,14 @@ const BugRegistrationCard = () => {
           <div className='campo-item'>
             <div className='campo-valor'>
               <textarea
+                id='bug-steps'
+                name='steps'
                 value={bugData.steps}
                 onChange={e => handleInputChange('steps', e.target.value)}
                 className='copyable'
                 placeholder=' '
               />
-              <label>Passo a passo para reprodução</label>
+              <label htmlFor='bug-steps'>Passo a passo para reprodução</label>
               {bugData.steps && (
                 <FaTimes
                   className='clear-icon'
@@ -220,6 +222,8 @@ const BugRegistrationCard = () => {
           <div className='campo-item'>
             <div className='campo-valor'>
               <textarea
+                id='bug-expected-behavior'
+                name='expectedBehavior'
                 value={bugData.expectedBehavior}
                 onChange={e =>
                   handleInputChange('expectedBehavior', e.target.value)
@@ -227,7 +231,7 @@ const BugRegistrationCard = () => {
                 className='copyable'
                 placeholder=' '
               />
-              <label>Comportamento esperado</label>
+              <label htmlFor='bug-expected-behavior'>Comportamento esperado</label>
               {bugData.expectedBehavior && (
                 <FaTimes
                   className='clear-icon'
@@ -246,13 +250,15 @@ const BugRegistrationCard = () => {
               className={`campo-valor ${!urlValidation.isValid ? 'url-error' : envIdExtracted ? 'url-success' : ''}`}
             >
               <input
+                id='bug-url'
+                name='url'
                 type='url'
                 value={bugData.url}
                 onChange={e => handleInputChange('url', e.target.value)}
                 className='copyable'
                 placeholder=' '
               />
-              <label>
+              <label htmlFor='bug-url'>
                 URL
                 {envIdExtracted && (
                   <span className='url-success-indicator'>
@@ -278,13 +284,15 @@ const BugRegistrationCard = () => {
           <div className='campo-item'>
             <div className='campo-valor'>
               <input
+                id='bug-login'
+                name='login'
                 type='text'
                 value={bugData.login}
                 onChange={e => handleInputChange('login', e.target.value)}
                 className='copyable'
                 placeholder=' '
               />
-              <label>Login</label>
+              <label htmlFor='bug-login'>Login</label>
               {bugData.login && (
                 <FaTimes
                   className='clear-icon'
@@ -297,13 +305,15 @@ const BugRegistrationCard = () => {
           <div className='campo-item'>
             <div className='campo-valor'>
               <input
+                id='bug-password'
+                name='password'
                 type={showPassword ? 'text' : 'password'}
                 value={bugData.password}
                 onChange={e => handleInputChange('password', e.target.value)}
                 className='copyable'
                 placeholder=' '
               />
-              <label>Senha</label>
+              <label htmlFor='bug-password'>Senha</label>
               <FaEye
                 className='toggle-password'
                 onClick={() => setShowPassword(!showPassword)}
@@ -320,13 +330,15 @@ const BugRegistrationCard = () => {
           <div className='campo-item'>
             <div className='campo-valor'>
               <input
+                id='bug-env-id'
+                name='envId'
                 type='number'
                 value={bugData.envId}
                 onChange={e => handleInputChange('envId', e.target.value)}
                 className='copyable'
                 placeholder=' '
               />
-              <label>ID do ambiente</label>
+              <label htmlFor='bug-env-id'>ID do ambiente</label>
               {bugData.envId && (
                 <FaTimes
                   className='clear-icon'
@@ -339,12 +351,14 @@ const BugRegistrationCard = () => {
           <div className='campo-item'>
             <div className='campo-valor'>
               <textarea
+                id='bug-others'
+                name='others'
                 value={bugData.others}
                 onChange={e => handleInputChange('others', e.target.value)}
                 className='copyable'
                 placeholder=' '
               />
-              <label>Outros</label>
+              <label htmlFor='bug-others'>Outros</label>
               {bugData.others && (
                 <FaTimes
                   className='clear-icon'
@@ -361,6 +375,8 @@ const BugRegistrationCard = () => {
           <div className='campo-item'>
             <div className='campo-valor'>
               <textarea
+                id='bug-evidence-description'
+                name='evidenceDescription'
                 value={bugData.evidenceDescription}
                 onChange={e =>
                   handleInputChange('evidenceDescription', e.target.value)
@@ -368,7 +384,7 @@ const BugRegistrationCard = () => {
                 className='copyable'
                 placeholder=' '
               />
-              <label>Descrição da evidência</label>
+              <label htmlFor='bug-evidence-description'>Descrição da evidência</label>
               {bugData.evidenceDescription && (
                 <FaTimes
                   className='clear-icon'
@@ -381,6 +397,8 @@ const BugRegistrationCard = () => {
           <div className='campo-item'>
             <div className='campo-valor'>
               <input
+                id='bug-evidence-link'
+                name='evidenceLink'
                 type='text'
                 value={bugData.evidenceLink}
                 onChange={e =>
@@ -389,7 +407,7 @@ const BugRegistrationCard = () => {
                 className='copyable'
                 placeholder='https://jam.dev/'
               />
-              <label>Link da evidência</label>
+              <label htmlFor='bug-evidence-link'>Link da evidência</label>
               {bugData.evidenceLink && (
                 <FaTimes
                   className='clear-icon'

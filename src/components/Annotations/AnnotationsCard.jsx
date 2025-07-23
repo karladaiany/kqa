@@ -4,6 +4,7 @@ import React, {
   useCallback,
   createContext,
   useContext,
+  useEffect,
 } from 'react';
 import logger from '../../utils/logger.js';
 import PropTypes from 'prop-types';
@@ -29,6 +30,7 @@ import { useBugRegistration } from '../../hooks/useBugRegistration';
 import { MiniCard } from './MiniCard';
 import QuickNotesBadge from './QuickNotesBadge';
 import MyEnvironmentsSection from './MyEnvironmentsSection';
+import { useSettings, AVAILABLE_FEATURES } from '../../contexts/SettingsContext';
 
 // Contexto para gerenciar o editor ativo
 const ActiveEditorContext = createContext();
@@ -78,6 +80,7 @@ const AnnotationsCard = () => {
   const { notes, addNote, updateNote, deleteNote, clearAllNotes } =
     useAnnotations();
   const { bugData } = useBugRegistration();
+  const { isFeatureVisible } = useSettings();
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [activeEditor, setActiveEditor] = useState(null);
@@ -371,343 +374,347 @@ const AnnotationsCard = () => {
     <ActiveEditorContext.Provider value={contextValue}>
       <>
         {/* Anotações Rápidas */}
-        <div className='annotations-subsection'>
-          <div className='subsection-header'>
-            <h3>
-              <FaBolt className='subsection-icon' /> Anotações rápidas
-            </h3>
-          </div>
-          <div className='subsection-content'>
-            <div className='quick-notes-container'>
-              <QuickNotesBadge
-                type='feature-flag'
-                text='Organization'
-                onFeatureFlagClick={async () => {
-                  // Buscar diretamente o valor atual do campo "ID do ambiente" no DOM
-                  const envIdInput = document.querySelector(
-                    '#bug input[type="number"]'
-                  );
-                  const currentEnvId = envIdInput
-                    ? String(envIdInput.value).trim()
-                    : '';
-
-                  // Gerar texto Organization com o ID atual
-                  const featureFlagText =
-                    currentEnvId !== ''
-                      ? `Organization;${currentEnvId}`
-                      : 'Organization;';
-
-                  // Copiar para clipboard
-                  try {
-                    await navigator.clipboard.writeText(featureFlagText);
-                    console.log(
-                      `✅ Organization flag copiado: "${featureFlagText}"`
+        {isFeatureVisible(AVAILABLE_FEATURES.QUICK_ANNOTATIONS) && (
+          <div id='quick-annotations' className='annotations-subsection'>
+            <div className='subsection-header'>
+              <h3>
+                <FaBolt className='subsection-icon' /> Anotações rápidas
+              </h3>
+            </div>
+            <div className='subsection-content'>
+              <div className='quick-notes-container'>
+                <QuickNotesBadge
+                  type='feature-flag'
+                  text='Organization'
+                  onFeatureFlagClick={async () => {
+                    // Buscar diretamente o valor atual do campo "ID do ambiente" no DOM
+                    const envIdInput = document.querySelector(
+                      '#bug input[type="number"]'
                     );
-                  } catch (err) {
-                    console.error('❌ Erro ao copiar Organization flag:', err);
-                  }
-                }}
-              />
-              <QuickNotesBadge type='api-v1' text='API v1' />
-              <QuickNotesBadge type='api-v2' text='API v2' />
-              <QuickNotesBadge type='storage-produto' text='[TEC] Produto' />
-              <QuickNotesBadge type='discoverys' text='[TEC] Discoverys' />
-              <QuickNotesBadge
-                type='documentacoes'
-                text='[TEC] Documentações por funcionalidade'
-              />
-              <QuickNotesBadge type='style-guide' text='[TEC] Style Guide' />
-              <QuickNotesBadge type='testlink' text='Testlink' />
-            </div>
-          </div>
-        </div>
-        {/* Anotações Personalizadas */}
-        <div className='annotations-subsection'>
-          <div className='subsection-header'>
-            <h3>
-              <FaEdit className='subsection-icon' /> Anotações personalizadas
-            </h3>
-          </div>
-          <div className='subsection-content'>
-            {/* Barra de formatação global */}
-            <div className='global-formatting-toolbar'>
-              <div
-                className={`toolbar-formatting ${!activeEditor ? 'disabled' : ''}`}
-              >
-                <div className='toolbar-section'>
-                  <ToolbarButton
-                    action='bold'
-                    active={activeEditor?.isActive('bold')}
-                    title='Negrito'
-                    disabled={!activeEditor}
-                  >
-                    <FaBold />
-                  </ToolbarButton>
-                  <ToolbarButton
-                    action='italic'
-                    active={activeEditor?.isActive('italic')}
-                    title='Itálico'
-                    disabled={!activeEditor}
-                  >
-                    <FaItalic />
-                  </ToolbarButton>
-                  <ToolbarButton
-                    action='underline'
-                    active={activeEditor?.isActive('underline')}
-                    title='Sublinhado'
-                    disabled={!activeEditor}
-                  >
-                    <FaUnderline />
-                  </ToolbarButton>
-                  <ToolbarButton
-                    action='strike'
-                    active={activeEditor?.isActive('strike')}
-                    title='Riscado'
-                    disabled={!activeEditor}
-                  >
-                    <FaStrikethrough />
-                  </ToolbarButton>
-                </div>
+                    const currentEnvId = envIdInput
+                      ? String(envIdInput.value).trim()
+                      : '';
 
-                <div className='toolbar-divider'></div>
+                    // Gerar texto Organization com o ID atual
+                    const featureFlagText =
+                      currentEnvId !== ''
+                        ? `Organization;${currentEnvId}`
+                        : 'Organization;';
 
-                <div className='toolbar-section'>
-                  <ToolbarButton
-                    action='bulletList'
-                    active={activeEditor?.isActive('bulletList')}
-                    title='Lista'
-                    disabled={!activeEditor}
-                  >
-                    <FaListUl />
-                  </ToolbarButton>
-                  <ToolbarButton
-                    action='orderedList'
-                    active={activeEditor?.isActive('orderedList')}
-                    title='Lista numerada'
-                    disabled={!activeEditor}
-                  >
-                    <FaListOl />
-                  </ToolbarButton>
-                  <ToolbarButton
-                    action='taskList'
-                    active={activeEditor?.isActive('taskList')}
-                    title='Lista de tarefas'
-                    disabled={!activeEditor}
-                  >
-                    <FaCheck />
-                  </ToolbarButton>
-                </div>
-
-                <div className='toolbar-divider'></div>
-
-                <div className='toolbar-section'>
-                  <ToolbarButton
-                    action='image'
-                    title='Inserir imagem'
-                    disabled={!activeEditor}
-                  >
-                    <FaImage />
-                  </ToolbarButton>
-                </div>
-
-                <div className='toolbar-divider'></div>
-
-                {/* Nova seção de cores */}
-                <div className='toolbar-section'>
-                  <ToolbarButton
-                    action='textColor'
-                    active={showColorLine && colorLineMode === 'text'}
-                    title='Cor do texto selecionado'
-                    disabled={!activeEditor}
-                    onClick={handleTextColorClick}
-                  >
-                    <FaFont />
-                  </ToolbarButton>
-                  <ToolbarButton
-                    action='cardColors'
-                    active={showColorLine && colorLineMode === 'card'}
-                    title='Cores do card (fundo e texto)'
-                    disabled={!activeEditor}
-                    onClick={handleCardColorsClick}
-                  >
-                    <FaPalette />
-                  </ToolbarButton>
-                </div>
-              </div>
-
-              {/* Spacer para empurrar os botões de ação para a direita */}
-              <div className='toolbar-spacer'></div>
-
-              {/* Botões de ação - sempre ativos */}
-              <div className='toolbar-section toolbar-actions'>
-                {notes.length > 0 && (
-                  <button
-                    className='global-toolbar-button action-clear'
-                    onClick={handleClearAll}
-                    title='Limpar todas as anotações'
-                  >
-                    <FaTrashAlt />
-                  </button>
-                )}
-                <button
-                  className='global-toolbar-button action-add'
-                  onClick={handleAddNote}
-                  title='Adicionar nova anotação'
-                >
-                  <FaPlus />
-                </button>
-              </div>
-            </div>
-
-            {/* Linha secundária de cores (expansível) */}
-            {showColorLine && (
-              <div className='color-line-toolbar'>
-                {colorLineMode === 'text' && (
-                  <div className='color-line-content'>
-                    <div className='color-line-section'>
-                      <span className='color-line-label'>Cor do texto:</span>
-                      <div className='color-options-row'>
-                        <ColorPicker
-                          type='general'
-                          onChange={handleTextColorChange}
-                          title='Cor personalizada'
-                        />
-                        {customGeneralColor && (
-                          <ColorOption
-                            color={customGeneralColor}
-                            onClick={() =>
-                              handleTextColorChange(customGeneralColor)
-                            }
-                            title='Cor personalizada'
-                          />
-                        )}
-                        {EXTENDED_COLORS.general.map(color => (
-                          <ColorOption
-                            key={color.value}
-                            color={color.value}
-                            onClick={() => handleTextColorChange(color.value)}
-                            title={color.name}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {colorLineMode === 'card' && (
-                  <div className='color-line-content' data-mode='card'>
-                    <div className='color-line-section'>
-                      <span className='color-line-label'>🎨 Fundo:</span>
-                      <div className='color-options-row'>
-                        <ColorPicker
-                          type='background'
-                          onChange={color => handleCardColorChange(color, true)}
-                          title='Cor de fundo personalizada'
-                        />
-                        {customBackgroundColor && (
-                          <ColorOption
-                            color={customBackgroundColor}
-                            isSelected={
-                              activeNote?.backgroundColor ===
-                              customBackgroundColor
-                            }
-                            onClick={() =>
-                              handleCardColorChange(customBackgroundColor, true)
-                            }
-                            title='Cor personalizada'
-                          />
-                        )}
-                        {EXTENDED_COLORS.backgrounds.map(color => (
-                          <ColorOption
-                            key={color.value}
-                            color={color.value}
-                            isSelected={
-                              activeNote?.backgroundColor === color.value
-                            }
-                            onClick={() =>
-                              handleCardColorChange(color.value, true)
-                            }
-                            title={color.name}
-                          />
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className='color-line-section'>
-                      <span className='color-line-label'>📝 Texto:</span>
-                      <div className='color-options-row'>
-                        <ColorPicker
-                          type='text'
-                          onChange={color =>
-                            handleCardColorChange(color, false)
-                          }
-                          title='Cor de texto personalizada'
-                        />
-                        {customTextColor && (
-                          <ColorOption
-                            color={customTextColor}
-                            isSelected={
-                              activeNote?.textColor === customTextColor
-                            }
-                            onClick={() =>
-                              handleCardColorChange(customTextColor, false)
-                            }
-                            title='Cor personalizada'
-                          />
-                        )}
-                        {EXTENDED_COLORS.texts.map(color => (
-                          <ColorOption
-                            key={color.value}
-                            color={color.value}
-                            isSelected={activeNote?.textColor === color.value}
-                            onClick={() =>
-                              handleCardColorChange(color.value, false)
-                            }
-                            title={color.name}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Área de trabalho das anotações dentro da seção */}
-            <div ref={containerRef} className='annotations-workspace'>
-              {notes.map(note => (
-                <MiniCard
-                  key={note.id}
-                  note={note}
-                  onUpdate={updates => updateNote(note.id, updates)}
-                  onDelete={() => handleDeleteNote(note.id)}
+                    // Copiar para clipboard
+                    try {
+                      await navigator.clipboard.writeText(featureFlagText);
+                      console.log(
+                        `✅ Organization flag copiado: "${featureFlagText}"`
+                      );
+                    } catch (err) {
+                      console.error('❌ Erro ao copiar Organization flag:', err);
+                    }
+                  }}
                 />
-              ))}
-
-              {notes.length === 0 && (
-                <div className='empty-workspace'>
-                  <div className='empty-content'>
-                    <FaStickyNote className='empty-icon' />
-                    <p>Nenhuma anotação ainda</p>
-                    <p className='empty-subtitle'>
-                      Clique no botão &ldquo;Nova&rdquo; para criar sua primeira
-                      anotação
-                    </p>
+                <QuickNotesBadge type='api-v1' text='API v1' />
+                <QuickNotesBadge type='api-v2' text='API v2' />
+                <QuickNotesBadge type='storage-produto' text='[TEC] Produto' />
+                <QuickNotesBadge type='discoverys' text='[TEC] Discoverys' />
+                <QuickNotesBadge
+                  type='documentacoes'
+                  text='[TEC] Documentações por funcionalidade'
+                />
+                <QuickNotesBadge type='style-guide' text='[TEC] Style Guide' />
+                <QuickNotesBadge type='testlink' text='Testlink' />
+              </div>
+            </div>
+          </div>
+        )}
+        {/* Anotações Personalizadas */}
+        {isFeatureVisible(AVAILABLE_FEATURES.CUSTOM_ANNOTATIONS) && (
+          <div id='custom-annotations' className='annotations-subsection'>
+            <div className='subsection-header'>
+              <h3>
+                <FaEdit className='subsection-icon' /> Anotações personalizadas
+              </h3>
+            </div>
+            <div className='subsection-content'>
+              {/* Barra de formatação global */}
+              <div className='global-formatting-toolbar'>
+                <div
+                  className={`toolbar-formatting ${!activeEditor ? 'disabled' : ''}`}
+                >
+                  <div className='toolbar-section'>
+                    <ToolbarButton
+                      action='bold'
+                      active={activeEditor?.isActive('bold')}
+                      title='Negrito'
+                      disabled={!activeEditor}
+                    >
+                      <FaBold />
+                    </ToolbarButton>
+                    <ToolbarButton
+                      action='italic'
+                      active={activeEditor?.isActive('italic')}
+                      title='Itálico'
+                      disabled={!activeEditor}
+                    >
+                      <FaItalic />
+                    </ToolbarButton>
+                    <ToolbarButton
+                      action='underline'
+                      active={activeEditor?.isActive('underline')}
+                      title='Sublinhado'
+                      disabled={!activeEditor}
+                    >
+                      <FaUnderline />
+                    </ToolbarButton>
+                    <ToolbarButton
+                      action='strike'
+                      active={activeEditor?.isActive('strike')}
+                      title='Riscado'
+                      disabled={!activeEditor}
+                    >
+                      <FaStrikethrough />
+                    </ToolbarButton>
                   </div>
+
+                  <div className='toolbar-divider'></div>
+
+                  <div className='toolbar-section'>
+                    <ToolbarButton
+                      action='bulletList'
+                      active={activeEditor?.isActive('bulletList')}
+                      title='Lista'
+                      disabled={!activeEditor}
+                    >
+                      <FaListUl />
+                    </ToolbarButton>
+                    <ToolbarButton
+                      action='orderedList'
+                      active={activeEditor?.isActive('orderedList')}
+                      title='Lista numerada'
+                      disabled={!activeEditor}
+                    >
+                      <FaListOl />
+                    </ToolbarButton>
+                    <ToolbarButton
+                      action='taskList'
+                      active={activeEditor?.isActive('taskList')}
+                      title='Lista de tarefas'
+                      disabled={!activeEditor}
+                    >
+                      <FaCheck />
+                    </ToolbarButton>
+                  </div>
+
+                  <div className='toolbar-divider'></div>
+
+                  <div className='toolbar-section'>
+                    <ToolbarButton
+                      action='image'
+                      title='Inserir imagem'
+                      disabled={!activeEditor}
+                    >
+                      <FaImage />
+                    </ToolbarButton>
+                  </div>
+
+                  <div className='toolbar-divider'></div>
+
+                  {/* Nova seção de cores */}
+                  <div className='toolbar-section'>
+                    <ToolbarButton
+                      action='textColor'
+                      active={showColorLine && colorLineMode === 'text'}
+                      title='Cor do texto selecionado'
+                      disabled={!activeEditor}
+                      onClick={handleTextColorClick}
+                    >
+                      <FaFont />
+                    </ToolbarButton>
+                    <ToolbarButton
+                      action='cardColors'
+                      active={showColorLine && colorLineMode === 'card'}
+                      title='Cores do card (fundo e texto)'
+                      disabled={!activeEditor}
+                      onClick={handleCardColorsClick}
+                    >
+                      <FaPalette />
+                    </ToolbarButton>
+                  </div>
+                </div>
+
+                {/* Spacer para empurrar os botões de ação para a direita */}
+                <div className='toolbar-spacer'></div>
+
+                {/* Botões de ação - sempre ativos */}
+                <div className='toolbar-section toolbar-actions'>
+                  {notes.length > 0 && (
+                    <button
+                      className='global-toolbar-button action-clear'
+                      onClick={handleClearAll}
+                      title='Limpar todas as anotações'
+                    >
+                      <FaTrashAlt />
+                    </button>
+                  )}
+                  <button
+                    className='global-toolbar-button action-add'
+                    onClick={handleAddNote}
+                    title='Adicionar nova anotação'
+                  >
+                    <FaPlus />
+                  </button>
+                </div>
+              </div>
+
+              {/* Linha secundária de cores (expansível) */}
+              {showColorLine && (
+                <div className='color-line-toolbar'>
+                  {colorLineMode === 'text' && (
+                    <div className='color-line-content'>
+                      <div className='color-line-section'>
+                        <span className='color-line-label'>Cor do texto:</span>
+                        <div className='color-options-row'>
+                          <ColorPicker
+                            type='general'
+                            onChange={handleTextColorChange}
+                            title='Cor personalizada'
+                          />
+                          {customGeneralColor && (
+                            <ColorOption
+                              color={customGeneralColor}
+                              onClick={() =>
+                                handleTextColorChange(customGeneralColor)
+                              }
+                              title='Cor personalizada'
+                            />
+                          )}
+                          {EXTENDED_COLORS.general.map(color => (
+                            <ColorOption
+                              key={color.value}
+                              color={color.value}
+                              onClick={() => handleTextColorChange(color.value)}
+                              title={color.name}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {colorLineMode === 'card' && (
+                    <div className='color-line-content' data-mode='card'>
+                      <div className='color-line-section'>
+                        <span className='color-line-label'>🎨 Fundo:</span>
+                        <div className='color-options-row'>
+                          <ColorPicker
+                            type='background'
+                            onChange={color => handleCardColorChange(color, true)}
+                            title='Cor de fundo personalizada'
+                          />
+                          {customBackgroundColor && (
+                            <ColorOption
+                              color={customBackgroundColor}
+                              isSelected={
+                                activeNote?.backgroundColor ===
+                                customBackgroundColor
+                              }
+                              onClick={() =>
+                                handleCardColorChange(customBackgroundColor, true)
+                              }
+                              title='Cor personalizada'
+                            />
+                          )}
+                          {EXTENDED_COLORS.backgrounds.map(color => (
+                            <ColorOption
+                              key={color.value}
+                              color={color.value}
+                              isSelected={
+                                activeNote?.backgroundColor === color.value
+                              }
+                              onClick={() =>
+                                handleCardColorChange(color.value, true)
+                              }
+                              title={color.name}
+                            />
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className='color-line-section'>
+                        <span className='color-line-label'>📝 Texto:</span>
+                        <div className='color-options-row'>
+                          <ColorPicker
+                            type='text'
+                            onChange={color =>
+                              handleCardColorChange(color, false)
+                            }
+                            title='Cor de texto personalizada'
+                          />
+                          {customTextColor && (
+                            <ColorOption
+                              color={customTextColor}
+                              isSelected={
+                                activeNote?.textColor === customTextColor
+                              }
+                              onClick={() =>
+                                handleCardColorChange(customTextColor, false)
+                              }
+                              title='Cor personalizada'
+                            />
+                          )}
+                          {EXTENDED_COLORS.texts.map(color => (
+                            <ColorOption
+                              key={color.value}
+                              color={color.value}
+                              isSelected={activeNote?.textColor === color.value}
+                              onClick={() =>
+                                handleCardColorChange(color.value, false)
+                              }
+                              title={color.name}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
 
-            {/* Input hidden para upload de imagem */}
-            <input
-              ref={fileInputRef}
-              type='file'
-              accept='image/*'
-              style={{ display: 'none' }}
-              onChange={handleImageUpload}
-            />
+              {/* Área de trabalho das anotações dentro da seção */}
+              <div ref={containerRef} className='annotations-workspace'>
+                {notes.map(note => (
+                  <MiniCard
+                    key={note.id}
+                    note={note}
+                    onUpdate={updates => updateNote(note.id, updates)}
+                    onDelete={() => handleDeleteNote(note.id)}
+                  />
+                ))}
+
+                {notes.length === 0 && (
+                  <div className='empty-workspace'>
+                    <div className='empty-content'>
+                      <FaStickyNote className='empty-icon' />
+                      <p>Nenhuma anotação ainda</p>
+                      <p className='empty-subtitle'>
+                        Clique no botão &ldquo;Nova&rdquo; para criar sua primeira
+                        anotação
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Input hidden para upload de imagem */}
+              <input
+                ref={fileInputRef}
+                type='file'
+                accept='image/*'
+                style={{ display: 'none' }}
+                onChange={handleImageUpload}
+              />
+            </div>
           </div>
-        </div>
+        )}
         {/* Modal de confirmação de exclusão */}
         {showDeleteConfirm && (
           <div className='delete-modal-overlay' onClick={cancelDelete}>
@@ -742,10 +749,14 @@ const AnnotationsCard = () => {
 
 // Adiciona a seção Meus Ambientes como independente
 export default function AnnotationsCardWrapper() {
+  const { isFeatureVisible } = useSettings();
+  
   return (
     <>
       <AnnotationsCard />
-      <MyEnvironmentsSection />
+      {isFeatureVisible(AVAILABLE_FEATURES.MY_ENVIRONMENTS) && (
+        <MyEnvironmentsSection />
+      )}
     </>
   );
 }

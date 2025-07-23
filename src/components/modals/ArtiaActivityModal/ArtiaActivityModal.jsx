@@ -11,6 +11,7 @@ import {
   FaLink,
   FaCheck,
   FaExclamationTriangle,
+  FaCog,
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import {
@@ -22,6 +23,7 @@ import {
 } from '../../../constants/artiaOptions';
 import { ArtiaService } from '../../../services/artiaService';
 import ActivityHistoryCard from './ActivityHistoryCard';
+import { useSettings } from '../../../contexts/SettingsContext';
 import './ArtiaActivityModal.css';
 
 // Hook para debounce
@@ -80,19 +82,23 @@ const getActivityTypeToggleBadge = type => {
 // Função para obter as configurações da badge baseado no status customizado
 const getCustomStatusToggleBadge = statusId => {
   const badgeConfig = {
-    246888: { // Não iniciado
+    246888: {
+      // Não iniciado
       text: 'Não iniciado',
       cssClass: 'nao-iniciado',
     },
-    246886: { // Backlog
+    246886: {
+      // Backlog
       text: 'Backlog',
       cssClass: 'backlog',
     },
-    246887: { // Backlog Programado
+    246887: {
+      // Backlog Programado
       text: 'Backlog Programado',
       cssClass: 'backlog-programado',
     },
-    246895: { // Triagem
+    246895: {
+      // Triagem
       text: 'Triagem',
       cssClass: 'triagem',
     },
@@ -169,12 +175,12 @@ const ArtiaActivityModal = ({
   activityType,
   initialData = {},
 }) => {
+  const { artiaCredentials, hasArtiaCredentials } = useSettings();
+
   const [formData, setFormData] = useState(() => {
-    // Carregar dados salvos do localStorage
+    // Carregar dados salvos do localStorage (exceto credenciais)
     const savedData = localStorage.getItem('artiaModalData');
     const defaultData = {
-      login: '',
-      senha: '',
       titulo: '',
       tipo: '',
       accountId: '',
@@ -190,7 +196,9 @@ const ArtiaActivityModal = ({
     if (savedData) {
       try {
         const parsed = JSON.parse(savedData);
-        return { ...defaultData, ...parsed };
+        // Não carregar credenciais do localStorage, usar do hook de configurações
+        const { login, senha, ...otherData } = parsed;
+        return { ...defaultData, ...otherData };
       } catch (error) {
         return defaultData;
       }
@@ -219,6 +227,26 @@ const ArtiaActivityModal = ({
 
   // Debounce para salvar dados no localStorage (exceto credenciais)
   const debouncedFormData = useDebounce(formData, 800);
+
+  // Verificar se as credenciais estão configuradas
+  useEffect(() => {
+    if (isOpen && !hasArtiaCredentials()) {
+      toast.error(
+        'Credenciais do Artia não configuradas. Configure-as nas configurações.',
+        { autoClose: 5000 }
+      );
+    }
+  }, [isOpen, hasArtiaCredentials]);
+
+  // Verificar se as credenciais estão configuradas
+  useEffect(() => {
+    if (isOpen && !hasArtiaCredentials()) {
+      toast.error(
+        'Credenciais do Artia não configuradas. Configure-as nas configurações.',
+        { autoClose: 5000 }
+      );
+    }
+  }, [isOpen, hasArtiaCredentials]);
 
   // Definir tipos disponíveis baseado na origem
   const availableTypes =
@@ -267,8 +295,8 @@ const ArtiaActivityModal = ({
   // Salvar dados com debounce (exceto credenciais)
   useEffect(() => {
     if (debouncedFormData && Object.keys(debouncedFormData).length > 0) {
-      const { login, senha, ...dataToSave } = debouncedFormData;
-      localStorage.setItem('artiaModalData', JSON.stringify(dataToSave));
+      localStorage.setItem('artiaModalData', JSON.stringify(debouncedFormData));
+      localStorage.setItem('artiaModalData', JSON.stringify(debouncedFormData));
     }
   }, [debouncedFormData]);
 
@@ -373,23 +401,19 @@ const ArtiaActivityModal = ({
 
   // Validação melhorada para todos os campos obrigatórios
   const isFormValid = useCallback(() => {
-    // Campos básicos obrigatórios
-    if (
-      !formData.login?.trim() ||
-      !formData.senha?.trim() ||
-      !formData.titulo?.trim() ||
-      !formData.tipo?.trim() ||
-      !formData.accountId?.toString().trim() ||
-      !formData.folderId?.toString().trim()
-    ) {
+    // Verificar se as credenciais estão configuradas
+    if (!hasArtiaCredentials()) {
       return false;
     }
 
-    // Validar se os IDs são números válidos
-    if (
-      isNaN(parseInt(formData.accountId)) ||
-      isNaN(parseInt(formData.folderId))
-    ) {
+    // Link do Artia obrigatório
+    if (!formData.artiaLink?.trim()) {
+      return false;
+    }
+
+    // Validar se o link é válido e se os IDs foram extraídos
+    const { accountId, folderId, isValid } = extractIdsFromArtiaLink(formData.artiaLink);
+    if (!isValid || !accountId || !folderId) {
       return false;
     }
 
@@ -405,25 +429,24 @@ const ArtiaActivityModal = ({
   }, [formData]);
 
   const validateForm = () => {
-    // Campos básicos obrigatórios
-    if (
-      !formData.login ||
-      !formData.senha ||
-      !formData.titulo ||
-      !formData.tipo ||
-      !formData.accountId ||
-      !formData.folderId
-    ) {
-      toast.error('Preencha todos os campos básicos obrigatórios');
+    // Verificar se as credenciais estão configuradas
+    if (!hasArtiaCredentials()) {
+      toast.error(
+        'Credenciais do Artia não configuradas. Configure-as nas configurações.'
+      );
       return false;
     }
 
-    // Validar se os IDs são números válidos
-    if (
-      isNaN(parseInt(formData.accountId)) ||
-      isNaN(parseInt(formData.folderId))
-    ) {
-      toast.error('IDs do Grupo e da Pasta devem ser números válidos');
+    // Link do Artia obrigatório
+    if (!formData.artiaLink?.trim()) {
+      toast.error('Link do Artia é obrigatório');
+      return false;
+    }
+
+    // Validar se o link é válido e se os IDs foram extraídos
+    const { accountId, folderId, isValid } = extractIdsFromArtiaLink(formData.artiaLink);
+    if (!isValid || !accountId || !folderId) {
+      toast.error('Link do Artia inválido ou IDs não extraídos');
       return false;
     }
 
@@ -844,75 +867,25 @@ ${bugData.others}${evidenceSection}`;
 
         <form onSubmit={handleSubmit} className='modal-form'>
           <div className='modal-body'>
-            {/* Campos básicos obrigatórios */}
+            {/* Aviso sobre credenciais do Artia */}
+            {/* Aviso sobre credenciais do Artia */}
             <div className='section-divider'>
-              <FaLock /> Autenticação
+              <FaLock /> Autenticação Artia
             </div>
-
             <div className='modal-field-group'>
-              <div className='modal-input-container'>
-                <input
-                  type='text'
-                  id='login'
-                  value={formData.login}
-                  onChange={e => handleInputChange('login', e.target.value)}
-                  required
-                  disabled={loading}
-                />
-                <label htmlFor='login'>
-                  Login
-                  <span className='modal-required'>*</span>
-                </label>
-                {formData.login && !loading && (
-                  <button
-                    type='button'
-                    className='modal-clear-field'
-                    onClick={() => handleInputChange('login', '')}
-                    title='Limpar Login'
-                  >
-                    <FaTimes />
-                  </button>
-                )}
-              </div>
-            </div>
-
-            <div className='modal-field-group'>
-              <div className='modal-input-container'>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  id='senha'
-                  value={formData.senha}
-                  onChange={e => handleInputChange('senha', e.target.value)}
-                  required
-                  disabled={loading}
-                />
-                <label htmlFor='senha'>
-                  Senha
-                  <span className='modal-required'>*</span>
-                </label>
-                {formData.senha && !loading && (
-                  <button
-                    type='button'
-                    className='modal-clear-field'
-                    onClick={() => handleInputChange('senha', '')}
-                    title='Limpar Senha'
-                  >
-                    <FaTimes />
-                  </button>
-                )}
-                <button
-                  type='button'
-                  className='modal-toggle-password'
-                  onClick={() => setShowPassword(!showPassword)}
-                  disabled={loading}
-                >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </button>
+              <div
+                className='modal-input-container'
+                style={{ background: '#f8f9fa', border: '1px solid #e0e0e0' }}
+              >
+                <span style={{ color: '#555', fontSize: 13 }}>
+                  Agora, as credenciais de acesso do Artia são configuradas na
+                  área de <b>Configurações</b> (no menu lateral).
+                </span>
               </div>
             </div>
 
             <div className='section-divider'>
-              <FaLink /> Link do Artia (opcional)
+              <FaLink /> Link do Artia
             </div>
 
             <div className='modal-field-group'>
@@ -923,6 +896,7 @@ ${bugData.others}${evidenceSection}`;
                   value={formData.artiaLink}
                   onChange={e => handleInputChange('artiaLink', e.target.value)}
                   disabled={loading}
+                  required
                   placeholder='https://app2.artia.com/a/4874953/f/4885568/kanban...'
                   className={
                     !linkValidation.isValid
@@ -933,10 +907,11 @@ ${bugData.others}${evidenceSection}`;
                   }
                 />
                 <label htmlFor='artiaLink'>
-                  Link do projeto no Artia
-                  {linkExtracted && (
-                    <span className='link-success-indicator'>
-                      <FaCheck /> IDs extraídos automaticamente
+                  Link do Artia
+                  <span className='modal-required'>*</span>
+                  {!linkValidation.isValid && (
+                    <span className='input-error-message'>
+                      Link do Artia é obrigatório
                     </span>
                   )}
                 </label>
@@ -946,7 +921,6 @@ ${bugData.others}${evidenceSection}`;
                     className='modal-clear-field'
                     onClick={() => {
                       handleInputChange('artiaLink', '');
-                      // Quando o link for limpo, mostrar novamente os campos de ID
                       setShouldHideIdFields(false);
                     }}
                     title='Limpar Link do Artia'
@@ -963,7 +937,13 @@ ${bugData.others}${evidenceSection}`;
                 {linkValidation.isValid &&
                   formData.artiaLink &&
                   !linkExtracted && (
-                    <div className={shouldHideIdFields ? 'input-success-message' : 'input-help-message'}>
+                    <div
+                      className={
+                        shouldHideIdFields
+                          ? 'input-success-message'
+                          : 'input-help-message'
+                      }
+                    >
                       {shouldHideIdFields ? (
                         <>
                           <FaCheck /> IDs do Grupo e Pasta preenchidos automaticamente
@@ -1065,70 +1045,7 @@ ${bugData.others}${evidenceSection}`;
               </div>
             </div>
 
-            {/* Campos de ID - ocultados quando link válido é fornecido */}
-            {!shouldHideIdFields && (
-              <>
-                <div className='modal-field-group'>
-                  <div className='modal-input-container'>
-                    <input
-                      type='number'
-                      id='accountId'
-                      value={formData.accountId}
-                      onChange={e =>
-                        handleInputChange('accountId', e.target.value)
-                      }
-                      required
-                      disabled={loading}
-                    />
-                    <label htmlFor='accountId'>
-                      ID do Grupo de Trabalho
-                      <span className='modal-required'>*</span>
-                    </label>
-                    {formData.accountId && !loading && (
-                      <button
-                        type='button'
-                        className='modal-clear-field'
-                        onClick={() => handleInputChange('accountId', '')}
-                        title='Limpar ID do Grupo de Trabalho'
-                      >
-                        <FaTimes />
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                <div className='modal-field-group'>
-                  <div className='modal-input-container'>
-                    <input
-                      type='number'
-                      id='folderId'
-                      value={formData.folderId}
-                      onChange={e =>
-                        handleInputChange('folderId', e.target.value)
-                      }
-                      required
-                      disabled={loading}
-                    />
-                    <label htmlFor='folderId'>
-                      ID da Pasta/Projeto
-                      <span className='modal-required'>*</span>
-                    </label>
-                    {formData.folderId && !loading && (
-                      <button
-                        type='button'
-                        className='modal-clear-field'
-                        onClick={() => handleInputChange('folderId', '')}
-                        title='Limpar ID da Pasta/Projeto'
-                      >
-                        <FaTimes />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
-
-
+            {/* Remover campos de ID do Grupo e Pasta, pois agora são extraídos automaticamente e o link é obrigatório */}
 
             {/* Campos específicos do tipo de atividade */}
             {formData.tipo && getFieldsForType(formData.tipo).length > 0 && (

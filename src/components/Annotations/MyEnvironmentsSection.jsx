@@ -67,7 +67,7 @@ const MyEnvironmentsSection = () => {
   }
 
   return (
-    <div className='my-environments-section'>
+    <div id='my-environments' className='my-environments-section'>
       <div className='section-header'>
         <h4>
           <FaGlobe className='section-icon' />
@@ -87,14 +87,6 @@ const MyEnvironmentsSection = () => {
       {environments.length === 0 ? (
         <div className='empty-state'>
           <p>Nenhum ambiente cadastrado.</p>
-          <button
-            type='button'
-            className='global-toolbar-button action-add'
-            onClick={handleAddEnvironment}
-            style={{ width: 'auto', padding: '0.5rem 1rem' }}
-          >
-            <FaPlus /> Adicionar Primeiro Ambiente
-          </button>
         </div>
       ) : (
         <div className='environments-grid'>
