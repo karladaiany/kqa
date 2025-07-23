@@ -86,7 +86,6 @@ CategoryCard.propTypes = {
 const DataGenerator = () => {
   useTextareaResize();
   const { isFeatureVisible } = useSettings();
-  const { isFeatureVisible } = useSettings();
 
   const {
     isLoading,

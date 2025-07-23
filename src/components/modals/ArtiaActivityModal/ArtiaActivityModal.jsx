@@ -12,7 +12,6 @@ import {
   FaCheck,
   FaExclamationTriangle,
   FaCog,
-  FaCog,
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import {

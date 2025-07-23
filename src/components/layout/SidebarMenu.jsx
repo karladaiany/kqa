@@ -197,7 +197,6 @@ SidebarMenu.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onSettingsClick: PropTypes.func,
-  onSettingsClick: PropTypes.func,
 };
 
 export default SidebarMenu;

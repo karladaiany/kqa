@@ -20,7 +20,6 @@ import {
   ScrollButtons,
 } from './components/layout';
 import { SettingsModal } from './components/modals';
-import { SettingsModal } from './components/modals';
 import {
   BugRegistrationCard,
   DeployCard,
@@ -150,11 +149,6 @@ const App = () => {
       >
         <FaBars />
       </button>
-      <SidebarMenu
-        open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-        onSettingsClick={() => setShowSettingsModal(true)}
-      />
       <SidebarMenu
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
