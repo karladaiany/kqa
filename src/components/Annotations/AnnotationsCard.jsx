@@ -383,45 +383,29 @@ const AnnotationsCard = () => {
             </div>
             <div className='subsection-content'>
               <div className='quick-notes-container'>
-                <QuickNotesBadge
-                  type='feature-flag'
-                  text='Organization'
-                  onFeatureFlagClick={async () => {
-                    // Buscar diretamente o valor atual do campo "ID do ambiente" no DOM
-                    const envIdInput = document.querySelector(
-                      '#bug input[type="number"]'
-                    );
-                    const currentEnvId = envIdInput
-                      ? String(envIdInput.value).trim()
-                      : '';
-
-                    // Gerar texto Organization com o ID atual
-                    const featureFlagText =
-                      currentEnvId !== ''
-                        ? `Organization;${currentEnvId}`
-                        : 'Organization;';
-
-                    // Copiar para clipboard
-                    try {
-                      await navigator.clipboard.writeText(featureFlagText);
-                      console.log(
-                        `✅ Organization flag copiado: "${featureFlagText}"`
-                      );
-                    } catch (err) {
-                      console.error('❌ Erro ao copiar Organization flag:', err);
-                    }
-                  }}
-                />
-                <QuickNotesBadge type='api-v1' text='API v1' />
-                <QuickNotesBadge type='api-v2' text='API v2' />
+                <QuickNotesBadge type='feature-flag' text='Feature flag' onFeatureFlagClick={async () => {
+                  // Buscar diretamente o valor atual do campo "ID do ambiente" no DOM
+                  const envIdInput = document.querySelector('#bug input[type="number"]');
+                  const currentEnvId = envIdInput ? String(envIdInput.value).trim() : '';
+                  const featureFlagText = currentEnvId !== '' ? `Organization;${currentEnvId}` : 'Organization;';
+                  try {
+                    await navigator.clipboard.writeText(featureFlagText);
+                    console.log(`✅ Organization flag copiado: "${featureFlagText}"`);
+                  } catch (err) {
+                    console.error('❌ Erro ao copiar Organization flag:', err);
+                  }
+                }} />
                 <QuickNotesBadge type='storage-produto' text='[TEC] Produto' />
                 <QuickNotesBadge type='discoverys' text='[TEC] Discoverys' />
-                <QuickNotesBadge
-                  type='documentacoes'
-                  text='[TEC] Documentações por funcionalidade'
-                />
+                <QuickNotesBadge type='documentacoes' text='[TEC] Documentações por funcionalidade' />
                 <QuickNotesBadge type='style-guide' text='[TEC] Style Guide' />
-                <QuickNotesBadge type='testlink' text='Testlink' />
+                <QuickNotesBadge type='api-v1' text='API v1' />
+                <QuickNotesBadge type='api-v2' text='API v2' />
+                <QuickNotesBadge type='testlink' text='TestLink' />
+                <QuickNotesBadge type='jenkins' text='Jenkins' />
+                <QuickNotesBadge type='github' text='GitHub' />
+                <QuickNotesBadge type='datadog' text='Datadog' />
+                <QuickNotesBadge type='newrelic' text='New Relic' />
               </div>
             </div>
           </div>
