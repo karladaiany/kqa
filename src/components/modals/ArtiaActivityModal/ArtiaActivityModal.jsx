@@ -406,26 +406,14 @@ const ArtiaActivityModal = ({
       return false;
     }
 
-    // Verificar se as credenciais estão configuradas
-    if (!hasArtiaCredentials()) {
+    // Link do Artia obrigatório
+    if (!formData.artiaLink?.trim()) {
       return false;
     }
 
-    // Campos básicos obrigatórios
-    if (
-      !formData.titulo?.trim() ||
-      !formData.tipo?.trim() ||
-      !formData.accountId?.toString().trim() ||
-      !formData.folderId?.toString().trim()
-    ) {
-      return false;
-    }
-
-    // Validar se os IDs são números válidos
-    if (
-      isNaN(parseInt(formData.accountId)) ||
-      isNaN(parseInt(formData.folderId))
-    ) {
+    // Validar se o link é válido e se os IDs foram extraídos
+    const { accountId, folderId, isValid } = extractIdsFromArtiaLink(formData.artiaLink);
+    if (!isValid || !accountId || !folderId) {
       return false;
     }
 
@@ -449,31 +437,16 @@ const ArtiaActivityModal = ({
       return false;
     }
 
-    // Verificar se as credenciais estão configuradas
-    if (!hasArtiaCredentials()) {
-      toast.error(
-        'Credenciais do Artia não configuradas. Configure-as nas configurações.'
-      );
+    // Link do Artia obrigatório
+    if (!formData.artiaLink?.trim()) {
+      toast.error('Link do Artia é obrigatório');
       return false;
     }
 
-    // Campos básicos obrigatórios
-    if (
-      !formData.titulo ||
-      !formData.tipo ||
-      !formData.accountId ||
-      !formData.folderId
-    ) {
-      toast.error('Preencha todos os campos básicos obrigatórios');
-      return false;
-    }
-
-    // Validar se os IDs são números válidos
-    if (
-      isNaN(parseInt(formData.accountId)) ||
-      isNaN(parseInt(formData.folderId))
-    ) {
-      toast.error('IDs do Grupo e da Pasta devem ser números válidos');
+    // Validar se o link é válido e se os IDs foram extraídos
+    const { accountId, folderId, isValid } = extractIdsFromArtiaLink(formData.artiaLink);
+    if (!isValid || !accountId || !folderId) {
+      toast.error('Link do Artia inválido ou IDs não extraídos');
       return false;
     }
 
@@ -912,7 +885,7 @@ ${bugData.others}${evidenceSection}`;
             </div>
 
             <div className='section-divider'>
-              <FaLink /> Link do Artia (opcional)
+              <FaLink /> Link do Artia
             </div>
 
             <div className='modal-field-group'>
@@ -923,6 +896,7 @@ ${bugData.others}${evidenceSection}`;
                   value={formData.artiaLink}
                   onChange={e => handleInputChange('artiaLink', e.target.value)}
                   disabled={loading}
+                  required
                   placeholder='https://app2.artia.com/a/4874953/f/4885568/kanban...'
                   className={
                     !linkValidation.isValid
@@ -933,10 +907,11 @@ ${bugData.others}${evidenceSection}`;
                   }
                 />
                 <label htmlFor='artiaLink'>
-                  Link do projeto no Artia
-                  {linkExtracted && (
-                    <span className='link-success-indicator'>
-                      <FaCheck /> IDs extraídos automaticamente
+                  Link do Artia
+                  <span className='modal-required'>*</span>
+                  {!linkValidation.isValid && (
+                    <span className='input-error-message'>
+                      Link do Artia é obrigatório
                     </span>
                   )}
                 </label>
@@ -946,7 +921,6 @@ ${bugData.others}${evidenceSection}`;
                     className='modal-clear-field'
                     onClick={() => {
                       handleInputChange('artiaLink', '');
-                      // Quando o link for limpo, mostrar novamente os campos de ID
                       setShouldHideIdFields(false);
                     }}
                     title='Limpar Link do Artia'
@@ -1071,68 +1045,7 @@ ${bugData.others}${evidenceSection}`;
               </div>
             </div>
 
-            {/* Campos de ID - ocultados quando link válido é fornecido */}
-            {!shouldHideIdFields && (
-              <>
-                <div className='modal-field-group'>
-                  <div className='modal-input-container'>
-                    <input
-                      type='number'
-                      id='accountId'
-                      value={formData.accountId}
-                      onChange={e =>
-                        handleInputChange('accountId', e.target.value)
-                      }
-                      required
-                      disabled={loading}
-                    />
-                    <label htmlFor='accountId'>
-                      ID do Grupo de Trabalho
-                      <span className='modal-required'>*</span>
-                    </label>
-                    {formData.accountId && !loading && (
-                      <button
-                        type='button'
-                        className='modal-clear-field'
-                        onClick={() => handleInputChange('accountId', '')}
-                        title='Limpar ID do Grupo de Trabalho'
-                      >
-                        <FaTimes />
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                <div className='modal-field-group'>
-                  <div className='modal-input-container'>
-                    <input
-                      type='number'
-                      id='folderId'
-                      value={formData.folderId}
-                      onChange={e =>
-                        handleInputChange('folderId', e.target.value)
-                      }
-                      required
-                      disabled={loading}
-                    />
-                    <label htmlFor='folderId'>
-                      ID da Pasta/Projeto
-                      <span className='modal-required'>*</span>
-                    </label>
-                    {formData.folderId && !loading && (
-                      <button
-                        type='button'
-                        className='modal-clear-field'
-                        onClick={() => handleInputChange('folderId', '')}
-                        title='Limpar ID da Pasta/Projeto'
-                      >
-                        <FaTimes />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
+            {/* Remover campos de ID do Grupo e Pasta, pois agora são extraídos automaticamente e o link é obrigatório */}
 
             {/* Campos específicos do tipo de atividade */}
             {formData.tipo && getFieldsForType(formData.tipo).length > 0 && (
