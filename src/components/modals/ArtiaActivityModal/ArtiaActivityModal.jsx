@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import {
   FaTimes,
@@ -12,6 +12,7 @@ import {
   FaCheck,
   FaExclamationTriangle,
   FaCog,
+  FaThumbtack,
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import {
@@ -54,7 +55,7 @@ const generateTitleTemplate = type => {
     type === ACTIVITY_TYPES.BUG_PRODUCAO ||
     type === ACTIVITY_TYPES.BUG_RETRABALHO
   ) {
-    return '[] ';
+    return '';
   }
   return '';
 };
@@ -169,6 +170,33 @@ const validateArtiaLink = link => {
   }
 };
 
+const getInitialPinState = (fieldName) => {
+  if (typeof window === 'undefined') return false;
+  try {
+    const pins = JSON.parse(localStorage.getItem('activityPinToggles') || '{}');
+    return !!pins[fieldName];
+  } catch {
+    return false;
+  }
+};
+
+const setPinState = (fieldName, value) => {
+  try {
+    const pins = JSON.parse(localStorage.getItem('activityPinToggles') || '{}');
+    pins[fieldName] = value;
+    localStorage.setItem('activityPinToggles', JSON.stringify(pins));
+  } catch (e) {
+    // Silencia o erro propositalmente
+  }
+};
+
+// Função auxiliar para obter a chave do localStorage conforme o tipo de atividade
+const getModalStorageKey = (activityType) => {
+  if (activityType === 'deploy') return 'artiaModalData_deploy';
+  if (activityType === 'bug') return 'artiaModalData_bug';
+  return 'artiaModalData';
+};
+
 const ArtiaActivityModal = ({
   isOpen,
   onClose,
@@ -177,9 +205,11 @@ const ArtiaActivityModal = ({
 }) => {
   const { artiaCredentials, hasArtiaCredentials } = useSettings();
 
+  const storageKey = useMemo(() => getModalStorageKey(activityType), [activityType]);
+
   const [formData, setFormData] = useState(() => {
     // Carregar dados salvos do localStorage (exceto credenciais)
-    const savedData = localStorage.getItem('artiaModalData');
+    const savedData = localStorage.getItem(storageKey);
     const defaultData = {
       titulo: '',
       tipo: '',
@@ -224,6 +254,21 @@ const ArtiaActivityModal = ({
     const saved = localStorage.getItem('artiaActivitiesHistory');
     return saved ? JSON.parse(saved) : [];
   });
+
+  // Estado dos pinos
+  const [pinToggles, setPinToggles] = useState(() => ({
+    prioridade: getInitialPinState('prioridade'),
+    funcionalidade: getInitialPinState('funcionalidade'),
+    subFuncionalidade: getInitialPinState('subFuncionalidade'),
+  }));
+
+  const handleTogglePin = (fieldName) => {
+    setPinToggles((prev) => {
+      const updated = { ...prev, [fieldName]: !prev[fieldName] };
+      setPinState(fieldName, updated[fieldName]);
+      return updated;
+    });
+  };
 
   // Debounce para salvar dados no localStorage (exceto credenciais)
   const debouncedFormData = useDebounce(formData, 800);
@@ -295,10 +340,9 @@ const ArtiaActivityModal = ({
   // Salvar dados com debounce (exceto credenciais)
   useEffect(() => {
     if (debouncedFormData && Object.keys(debouncedFormData).length > 0) {
-      localStorage.setItem('artiaModalData', JSON.stringify(debouncedFormData));
-      localStorage.setItem('artiaModalData', JSON.stringify(debouncedFormData));
+      localStorage.setItem(storageKey, JSON.stringify(debouncedFormData));
     }
-  }, [debouncedFormData]);
+  }, [debouncedFormData, storageKey]);
 
   // Atualizar sub-funcionalidades quando funcionalidade mudar
   useEffect(() => {
@@ -682,7 +726,7 @@ ${bugData.others}${evidenceSection}`;
       )
     ) {
       // Limpar localStorage (dados do modal e histórico)
-      localStorage.removeItem('artiaModalData');
+      localStorage.removeItem(storageKey);
       localStorage.removeItem('artiaActivitiesHistory');
 
       // Resetar estados
@@ -699,6 +743,8 @@ ${bugData.others}${evidenceSection}`;
 
   const renderField = field => {
     const value = formData[field.name] || '';
+    const isPinField = ['prioridade', 'funcionalidade', 'subFuncionalidade'].includes(field.name);
+    const pinActive = pinToggles[field.name];
 
     switch (field.type) {
       case 'select': {
@@ -739,9 +785,28 @@ ${bugData.others}${evidenceSection}`;
                   );
                 })}
               </select>
-              <label htmlFor={field.name}>
+              <label htmlFor={field.name} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 {field.label}
                 {field.required && <span className='modal-required'>*</span>}
+                {isPinField && (
+                  <button
+                    type='button'
+                    aria-label={`Fixar no título: ${field.label}`}
+                    style={{ background: 'none', border: 'none', padding: 0, marginLeft: 4, cursor: 'pointer' }}
+                    onClick={() => handleTogglePin(field.name)}
+                    tabIndex={0}
+                  >
+                    <FaThumbtack
+                      size={16}
+                      color={pinActive ? '#F90EF4' : 'currentColor'}
+                      style={{
+                        transform: pinActive ? 'rotate(-20deg)' : 'none',
+                        opacity: pinActive ? 1 : 0.7,
+                        transition: 'transform 0.2s, color 0.2s, opacity 0.2s',
+                      }}
+                    />
+                  </button>
+                )}
               </label>
             </div>
           </div>
@@ -761,9 +826,28 @@ ${bugData.others}${evidenceSection}`;
                 min={field.min}
                 max={field.max}
               />
-              <label htmlFor={field.name}>
+              <label htmlFor={field.name} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 {field.label}
                 {field.required && <span className='modal-required'>*</span>}
+                {isPinField && (
+                  <button
+                    type='button'
+                    aria-label={`Fixar no título: ${field.label}`}
+                    style={{ background: 'none', border: 'none', padding: 0, marginLeft: 4, cursor: 'pointer' }}
+                    onClick={() => handleTogglePin(field.name)}
+                    tabIndex={0}
+                  >
+                    <FaThumbtack
+                      size={16}
+                      color={pinActive ? '#F90EF4' : 'currentColor'}
+                      style={{
+                        transform: pinActive ? 'rotate(-20deg)' : 'none',
+                        opacity: pinActive ? 1 : 0.7,
+                        transition: 'transform 0.2s, color 0.2s, opacity 0.2s',
+                      }}
+                    />
+                  </button>
+                )}
                 {field.min !== undefined && field.max !== undefined && (
                   <span className='modal-field-hint'>
                     {' '}
@@ -796,9 +880,28 @@ ${bugData.others}${evidenceSection}`;
                 onChange={e => handleInputChange(field.name, e.target.value)}
                 required={field.required}
               />
-              <label htmlFor={field.name}>
+              <label htmlFor={field.name} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 {field.label}
                 {field.required && <span className='modal-required'>*</span>}
+                {isPinField && (
+                  <button
+                    type='button'
+                    aria-label={`Fixar no título: ${field.label}`}
+                    style={{ background: 'none', border: 'none', padding: 0, marginLeft: 4, cursor: 'pointer' }}
+                    onClick={() => handleTogglePin(field.name)}
+                    tabIndex={0}
+                  >
+                    <FaThumbtack
+                      size={16}
+                      color={pinActive ? '#F90EF4' : 'currentColor'}
+                      style={{
+                        transform: pinActive ? 'rotate(-20deg)' : 'none',
+                        opacity: pinActive ? 1 : 0.7,
+                        transition: 'transform 0.2s, color 0.2s, opacity 0.2s',
+                      }}
+                    />
+                  </button>
+                )}
               </label>
               {value && (
                 <button
@@ -825,9 +928,28 @@ ${bugData.others}${evidenceSection}`;
                 onChange={e => handleInputChange(field.name, e.target.value)}
                 required={field.required}
               />
-              <label htmlFor={field.name}>
+              <label htmlFor={field.name} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 {field.label}
                 {field.required && <span className='modal-required'>*</span>}
+                {isPinField && (
+                  <button
+                    type='button'
+                    aria-label={`Fixar no título: ${field.label}`}
+                    style={{ background: 'none', border: 'none', padding: 0, marginLeft: 4, cursor: 'pointer' }}
+                    onClick={() => handleTogglePin(field.name)}
+                    tabIndex={0}
+                  >
+                    <FaThumbtack
+                      size={16}
+                      color={pinActive ? '#F90EF4' : 'currentColor'}
+                      style={{
+                        transform: pinActive ? 'rotate(-20deg)' : 'none',
+                        opacity: pinActive ? 1 : 0.7,
+                        transition: 'transform 0.2s, color 0.2s, opacity 0.2s',
+                      }}
+                    />
+                  </button>
+                )}
               </label>
               {value && (
                 <button
@@ -844,6 +966,62 @@ ${bugData.others}${evidenceSection}`;
         );
     }
   };
+
+  // Função para gerar o texto da tag de cada campo
+  const getPinTag = (fieldName, pinToggles, formData) => {
+    if (!pinToggles[fieldName]) return '';
+    if (fieldName === 'prioridade' && formData.prioridade !== undefined && formData.prioridade !== '') {
+      return `P${formData.prioridade}`;
+    }
+    if (fieldName === 'funcionalidade' && formData.funcionalidade) {
+      return `[${formData.funcionalidade}]`;
+    }
+    if (fieldName === 'subFuncionalidade' && formData.subFuncionalidade) {
+      return `[${formData.subFuncionalidade}]`;
+    }
+    return '';
+  };
+
+  // Substitua a declaração de fixedTags por:
+  const fixedTags = useMemo(() => {
+    // Só exibe tags para Bug Produção ou Bug Retrabalho
+    if (
+      formData.tipo === ACTIVITY_TYPES.BUG_PRODUCAO ||
+      formData.tipo === ACTIVITY_TYPES.BUG_RETRABALHO
+    ) {
+      return [
+        getPinTag('prioridade', pinToggles, formData),
+        getPinTag('funcionalidade', pinToggles, formData),
+        getPinTag('subFuncionalidade', pinToggles, formData),
+      ].filter(Boolean);
+    }
+    // Para outros tipos (ex: Deploy), não exibe tags
+    return [];
+  }, [formData.tipo, pinToggles, formData.prioridade, formData.funcionalidade, formData.subFuncionalidade]);
+
+  const [userTitle, setUserTitle] = useState('');
+
+  // Atualiza userTitle quando o formData.titulo muda externamente (reset, etc)
+  useEffect(() => {
+    // Só atualiza se o modal abrir ou o título for resetado
+    if (!isOpen) return;
+    let t = formData.titulo || '';
+    fixedTags.forEach(tag => {
+      if (t.startsWith(tag + ' ')) t = t.slice(tag.length + 1);
+      else if (t.startsWith(tag)) t = t.slice(tag.length);
+    });
+    setUserTitle(t.trimStart());
+    // eslint-disable-next-line
+  }, [isOpen]);
+
+  // Atualiza formData.titulo sempre que as tags ou userTitle mudam
+  useEffect(() => {
+    const newTitle = (fixedTags.length > 0 ? fixedTags.join(' ') + ' ' : '') + (userTitle || '');
+    if (formData.titulo !== newTitle) {
+      setFormData(prev => ({ ...prev, titulo: newTitle }));
+    }
+    // eslint-disable-next-line
+  }, [userTitle, fixedTags, setFormData]);
 
   if (!isOpen) return null;
 
@@ -1019,24 +1197,43 @@ ${bugData.others}${evidenceSection}`;
             </div>
 
             <div className='modal-field-group'>
-              <div className='modal-input-container'>
+              <div className='modal-input-container' style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                {/* Tags fixadas à esquerda */}
+                {fixedTags.map((tag, idx) => (
+                  <span key={tag + idx} className='fixed-title-tag' style={{
+                    background: 'var(--primary-color, #F90EF4)',
+                    color: '#fff',
+                    borderRadius: 4,
+                    padding: '2px 8px',
+                    fontSize: 13,
+                    fontWeight: 500,
+                    marginRight: 4,
+                    userSelect: 'none',
+                    letterSpacing: 0.5,
+                    display: 'inline-block',
+                    whiteSpace: 'nowrap',
+                  }}>{tag}</span>
+                ))}
+                {/* Input editável */}
                 <input
                   type='text'
                   id='titulo'
-                  value={formData.titulo}
-                  onChange={e => handleInputChange('titulo', e.target.value)}
+                  value={userTitle}
+                  onChange={e => setUserTitle(e.target.value)}
                   required
                   disabled={loading}
+                  style={{ flex: 1, minWidth: 0 }}
+                  placeholder={fixedTags.length > 0 ? 'Descreva o restante do título...' : 'Título da atividade'}
                 />
                 <label htmlFor='titulo'>
                   Título
                   <span className='modal-required'>*</span>
                 </label>
-                {formData.titulo && !loading && (
+                {userTitle && !loading && (
                   <button
                     type='button'
                     className='modal-clear-field'
-                    onClick={() => handleInputChange('titulo', '')}
+                    onClick={() => setUserTitle('')}
                     title='Limpar Título'
                   >
                     <FaTimes />
