@@ -875,12 +875,30 @@ ${bugData.others}${evidenceSection}`;
             <div className='modal-field-group'>
               <div
                 className='modal-input-container'
-                style={{ background: '#f8f9fa', border: '1px solid #e0e0e0' }}
+                style={{
+                  background: '#181c1f',
+                  border: '1px solid #222',
+                  color: hasArtiaCredentials() ? '#2ecc40' : '#fff',
+                  padding: 12,
+                  borderRadius: 6,
+                  marginBottom: 8,
+                  fontWeight: 500,
+                  fontSize: 15,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                }}
               >
-                <span style={{ color: '#555', fontSize: 13 }}>
-                  Agora, as credenciais de acesso do Artia são configuradas na
-                  área de <b>Configurações</b> (no menu lateral).
-                </span>
+                {hasArtiaCredentials() ? (
+                  <span style={{ color: '#2ecc40', fontWeight: 600, marginBottom: 2 }}>Status: ✓ Configurado</span>
+                ) : (
+                  <>
+                    <span style={{ color: '#e74c3c', fontWeight: 600, marginBottom: 2 }}>Status: ✗ Não configurado</span>
+                    <span style={{ color: '#fff', fontWeight: 400, fontSize: 14 }}>
+                      Configure suas credenciais na área de <b>Configurações</b> (no menu lateral).
+                    </span>
+                  </>
+                )}
               </div>
             </div>
 
