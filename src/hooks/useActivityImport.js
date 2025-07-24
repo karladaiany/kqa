@@ -1214,8 +1214,8 @@ const convertToArtiaFormat = (activity, credentials, finalStatusId = null) => {
     garantia: activity.garantia || '',
 
     // Credenciais para criação
-    login: credentials.email,
-    senha: credentials.password,
+    login: credentials.email, // compatível com ArtiaService
+    senha: credentials.password, // compatível com ArtiaService
     accountId: accountId,
     folderId: folderId,
   };
