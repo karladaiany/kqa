@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { FaRocket, FaTimes, FaCopy, FaBroom } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import ArtiaActivityModal from '../../modals/ArtiaActivityModal/ArtiaActivityModal';
+import { useSettings } from '../../../contexts/SettingsContext';
 
 const DeployCard = () => {
   const [fields, setFields] = useState(() => {
@@ -19,6 +20,8 @@ const DeployCard = () => {
 
   // Estado para controlar o modal do Artia
   const [showArtiaModal, setShowArtiaModal] = useState(false);
+
+  const { hasArtiaCredentials } = useSettings();
 
   // Função para verificar se há dados preenchidos
   const hasAnyData = useCallback(() => {
@@ -309,8 +312,15 @@ const DeployCard = () => {
                 </button>
                 <button
                   className='generate-all-btn'
-                  onClick={() => setShowArtiaModal(true)}
+                  onClick={() => {
+                    if (!hasArtiaCredentials()) {
+                      toast.error('Credenciais do Artia não configuradas. Configure-as nas configurações.');
+                      return;
+                    }
+                    setShowArtiaModal(true);
+                  }}
                   title='Criar atividade no Artia'
+                  disabled={!hasArtiaCredentials()}
                 >
                   <FaRocket /> Criar atividade
                 </button>
