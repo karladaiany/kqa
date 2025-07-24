@@ -89,16 +89,16 @@ const SettingsModal = ({ isOpen, onClose }) => {
 
   // Inicializar credenciais uma única vez baseado nas credenciais atuais
   const [credentials, setCredentials] = useState(() => ({
-    login: artiaCredentials.login || '',
-    senha: artiaCredentials.senha || '',
+    email: artiaCredentials.email || '',
+    password: artiaCredentials.password || '',
   }));
 
   const [showPassword, setShowPassword] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSaveCredentials = async () => {
-    if (!credentials.login || !credentials.senha) {
-      toast.error('Login e senha são obrigatórios');
+    if (!credentials.email || !credentials.password) {
+      toast.error('Email e senha são obrigatórios');
       return;
     }
 
@@ -119,7 +119,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
       window.confirm('Tem certeza que deseja limpar as credenciais do Artia?')
     ) {
       clearArtiaCredentials();
-      setCredentials({ login: '', senha: '' });
+      setCredentials({ email: '', password: '' });
       toast.success('Credenciais removidas');
     }
   };
@@ -174,21 +174,26 @@ const SettingsModal = ({ isOpen, onClose }) => {
                 Configure suas credenciais do Artia para criar atividades de
                 Bug, Deploy e importar atividades.
               </p>
+              <p className='credentials-warning' style={{ color: '#b85c00', fontSize: 13, marginTop: 8 }}>
+                ⚠️ As credenciais são salvas localmente de forma criptografada. Não compartilhe este dispositivo se não confiar no ambiente.
+              </p>
             </div>
 
             <div className='modal-field-group'>
-              <label htmlFor='artia-login'>
-                Login <span className='modal-required'>*</span>
+              <label htmlFor='artia-email'>
+                Email <span className='modal-required'>*</span>
               </label>
               <div className='modal-input-container'>
                 <input
-                  id='artia-login'
+                  id='artia-email'
+                  name='email'
                   type='email'
-                  value={credentials.login}
+                  autoComplete='username'
+                  value={credentials.email}
                   onChange={e =>
                     setCredentials(prev => ({
                       ...prev,
-                      login: e.target.value,
+                      email: e.target.value,
                     }))
                   }
                 />
@@ -196,18 +201,20 @@ const SettingsModal = ({ isOpen, onClose }) => {
             </div>
 
             <div className='modal-field-group'>
-              <label htmlFor='artia-senha'>
+              <label htmlFor='artia-password'>
                 Senha <span className='modal-required'>*</span>
               </label>
               <div className='modal-input-container'>
                 <input
-                  id='artia-senha'
+                  id='artia-password'
+                  name='password'
                   type={showPassword ? 'text' : 'password'}
-                  value={credentials.senha}
+                  autoComplete='current-password'
+                  value={credentials.password}
                   onChange={e =>
                     setCredentials(prev => ({
                       ...prev,
-                      senha: e.target.value,
+                      password: e.target.value,
                     }))
                   }
                 />
@@ -226,7 +233,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
               <button
                 className='modal-action-button primary'
                 onClick={handleSaveCredentials}
-                disabled={isSaving || !credentials.login || !credentials.senha}
+                disabled={isSaving || !credentials.email || !credentials.password}
               >
                 {isSaving ? (
                   <>
