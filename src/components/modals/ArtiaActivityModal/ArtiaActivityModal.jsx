@@ -225,6 +225,12 @@ const ArtiaActivityModal = ({
     return saved ? JSON.parse(saved) : [];
   });
 
+  // Definir tipos disponíveis baseado na origem
+  const availableTypes =
+    activityType === 'bug'
+      ? [ACTIVITY_TYPES.BUG_PRODUCAO, ACTIVITY_TYPES.BUG_RETRABALHO]
+      : [ACTIVITY_TYPES.DEPLOY];
+
   // Debounce para salvar dados no localStorage (exceto credenciais)
   const debouncedFormData = useDebounce(formData, 800);
 
@@ -237,22 +243,6 @@ const ArtiaActivityModal = ({
       );
     }
   }, [isOpen, hasArtiaCredentials]);
-
-  // Verificar se as credenciais estão configuradas
-  useEffect(() => {
-    if (isOpen && !hasArtiaCredentials()) {
-      toast.error(
-        'Credenciais do Artia não configuradas. Configure-as nas configurações.',
-        { autoClose: 5000 }
-      );
-    }
-  }, [isOpen, hasArtiaCredentials]);
-
-  // Definir tipos disponíveis baseado na origem
-  const availableTypes =
-    activityType === 'bug'
-      ? [ACTIVITY_TYPES.BUG_PRODUCAO, ACTIVITY_TYPES.BUG_RETRABALHO]
-      : [ACTIVITY_TYPES.DEPLOY];
 
   // Bloquear scroll da página quando modal está aberto
   useEffect(() => {
@@ -585,6 +575,11 @@ ${bugData.others}${evidenceSection}`;
   const handleSubmit = async e => {
     e.preventDefault();
 
+    if (!hasArtiaCredentials()) {
+      toast.error('Credenciais do Artia não configuradas. Configure-as nas configurações.');
+      return;
+    }
+
     if (!validateForm()) {
       return;
     }
@@ -595,11 +590,18 @@ ${bugData.others}${evidenceSection}`;
       // Gerar descrição baseada na função de copiar
       const generatedDescription = await getGeneratedDescription();
 
+      // Garantir que as credenciais do contexto estejam presentes no formData
+      const formDataWithCredentials = {
+        ...formData,
+        login: artiaCredentials.email,
+        senha: artiaCredentials.password,
+      };
+
       // Tentar criar atividade completa primeiro, se falhar, criar simples
       let result;
       try {
         result = await ArtiaService.createActivity(
-          formData,
+          formDataWithCredentials,
           generatedDescription
         );
       } catch (error) {
@@ -609,7 +611,7 @@ ${bugData.others}${evidenceSection}`;
           error.message.includes('input type')
         ) {
           result = await ArtiaService.createSimpleActivity(
-            formData,
+            formDataWithCredentials,
             generatedDescription
           );
         } else {
@@ -1101,7 +1103,7 @@ ${bugData.others}${evidenceSection}`;
             <button
               type='submit'
               className='modal-action-button primary'
-              disabled={loading || !isFormValid()}
+              disabled={loading || !isFormValid() || !hasArtiaCredentials()}
             >
               {loading ? (
                 <>

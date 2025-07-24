@@ -325,6 +325,11 @@ const ActivityImportCard = () => {
       return;
     }
 
+    if (!hasArtiaCredentials()) {
+      toast.error('Credenciais do Artia não configuradas. Configure-as nas configurações.');
+      return;
+    }
+
     // Validar credenciais básicas
     if (!artiaCredentials.email || !artiaCredentials.password) {
       toast.error(
@@ -360,6 +365,7 @@ const ActivityImportCard = () => {
     credentials,
     importMode,
     artiaCredentials,
+    hasArtiaCredentials,
   ]);
 
   /**
@@ -368,6 +374,11 @@ const ActivityImportCard = () => {
   const handleExecuteImport = useCallback(async () => {
     if (!canProceed) {
       toast.warning('Corrija os erros antes de prosseguir');
+      return;
+    }
+
+    if (!hasArtiaCredentials()) {
+      toast.error('Credenciais do Artia não configuradas. Configure-as nas configurações.');
       return;
     }
 
@@ -398,6 +409,7 @@ const ActivityImportCard = () => {
     credentials,
     selectedStatus,
     artiaCredentials,
+    hasArtiaCredentials,
   ]);
 
   /**
@@ -730,7 +742,8 @@ const ActivityImportCard = () => {
           (importMode === 'create' &&
             !credentials.useFileAccountId &&
             !credentials.accountId) ||
-          (!credentials.useFileFolderId && !credentials.folderId)
+          (!credentials.useFileFolderId && !credentials.folderId) ||
+          !hasArtiaCredentials()
         }
       >
         <FaRocket /> Processar Arquivo
@@ -893,7 +906,8 @@ const ActivityImportCard = () => {
                   !credentials.accountId) ||
                 (importMode === 'create' &&
                   !credentials.useFileFolderId &&
-                  !credentials.folderId)
+                  !credentials.folderId) ||
+                !hasArtiaCredentials()
               }
             >
               <FaRocket />{' '}
