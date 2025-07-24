@@ -325,8 +325,13 @@ const ActivityImportCard = () => {
       return;
     }
 
+    if (!hasArtiaCredentials()) {
+      toast.error('Credenciais do Artia não configuradas. Configure-as nas configurações.');
+      return;
+    }
+
     // Validar credenciais básicas
-    if (!artiaCredentials.login || !artiaCredentials.senha) {
+    if (!artiaCredentials.email || !artiaCredentials.password) {
       toast.error(
         'Por favor, configure suas credenciais de acesso ao Artia nas Configurações.'
       );
@@ -360,6 +365,7 @@ const ActivityImportCard = () => {
     credentials,
     importMode,
     artiaCredentials,
+    hasArtiaCredentials,
   ]);
 
   /**
@@ -371,10 +377,15 @@ const ActivityImportCard = () => {
       return;
     }
 
+    if (!hasArtiaCredentials()) {
+      toast.error('Credenciais do Artia não configuradas. Configure-as nas configurações.');
+      return;
+    }
+
     // Preparar os dados de configuração
     const importConfig = {
-      email: artiaCredentials.login,
-      password: artiaCredentials.senha,
+      email: artiaCredentials.email,
+      password: artiaCredentials.password,
       useFileAccountId: credentials.useFileAccountId,
       useFileFolderId: credentials.useFileFolderId,
       accountId: credentials.useFileAccountId ? null : credentials.accountId,
@@ -398,6 +409,7 @@ const ActivityImportCard = () => {
     credentials,
     selectedStatus,
     artiaCredentials,
+    hasArtiaCredentials,
   ]);
 
   /**
@@ -725,12 +737,13 @@ const ActivityImportCard = () => {
         className='btn-action'
         onClick={handleProcessFile}
         disabled={
-          !artiaCredentials.login ||
-          !artiaCredentials.senha ||
+          !artiaCredentials.email ||
+          !artiaCredentials.password ||
           (importMode === 'create' &&
             !credentials.useFileAccountId &&
             !credentials.accountId) ||
-          (!credentials.useFileFolderId && !credentials.folderId)
+          (!credentials.useFileFolderId && !credentials.folderId) ||
+          !hasArtiaCredentials()
         }
       >
         <FaRocket /> Processar Arquivo
@@ -886,14 +899,15 @@ const ActivityImportCard = () => {
               className='btn-primary'
               onClick={handleExecuteImport}
               disabled={
-                !artiaCredentials.login ||
-                !artiaCredentials.senha ||
+                !artiaCredentials.email ||
+                !artiaCredentials.password ||
                 (importMode === 'create' &&
                   !credentials.useFileAccountId &&
                   !credentials.accountId) ||
                 (importMode === 'create' &&
                   !credentials.useFileFolderId &&
-                  !credentials.folderId)
+                  !credentials.folderId) ||
+                !hasArtiaCredentials()
               }
             >
               <FaRocket />{' '}
@@ -987,9 +1001,9 @@ const ActivityImportCard = () => {
         <div className='preview-config-item'>
           <span className='preview-config-label'>Login:</span>
           <span
-            className={`preview-config-value ${artiaCredentials.login ? 'cached' : 'empty'}`}
+            className={`preview-config-value ${artiaCredentials.email ? 'cached' : 'empty'}`}
           >
-            {artiaCredentials.login || 'Não informado'}
+            {artiaCredentials.email || 'Não informado'}
           </span>
         </div>
       </div>

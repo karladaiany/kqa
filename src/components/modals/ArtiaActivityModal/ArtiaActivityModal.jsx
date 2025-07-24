@@ -270,6 +270,12 @@ const ArtiaActivityModal = ({
     });
   };
 
+  // Definir tipos disponíveis baseado na origem
+  const availableTypes =
+    activityType === 'bug'
+      ? [ACTIVITY_TYPES.BUG_PRODUCAO, ACTIVITY_TYPES.BUG_RETRABALHO]
+      : [ACTIVITY_TYPES.DEPLOY];
+
   // Debounce para salvar dados no localStorage (exceto credenciais)
   const debouncedFormData = useDebounce(formData, 800);
 
@@ -282,22 +288,6 @@ const ArtiaActivityModal = ({
       );
     }
   }, [isOpen, hasArtiaCredentials]);
-
-  // Verificar se as credenciais estão configuradas
-  useEffect(() => {
-    if (isOpen && !hasArtiaCredentials()) {
-      toast.error(
-        'Credenciais do Artia não configuradas. Configure-as nas configurações.',
-        { autoClose: 5000 }
-      );
-    }
-  }, [isOpen, hasArtiaCredentials]);
-
-  // Definir tipos disponíveis baseado na origem
-  const availableTypes =
-    activityType === 'bug'
-      ? [ACTIVITY_TYPES.BUG_PRODUCAO, ACTIVITY_TYPES.BUG_RETRABALHO]
-      : [ACTIVITY_TYPES.DEPLOY];
 
   // Bloquear scroll da página quando modal está aberto
   useEffect(() => {
@@ -629,6 +619,11 @@ ${bugData.others}${evidenceSection}`;
   const handleSubmit = async e => {
     e.preventDefault();
 
+    if (!hasArtiaCredentials()) {
+      toast.error('Credenciais do Artia não configuradas. Configure-as nas configurações.');
+      return;
+    }
+
     if (!validateForm()) {
       return;
     }
@@ -639,11 +634,18 @@ ${bugData.others}${evidenceSection}`;
       // Gerar descrição baseada na função de copiar
       const generatedDescription = await getGeneratedDescription();
 
+      // Garantir que as credenciais do contexto estejam presentes no formData
+      const formDataWithCredentials = {
+        ...formData,
+        login: artiaCredentials.email,
+        senha: artiaCredentials.password,
+      };
+
       // Tentar criar atividade completa primeiro, se falhar, criar simples
       let result;
       try {
         result = await ArtiaService.createActivity(
-          formData,
+          formDataWithCredentials,
           generatedDescription
         );
       } catch (error) {
@@ -653,7 +655,7 @@ ${bugData.others}${evidenceSection}`;
           error.message.includes('input type')
         ) {
           result = await ArtiaService.createSimpleActivity(
-            formData,
+            formDataWithCredentials,
             generatedDescription
           );
         } else {
@@ -1053,12 +1055,30 @@ ${bugData.others}${evidenceSection}`;
             <div className='modal-field-group'>
               <div
                 className='modal-input-container'
-                style={{ background: '#f8f9fa', border: '1px solid #e0e0e0' }}
+                style={{
+                  background: '#181c1f',
+                  border: '1px solid #222',
+                  color: hasArtiaCredentials() ? '#2ecc40' : '#fff',
+                  padding: 12,
+                  borderRadius: 6,
+                  marginBottom: 8,
+                  fontWeight: 500,
+                  fontSize: 15,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                }}
               >
-                <span style={{ color: '#555', fontSize: 13 }}>
-                  Agora, as credenciais de acesso do Artia são configuradas na
-                  área de <b>Configurações</b> (no menu lateral).
-                </span>
+                {hasArtiaCredentials() ? (
+                  <span style={{ color: '#2ecc40', fontWeight: 600, marginBottom: 2 }}>Status: ✓ Configurado</span>
+                ) : (
+                  <>
+                    <span style={{ color: '#e74c3c', fontWeight: 600, marginBottom: 2 }}>Status: ✗ Não configurado</span>
+                    <span style={{ color: '#fff', fontWeight: 400, fontSize: 14 }}>
+                      Configure suas credenciais na área de <b>Configurações</b> (no menu lateral).
+                    </span>
+                  </>
+                )}
               </div>
             </div>
 
@@ -1280,7 +1300,7 @@ ${bugData.others}${evidenceSection}`;
             <button
               type='submit'
               className='modal-action-button primary'
-              disabled={loading || !isFormValid()}
+              disabled={loading || !isFormValid() || !hasArtiaCredentials()}
             >
               {loading ? (
                 <>

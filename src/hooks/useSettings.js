@@ -43,8 +43,8 @@ const DEFAULT_SETTINGS = {
 const useSettings = () => {
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [artiaCredentials, setArtiaCredentials] = useState({
-    login: '',
-    senha: '',
+    email: '',
+    password: '',
   });
   const [isLoading, setIsLoading] = useState(true);
   const [hasUserModifiedSettings, setHasUserModifiedSettings] = useState(false);
@@ -79,7 +79,7 @@ const useSettings = () => {
           setArtiaCredentials(decrypted);
         } catch (error) {
           console.warn('Erro ao descriptografar credenciais:', error);
-          setArtiaCredentials({ login: '', senha: '' });
+          setArtiaCredentials({ email: '', password: '' });
         }
       }
     } catch (error) {
@@ -133,7 +133,7 @@ const useSettings = () => {
   const clearArtiaCredentials = useCallback(() => {
     try {
       localStorage.removeItem(ARTIA_CREDENTIALS_KEY);
-      setArtiaCredentials({ login: '', senha: '' });
+      setArtiaCredentials({ email: '', password: '' });
       setHasUserModifiedSettings(true);
     } catch (error) {
       console.error('Erro ao limpar credenciais:', error);
@@ -163,7 +163,7 @@ const useSettings = () => {
 
   // Verificar se as credenciais do Artia estão configuradas
   const hasArtiaCredentials = useCallback(() => {
-    return !!(artiaCredentials.login && artiaCredentials.senha);
+    return !!(artiaCredentials.email && artiaCredentials.password);
   }, [artiaCredentials]);
 
   // Carregar configurações na inicialização
