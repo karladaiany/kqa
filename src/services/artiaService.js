@@ -178,6 +178,41 @@ const CREATE_ACTIVITY = gql`
   }
 `;
 
+// Query para visualizar atividade no Artia
+const VIEW_ACTIVITY = gql`
+  query viewActivity($id: ID!, $accountId: Int!) {
+    activity(id: $id, accountId: $accountId) {
+      id
+      uid
+      title
+      description
+      status
+      priority
+      estimatedEffort
+      createdAt
+      customStatus {
+        id
+        statusName
+        status
+      }
+      customColumns
+      responsible {
+        id
+        name
+        email
+      }
+      folder {
+        id
+        name
+      }
+      account {
+        id
+        name
+      }
+    }
+  }
+`;
+
 // Mutation para atualizar atividade no Artia
 const UPDATE_ACTIVITY = gql`
   mutation updateActivity(
@@ -380,7 +415,7 @@ function convertBrazilianDateToAPI(dateString) {
 export class ArtiaService {
   /**
    * Testa a autenticação no Artia com logs detalhados
-   * @param {string} email - Email do usuário
+   * @param {string} email - E-mail do usuário
    * @param {string} password - Senha do usuário
    * @returns {Promise<Object>} Dados de autenticação e logs
    */
@@ -417,7 +452,7 @@ export class ArtiaService {
 
   /**
    * Autentica o usuário no Artia (versão otimizada para produção)
-   * @param {string} email - Email do usuário
+   * @param {string} email - E-mail do usuário
    * @param {string} password - Senha do usuário
    * @returns {Promise<Object>} Dados de autenticação
    */
@@ -1223,6 +1258,75 @@ Evidência pendente de anexo
       variables.customField = customFields;
     }
     return variables;
+  }
+
+  /**
+   * Visualiza uma atividade no Artia
+   * @param {string} activityId - ID da atividade
+   * @param {number} accountId - ID da conta
+   * @returns {Promise<Object>} Dados da atividade
+   */
+  static async viewActivity(activityId, accountId) {
+    try {
+      // Garantir token válido automaticamente
+      const token = this.getCurrentToken();
+      if (!token) {
+        throw new Error('Token de autenticação não encontrado');
+      }
+
+      const response = await client.query({
+        query: VIEW_ACTIVITY,
+        variables: {
+          id: activityId,
+          accountId: parseInt(accountId),
+        },
+        fetchPolicy: 'no-cache',
+      });
+
+      // Verificar se há erros GraphQL
+      if (response.errors && response.errors.length > 0) {
+        const errorMessages = response.errors
+          .map(err => err.message)
+          .join(', ');
+        throw new Error(`Erro GraphQL: ${errorMessages}`);
+      }
+
+      if (response.data && response.data.activity) {
+        return response.data.activity;
+      } else {
+        throw new Error('Atividade não encontrada');
+      }
+    } catch (error) {
+      throw new Error(`Falha ao visualizar atividade: ${error.message}`);
+    }
+  }
+
+  /**
+   * Extrai ID da atividade de um link do Artia
+   * @param {string} url - URL do Artia
+   * @returns {Object} Objeto com ID extraído e validação
+   */
+  static extractActivityIdFromUrl(url) {
+    if (!url || typeof url !== 'string') {
+      return { activityId: '', isValid: false, message: 'URL inválida' };
+    }
+
+    try {
+      // Regex para capturar ID da atividade após '/activity/' ou '/activities/'
+      const activityMatch = url.match(/\/(?:activity|activities)\/(\d+)/);
+      const activityId = activityMatch ? activityMatch[1] : '';
+      
+      // Verificar se é um link válido do Artia
+      const isValid = !!(activityId && url.includes('app.artia.com'));
+      
+      return { 
+        activityId, 
+        isValid,
+        message: isValid ? '' : 'Link não parece ser do Artia'
+      };
+    } catch (error) {
+      return { activityId: '', isValid: false, message: 'Erro ao processar URL' };
+    }
   }
 
   /**

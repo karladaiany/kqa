@@ -740,7 +740,7 @@ export const useActivityImport = () => {
         // Validar credenciais antes de tentar autenticar
         if (!credentials.email || !credentials.password) {
           throw new Error(
-            'Email e senha são obrigatórios para autenticação no Artia'
+            'E-mail e senha são obrigatórios para autenticação no Artia'
           );
         }
 

@@ -306,7 +306,7 @@ const validateFieldValues = (activity, lineNumber) => {
 
   // Validar email (formato básico)
   if (activity.email && !isValidEmail(activity.email)) {
-    errors.push(`Linha ${lineNumber}: Email '${activity.email}' inválido`);
+    errors.push(`Linha ${lineNumber}: E-mail '${activity.email}' inválido`);
   }
 
   // Validar ticket movidesk (deve ser número se preenchido)
@@ -361,7 +361,7 @@ const validateFieldValues = (activity, lineNumber) => {
 
 /**
  * Validar formato de email
- * @param {string} email - Email para validar
+ * @param {string} email - E-mail para validar
  * @returns {boolean} Se o email é válido
  */
 const isValidEmail = email => {

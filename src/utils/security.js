@@ -67,7 +67,7 @@ export const sanitizeFormData = formData => {
 
 /**
  * Valida se um email é seguro (não é um email de teste malicioso)
- * @param {string} email - Email a ser validado
+ * @param {string} email - E-mail a ser validado
  * @returns {boolean} True se o email for seguro
  */
 export const isSafeEmail = email => {

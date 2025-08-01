@@ -95,6 +95,9 @@ const BugRegistrationCard = () => {
     handleClearField,
     handleToggleAttachment,
     handleCopyAll,
+    activityData,
+    loadingActivity,
+    activityError,
   } = useBugRegistration();
 
   const { clearCardTextareaSizes } = useTextareaResizeActions();
@@ -181,19 +184,137 @@ const BugRegistrationCard = () => {
       </div>
       {showFields && (
         <div className='card-content'>
+          {/* Primeira linha: Link da atividade */}
           <div className='campo-item'>
-            <label htmlFor='field-incident'>Descrição do BUG</label>
-            <div className='campo-valor'>
-              <textarea
-                id='field-incident'
-                value={bugData.incident}
-                onChange={e => handleInputChange('incident', e.target.value)}
+            <div
+              className={`campo-valor ${!urlValidation.isValid ? 'url-error' : envIdExtracted ? 'url-success' : ''}`}
+            >
+              <input
+                id='bug-url'
+                name='url'
+                type='url'
+                value={bugData.url}
+                onChange={e => handleInputChange('url', e.target.value)}
                 className='copyable'
+                placeholder=' '
               />
-              {bugData.incident && (
+              <label htmlFor='bug-url'>
+                Link da atividade
+                {envIdExtracted && (
+                  <span className='url-success-indicator'>
+                    <FaCheck /> ID do ambiente extraído automaticamente
+                  </span>
+                )}
+                {loadingActivity && (
+                  <span className='loading-indicator'>
+                    <FaEye /> Carregando dados da atividade...
+                  </span>
+                )}
+                {activityError && (
+                  <span className='error-indicator'>
+                    <FaExclamationTriangle /> {activityError}
+                  </span>
+                )}
+              </label>
+              {bugData.url && (
                 <FaTimes
                   className='clear-icon'
-                  onClick={() => handleClearField('incident')}
+                  onClick={() => handleClearField('url')}
+                />
+              )}
+              {!urlValidation.isValid && (
+                <div className='url-error-message'>
+                  <FaExclamationTriangle />
+                  {urlValidation.message}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Segunda linha: Título, Situação e Área */}
+          <div className='fields-row'>
+            <div className='campo-item'>
+              <div className='campo-valor'>
+                <input
+                  id='field-incident'
+                  name='incident'
+                  type='text'
+                  value={bugData.incident}
+                  onChange={e => handleInputChange('incident', e.target.value)}
+                  className='copyable'
+                  placeholder=' '
+                />
+                <label htmlFor='field-incident'>Título</label>
+                {bugData.incident && (
+                  <FaTimes
+                    className='clear-icon'
+                    onClick={() => handleClearField('incident')}
+                  />
+                )}
+              </div>
+            </div>
+
+            <div className='campo-item'>
+              <div className='campo-valor'>
+                <input
+                  id='bug-activity-status'
+                  name='activityStatus'
+                  type='text'
+                  value={bugData.activityStatus}
+                  onChange={e => handleInputChange('activityStatus', e.target.value)}
+                  className='copyable'
+                  placeholder=' '
+                  readOnly
+                />
+                <label htmlFor='bug-activity-status'>Situação</label>
+                {bugData.activityStatus && (
+                  <FaTimes
+                    className='clear-icon'
+                    onClick={() => handleClearField('activityStatus')}
+                  />
+                )}
+              </div>
+            </div>
+
+            <div className='campo-item'>
+              <div className='campo-valor'>
+                <input
+                  id='bug-activity-area'
+                  name='activityArea'
+                  type='text'
+                  value={bugData.activityArea}
+                  onChange={e => handleInputChange('activityArea', e.target.value)}
+                  className='copyable'
+                  placeholder=' '
+                  readOnly
+                />
+                <label htmlFor='bug-activity-area'>Área</label>
+                {bugData.activityArea && (
+                  <FaTimes
+                    className='clear-icon'
+                    onClick={() => handleClearField('activityArea')}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Terceira linha: Comentário */}
+          <div className='campo-item'>
+            <div className='campo-valor'>
+              <textarea
+                id='bug-comment'
+                name='comment'
+                value={bugData.comment}
+                onChange={e => handleInputChange('comment', e.target.value)}
+                className='copyable'
+                placeholder=' '
+              />
+              <label htmlFor='bug-comment'>Comentário</label>
+              {bugData.comment && (
+                <FaTimes
+                  className='clear-icon'
+                  onClick={() => handleClearField('comment')}
                 />
               )}
             </div>
@@ -243,42 +364,6 @@ const BugRegistrationCard = () => {
 
           <div className='section-divider'>
             <FaInfoCircle /> Informações
-          </div>
-
-          <div className='campo-item'>
-            <div
-              className={`campo-valor ${!urlValidation.isValid ? 'url-error' : envIdExtracted ? 'url-success' : ''}`}
-            >
-              <input
-                id='bug-url'
-                name='url'
-                type='url'
-                value={bugData.url}
-                onChange={e => handleInputChange('url', e.target.value)}
-                className='copyable'
-                placeholder=' '
-              />
-              <label htmlFor='bug-url'>
-                URL
-                {envIdExtracted && (
-                  <span className='url-success-indicator'>
-                    <FaCheck /> ID do ambiente extraído automaticamente
-                  </span>
-                )}
-              </label>
-              {bugData.url && (
-                <FaTimes
-                  className='clear-icon'
-                  onClick={() => handleClearField('url')}
-                />
-              )}
-              {!urlValidation.isValid && (
-                <div className='url-error-message'>
-                  <FaExclamationTriangle />
-                  {urlValidation.message}
-                </div>
-              )}
-            </div>
           </div>
 
           <div className='campo-item'>

@@ -1,746 +1,410 @@
-import React, {
-  useState,
-  useRef,
-  useCallback,
-  createContext,
-  useContext,
-  useEffect,
-} from 'react';
-import logger from '../../utils/logger.js';
-import PropTypes from 'prop-types';
-import {
-  FaStickyNote,
-  FaPlus,
-  FaTrashAlt,
-  FaBold,
-  FaItalic,
-  FaUnderline,
-  FaStrikethrough,
-  FaListUl,
-  FaListOl,
-  FaCheck,
-  FaImage,
-  FaPalette,
-  FaFont,
-  FaBolt,
-  FaEdit,
-} from 'react-icons/fa';
-import { useAnnotations } from '../../hooks/useAnnotations';
-import { useBugRegistration } from '../../hooks/useBugRegistration';
-import { MiniCard } from './MiniCard';
-import QuickNotesBadge from './QuickNotesBadge';
-import MyEnvironmentsSection from './MyEnvironmentsSection';
-import { useSettings, AVAILABLE_FEATURES } from '../../contexts/SettingsContext';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { FaRegClock, FaPlay, FaStop, FaPlus, FaClipboardList, FaTrash, FaBookmark, FaEye, FaExclamationTriangle, FaCheck } from 'react-icons/fa';
+import AnnotationsTable from './AnnotationsTable';
+import ActivitySelector from './ActivitySelector';
+import { useActivityStorage } from '../../hooks';
+import { ArtiaService } from '../../services/artiaService';
+import './AnnotationsCard.css';
 
-// Contexto para gerenciar o editor ativo
-const ActiveEditorContext = createContext();
+const initialLine = () => ({
+  date: '',
+  startTime: '',
+  endTime: '',
+  effort: '',
+  title: '',
+  link: '',
+  description: '',
+  activityStatus: '',
+  activityArea: '',
+  timerRunning: false,
+});
 
-export const useActiveEditor = () => {
-  const context = useContext(ActiveEditorContext);
-  if (!context) {
-    throw new Error('useActiveEditor must be used within ActiveEditorProvider');
-  }
-  return context;
-};
+function pad(num) {
+  return num.toString().padStart(2, '0');
+}
 
-// Cores específicas para os novos seletores
-const EXTENDED_COLORS = {
-  backgrounds: [
-    { name: 'Preto', value: '#000000' },
-    { name: 'Cinza', value: '#6272a4' },
-    { name: 'Azul claro', value: '#8be9fd' },
-    { name: 'Rosa', value: '#ff79c6' },
-    { name: 'Branco', value: '#ffffff' },
-  ],
-  texts: [
-    { name: 'Preto', value: '#000000' },
-    { name: 'Cinza', value: '#6272a4' },
-    { name: 'Azul claro', value: '#8be9fd' },
-    { name: 'Rosa', value: '#ff79c6' },
-    { name: 'Branco', value: '#ffffff' },
-  ],
-  general: [
-    { name: 'Preto', value: '#000000' },
-    { name: 'Cinza escuro', value: '#374151' },
-    { name: 'Azul escuro', value: '#1e40af' },
-    { name: 'Verde escuro', value: '#166534' },
-    { name: 'Vermelho', value: '#dc2626' },
-    { name: 'Roxo', value: '#7c3aed' },
-    { name: 'Laranja', value: '#ea580c' },
-    { name: 'Rosa escuro', value: '#be185d' },
-    { name: 'Cinza claro', value: '#f9fafb' },
-    { name: 'Branco', value: '#ffffff' },
-    { name: 'Cinza', value: '#6272a4' },
-    { name: 'Azul claro', value: '#8be9fd' },
-    { name: 'Rosa', value: '#ff79c6' },
-  ],
-};
+function calculateEffort(start, end) {
+  if (!start || !end) return '';
+  const [sh, sm] = start.split(':').map(Number);
+  const [eh, em] = end.split(':').map(Number);
+  let diff = (eh * 60 + em) - (sh * 60 + sm);
+  if (diff < 0) diff += 24 * 60;
+  const h = Math.floor(diff / 60);
+  const m = diff % 60;
+  return `${pad(h)}:${pad(m)}`;
+}
 
 const AnnotationsCard = () => {
-  const { notes, addNote, updateNote, deleteNote, clearAllNotes } =
-    useAnnotations();
-  const { bugData } = useBugRegistration();
-  const { isFeatureVisible } = useSettings();
+  const [lines, setLines] = useState([initialLine()]);
+  const [savedAnnotations, setSavedAnnotations] = useState([]);
+  const [showActivitySelector, setShowActivitySelector] = useState(false);
+  const timersRef = useRef([]);
+  const [timerStarts, setTimerStarts] = useState([null]);
+  const [activityData, setActivityData] = useState(null);
+  const [loadingActivity, setLoadingActivity] = useState(false);
+  const [activityError, setActivityError] = useState('');
 
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
-  const [activeEditor, setActiveEditor] = useState(null);
-  const [activeNote, setActiveNote] = useState(null);
+  const { addActivity } = useActivityStorage();
 
-  // Estados para controlar a linha secundária
-  const [showColorLine, setShowColorLine] = useState(false);
-  const [colorLineMode, setColorLineMode] = useState(null); // 'text' ou 'card'
+  // Function to fetch data from Artia API
+  const fetchActivityData = useCallback(async (url, lineIndex) => {
+    if (!url || !url.trim()) {
+      setActivityData(null);
+      setActivityError('');
+      return;
+    }
 
-  // Estados para cores personalizadas
-  const [customTextColor, setCustomTextColor] = useState(null);
-  const [customBackgroundColor, setCustomBackgroundColor] = useState(null);
-  const [customGeneralColor, setCustomGeneralColor] = useState(null);
+    setLoadingActivity(true);
+    setActivityError('');
 
-  const containerRef = useRef(null);
-  const fileInputRef = useRef(null);
+    try {
+      const { activityId, isValid, message } = ArtiaService.extractActivityIdFromUrl(url);
 
-  const handleAddNote = useCallback(() => {
-    const containerRect = containerRef.current?.getBoundingClientRect();
-    if (!containerRect) return;
-
-    // Posiciona o novo card em uma área livre ou centralizada
-    const noteData = {
-      x: Math.max(50, Math.random() * (containerRect.width - 350)), // Evita overflow
-      y: Math.max(50, Math.random() * (containerRect.height - 250)),
-      width: 300,
-      height: 200,
-      content: '<p>Digite sua anotação aqui...</p>',
-      backgroundColor: '#fef9e7',
-      textColor: '#374151',
-    };
-
-    addNote(noteData);
-  }, [addNote]);
-
-  // Funções da barra de formatação
-  const handleToolbarAction = useCallback(
-    (action, event) => {
-      event.preventDefault();
-      event.stopPropagation();
-
-      if (!activeEditor) return;
-
-      switch (action) {
-        case 'bold':
-          activeEditor.chain().focus().toggleBold().run();
-          break;
-        case 'italic':
-          activeEditor.chain().focus().toggleItalic().run();
-          break;
-        case 'underline':
-          activeEditor.chain().focus().toggleUnderline().run();
-          break;
-        case 'strike':
-          activeEditor.chain().focus().toggleStrike().run();
-          break;
-        case 'bulletList':
-          activeEditor.chain().focus().toggleBulletList().run();
-          break;
-        case 'orderedList':
-          activeEditor.chain().focus().toggleOrderedList().run();
-          break;
-        case 'taskList':
-          activeEditor.chain().focus().toggleTaskList().run();
-          break;
-        case 'image':
-          fileInputRef.current?.click();
-          break;
+      if (!isValid) {
+        setActivityError(message || 'Link inválido');
+        setActivityData(null);
+        return;
       }
-    },
-    [activeEditor]
-  );
 
-  const handleImageUpload = useCallback(
-    event => {
-      const file = event.target.files?.[0];
-      if (file && activeEditor) {
-        // Verificar tamanho do arquivo (limite de 2MB)
-        const maxSize = 2 * 1024 * 1024;
-        if (file.size > maxSize) {
-          alert(
-            'Imagem muito grande! Por favor, selecione uma imagem menor que 2MB.'
-          );
-          return;
+      const activity = await ArtiaService.viewActivity(activityId, 1); // accountId padrão
+
+      setActivityData(activity);
+      setActivityError('');
+
+      // Atualizar a linha específica com os dados da atividade
+      setLines(prev => prev.map((line, idx) => {
+        if (idx !== lineIndex) return line;
+        
+        const updatedLine = { ...line };
+        
+        if (activity.title) {
+          updatedLine.title = activity.title;
         }
 
-        const reader = new FileReader();
-        reader.onload = e => {
-          const url = e.target?.result;
-          if (typeof url === 'string') {
-            activeEditor
-              .chain()
-              .focus()
-              .setImage({
-                src: url,
-                alt: file.name,
-                title: file.name,
-              })
-              .run();
+        if (activity.customStatus?.statusName) {
+          updatedLine.activityStatus = activity.customStatus.statusName;
+        }
+
+        if (activity.customColumns) {
+          const areaField = activity.customColumns.find(field =>
+            field.name?.toLowerCase().includes('área') ||
+            field.name?.toLowerCase().includes('area')
+          );
+          if (areaField?.value) {
+            updatedLine.activityArea = areaField.value;
           }
-        };
-        reader.readAsDataURL(file);
-      }
+        }
 
-      // Reset input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-    },
-    [activeEditor]
-  );
+        return updatedLine;
+      }));
 
-  // Funções para controlar a linha de cores
-  const handleTextColorClick = useCallback(() => {
-    if (!activeEditor) return;
-
-    if (showColorLine && colorLineMode === 'text') {
-      setShowColorLine(false);
-      setColorLineMode(null);
-    } else {
-      setShowColorLine(true);
-      setColorLineMode('text');
-    }
-  }, [activeEditor, showColorLine, colorLineMode]);
-
-  const handleCardColorsClick = useCallback(() => {
-    if (!activeEditor) return;
-
-    if (showColorLine && colorLineMode === 'card') {
-      setShowColorLine(false);
-      setColorLineMode(null);
-    } else {
-      setShowColorLine(true);
-      setColorLineMode('card');
-    }
-  }, [activeEditor, showColorLine, colorLineMode]);
-
-  // Funções para aplicar cores
-  const handleTextColorChange = useCallback(
-    color => {
-      if (!activeEditor) return;
-
-      const selection = activeEditor.state.selection;
-      if (!selection.empty) {
-        // Aplicar cor ao texto selecionado
-        activeEditor.chain().focus().setColor(color).run();
-      }
-
-      setShowColorLine(false);
-      setColorLineMode(null);
-    },
-    [activeEditor]
-  );
-
-  const handleCardColorChange = useCallback(
-    (color, isBackground = true) => {
-      if (!activeNote) return;
-
-      const updates = {
-        [isBackground ? 'backgroundColor' : 'textColor']: color,
-        lastModified: new Date().toISOString(),
-      };
-      updateNote(activeNote.id, updates);
-    },
-    [activeNote, updateNote]
-  );
-
-  // Funções para cores personalizadas
-  const handleCustomColorChange = useCallback((color, type) => {
-    switch (type) {
-      case 'text':
-        setCustomTextColor(color);
-        break;
-      case 'background':
-        setCustomBackgroundColor(color);
-        break;
-      case 'general':
-        setCustomGeneralColor(color);
-        break;
+    } catch (error) {
+      setActivityError(`Erro ao buscar atividade: ${error.message}`);
+      setActivityData(null);
+    } finally {
+      setLoadingActivity(false);
     }
   }, []);
 
-  const handleDeleteNote = useCallback(noteId => {
-    setShowDeleteConfirm(noteId);
-  }, []);
-
-  const confirmDelete = useCallback(() => {
-    if (showDeleteConfirm) {
-      deleteNote(showDeleteConfirm);
-      setShowDeleteConfirm(null);
-    }
-  }, [showDeleteConfirm, deleteNote]);
-
-  const cancelDelete = useCallback(() => {
-    setShowDeleteConfirm(null);
-  }, []);
-
-  const handleClearAll = useCallback(() => {
-    if (notes.length > 0) {
-      if (
-        window.confirm(
-          'Tem certeza de que deseja excluir todas as anotações? Esta ação não pode ser desfeita.'
-        )
-      ) {
-        clearAllNotes();
+  // Atualiza campos de uma linha
+  const handleChange = (idx, e) => {
+    const { name, value } = e.target;
+    setLines(prev => prev.map((line, i) => {
+      if (i !== idx) return line;
+      const updated = { ...line, [name]: value };
+      if (name === 'startTime' || name === 'endTime') {
+        updated.effort = calculateEffort(
+          name === 'startTime' ? value : line.startTime,
+          name === 'endTime' ? value : line.endTime
+        );
       }
+      return updated;
+    }));
+
+    // Se o campo alterado for 'link', buscar dados da atividade
+    if (name === 'link' && value.includes('app.artia.com')) {
+      fetchActivityData(value, idx);
     }
-  }, [notes.length, clearAllNotes]);
-
-  // Componente da barra de formatação
-  const ToolbarButton = ({
-    action,
-    active,
-    children,
-    title,
-    disabled,
-    onClick,
-  }) => (
-    <button
-      type='button'
-      className={`global-toolbar-button ${active ? 'active' : ''} ${disabled ? 'disabled' : ''}`}
-      onMouseDown={
-        onClick ? undefined : e => !disabled && handleToolbarAction(action, e)
-      }
-      onClick={onClick ? e => !disabled && onClick(e) : undefined}
-      title={disabled ? 'Selecione um card para usar esta ferramenta' : title}
-      disabled={disabled}
-    >
-      {children}
-    </button>
-  );
-
-  ToolbarButton.propTypes = {
-    action: PropTypes.string,
-    active: PropTypes.bool,
-    children: PropTypes.node.isRequired,
-    title: PropTypes.string.isRequired,
-    disabled: PropTypes.bool,
-    onClick: PropTypes.func,
   };
 
-  // Componente para o seletor de cores
-  const ColorPicker = ({ type, onChange, value, title }) => (
-    <div className='color-picker-container'>
-      <input
-        type='color'
-        value={value || '#000000'}
-        onChange={e => {
-          onChange(e.target.value);
-          handleCustomColorChange(e.target.value, type);
-        }}
-        title={title}
-        className='color-picker-input'
+  // Inicia cronômetro de uma linha
+  const handlePlay = idx => {
+    const now = new Date();
+    const currentDate = now.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    const currentTime = getNowTime();
+    
+    setLines(prev => prev.map((line, i) =>
+      i === idx ? { 
+        ...line, 
+        timerRunning: true, 
+        date: currentDate,
+        startTime: currentTime 
+      } : line
+    ));
+    setTimerStarts(prev => prev.map((t, i) => (i === idx ? Date.now() : t)));
+    timersRef.current[idx] = setInterval(() => {}, 1000);
+  };
+
+  // Para cronômetro de uma linha
+  const handleStop = idx => {
+    setLines(prev => prev.map((line, i) => {
+      if (i !== idx) return line;
+      const endTime = getNowTime();
+      return {
+        ...line,
+        endTime,
+        effort: calculateEffort(line.startTime, endTime),
+        timerRunning: false,
+      };
+    }));
+    setTimerStarts(prev => prev.map((t, i) => (i === idx ? null : t)));
+    clearInterval(timersRef.current[idx]);
+  };
+
+  // Adiciona nova linha
+  const handleAddLine = () => {
+    setLines(prev => [...prev, initialLine()]);
+    setTimerStarts(prev => [...prev, null]);
+  };
+
+  // Remove linha
+  const handleRemoveLine = idx => {
+    setLines(prev => prev.filter((_, i) => i !== idx));
+    setTimerStarts(prev => prev.filter((_, i) => i !== idx));
+    clearInterval(timersRef.current[idx]);
+  };
+
+  // Adiciona todas as linhas válidas à tabela
+  const handleAddAll = () => {
+    const validLines = lines.filter(l => l.date && l.startTime && l.endTime && l.title);
+    if (validLines.length > 0) {
+      const newAnnotations = validLines.map(l => ({
+        ...l,
+        id: Date.now() + Math.random(), // ID único simples
+        effort: calculateEffort(l.startTime, l.endTime),
+        status: 'não lançado'
+      }));
+      setSavedAnnotations(prev => [...prev, ...newAnnotations]);
+      
+      // Limpa linhas preenchidas, mantém as incompletas para edição
+      setLines(prev => prev.filter(l => !(l.date && l.startTime && l.endTime && l.title)).length > 0 ? prev.filter(l => !(l.date && l.startTime && l.endTime && l.title)) : [initialLine()]);
+      setTimerStarts([null]);
+      timersRef.current = [];
+    }
+  };
+
+  // Lança apontamentos via API
+  const handleLaunch = async (pendingAnnotations) => {
+    // TODO: Implementar integração com API do Artia
+    console.log('Lançando apontamentos:', pendingAnnotations);
+    
+    // Simulação de envio
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Atualiza status para 'lançado'
+    setSavedAnnotations(prev => prev.map(a => 
+      pendingAnnotations.some(p => p.id === a.id) 
+        ? { ...a, status: 'lançado' }
+        : a
+    ));
+  };
+
+  // Seleciona atividade do histórico
+  const handleSelectActivity = (activity) => {
+    // Preencher a primeira linha com os dados da atividade selecionada
+    setLines(prev => prev.map((line, i) => 
+      i === 0 ? {
+        ...line,
+        title: activity.title || '',
+        link: activity.link || '',
+        description: activity.description || '',
+      } : line
+    ));
+    setShowActivitySelector(false);
+  };
+
+  // Adiciona atividade atual ao histórico
+  const handleAddActivityToStorage = () => {
+    const currentLine = lines[0];
+    if (currentLine.title?.trim()) {
+      addActivity({
+        title: currentLine.title,
+        link: currentLine.link,
+        description: currentLine.description,
+      });
+    }
+  };
+
+  function getNowTime() {
+    const now = new Date();
+    return `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  }
+
+  return (
+    <div className="activity-import-card annotations-card">
+      <div className="card-header">
+        <span className="card-title">
+          <FaClipboardList className="card-icon" /> Apontamentos (Artia)
+        </span>
+        <button
+          type="button"
+          className="activity-history-btn"
+          onClick={() => setShowActivitySelector(!showActivitySelector)}
+          title="Histórico de atividades"
+        >
+          <FaBookmark />
+        </button>
+      </div>
+      
+      <div className="card-content">
+        {/* Seletor de atividades */}
+        {showActivitySelector && (
+          <ActivitySelector
+            onSelectActivity={handleSelectActivity}
+            onAddActivity={handleAddActivityToStorage}
+          />
+        )}
+
+        <form className="annotations-form-table" onSubmit={e => { e.preventDefault(); handleAddAll(); }}>
+          {/* Campos de entrada reorganizados */}
+          {lines.map((line, idx) => (
+            <div className="annotations-form-row" key={idx}>
+              {/* Primeira linha: Controles de tempo e ações */}
+              <div className="annotations-form-row-top">
+                <input 
+                  type="date" 
+                  name="date" 
+                  value={line.date} 
+                  onChange={e => handleChange(idx, e)} 
+                  className="import-name-input" 
+                />
+                <input 
+                  type="time" 
+                  name="startTime" 
+                  value={line.startTime} 
+                  onChange={e => handleChange(idx, e)} 
+                  className="import-name-input" 
+                />
+                <input 
+                  type="time" 
+                  name="endTime" 
+                  value={line.endTime} 
+                  onChange={e => handleChange(idx, e)} 
+                  className="import-name-input" 
+                />
+                <input 
+                  type="text" 
+                  name="effort" 
+                  value={line.effort} 
+                  readOnly 
+                  placeholder="hh:mm" 
+                  className="import-name-input" 
+                />
+                <button 
+                  type="button" 
+                  className="btn-secondary" 
+                  onClick={line.timerRunning ? () => handleStop(idx) : () => handlePlay(idx)} 
+                  title={line.timerRunning ? 'Parar cronômetro' : 'Iniciar cronômetro'}
+                >
+                  {line.timerRunning ? <FaStop /> : <FaPlay />}
+                  <span className="sr-only">{line.timerRunning ? 'Parar' : 'Iniciar'}</span>
+                </button>
+                <button 
+                  type="button" 
+                  className="btn-danger" 
+                  onClick={() => handleRemoveLine(idx)} 
+                  title="Remover linha" 
+                  disabled={lines.length === 1}
+                >
+                  <FaTrash />
+                </button>
+              </div>
+              
+              {/* Segunda linha: Link da atividade */}
+              <div className="annotations-form-row-link">
+                <div className="link-field-container">
+                  <input 
+                    type="text" 
+                    name="link" 
+                    value={line.link} 
+                    onChange={e => handleChange(idx, e)} 
+                    placeholder="Link da atividade" 
+                    className="import-name-input link-field" 
+                  />
+                  {loadingActivity && (
+                    <span className="loading-indicator">
+                      <FaEye /> Carregando dados da atividade...
+                    </span>
+                  )}
+                  {activityError && (
+                    <span className="error-indicator">
+                      <FaExclamationTriangle /> {activityError}
+                    </span>
+                  )}
+                </div>
+              </div>
+              
+              {/* Terceira linha: Título, Situação e Área */}
+              <div className="annotations-form-row-fields">
+                <input 
+                  type="text" 
+                  name="title" 
+                  value={line.title} 
+                  onChange={e => handleChange(idx, e)} 
+                  placeholder="Título da atividade" 
+                  className="import-name-input title-field" 
+                />
+                <input 
+                  type="text" 
+                  name="activityStatus" 
+                  value={line.activityStatus} 
+                  onChange={e => handleChange(idx, e)} 
+                  placeholder="Situação" 
+                  className="import-name-input status-field" 
+                  readOnly
+                />
+                <input 
+                  type="text" 
+                  name="activityArea" 
+                  value={line.activityArea} 
+                  onChange={e => handleChange(idx, e)} 
+                  placeholder="Área" 
+                  className="import-name-input area-field" 
+                  readOnly
+                />
+              </div>
+              
+              {/* Quarta linha: Comentário */}
+              <div className="annotations-form-row-comment">
+                <input 
+                  type="text" 
+                  name="description" 
+                  value={line.description} 
+                  onChange={e => handleChange(idx, e)} 
+                  placeholder="Comentário" 
+                  className="import-name-input description-field" 
+                />
+              </div>
+            </div>
+          ))}
+          
+          <div className="annotations-actions-row">
+            <button type="button" className="btn-secondary" onClick={handleAddLine}>
+              <FaPlus /> Nova linha
+            </button>
+            <button type="submit" className="btn-primary" disabled={lines.every(l => !(l.date && l.startTime && l.endTime && l.title))}>
+              <FaPlus /> Adicionar à tabela
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <AnnotationsTable 
+        annotations={savedAnnotations}
+        onLaunch={handleLaunch}
       />
     </div>
   );
-
-  ColorPicker.propTypes = {
-    type: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired,
-    value: PropTypes.string,
-    title: PropTypes.string.isRequired,
-  };
-
-  // Componente para opções de cores
-  const ColorOption = ({ color, isSelected, onClick, title }) => (
-    <button
-      type='button'
-      className={`color-option ${isSelected ? 'selected' : ''}`}
-      style={{ backgroundColor: color }}
-      onClick={onClick}
-      title={title}
-    />
-  );
-
-  ColorOption.propTypes = {
-    color: PropTypes.string.isRequired,
-    isSelected: PropTypes.bool,
-    onClick: PropTypes.func.isRequired,
-    title: PropTypes.string.isRequired,
-  };
-
-  const contextValue = {
-    activeEditor,
-    setActiveEditor,
-    activeNote,
-    setActiveNote,
-  };
-
-  return (
-    <ActiveEditorContext.Provider value={contextValue}>
-      <>
-        {/* Anotações Rápidas */}
-        {isFeatureVisible(AVAILABLE_FEATURES.QUICK_ANNOTATIONS) && (
-          <div id='quick-annotations' className='annotations-subsection'>
-            <div className='subsection-header'>
-              <h3>
-                <FaBolt className='subsection-icon' /> Anotações rápidas
-              </h3>
-            </div>
-            <div className='subsection-content'>
-              <div className='quick-notes-container'>
-                <QuickNotesBadge type='feature-flag' text='Feature flag' onFeatureFlagClick={async () => {
-                  // Buscar diretamente o valor atual do campo "ID do ambiente" no DOM
-                  const envIdInput = document.querySelector('#bug input[type="number"]');
-                  const currentEnvId = envIdInput ? String(envIdInput.value).trim() : '';
-                  const featureFlagText = currentEnvId !== '' ? `Organization;${currentEnvId}` : 'Organization;';
-                  try {
-                    await navigator.clipboard.writeText(featureFlagText);
-                    console.log(`✅ Organization flag copiado: "${featureFlagText}"`);
-                  } catch (err) {
-                    console.error('❌ Erro ao copiar Organization flag:', err);
-                  }
-                }} />
-                <QuickNotesBadge type='storage-produto' text='[TEC] Produto' />
-                <QuickNotesBadge type='discoverys' text='[TEC] Discoverys' />
-                <QuickNotesBadge type='documentacoes' text='[TEC] Documentações por funcionalidade' />
-                <QuickNotesBadge type='style-guide' text='[TEC] Style Guide' />
-                <QuickNotesBadge type='api-v1' text='API v1' />
-                <QuickNotesBadge type='api-v2' text='API v2' />
-                <QuickNotesBadge type='testlink' text='TestLink' />
-                <QuickNotesBadge type='jenkins' text='Jenkins' />
-                <QuickNotesBadge type='github' text='GitHub' />
-                <QuickNotesBadge type='datadog' text='Datadog' />
-                <QuickNotesBadge type='newrelic' text='New Relic' />
-              </div>
-            </div>
-          </div>
-        )}
-        {/* Anotações Personalizadas */}
-        {isFeatureVisible(AVAILABLE_FEATURES.CUSTOM_ANNOTATIONS) && (
-          <div id='custom-annotations' className='annotations-subsection'>
-            <div className='subsection-header'>
-              <h3>
-                <FaEdit className='subsection-icon' /> Anotações personalizadas
-              </h3>
-            </div>
-            <div className='subsection-content'>
-              {/* Barra de formatação global */}
-              <div className='global-formatting-toolbar'>
-                <div
-                  className={`toolbar-formatting ${!activeEditor ? 'disabled' : ''}`}
-                >
-                  <div className='toolbar-section'>
-                    <ToolbarButton
-                      action='bold'
-                      active={activeEditor?.isActive('bold')}
-                      title='Negrito'
-                      disabled={!activeEditor}
-                    >
-                      <FaBold />
-                    </ToolbarButton>
-                    <ToolbarButton
-                      action='italic'
-                      active={activeEditor?.isActive('italic')}
-                      title='Itálico'
-                      disabled={!activeEditor}
-                    >
-                      <FaItalic />
-                    </ToolbarButton>
-                    <ToolbarButton
-                      action='underline'
-                      active={activeEditor?.isActive('underline')}
-                      title='Sublinhado'
-                      disabled={!activeEditor}
-                    >
-                      <FaUnderline />
-                    </ToolbarButton>
-                    <ToolbarButton
-                      action='strike'
-                      active={activeEditor?.isActive('strike')}
-                      title='Riscado'
-                      disabled={!activeEditor}
-                    >
-                      <FaStrikethrough />
-                    </ToolbarButton>
-                  </div>
-
-                  <div className='toolbar-divider'></div>
-
-                  <div className='toolbar-section'>
-                    <ToolbarButton
-                      action='bulletList'
-                      active={activeEditor?.isActive('bulletList')}
-                      title='Lista'
-                      disabled={!activeEditor}
-                    >
-                      <FaListUl />
-                    </ToolbarButton>
-                    <ToolbarButton
-                      action='orderedList'
-                      active={activeEditor?.isActive('orderedList')}
-                      title='Lista numerada'
-                      disabled={!activeEditor}
-                    >
-                      <FaListOl />
-                    </ToolbarButton>
-                    <ToolbarButton
-                      action='taskList'
-                      active={activeEditor?.isActive('taskList')}
-                      title='Lista de tarefas'
-                      disabled={!activeEditor}
-                    >
-                      <FaCheck />
-                    </ToolbarButton>
-                  </div>
-
-                  <div className='toolbar-divider'></div>
-
-                  <div className='toolbar-section'>
-                    <ToolbarButton
-                      action='image'
-                      title='Inserir imagem'
-                      disabled={!activeEditor}
-                    >
-                      <FaImage />
-                    </ToolbarButton>
-                  </div>
-
-                  <div className='toolbar-divider'></div>
-
-                  {/* Nova seção de cores */}
-                  <div className='toolbar-section'>
-                    <ToolbarButton
-                      action='textColor'
-                      active={showColorLine && colorLineMode === 'text'}
-                      title='Cor do texto selecionado'
-                      disabled={!activeEditor}
-                      onClick={handleTextColorClick}
-                    >
-                      <FaFont />
-                    </ToolbarButton>
-                    <ToolbarButton
-                      action='cardColors'
-                      active={showColorLine && colorLineMode === 'card'}
-                      title='Cores do card (fundo e texto)'
-                      disabled={!activeEditor}
-                      onClick={handleCardColorsClick}
-                    >
-                      <FaPalette />
-                    </ToolbarButton>
-                  </div>
-                </div>
-
-                {/* Spacer para empurrar os botões de ação para a direita */}
-                <div className='toolbar-spacer'></div>
-
-                {/* Botões de ação - sempre ativos */}
-                <div className='toolbar-section toolbar-actions'>
-                  {notes.length > 0 && (
-                    <button
-                      className='global-toolbar-button action-clear'
-                      onClick={handleClearAll}
-                      title='Limpar todas as anotações'
-                    >
-                      <FaTrashAlt />
-                    </button>
-                  )}
-                  <button
-                    className='global-toolbar-button action-add'
-                    onClick={handleAddNote}
-                    title='Adicionar nova anotação'
-                  >
-                    <FaPlus />
-                  </button>
-                </div>
-              </div>
-
-              {/* Linha secundária de cores (expansível) */}
-              {showColorLine && (
-                <div className='color-line-toolbar'>
-                  {colorLineMode === 'text' && (
-                    <div className='color-line-content'>
-                      <div className='color-line-section'>
-                        <span className='color-line-label'>Cor do texto:</span>
-                        <div className='color-options-row'>
-                          <ColorPicker
-                            type='general'
-                            onChange={handleTextColorChange}
-                            title='Cor personalizada'
-                          />
-                          {customGeneralColor && (
-                            <ColorOption
-                              color={customGeneralColor}
-                              onClick={() =>
-                                handleTextColorChange(customGeneralColor)
-                              }
-                              title='Cor personalizada'
-                            />
-                          )}
-                          {EXTENDED_COLORS.general.map(color => (
-                            <ColorOption
-                              key={color.value}
-                              color={color.value}
-                              onClick={() => handleTextColorChange(color.value)}
-                              title={color.name}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {colorLineMode === 'card' && (
-                    <div className='color-line-content' data-mode='card'>
-                      <div className='color-line-section'>
-                        <span className='color-line-label'>🎨 Fundo:</span>
-                        <div className='color-options-row'>
-                          <ColorPicker
-                            type='background'
-                            onChange={color => handleCardColorChange(color, true)}
-                            title='Cor de fundo personalizada'
-                          />
-                          {customBackgroundColor && (
-                            <ColorOption
-                              color={customBackgroundColor}
-                              isSelected={
-                                activeNote?.backgroundColor ===
-                                customBackgroundColor
-                              }
-                              onClick={() =>
-                                handleCardColorChange(customBackgroundColor, true)
-                              }
-                              title='Cor personalizada'
-                            />
-                          )}
-                          {EXTENDED_COLORS.backgrounds.map(color => (
-                            <ColorOption
-                              key={color.value}
-                              color={color.value}
-                              isSelected={
-                                activeNote?.backgroundColor === color.value
-                              }
-                              onClick={() =>
-                                handleCardColorChange(color.value, true)
-                              }
-                              title={color.name}
-                            />
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className='color-line-section'>
-                        <span className='color-line-label'>📝 Texto:</span>
-                        <div className='color-options-row'>
-                          <ColorPicker
-                            type='text'
-                            onChange={color =>
-                              handleCardColorChange(color, false)
-                            }
-                            title='Cor de texto personalizada'
-                          />
-                          {customTextColor && (
-                            <ColorOption
-                              color={customTextColor}
-                              isSelected={
-                                activeNote?.textColor === customTextColor
-                              }
-                              onClick={() =>
-                                handleCardColorChange(customTextColor, false)
-                              }
-                              title='Cor personalizada'
-                            />
-                          )}
-                          {EXTENDED_COLORS.texts.map(color => (
-                            <ColorOption
-                              key={color.value}
-                              color={color.value}
-                              isSelected={activeNote?.textColor === color.value}
-                              onClick={() =>
-                                handleCardColorChange(color.value, false)
-                              }
-                              title={color.name}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Área de trabalho das anotações dentro da seção */}
-              <div ref={containerRef} className='annotations-workspace'>
-                {notes.map(note => (
-                  <MiniCard
-                    key={note.id}
-                    note={note}
-                    onUpdate={updates => updateNote(note.id, updates)}
-                    onDelete={() => handleDeleteNote(note.id)}
-                  />
-                ))}
-
-                {notes.length === 0 && (
-                  <div className='empty-workspace'>
-                    <div className='empty-content'>
-                      <FaStickyNote className='empty-icon' />
-                      <p>Nenhuma anotação ainda</p>
-                      <p className='empty-subtitle'>
-                        Clique no botão &ldquo;Nova&rdquo; para criar sua primeira
-                        anotação
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Input hidden para upload de imagem */}
-              <input
-                ref={fileInputRef}
-                type='file'
-                accept='image/*'
-                style={{ display: 'none' }}
-                onChange={handleImageUpload}
-              />
-            </div>
-          </div>
-        )}
-        {/* Modal de confirmação de exclusão */}
-        {showDeleteConfirm && (
-          <div className='delete-modal-overlay' onClick={cancelDelete}>
-            <div className='delete-modal' onClick={e => e.stopPropagation()}>
-              <div className='delete-modal-content'>
-                <FaTrashAlt className='delete-modal-icon' />
-                <h3>Confirmar exclusão</h3>
-                <p>Tem certeza de que deseja excluir esta anotação?</p>
-                <p className='delete-warning'>
-                  Esta ação não pode ser desfeita.
-                </p>
-                <div className='delete-modal-actions'>
-                  <button className='action-button' onClick={cancelDelete}>
-                    Cancelar
-                  </button>
-                  <button
-                    className='action-button delete'
-                    onClick={confirmDelete}
-                  >
-                    <FaTrashAlt />
-                    Excluir
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </>
-    </ActiveEditorContext.Provider>
-  );
 };
 
-// Adiciona a seção Meus Ambientes como independente
-export default function AnnotationsCardWrapper() {
-  const { isFeatureVisible } = useSettings();
-  
-  return (
-    <>
-      <AnnotationsCard />
-      {isFeatureVisible(AVAILABLE_FEATURES.MY_ENVIRONMENTS) && (
-        <MyEnvironmentsSection />
-      )}
-    </>
-  );
-}
+export default AnnotationsCard;

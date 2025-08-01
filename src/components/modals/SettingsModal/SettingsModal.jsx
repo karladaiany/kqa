@@ -98,7 +98,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
 
   const handleSaveCredentials = async () => {
     if (!credentials.email || !credentials.password) {
-      toast.error('Email e senha são obrigatórios');
+      toast.error('E-mail e senha são obrigatórios');
       return;
     }
 
@@ -181,7 +181,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
 
             <div className='modal-field-group'>
               <label htmlFor='artia-email'>
-                Email <span className='modal-required'>*</span>
+                E-mail <span className='modal-required'>*</span>
               </label>
               <div className='modal-input-container'>
                 <input

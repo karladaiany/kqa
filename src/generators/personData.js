@@ -33,7 +33,7 @@ export const gerarNome = () => {
  * Gera email baseado no nome
  * @param {string} nome - Nome para gerar o email
  * @param {string} [dominio='teste.com'] - Domínio do email
- * @returns {string} Email formatado
+ * @returns {string} E-mail formatado
  */
 export const gerarEmail = (nome, dominio = 'teste.com') => {
   const nomeFormatado = formatarNomeParaEmail(nome);

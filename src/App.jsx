@@ -205,6 +205,8 @@ const App = () => {
                 )}
               </div>
               {isFeatureVisible(AVAILABLE_FEATURES.DEPLOY) && <DeployCard />}
+              {/* Inserir o card de Apontamentos aqui */}
+              {isFeatureVisible(AVAILABLE_FEATURES.ANNOTATIONS) && <AnnotationsCard />}
               {isFeatureVisible(AVAILABLE_FEATURES.ACTIVITY_IMPORT) && (
                 /* Card de Importação de Atividades - movido para depois do Deploy */
                 <ActivityImportCard />

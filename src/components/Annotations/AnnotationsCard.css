@@ -1,0 +1,226 @@
+.annotations-card .annotations-table-head {
+  display: flex;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--accent-color, #60a5fa);
+  padding: 0 0 6px 0;
+  font-size: 0.98em;
+}
+
+.annotations-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.annotations-card .activity-history-btn {
+  padding: 8px 12px;
+  background: var(--accent-color, #60a5fa);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.2s;
+}
+
+.annotations-card .activity-history-btn:hover {
+  background: var(--accent-hover, #3b82f6);
+}
+
+.annotations-card .annotations-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 12px;
+  border: 1px solid var(--border-color, #333);
+  border-radius: 8px;
+  background: var(--bg-secondary, #23272f);
+}
+
+.annotations-card .annotations-form-row-top {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.annotations-card .annotations-form-row-bottom {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.annotations-card .annotations-form-row input[type="date"],
+.annotations-card .annotations-form-row input[type="time"],
+.annotations-card .annotations-form-row input[type="text"] {
+  min-width: 90px;
+  max-width: 180px;
+  flex: 1 1 0;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color, #333);
+  background: var(--bg-secondary, #23272f);
+  color: var(--text-primary, #fff);
+  font-size: 1em;
+}
+
+.annotations-card .annotations-form-row input[readonly] {
+  background: var(--bg-tertiary, #181a20);
+  color: var(--text-secondary, #aaa);
+}
+
+.annotations-card .annotations-form-row button {
+  min-width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1em;
+  margin-left: 2px;
+}
+
+/* Campos maiores na linha inferior */
+.annotations-card .title-field {
+  flex: 2 1 0;
+  min-width: 200px;
+}
+
+.annotations-card .link-field {
+  flex: 2 1 0;
+  min-width: 200px;
+}
+
+.annotations-card .description-field {
+  flex: 3 1 0;
+  min-width: 250px;
+}
+
+/* Novos estilos para layout reorganizado */
+.annotations-card .annotations-form-row-link {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.annotations-card .link-field-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.annotations-card .annotations-form-row-fields {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.annotations-card .annotations-form-row-comment {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.annotations-card .status-field,
+.annotations-card .area-field {
+  flex: 1 1 0;
+  min-width: 120px;
+}
+
+/* Indicadores de carregamento e erro para atividade */
+.annotations-card .loading-indicator,
+.annotations-card .error-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-weight: 500;
+}
+
+.annotations-card .loading-indicator {
+  color: var(--accent-color, #60a5fa);
+  background-color: rgba(96, 165, 250, 0.1);
+}
+
+.annotations-card .error-indicator {
+  color: #dc3545;
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+.annotations-card .loading-indicator svg {
+  width: 12px;
+  height: 12px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Responsividade para novos campos */
+@media (max-width: 768px) {
+  .annotations-card .annotations-form-row-fields {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .annotations-card .status-field,
+  .annotations-card .area-field {
+    min-width: 100px;
+  }
+
+  .annotations-card .loading-indicator,
+  .annotations-card .error-indicator {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .annotations-card .annotations-form-row-fields {
+    gap: 2px;
+  }
+
+  .annotations-card .loading-indicator,
+  .annotations-card .error-indicator {
+    font-size: 0.65rem;
+  }
+}
+
+.annotations-card .annotations-actions-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+@media (max-width: 900px) {
+  .annotations-card .annotations-form-row,
+  .annotations-card .annotations-table-head {
+    font-size: 0.95em;
+  }
+  
+  .annotations-card .annotations-form-row-top,
+  .annotations-card .annotations-form-row-bottom {
+    flex-wrap: wrap;
+  }
+  
+  .annotations-card .annotations-form-row input,
+  .annotations-card .annotations-form-row button {
+    min-width: 70px;
+    font-size: 0.95em;
+  }
+  
+  .annotations-card .title-field,
+  .annotations-card .link-field,
+  .annotations-card .description-field {
+    min-width: 150px;
+  }
+} 

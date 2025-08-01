@@ -2798,3 +2798,80 @@ body.dark-theme .quick-notes-badge:hover {
     font-size: 9px;
   }
 }
+
+/* Estilos para campos em linha no registro de bugs */
+.fields-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.fields-row .campo-item {
+  margin-bottom: 0;
+}
+
+/* Indicadores de carregamento e erro para atividade */
+.loading-indicator,
+.error-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  margin-left: 0.5rem;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-weight: 500;
+}
+
+.loading-indicator {
+  color: var(--accent-color);
+  background-color: rgba(var(--accent-color-rgb), 0.1);
+}
+
+.error-indicator {
+  color: #dc3545;
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+.loading-indicator svg,
+.error-indicator svg {
+  width: 12px;
+  height: 12px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Responsividade para campos em linha */
+@media (max-width: 768px) {
+  .fields-row {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+  
+  .fields-row .campo-item {
+    margin-bottom: 0.25rem;
+  }
+  
+  .loading-indicator,
+  .error-indicator {
+    font-size: 0.7rem;
+    margin-left: 0.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .fields-row {
+    gap: 0.125rem;
+  }
+  
+  .loading-indicator,
+  .error-indicator {
+    font-size: 0.65rem;
+    margin-left: 0.125rem;
+  }
+}

@@ -266,7 +266,7 @@ export const validarTelefone = telefone => {
 
 /**
  * Valida formato de email
- * @param {string} email - Email a ser validado
+ * @param {string} email - E-mail a ser validado
  * @returns {boolean} True se o email for válido
  */
 export const validarEmail = email => {
@@ -278,7 +278,7 @@ export const validarEmail = email => {
 
 /**
  * Valida se o email é um email de teste (domínio @teste.com)
- * @param {string} email - Email a ser validado
+ * @param {string} email - E-mail a ser validado
  * @returns {boolean} True se for email de teste
  */
 export const isEmailTeste = email => {
@@ -332,7 +332,7 @@ export const validarPessoaCompleta = pessoa => {
   // Valida email
   if (!validarEmail(pessoa.email)) {
     resultado.valido = false;
-    resultado.erros.push('Email inválido');
+    resultado.erros.push('E-mail inválido');
   }
 
   // Valida telefone
