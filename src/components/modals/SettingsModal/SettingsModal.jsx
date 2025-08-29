@@ -8,6 +8,7 @@ import {
   FaLink,
   FaSave,
   FaTrash,
+  FaUserShield,
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { useSettings, AVAILABLE_FEATURES } from '../../../contexts/SettingsContext';
@@ -302,6 +303,34 @@ const SettingsModal = ({ isOpen, onClose }) => {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Seção: Administrador */}
+          <div className='settings-section'>
+            <div className='section-divider'>
+              <FaUserShield />
+              Administrador
+            </div>
+
+            <div className='admin-info'>
+              <p className='admin-description'>
+                Acesso às funcionalidades administrativas da aplicação.
+              </p>
+            </div>
+
+            <div className='admin-actions'>
+              <button
+                className='modal-action-button primary'
+                onClick={() => {
+                  // TODO: Implementar funcionalidade de acesso admin
+                  toast.info('Funcionalidade de administrador em desenvolvimento');
+                }}
+                title='Acessar painel administrativo'
+              >
+                <FaUserShield />
+                Acessar
+              </button>
             </div>
           </div>
         </div>

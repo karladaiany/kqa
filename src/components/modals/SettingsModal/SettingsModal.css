@@ -239,3 +239,41 @@
 .feature-item:focus-within {
   box-shadow: 0 0 0 2px rgba(255, 121, 198, 0.2);
 }
+
+/* Seção de administrador */
+.admin-info {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+}
+
+.admin-description {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.admin-actions .modal-action-button {
+  flex: 1;
+  min-width: 150px;
+}
+
+@media (max-width: 640px) {
+  .admin-actions {
+    flex-direction: column;
+  }
+
+  .admin-actions .modal-action-button {
+    width: 100%;
+  }
+}
