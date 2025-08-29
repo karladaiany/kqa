@@ -195,6 +195,107 @@ O template de atualização inclui automaticamente os campos de configuração d
 6. **📤 Faça upload** do arquivo limpo
 7. **✅ Valide na preview** antes de importar
 
+## 🎨 Formatação HTML Customizada
+
+### ✨ Funcionalidade Avançada
+
+O campo `descricao` do CSV aceita **formatação HTML customizada** para criar atividades com formatação visual avançada.
+
+### 📝 Exemplos de Uso
+
+#### **Título Colorido**
+```csv
+tipo,titulo,descricao
+Desenvolvimento,"Nova funcionalidade","<span style=\"color: #8e44ad; font-weight: bold;\">Implementação necessário:</span>
+- Criar formulário de cadastro
+- Implementar validações
+- Adicionar testes unitários"
+```
+
+#### **Lista Formatada**
+```csv
+tipo,titulo,descricao
+Teste,"Teste de funcionalidade","<h3 style=\"color: #2c3e50;\">Cenários de Teste:</h3>
+<ul style=\"margin-left: 20px;\">
+<li>Login com credenciais válidas</li>
+<li>Login com credenciais inválidas</li>
+<li>Recuperação de senha</li>
+</ul>"
+```
+
+#### **Seções Destacadas**
+```csv
+tipo,titulo,descricao
+Documentação,"Atualizar docs","<div style=\"background-color: #f8f9fa; padding: 10px; border-left: 4px solid #007bff;\">
+<strong>Objetivo:</strong> Atualizar documentação da API
+</div>
+<br>
+<strong>Arquivos a atualizar:</strong>
+- README.md
+- API.md
+- CHANGELOG.md"
+```
+
+### 🛡️ Segurança
+
+O sistema **sanitiza automaticamente** o HTML para segurança:
+
+- ✅ **Tags permitidas**: `span`, `div`, `p`, `strong`, `b`, `em`, `i`, `u`, `br`, `ul`, `ol`, `li`, `h1-h6`
+- ✅ **Estilos permitidos**: `color`, `background-color`, `font-family`, `font-size`, `font-weight`, `text-align`, `margin`, `padding`, `border`, `border-radius`, `display`, `line-height`
+- ❌ **Tags bloqueadas**: `script`, `iframe`, `object`, `embed`, `form`, `input`, etc.
+- ❌ **Estilos bloqueados**: `javascript:`, `expression()`, `url()`, etc.
+
+### 🎯 Dicas de Formatação
+
+#### **Cores Recomendadas**
+- **Roxo**: `#8e44ad` (padrão do sistema)
+- **Azul**: `#007bff` (destaque)
+- **Verde**: `#28a745` (sucesso)
+- **Vermelho**: `#dc3545` (erro)
+- **Laranja**: `#fd7e14` (aviso)
+
+#### **Estruturas Comuns**
+```html
+<!-- Título destacado -->
+<span style="color: #8e44ad; font-weight: bold;">Título:</span>
+
+<!-- Seção com borda -->
+<div style="border-left: 4px solid #007bff; padding-left: 10px;">
+Conteúdo da seção
+</div>
+
+<!-- Lista formatada -->
+<ul style="margin-left: 20px;">
+<li>Item 1</li>
+<li>Item 2</li>
+</ul>
+```
+
+### ⚠️ Importante
+
+- **Escape de aspas**: Use `\"` dentro de strings CSV
+- **Codificação**: Sempre use UTF-8 com BOM
+- **Delimitador**: Ponto-e-vírgula (`;`) é recomendado
+- **Validação**: O sistema valida e limpa HTML automaticamente
+
+## 📄 Exemplo Completo de CSV com Formatação HTML
+
+```csv
+tipo;titulo;descricao;esforco_estimado;funcionalidade;sub_funcionalidade
+Desenvolvimento;"Implementar sistema de login";"<span style=\"color: #8e44ad; font-weight: bold;\">Implementação necessário:</span><br><br><strong>Funcionalidades:</strong><ul style=\"margin-left: 20px;\"><li>Criar formulário de login</li><li>Implementar autenticação JWT</li><li>Adicionar validações de segurança</li><li>Criar testes unitários</li></ul><br><div style=\"background-color: #f8f9fa; padding: 10px; border-left: 4px solid #007bff;\"><strong>Observações:</strong> Seguir padrões de segurança OWASP</div>";8;Login;Autenticação
+Teste;"Teste de integração";"<h3 style=\"color: #2c3e50;\">Cenários de Teste:</h3><br><ul style=\"margin-left: 20px;\"><li>Login com credenciais válidas</li><li>Login com credenciais inválidas</li><li>Recuperação de senha</li><li>Logout automático</li></ul><br><span style=\"color: #28a745; font-weight: bold;\">Critérios de Aceitação:</span><br>- Todos os cenários devem passar<br>- Cobertura mínima de 90%";4;Login;Testes
+Documentação;"Atualizar documentação";"<div style=\"background-color: #fff3cd; padding: 10px; border: 1px solid #ffeaa7;\"><strong>Objetivo:</strong> Atualizar documentação da API</div><br><strong>Arquivos a atualizar:</strong><ul><li>README.md</li><li>API.md</li><li>CHANGELOG.md</li></ul><br><span style=\"color: #fd7e14;\">Prioridade:</span> Alta";2;Documentação;API
+```
+
+### 🎯 Resultado Esperado
+
+As atividades criadas terão formatação visual rica com:
+- **Títulos coloridos** em roxo
+- **Listas formatadas** com indentação
+- **Seções destacadas** com bordas e cores
+- **Hierarquia visual** clara com diferentes tamanhos de texto
+- **Cores semânticas** para diferentes tipos de informação
+
 ---
 
 💡 **Dúvidas?** O sistema mostra erros detalhados durante a validação, indicando exatamente quais campos estão faltando ou incorretos!

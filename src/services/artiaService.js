@@ -811,11 +811,13 @@ Evidência pendente de anexo
 
     // Fallback para outros tipos - aplicar formatação básica
     if (generatedDescription && generatedDescription.trim() !== '') {
+      // Verificar se já contém HTML customizado
       if (
         generatedDescription.includes('<') &&
         generatedDescription.includes('>')
       ) {
-        return generatedDescription;
+        // Validar e sanitizar HTML customizado para segurança
+        return this.sanitizeCustomHTML(generatedDescription);
       }
 
       // Converter para HTML básico
@@ -824,6 +826,133 @@ Evidência pendente de anexo
 
     // Fallback padrão
     return `<p><strong>Atividade criada via KQA - ${activityData.tipo}</strong></p>`;
+  }
+
+  /**
+   * Sanitiza HTML customizado para segurança, permitindo apenas tags e atributos seguros
+   * @param {string} html - HTML customizado do CSV
+   * @returns {string} HTML sanitizado e seguro
+   */
+  static sanitizeCustomHTML(html) {
+    // Tags permitidas com seus atributos
+    const allowedTags = {
+      'span': ['style', 'class'],
+      'div': ['style', 'class'],
+      'p': ['style', 'class'],
+      'strong': [],
+      'b': [],
+      'em': [],
+      'i': [],
+      'u': [],
+      'br': [],
+      'ul': ['style', 'class'],
+      'ol': ['style', 'class'],
+      'li': ['style', 'class'],
+      'h1': ['style', 'class'],
+      'h2': ['style', 'class'],
+      'h3': ['style', 'class'],
+      'h4': ['style', 'class'],
+      'h5': ['style', 'class'],
+      'h6': ['style', 'class'],
+    };
+
+    // Atributos de estilo permitidos
+    const allowedStyleProps = [
+      'color',
+      'background-color',
+      'font-family',
+      'font-size',
+      'font-weight',
+      'text-align',
+      'margin',
+      'padding',
+      'border',
+      'border-radius',
+      'display',
+      'line-height',
+    ];
+
+    // Função para validar e limpar atributos de estilo
+    const sanitizeStyle = (style) => {
+      if (!style) return '';
+      
+      const properties = style.split(';').filter(prop => {
+        const [property] = prop.split(':');
+        return allowedStyleProps.includes(property.trim().toLowerCase());
+      });
+      
+      return properties.join(';');
+    };
+
+    // Função para validar atributos de uma tag
+    const sanitizeAttributes = (tagName, attributes) => {
+      const allowedAttrs = allowedTags[tagName] || [];
+      const sanitized = {};
+      
+      Object.keys(attributes).forEach(attr => {
+        if (allowedAttrs.includes(attr)) {
+          if (attr === 'style') {
+            sanitized[attr] = sanitizeStyle(attributes[attr]);
+          } else {
+            sanitized[attr] = attributes[attr];
+          }
+        }
+      });
+      
+      return sanitized;
+    };
+
+    // Converter atributos para string HTML
+    const attributesToString = (attrs) => {
+      return Object.entries(attrs)
+        .map(([key, value]) => `${key}="${value}"`)
+        .join(' ');
+    };
+
+    // Processar HTML com regex para manter estrutura
+    let sanitizedHtml = html;
+    
+    // Processar tags de abertura
+    sanitizedHtml = sanitizedHtml.replace(
+      /<(\w+)([^>]*)>/gi,
+      (match, tagName, attributes) => {
+        const lowerTagName = tagName.toLowerCase();
+        
+        if (!allowedTags[lowerTagName]) {
+          return ''; // Remover tag não permitida
+        }
+        
+        // Extrair atributos
+        const attrObj = {};
+        const attrRegex = /(\w+)=["']([^"']*)["']/g;
+        let attrMatch;
+        
+        while ((attrMatch = attrRegex.exec(attributes)) !== null) {
+          attrObj[attrMatch[1]] = attrMatch[2];
+        }
+        
+        const sanitizedAttrs = sanitizeAttributes(lowerTagName, attrObj);
+        const attrString = attributesToString(sanitizedAttrs);
+        
+        return `<${lowerTagName}${attrString ? ` ${attrString}` : ''}>`;
+      }
+    );
+    
+    // Processar tags de fechamento
+    sanitizedHtml = sanitizedHtml.replace(
+      /<\/(\w+)>/gi,
+      (match, tagName) => {
+        const lowerTagName = tagName.toLowerCase();
+        return allowedTags[lowerTagName] ? `</${lowerTagName}>` : '';
+      }
+    );
+
+    // Envolver em container seguro se não estiver
+    if (!sanitizedHtml.includes('<div') && !sanitizedHtml.includes('<p')) {
+      sanitizedHtml = `<div style="font-family: Verdana, Geneva, sans-serif;">${sanitizedHtml}</div>`;
+    }
+
+    return sanitizedHtml;
   }
 
   /**

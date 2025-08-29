@@ -647,6 +647,10 @@ export const generateCSVTemplate = (
       '"ESFORÇO: Use horas (ex: 2 ou 3). Valores decimais (2.5 ou 2,5) serão arredondados para cima (3)"',
       '"DATAS: Use o formato DD/MM/YYYY (ex: 20/03/2024)"',
       '"CAMPOS DISPONÍVEIS: Apenas os campos que continham dados na importação original são exibidos"',
+      '"FORMATAÇÃO HTML: O campo descricao aceita HTML customizado para formatação avançada"',
+      '"EXEMPLOS HTML: <span style=\"color: #8e44ad; font-weight: bold;\">Título</span> ou <strong>Texto</strong>"',
+      '"TAGS PERMITIDAS: span, div, p, strong, b, em, i, u, br, ul, ol, li, h1-h6"',
+      '"ESTILOS PERMITIDOS: color, background-color, font-family, font-size, font-weight, text-align, margin, padding"',
       '',
     ];
 
