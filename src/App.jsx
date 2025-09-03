@@ -19,7 +19,7 @@ import {
   SidebarMenu,
   ScrollButtons,
 } from './components/layout';
-import { SettingsModal } from './components/modals';
+import { SettingsModal, CustomFieldsModal } from './components/modals';
 import {
   BugRegistrationCard,
   DeployCard,
@@ -51,6 +51,7 @@ const App = () => {
   const [canScrollDown, setCanScrollDown] = useState(true);
   const [canScrollUp, setCanScrollUp] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showCustomFieldsModal, setShowCustomFieldsModal] = useState(false);
 
   const { isFeatureVisible, forceUpdateCounter } = useSettings();
 
@@ -92,6 +93,16 @@ const App = () => {
     setShowSettingsModal(false);
   }, []);
 
+  // Função para fechar o modal de campos customizados
+  const handleCloseCustomFieldsModal = useCallback(() => {
+    setShowCustomFieldsModal(false);
+  }, []);
+
+  // Função para abrir o modal de campos customizados
+  const handleOpenCustomFieldsModal = useCallback(() => {
+    setShowCustomFieldsModal(true);
+  }, []);
+
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop =
@@ -115,6 +126,14 @@ const App = () => {
     const newDarkMode = alternarTema(darkMode);
     setDarkMode(newDarkMode);
   };
+
+  // Expor função para abrir modal de campos customizados globalmente
+  useEffect(() => {
+    window.openCustomFieldsModal = handleOpenCustomFieldsModal;
+    return () => {
+      delete window.openCustomFieldsModal;
+    };
+  }, [handleOpenCustomFieldsModal]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: CONFIG_SCROLL.comportamento });
@@ -233,6 +252,12 @@ const App = () => {
       <SettingsModal
         isOpen={showSettingsModal}
         onClose={handleCloseSettingsModal}
+      />
+
+      {/* Modal de Campos Customizados */}
+      <CustomFieldsModal
+        isOpen={showCustomFieldsModal}
+        onClose={handleCloseCustomFieldsModal}
       />
 
       <ToastContainer {...CONFIG_TOAST} theme={darkMode ? 'dark' : 'light'} />

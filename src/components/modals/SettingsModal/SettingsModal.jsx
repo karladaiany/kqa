@@ -323,10 +323,13 @@ const SettingsModal = ({ isOpen, onClose }) => {
               <button
                 className='modal-action-button primary'
                 onClick={() => {
-                  // TODO: Implementar funcionalidade de acesso admin
-                  toast.info('Funcionalidade de administrador em desenvolvimento');
+                  onClose(); // Fechar modal de configurações
+                  // Abrir modal de campos customizados
+                  if (window.openCustomFieldsModal) {
+                    window.openCustomFieldsModal();
+                  }
                 }}
-                title='Acessar painel administrativo'
+                title='Acessar painel de campos customizados'
               >
                 <FaUserShield />
                 Acessar
