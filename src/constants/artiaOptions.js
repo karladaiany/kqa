@@ -69,7 +69,10 @@ export const FUNCIONALIDADE_OPTIONS = {
     'Portal de processos',
   ],
   'Agente de importação': ['Importação de Questionários'],
-  'Agente de suporte': ['Chatbot'],
+  'Agente de suporte': [
+    'Chatbot',
+    'Sincronização de conteúdos (pré-beta)',
+  ],
   'Ambientes adicionais': [
     'Ambiente adicional antigo',
     'Acesso',
@@ -77,7 +80,11 @@ export const FUNCIONALIDADE_OPTIONS = {
     'Inativação',
     'Listagem',
   ],
-  Aprender: [
+  'Análise por IA': [
+    'Visão Aluno',
+    'Visão Admin',
+  ],
+  'Aprender': [
     'Cards',
     'Chat',
     'Layout',
@@ -86,7 +93,7 @@ export const FUNCIONALIDADE_OPTIONS = {
     'Usabilidade',
   ],
   'Automação de testes': ['Automação de testes'],
-  API: [
+  'API': [
     'Autenticação',
     'Catálogo',
     'Conteúdos',
@@ -96,10 +103,18 @@ export const FUNCIONALIDADE_OPTIONS = {
     'Questionários',
     'Usuários',
   ],
-  Arquitetura: ['Componentes', 'Banco de dados', 'Segurança', 'Tecnologia'],
-  Biblioteca: ['Biblioteca'],
-  'Catálogo de cursos': ['Catálogo - visão admin', 'Catálogo - visão aluno'],
-  Certificado: [
+  'Arquitetura': [
+    'Componentes',
+    'Banco de dados',
+    'Segurança',
+    'Tecnologia',
+  ],
+  'Biblioteca': ['Biblioteca'],
+  'Catálogo de cursos': [
+    'Catálogo - visão admin',
+    'Catálogo - visão aluno',
+  ],
+  'Certificado': [
     'Catálogo',
     'Curso',
     'Emitidos',
@@ -109,13 +124,13 @@ export const FUNCIONALIDADE_OPTIONS = {
     'Organização',
     'Trilha',
   ],
-  Chat: ['Hubspot'],
+  'Chat': ['Hubspot'],
   'Cobrança de inscrição': [
     'Cobrança automática',
-    'Cupons e Vouchers',
+    'Cupons e vouchers',
     'Logs de transação',
   ],
-  Compartilhamentos: [
+  'Compartilhamentos': [
     'Busca',
     'Concedidos',
     'Cópia',
@@ -126,9 +141,16 @@ export const FUNCIONALIDADE_OPTIONS = {
     'Listagem',
     'Recebidos',
   ],
-  Comunicação: ['Registro de alterações', 'Regras da comunidade'],
-  Comunidades: ['Comunidades', 'Discussões', 'Notícias'],
-  Configurações: [
+  'Comunicação': [
+    'Registro de alterações', 
+    'Regras da comunidade',
+  ],
+  'Comunidades': [
+    'Comunidades',
+    'Discussões',
+    'Notícias',
+  ],
+  'Configurações': [
     'Ambientes adicionais',
     'Assinatura',
     'Cobrança de inscrição',
@@ -139,7 +161,7 @@ export const FUNCIONALIDADE_OPTIONS = {
     'Plugins',
     'Regras do jogo',
   ],
-  Conteúdos: [
+  'Conteúdos': [
     'Abrir em nova aba',
     'Adição/Edição',
     'Ambiente adicional',
@@ -161,13 +183,17 @@ export const FUNCIONALIDADE_OPTIONS = {
     'Lista de conteúdos',
     'Soph.ia',
   ],
-  Dashboard: [
+  'Dashboard': [
     'Dashboard - visão admin',
     'Dashboard - visão aluno',
     'Dashboard - visão gestor',
     'Dashboard - visão instrutor',
   ],
-  Empresas: ['Adição/Edição', 'Exclusão', 'Listagem'],
+  'Empresas': [
+    'Adição/Edição',
+    'Exclusão',
+    'Listagem',
+  ],
   'Envio de e-mail': [
     'Cadastro de usuário',
     'Cancelamento de inscrição',
@@ -185,7 +211,7 @@ export const FUNCIONALIDADE_OPTIONS = {
     'Recuperação de senha',
     'Trial- Confirmação de conta',
   ],
-  Equipe: [
+  'Equipe': [
     'Busca',
     'Dashboards',
     'Filtro',
@@ -193,13 +219,25 @@ export const FUNCIONALIDADE_OPTIONS = {
     'Pontuação',
     'Visão detalhada',
   ],
-  Exportação: ['Conteúdos', 'Inscrição', 'Questionários', 'Usuários'],
+  'Exportação': [
+    'Conteúdos',
+    'Inscrição',
+    'Questionários',
+    'Usuários',
+  ],
   'Formulário de inscrição': ['Formulário de inscrição'],
-  Importação: ['Inscrição', 'Usuários'],
+  'Importação': [
+    'Inscrição',
+    'Usuários',
+  ],
   'Integração Fleeg': ['Integração Fleeg'],
   'Integração Hubspot': ['Integração Hubspot'],
-  'Integrações de pagamento': ['Asaas', 'e-Rede', 'PagSeguro'],
-  Log: [
+  'Integrações de pagamento': [
+    'Asaas',
+    'e-Rede',
+    'PagSeguro',
+  ],
+  'Log': [
     'Ambiente adicional',
     'Cobrança de inscrição - Logs de transações',
     'Comunicação',
@@ -211,22 +249,33 @@ export const FUNCIONALIDADE_OPTIONS = {
     'Usuários',
     'Super admin',
   ],
-  Login: ['Magic link', 'Padrão (e-mail/cpf)', 'Redes sociais'],
-  'Magic link': ['Configuração', 'Geração - Usuário', 'Magic link'],
+  'Login': [
+    'Magic link',
+    'Padrão (e-mail/cpf)',
+    'Redes sociais',
+  ],
+  'Magic link': [
+    'Configuração',
+    'Geração - Usuário',
+    'Magic link',
+  ],
   'Menu de apoio (Sophia)': [
     'Primeiros passos',
     'Fale com a gente',
     'Contratar a Twygo',
     'Excluir informações',
   ],
-  'Meus cursos': ['Aprender', 'Meus cursos'],
-  Navegação: ['Modo de uso'],
-  Notificações: [
+  'Meus cursos': [
+    'Aprender',
+    'Meus cursos',
+  ],
+  'Navegação': ['Modo de uso'],
+  'Notificações': [
     'Interna (microserviço)',
     'Modal (pop up)',
     'Topo de tela (faixa amarela)',
   ],
-  Organização: [
+  'Organização': [
     'Certificado',
     'Customizações',
     'Dados',
@@ -241,7 +290,7 @@ export const FUNCIONALIDADE_OPTIONS = {
     'Lista de itens',
     'Página pública de um conteúdo',
   ],
-  'Perfil de usuários': ['Perfil de usuários'],
+  'Perfil dos usuários': ['Perfil dos usuários'],
   'Piloto automático': [
     'Adição/Edição',
     'Ações em massa',
@@ -259,7 +308,7 @@ export const FUNCIONALIDADE_OPTIONS = {
     'Filtro',
     'Listagem',
   ],
-  Play: [
+  'Play': [
     'Busca',
     'Card resumido',
     'Card detalhado',
@@ -268,7 +317,7 @@ export const FUNCIONALIDADE_OPTIONS = {
     'Listagem',
     'Ver tudo',
   ],
-  Questionários: [
+  'Questionários': [
     'Adição/Edição',
     'Busca',
     'Dashboards',
@@ -279,7 +328,7 @@ export const FUNCIONALIDADE_OPTIONS = {
   ],
   'Registre-se': ['Formulário Registre-se'],
   'Regras do jogo': ['Regras do Jogo'],
-  Site: ['Site'],
+  'Site': ['Site'],
   'Soph.ia': [
     'Atividades',
     'Questionário',
@@ -287,7 +336,7 @@ export const FUNCIONALIDADE_OPTIONS = {
     'Roteiro do narrador',
     'Vídeo narrado',
   ],
-  SSO: ['SSO'],
+  'SSO': ['SSO'],
   'Super admin': [
     'Acesso - Liberação de usuários',
     'Acesso - Manutenção de perfis de acesso',
@@ -296,11 +345,18 @@ export const FUNCIONALIDADE_OPTIONS = {
     'Features',
     'Outros',
   ],
-  Termos: ['Aceite dos termos', 'Adição/Edição'],
-  Trial: ['Acesso', 'Base populada', 'Formulário'],
-  Trilha: ['Trilha'],
-  Twygo: ['Twygo'],
-  Usuários: [
+  'Termos': [
+    'Aceite dos termos',
+    'Adição/Edição',
+  ],
+  'Trial': [
+    'Acesso',
+    'Base populada',
+    'Formulário',
+  ],
+  'Trilha': ['Trilha'],
+  'Twygo': ['Twygo'],
+  'Usuários': [
     'Ações em massa',
     'Adição/Edição',
     'Alteração de senha',
@@ -316,7 +372,10 @@ export const FUNCIONALIDADE_OPTIONS = {
     'Registros de acesso',
     'Visão detalhada',
   ],
-  'Views de BI': ['Clientes', 'Internas'],
+  'Views de BI': [
+    'Clientes',
+    'Internas',
+  ],
 };
 
 export const ACTIVITY_TYPES = {
