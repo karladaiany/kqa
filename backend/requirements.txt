@@ -1,0 +1,14 @@
+# Dependências básicas para o backend Flask
+Flask==2.0.1
+Werkzeug==2.0.3  # Fixando versão compatível com Flask 2.0.1
+gunicorn==20.1.0
+pymongo==4.0.1
+python-dotenv==0.19.1
+flask-cors==3.0.10
+PyJWT==2.1.0
+bcrypt==3.2.0
+requests==2.26.0
+
+# Removendo temporariamente pandas e numpy devido a problemas de compilação
+# pandas==1.3.3
+# openpyxl==3.0.9
